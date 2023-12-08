@@ -1,8 +1,8 @@
 import { Client, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 import process from "process";
-import { VERSION } from "src/index";
-import { commandsList } from "src/commands";
+import { VERSION } from "../index";
+import { commandsList } from "../commands";
 
 
 dotenv.config({ path: ".env" });
