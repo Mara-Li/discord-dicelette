@@ -29,46 +29,51 @@ export const diceRoll = {
 			return;
 		}
 		//get thread starting with "🎲"
-		const rollDice = roll(dice)
-		const parser = parseResult(rollDice)
-		if (channel instanceof TextChannel) {
-			//sort threads by date by most recent
-			const mostRecentThread = channel.threads.cache.sort((a, b) => {
-				const aDate = a.createdTimestamp;
-				const bDate = b.createdTimestamp;
-				if (aDate && bDate) {
-					return bDate - aDate;
-				}
-				return 0;
-			});
-			const thread = mostRecentThread.find(thread => thread.name.startsWith("🎲") && !thread.archived);
-			//archive old threads
-			if (thread) {
-				const threadThatMustBeArchived = mostRecentThread.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id);
-				for (const thread of threadThatMustBeArchived) {
-					await thread[1].setArchived(true);
-				}
-				const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
-				const msgToEdit = await thread.send("_ _");
-				await msgToEdit.edit(msg);
-			} else {
-				//create thread
-				const date = moment().format("YYYY-MM-DD:HH:mm");
-				const newThread = await channel.threads.create({
-					name: `🎲 ${date}`,
-					reason: "New roll thread",
+		try {
+			const rollDice = roll(dice)
+			const parser = parseResult(rollDice)
+			if (channel instanceof TextChannel) {
+				//sort threads by date by most recent
+				const mostRecentThread = channel.threads.cache.sort((a, b) => {
+					const aDate = a.createdTimestamp;
+					const bDate = b.createdTimestamp;
+					if (aDate && bDate) {
+						return bDate - aDate;
+					}
+					return 0;
 				});
-				//send a empty message to prevent mention...
-				const msgToEdit = await newThread.send("_ _");
-				const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
-				await msgToEdit.edit(msg);
+				const thread = mostRecentThread.find(thread => thread.name.startsWith("🎲") && !thread.archived);
+				//archive old threads
+				if (thread) {
+					const threadThatMustBeArchived = mostRecentThread.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id);
+					for (const thread of threadThatMustBeArchived) {
+						await thread[1].setArchived(true);
+					}
+					const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
+					const msgToEdit = await thread.send("_ _");
+					await msgToEdit.edit(msg);
+				} else {
+					//create thread
+					const date = moment().format("YYYY-MM-DD:HH:mm");
+					const newThread = await channel.threads.create({
+						name: `🎲 ${date}`,
+						reason: "New roll thread",
+					});
+					//send a empty message to prevent mention...
+					const msgToEdit = await newThread.send("_ _");
+					const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
+					await msgToEdit.edit(msg);
+				}
+				await interaction.reply({ content: parser, ephemeral: true });
+				return;
 			}
-			await interaction.reply({ content: parser, ephemeral: true });
+			//send message
+			const msg = `${parser}`;
+			await interaction.reply({ content: msg });
+		} catch (error) {
+			await interaction.reply({ content: "Error : Invalid dice", ephemeral: true });
 			return;
 		}
-		//send message
-		const msg = `${parser}`;
-		await interaction.reply({ content: msg });
 	},
 }
 
@@ -102,7 +107,7 @@ export const newScene = {
 		});
 		await interaction.reply({ content: `New scene thread created: ${newThread.name}`, ephemeral: true });
 		const msgToEdit = await newThread.send("_ _");
-		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\nScene: ${scene}`;
+		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n__New Scene__: ${scene}`;
 		await msgToEdit.edit(msg);
 		return;
 	}
