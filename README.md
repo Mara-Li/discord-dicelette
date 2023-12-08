@@ -6,6 +6,8 @@ Use [@diceRoller](https://dice-roller.github.io/documentation/) API to throw dic
 
 It also support the rollem notation `4#(dice)` for bulk rolls.
 
+[Invite the bot](https://discord.com/api/oauth2/authorize?client_id=1182819335878754385&permissions=395137215504&scope=bot+applications.commands)
+
 ## Usage
 
 The bot use slash-commands for simplicity.

@@ -1,7 +1,6 @@
 import {
 	CommandInteraction,
 	CommandInteractionOptionResolver,
-	GuildMember,
 	SlashCommandBuilder,
 	TextChannel,
 	userMention
@@ -107,10 +106,22 @@ export const newScene = {
 		});
 		await interaction.reply({ content: `New scene thread created: ${newThread.name}`, ephemeral: true });
 		const msgToEdit = await newThread.send("_ _");
-		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n__New Scene__: ${scene}`;
+		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n__New Scene__: ${scene}\n*roll: </roll:1182771374410973194>*`;
 		await msgToEdit.edit(msg);
 		return;
 	}
 }
 
-export const commandsList = [diceRoll, newScene];
+export const help = {
+	data: new SlashCommandBuilder()
+		.setName("help")
+		.setDescription("Display help"),
+	async execute(interaction: CommandInteraction): Promise<void> {
+		const msg = `**</roll:1182771374410973194>** : Roll a dice\n**</scene:1182771374410973195>** : Create a new thread for the dice`;
+		await interaction.reply({ content: msg, ephemeral: true });
+		return;
+	}
+
+}
+
+export const commandsList = [diceRoll, newScene, help];
