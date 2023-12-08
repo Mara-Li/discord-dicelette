@@ -32,8 +32,6 @@ export function roll(dice: string): Resultat {
 	};
 }
 
-console.log(roll("4#d20 //coucou"));
-
 export function parseResult(output: Resultat) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
