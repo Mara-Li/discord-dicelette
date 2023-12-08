@@ -41,9 +41,13 @@ export const diceRoll = {
 				}
 				return 0;
 			});
-			console.log(mostRecentThread);
 			const thread = mostRecentThread.find(thread => thread.name.startsWith("🎲") && !thread.archived);
+			//archive old threads
 			if (thread) {
+				const threadThatMustBeArchived = mostRecentThread.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id);
+				for (const thread of threadThatMustBeArchived) {
+					await thread[1].setArchived(true);
+				}
 				const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
 				const msgToEdit = await thread.send("_ _");
 				await msgToEdit.edit(msg);
@@ -87,7 +91,11 @@ export const newScene = {
 			await interaction.reply({ content: "No scene provided", ephemeral: true });
 			return;
 		}
-		//create thread
+		//archive old threads
+		const threads = channel.threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived);
+		for (const thread of threads) {
+			await thread[1].setArchived(true);
+		}
 		const newThread = await channel.threads.create({
 			name: `🎲 ${scene}`,
 			reason: "New scene thread",
