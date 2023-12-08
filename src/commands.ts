@@ -117,7 +117,7 @@ export const help = {
 		.setName("help")
 		.setDescription("Display help"),
 	async execute(interaction: CommandInteraction): Promise<void> {
-		const msg = `**</roll:1182771374410973194>** : Roll a dice\n**</scene:1182771374410973195>** : Create a new thread for the dice`;
+		const msg = "- **</roll:1182771374410973194>** : Roll a dice\n- **</scene:1182771374410973195>** : Create a new thread for future dice\n\n[See documentation for Dice Notation](https://dice-roller.github.io/documentation/guide/notation/dice.html)\nBulk dice are supported with `{nb}#{dice}` like `4#d100`"
 		await interaction.reply({ content: msg, ephemeral: true });
 		return;
 	}
