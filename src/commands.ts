@@ -109,6 +109,8 @@ export const newScene = {
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
+		const allCommands = await client.application?.commands.fetch();
+		if (!allCommands) return;
 		const channel = interaction.channel;
 		if (!channel || !channel.isTextBased() || !(channel instanceof TextChannel)) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
@@ -129,10 +131,10 @@ export const newScene = {
 			reason: userLang.scene.reason,
 		});
 		await interaction.reply({ content: userLang.scene.interaction(scene), ephemeral: true });
-		const allCommands = await client.application?.commands.fetch();
-		const rollCommand = allCommands?.findKey(command => command.name === "roll") || "";
+
+		const rollID = allCommands.findKey(command => command.name === "roll");
 		const msgToEdit = await newThread.send("_ _");
-		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:${rollCommand}>*`;
+		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:${rollID}>*`;
 		await msgToEdit.edit(msg);
 		return;
 	}
