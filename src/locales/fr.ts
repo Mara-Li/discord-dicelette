@@ -2,9 +2,9 @@ export default {
 	help : {
 		name: "aide",
 		description: "Affiche l'aide",
-		message: `
-			- </roll:1182771374410973194> : Lance un dé
-			- </scene:1182771374410973195> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.
+		message: (rollId: string, sceneId: string) => `
+			- </roll:${rollId}> : Lance un dé
+			- </scene:${sceneId}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.
 
 			[Voir la documentation pour la notation des dés (en anglais)](https://dice-roller.github.io/documentation/guide/notation/dice.html).
 

@@ -22,6 +22,7 @@ export default (client: Client): void => {
 				console.log(`Deleting ${command.name}`);
 				command.delete();
 			});
+
 			await rest.put(
 				Routes.applicationGuildCommands(process.env.CLIENT_ID, guild.id),
 				{ body: serializedCommands },

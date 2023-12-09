@@ -12,6 +12,7 @@ import { parseResult, roll } from "./dice";
 import dedent from "ts-dedent";
 import fr from "./locales/fr";
 import en from "./locales/en";
+import { client } from "./index";
 
 const TRANSLATION = {
 	fr,
@@ -38,7 +39,7 @@ export const diceRoll = {
 		const userLang = TRANSLATION[interaction.locale as keyof typeof TRANSLATION] || TRANSLATION.en;
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const dice = option.getString(userLang.roll.option.name);
+		const dice = option.getString(en.roll.option.name);
 		if (!dice) {
 			await interaction.reply({ content: userLang.roll.noDice, ephemeral: true });
 			return;
@@ -128,8 +129,10 @@ export const newScene = {
 			reason: userLang.scene.reason,
 		});
 		await interaction.reply({ content: userLang.scene.interaction(scene), ephemeral: true });
+		const allCommands = await client.application?.commands.fetch();
+		const rollCommand = allCommands?.findKey(command => command.name === "roll") || "";
 		const msgToEdit = await newThread.send("_ _");
-		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:1182771374410973194>*`;
+		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:${rollCommand}>*`;
 		await msgToEdit.edit(msg);
 		return;
 	}
@@ -142,9 +145,14 @@ export const help = {
 		.setDescription(en.help.description)
 		.setDescriptionLocalizations({ "fr": fr.help.description }),
 	async execute(interaction: CommandInteraction): Promise<void> {
+		const commandsID = await interaction.guild?.commands.fetch();
+		if (!commandsID) return;
+		const rollID = commandsID.findKey(command => command.name === "roll");
+		const sceneID = commandsID.findKey(command => command.name === "scene");
+
 		const locales: { [key: string]: string } = {
-			"fr" : fr.help.message,
-			"en" : en.help.message
+			"fr" : fr.help.message(rollID || "", sceneID || ""),
+			"en" : en.help.message(rollID || "", sceneID || "")
 		}
 		const userLocale = interaction.locale as LocaleString;
 		const message = locales[userLocale] || locales.en;

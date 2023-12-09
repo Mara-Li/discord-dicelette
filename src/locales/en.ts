@@ -2,9 +2,9 @@ export default {
 	help: {
 		name: "help",
 		description: "Display help",
-		message: `
-			- </roll:1182771374410973194> : Roll a dice
-			- </scene:1182771374410973195> : Create a new scene thread for future rolls, it will also archive all previous scene threads
+		message: (rollId: string, sceneId: string) => `
+			- </roll:${rollId}> : Roll a dice
+			- </scene:${sceneId}> : Create a new scene thread for future rolls, it will also archive all previous scene threads
 
 			[See the documentation for dice notation](https://dice-roller.github.io/documentation/guide/notation/dice.html).
 
