@@ -144,7 +144,7 @@ export const newScene = {
 		});
 		const threadMention = channelMention(newThread.id);
 		const reply = await interaction.reply({ content: userLang.scene.interaction(threadMention) });
-
+		deleteAfter(reply, 180000);
 		const rollID = allCommands.findKey(command => command.name === "roll");
 		const msgToEdit = await newThread.send("_ _");
 		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:${rollID}>*`;
