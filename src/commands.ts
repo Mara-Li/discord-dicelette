@@ -12,7 +12,6 @@ import { parseResult, roll } from "./dice";
 import dedent from "ts-dedent";
 import fr from "./locales/fr";
 import en from "./locales/en";
-import { client } from "./index";
 
 const TRANSLATION = {
 	fr,
