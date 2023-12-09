@@ -1,30 +1,46 @@
 import {
 	CommandInteraction,
 	CommandInteractionOptionResolver,
+	Locale,
+	LocaleString,
 	SlashCommandBuilder,
 	TextChannel,
 	userMention
 } from "discord.js";
 import moment from "moment";
 import { parseResult, roll } from "./dice";
+import dedent from "ts-dedent";
+import fr from "./locales/fr";
+import en from "./locales/en";
+
+const TRANSLATION = {
+	fr,
+	en
+}
 
 export const diceRoll = {
 	data: new SlashCommandBuilder()
-		.setName("roll")
-		.setDescription("Roll a dice")
+		.setName(en.roll.name)
+		.setNameLocalizations({ "fr": fr.roll.name })
+		.setDescription(en.roll.description)
+		.setDescriptionLocalizations({ "fr": fr.roll.description })
 		.addStringOption(option =>
-			option.setName("dice")
-				.setDescription("The dice to roll")
+			option
+				.setName(en.roll.option.name)
+				.setNameLocalizations({ "fr": fr.roll.option.name })
+				.setDescription(en.roll.option.description)
+				.setDescriptionLocalizations({ "fr": fr.roll.option.description })
 				.setRequired(true)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
 		const channel = interaction.channel;
+		const userLang = TRANSLATION[interaction.locale as keyof typeof TRANSLATION] || TRANSLATION.en;
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const dice = option.getString("dice");
+		const dice = option.getString(userLang.roll.option.name);
 		if (!dice) {
-			await interaction.reply({ content: "No dice provided", ephemeral: true });
+			await interaction.reply({ content: userLang.roll.noDice, ephemeral: true });
 			return;
 		}
 		//get thread starting with "🎲"
@@ -56,7 +72,7 @@ export const diceRoll = {
 					const date = moment().format("YYYY-MM-DD:HH:mm");
 					const newThread = await channel.threads.create({
 						name: `🎲 ${date}`,
-						reason: "New roll thread",
+						reason: userLang.roll.reason,
 					});
 					//send a empty message to prevent mention...
 					const msgToEdit = await newThread.send("_ _");
@@ -70,7 +86,7 @@ export const diceRoll = {
 			const msg = `${parser}`;
 			await interaction.reply({ content: msg });
 		} catch (error) {
-			await interaction.reply({ content: "Error : Invalid dice", ephemeral: true });
+			await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
 			return;
 		}
 	},
@@ -78,11 +94,16 @@ export const diceRoll = {
 
 export const newScene = {
 	data : new SlashCommandBuilder()
-		.setName("scene")
-		.setDescription("Create a new thread for the dice")
+		.setName(en.scene.name)
+		.setDescription(en.scene.description)
+		.setDescriptionLocalizations({ "fr": fr.scene.description })
+		.setNameLocalizations({ "fr": fr.scene.name })
 		.addStringOption(option =>
-			option.setName("scene")
-				.setDescription("The name of the scene")
+			option
+				.setName(en.scene.option.name)
+				.setNameLocalizations({ "fr": fr.scene.option.name })
+				.setDescription(en.scene.option.description)
+				.setDescriptionLocalizations({ "fr": fr.scene.option.description })
 				.setRequired(true)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
@@ -90,9 +111,11 @@ export const newScene = {
 		const channel = interaction.channel;
 		if (!channel || !channel.isTextBased() || !(channel instanceof TextChannel)) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const scene = option.getString("scene");
+		const locales: keyof typeof TRANSLATION = interaction.locale as keyof typeof TRANSLATION;
+		const userLang = TRANSLATION[locales] || TRANSLATION.en;
+		const scene = option.getString(userLang.scene.option.name);
 		if (!scene) {
-			await interaction.reply({ content: "No scene provided", ephemeral: true });
+			await interaction.reply({ content: userLang.scene.noScene, ephemeral: true });
 			return;
 		}
 		//archive old threads
@@ -102,11 +125,11 @@ export const newScene = {
 		}
 		const newThread = await channel.threads.create({
 			name: `🎲 ${scene}`,
-			reason: "New scene thread",
+			reason: userLang.scene.reason,
 		});
-		await interaction.reply({ content: `New scene thread created: ${newThread.name}`, ephemeral: true });
+		await interaction.reply({ content: userLang.scene.interaction(scene), ephemeral: true });
 		const msgToEdit = await newThread.send("_ _");
-		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n__New Scene__: ${scene}\n*roll: </roll:1182771374410973194>*`;
+		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:1182771374410973194>*`;
 		await msgToEdit.edit(msg);
 		return;
 	}
@@ -114,11 +137,19 @@ export const newScene = {
 
 export const help = {
 	data: new SlashCommandBuilder()
-		.setName("help")
-		.setDescription("Display help"),
+		.setName(en.help.name)
+		.setNameLocalizations({ "fr": fr.help.name })
+		.setDescription(en.help.description)
+		.setDescriptionLocalizations({ "fr": fr.help.description }),
 	async execute(interaction: CommandInteraction): Promise<void> {
-		const msg = "- **</roll:1182771374410973194>** : Roll a dice\n- **</scene:1182771374410973195>** : Create a new thread for future dice\n\n[See documentation for Dice Notation](https://dice-roller.github.io/documentation/guide/notation/dice.html)\nBulk dice are supported with `{nb}#{dice}` like `4#d100`"
-		await interaction.reply({ content: msg, ephemeral: true });
+		const locales: { [key: string]: string } = {
+			"fr" : fr.help.message,
+			"en" : en.help.message
+		}
+		const userLocale = interaction.locale as LocaleString;
+		const message = locales[userLocale] || locales.en;
+		await interaction.reply({ content: dedent(message), ephemeral: true });
+
 		return;
 	}
 
