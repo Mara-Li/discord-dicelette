@@ -129,7 +129,6 @@ export const newScene = {
 			name: `🎲 ${scene}`,
 			reason: userLang.scene.reason,
 		});
-		console.log(allCommands)
 		await interaction.reply({ content: userLang.scene.interaction(scene), ephemeral: true });
 
 		const rollID = allCommands.findKey(command => command.name === "roll");
