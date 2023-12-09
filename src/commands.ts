@@ -95,10 +95,7 @@ export const diceRoll = {
 				deleteAfter(inter, 180000);
 				return;
 			}
-			//send message
-			const msg = `${parser}`;
-			const inter = await interaction.reply({ content: msg });
-			deleteAfter(inter, 180000);
+			await interaction.reply({ content: parser });
 		} catch (error) {
 			await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
 			return;
