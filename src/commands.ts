@@ -94,7 +94,7 @@ export const diceRoll = {
 				const inter = await interaction.reply({ content: `${parser}\n\n${idMessage}`});
 				deleteAfter(inter, 180000);
 				return;
-			}
+			} //run in thread ; no need to log and delete
 			await interaction.reply({ content: parser });
 		} catch (error) {
 			await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
