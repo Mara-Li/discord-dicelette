@@ -168,8 +168,8 @@ export const help = {
 		}
 		const userLocale = interaction.locale as LocaleString;
 		const message = locales[userLocale] || locales.en;
-		await interaction.reply({ content: dedent(message), ephemeral: true });
-
+		const reply = await interaction.reply({ content: dedent(message)});
+		deleteAfter(reply, 60000);
 		return;
 	}
 
