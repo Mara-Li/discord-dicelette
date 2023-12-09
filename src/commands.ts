@@ -1,6 +1,7 @@
 import {
 	CommandInteraction,
 	CommandInteractionOptionResolver,
+	InteractionResponse,
 	Locale,
 	LocaleString,
 	SlashCommandBuilder,
@@ -17,6 +18,12 @@ import en from "./locales/en";
 const TRANSLATION = {
 	fr,
 	en
+}
+
+function deleteAfter(message: InteractionResponse, time: number): void {
+	setTimeout(() => {
+		message.delete();
+	}, time);
 }
 
 export const diceRoll = {
@@ -84,12 +91,14 @@ export const diceRoll = {
 					idMessage = msgToEdit.url;
 				}
 				idMessage = `↪ ${idMessage}`
-				await interaction.reply({ content: `${idMessage}\n${parser}` , ephemeral: true });
+				const inter = await interaction.reply({ content: `${parser}\n\n${idMessage}`});
+				deleteAfter(inter, 180000);
 				return;
 			}
 			//send message
 			const msg = `${parser}`;
-			await interaction.reply({ content: msg });
+			const inter = await interaction.reply({ content: msg });
+			deleteAfter(inter, 180000);
 		} catch (error) {
 			await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
 			return;
@@ -134,7 +143,7 @@ export const newScene = {
 			reason: userLang.scene.reason,
 		});
 		const threadMention = channelMention(newThread.id);
-		await interaction.reply({ content: userLang.scene.interaction(threadMention), ephemeral: true });
+		const reply = await interaction.reply({ content: userLang.scene.interaction(threadMention) });
 
 		const rollID = allCommands.findKey(command => command.name === "roll");
 		const msgToEdit = await newThread.send("_ _");
