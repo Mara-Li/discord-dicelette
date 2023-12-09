@@ -5,6 +5,7 @@ import {
 	LocaleString,
 	SlashCommandBuilder,
 	TextChannel,
+	channelMention,
 	userMention
 } from "discord.js";
 import moment from "moment";
@@ -59,6 +60,7 @@ export const diceRoll = {
 				});
 				const thread = mostRecentThread.find(thread => thread.name.startsWith("🎲") && !thread.archived);
 				//archive old threads
+				let idMessage = "";
 				if (thread) {
 					const threadThatMustBeArchived = mostRecentThread.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id);
 					for (const thread of threadThatMustBeArchived) {
@@ -67,6 +69,7 @@ export const diceRoll = {
 					const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
 					const msgToEdit = await thread.send("_ _");
 					await msgToEdit.edit(msg);
+					idMessage = msgToEdit.url;
 				} else {
 					//create thread
 					const date = moment().format("YYYY-MM-DD:HH:mm");
@@ -78,8 +81,10 @@ export const diceRoll = {
 					const msgToEdit = await newThread.send("_ _");
 					const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
 					await msgToEdit.edit(msg);
+					idMessage = msgToEdit.url;
 				}
-				await interaction.reply({ content: parser, ephemeral: true });
+				idMessage = `↪ ${idMessage}`
+				await interaction.reply({ content: `${idMessage}\n${parser}` , ephemeral: true });
 				return;
 			}
 			//send message
@@ -128,7 +133,8 @@ export const newScene = {
 			name: `🎲 ${scene}`,
 			reason: userLang.scene.reason,
 		});
-		await interaction.reply({ content: userLang.scene.interaction(scene), ephemeral: true });
+		const threadMention = channelMention(newThread.id);
+		await interaction.reply({ content: userLang.scene.interaction(threadMention), ephemeral: true });
 
 		const rollID = allCommands.findKey(command => command.name === "roll");
 		const msgToEdit = await newThread.send("_ _");
