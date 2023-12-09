@@ -109,8 +109,7 @@ export const newScene = {
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
-		const allCommands = await client.application?.commands.fetch();
-		if (!allCommands) return;
+		const allCommands = await interaction.guild.commands.fetch();
 		const channel = interaction.channel;
 		if (!channel || !channel.isTextBased() || !(channel instanceof TextChannel)) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
@@ -130,6 +129,7 @@ export const newScene = {
 			name: `🎲 ${scene}`,
 			reason: userLang.scene.reason,
 		});
+		console.log(allCommands)
 		await interaction.reply({ content: userLang.scene.interaction(scene), ephemeral: true });
 
 		const rollID = allCommands.findKey(command => command.name === "roll");
