@@ -1,30 +1,57 @@
 # Dice Thread
 
-Allow to throw dice and send the result in a thread.
+Allows you to throw dice and send the result in a thread.
 
-Use [@diceRoller](https://dice-roller.github.io/documentation/) API to throw dice.
+Uses the [@diceRoller](https://dice-roller.github.io/documentation/) API to throw dice.
 
-It also support the rollem notation `4#(dice)` for bulk rolls.
+It also supports the rollem notation `4#(dice)` for bulk rolls.
 
 [Invite the bot](https://discord.com/api/oauth2/authorize?client_id=1182819335878754385&permissions=395137215504&scope=bot+applications.commands)
 
-## Usage
-
-The bot use slash-commands for simplicity.
-
-### Throw dice
-
-`/roll 1d20` for roll.
-
-If there is already a thread created for roll (prefix by `🎲`), the bot will send the log here plus an ephemeral message in the reply.
-If there is no thread, the bot will create one and send the log in it.
-If the command is used in a thread, the bot will send the log in the thread directly.
+## Behavior
+### Logs Threads
+The bot operates with threads. In the first roll, it will search for threads prefixed by `🎲`.
+- If the thread doesn't exist, a new one will be created, and all future logs will be sent to it.
+- If a thread exists, it will take the most recent and send the log to it.
 
 > [!NOTE]
-> The bot will archive all old threads prefixed by `🎲` if multiple are found and not archived.
+> If multiple thread logs are found, the bot will use the most recent and archive the others.
 
-### Create a new scene
+The commands can also work in threads. In this case, the bot will just send the result in it.
+
+It is also possible to create a new thread with the command [Create a new scene](#create-a-new-scene).
+
+### Channels
+
+The bot will **also** send the result in the channel where the command was sent. The message:
+- Will be deleted after 3 minutes.
+- Contains a link to the logs message.
+
+## Usage
+
+The bot can be:
+- Used with slash commands (see [Slash Commands](#slash-commands))
+- But also directly in messages.
+
+### Message Send
+
+The message will detect the dice notation and send the result.
+
+The dice notation can be in two ways:
+- Direct, like `1d20`: In this case, the message "commands" will be deleted, and the result will be sent in the same channel (and in the logs).
+- Indirect, in brackets, like: `my message content [1d20]`. In this case, the message will be preserved, and the content of the brackets will be rolled. You will get a reply with the result, and the log will be sent in the thread. The logs will contain a link to the original message.
+
+### Slash Commands
+#### Throw Dice
+
+`/roll 1d20` for a roll.
+
+#### Create a New Scene
 
 `/scene <name>`
 
-The bot will create a new thread, prefixed by `🎲`, and send the log in it. The thread will take the `scene` name, and all other thread prefixed by `🎲` will be archived.
+The bot will create a new thread, prefixed by `🎲`, and send the log to it. The thread will take the `scene` name, and all other threads prefixed by `🎲` will be archived.
+
+#### Help
+
+`/help`: Display the help message.
