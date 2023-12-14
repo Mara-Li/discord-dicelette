@@ -36,19 +36,21 @@ export default (client: Client): void => {
 		const dice = roll(content);
 		const parser = parseResult(dice);
 		if (channel instanceof TextChannel) {
-			if (deleteInput) message.delete()
+			let linkToOriginal = "";
+			if (deleteInput) {
+				message.delete()
+			} else {
+				linkToOriginal = `\n\n__Original__: ${message.url}`;
+			}
 			const thread = await findThread(channel, translation.roll.reason);
 			const msgToEdit = await thread.send("_ _");
-			const msg = `${userMention(message.author.id)} - <t:${moment().unix()}>\n${parser}`;
+			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${dice.dice.replace(COMMENT_REGEX, "")}\`)`;
+			const msg = `${authorMention} - <t:${moment().unix()}>\n${parser}${linkToOriginal}`;
 			await msgToEdit.edit(msg);
 			const idMessage = `↪ ${msgToEdit.url}`;
-			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${dice.dice.replace(COMMENT_REGEX, "")}\`)`;
 			let reply;
-			if (!deleteInput) {
-				reply = await message.reply({ content: `${authorMention}\n${parser}\n\n${idMessage}` })
-			} else {
-				reply = await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` });
-			}
+			if (!deleteInput) reply = await message.reply({ content: `${parser}\n\n${idMessage}` })
+			else reply = await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` });
 			deleteAfter(reply, 180000)
 			return;
 		}
