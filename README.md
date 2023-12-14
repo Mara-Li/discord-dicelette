@@ -1,5 +1,7 @@
 # Dice Thread
 
+-> [FRENCH TRANSLATION](README.fr.md) <-
+
 Allows you to throw dice and send the result in a thread.
 
 Uses the [@diceRoller](https://dice-roller.github.io/documentation/) API to throw dice.
