@@ -7,14 +7,15 @@ import {
 	SlashCommandBuilder,
 	TextChannel,
 	channelMention,
-	userMention
+	userMention,
+	ForumChannel
 } from "discord.js";
 import moment from "moment";
 import { parseResult, roll } from "./dice";
 import dedent from "ts-dedent";
 import fr from "./locales/fr";
 import en from "./locales/en";
-import { findThread } from "./utils";
+import { findForumChannel, findThread } from "./utils";
 const TRANSLATION = {
 	fr,
 	en
@@ -43,6 +44,7 @@ export const diceRoll = {
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
 		const channel = interaction.channel;
+		if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
 		const userLang = TRANSLATION[interaction.locale as keyof typeof TRANSLATION] || TRANSLATION.en;
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
@@ -55,9 +57,9 @@ export const diceRoll = {
 		try {
 			const rollDice = roll(dice)
 			const parser = parseResult(rollDice)
-			if (channel instanceof TextChannel) {
+			if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
 				//sort threads by date by most recent
-				const thread = await findThread(channel, userLang.roll.reason);
+				const thread = channel instanceof TextChannel ? await findThread(channel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason);
 				const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
 				const msgToEdit = await thread.send("_ _");
 				await msgToEdit.edit(msg);
@@ -92,7 +94,8 @@ export const newScene = {
 		if (!interaction.guild) return;
 		const allCommands = await interaction.guild.commands.fetch();
 		const channel = interaction.channel;
-		if (!channel || !channel.isTextBased() || !(channel instanceof TextChannel)) return;
+		if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
+
 		const option = interaction.options as CommandInteractionOptionResolver;
 		const locales: keyof typeof TRANSLATION = interaction.locale as keyof typeof TRANSLATION;
 		const userLang = TRANSLATION[locales] || TRANSLATION.en;
@@ -102,21 +105,27 @@ export const newScene = {
 			return;
 		}
 		//archive old threads
-		const threads = channel.threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived);
-		for (const thread of threads) {
-			await thread[1].setArchived(true);
+		if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
+			const threads = channel instanceof TextChannel ? channel.threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived) : (channel.parent as ForumChannel).threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived);
+			for (const thread of threads) {
+				await thread[1].setArchived(true);
+			}
+			const newThread = channel instanceof TextChannel ? await channel.threads.create({
+				name: `🎲 ${scene}`,
+				reason: userLang.scene.reason,
+			}) : await (channel.parent as ForumChannel).threads.create({
+				name: `🎲 ${scene}`,
+				message: {content: userLang.scene.reason}
+			})
+
+			const threadMention = channelMention(newThread.id);
+			const reply = await interaction.reply({ content: userLang.scene.interaction(threadMention) });
+			deleteAfter(reply, 180000);
+			const rollID = allCommands.findKey(command => command.name === "roll");
+			const msgToEdit = await newThread.send("_ _");
+			const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:${rollID}>*`;
+			await msgToEdit.edit(msg);
 		}
-		const newThread = await channel.threads.create({
-			name: `🎲 ${scene}`,
-			reason: userLang.scene.reason,
-		});
-		const threadMention = channelMention(newThread.id);
-		const reply = await interaction.reply({ content: userLang.scene.interaction(threadMention) });
-		deleteAfter(reply, 180000);
-		const rollID = allCommands.findKey(command => command.name === "roll");
-		const msgToEdit = await newThread.send("_ _");
-		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:${rollID}>*`;
-		await msgToEdit.edit(msg);
 		return;
 	}
 }

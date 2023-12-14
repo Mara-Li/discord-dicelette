@@ -1,11 +1,11 @@
-import {ChannelType, Client, TextChannel, userMention} from "discord.js";
+import {ChannelType, Client, ForumChannel, TextChannel, ThreadChannel, userMention} from "discord.js";
 import { deleteAfter } from "../commands";
 import { Parser } from "@dice-roller/rpg-dice-roller";
 import en from "../locales/en";
 import fr from "../locales/fr";
 import { COMMENT_REGEX, parseResult, roll } from "../dice";
 import moment from "moment";
-import { findThread } from "../utils";
+import { findForumChannel, findThread } from "../utils";
 const TRANSLATION = {
 	fr,
 	en
@@ -35,14 +35,15 @@ export default (client: Client): void => {
 		const channel = message.channel;
 		const dice = roll(content);
 		const parser = parseResult(dice);
-		if (channel instanceof TextChannel) {
+		console.log(channel.parent);
+		if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
 			let linkToOriginal = "";
 			if (deleteInput) {
 				message.delete()
 			} else {
 				linkToOriginal = `\n\n__Original__: ${message.url}`;
 			}
-			const thread = await findThread(channel, translation.roll.reason);
+			const thread = channel instanceof TextChannel ? await findThread(channel, translation.roll.reason) : await findForumChannel(channel.parent as ForumChannel, translation.roll.reason);
 			const msgToEdit = await thread.send("_ _");
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${dice.dice.replace(COMMENT_REGEX, "")}\`)`;
 			const msg = `${authorMention} - <t:${moment().unix()}>\n${parser}${linkToOriginal}`;

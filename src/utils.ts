@@ -1,4 +1,4 @@
-import { TextChannel } from "discord.js";
+import { ForumChannel, TextChannel } from "discord.js";
 import moment from "moment";
 
 export async function findThread(channel: TextChannel, reason?: string) {
@@ -24,4 +24,29 @@ export async function findThread(channel: TextChannel, reason?: string) {
 		name: `🎲 ${date}`,
 		reason,
 	});
+}
+
+export async function findForumChannel(forum: ForumChannel, reason: string) {
+	const allForumChannel = forum.threads.cache.sort((a, b) => {
+		const aDate = a.createdTimestamp;
+		const bDate = b.createdTimestamp;
+		if (aDate && bDate) {
+			return bDate - aDate;
+		}
+		return 0;
+	})
+	const rollTopic = allForumChannel.find(thread => thread.name.startsWith("🎲") && !thread.archived)
+	if (rollTopic) {
+		//archive all other roll topic
+		const threadThatMustBeArchived = allForumChannel.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== rollTopic.id);
+		for (const topic of threadThatMustBeArchived) {
+			await topic[1].setArchived(true);
+		}
+		return rollTopic
+	}
+	//create new forum thread
+	return await forum.threads.create({
+		name: `🎲 ${forum.name}`,
+		message: {content: reason}
+	})
 }
