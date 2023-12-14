@@ -6,6 +6,7 @@ import * as pkg from "../package.json";
 import interaction from "./events/interaction";
 import ready from "./events/ready";
 import join from "./events/join";
+import message_create from "./events/message_create";
 dotenv.config({ path: ".env" });
 
 export const client = new Client({
@@ -30,6 +31,7 @@ try {
 	ready(client);
 	interaction(client);
 	join(client);
+	message_create(client);
 }
 catch (error) {
 	console.error(error);

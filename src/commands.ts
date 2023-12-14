@@ -2,7 +2,7 @@ import {
 	CommandInteraction,
 	CommandInteractionOptionResolver,
 	InteractionResponse,
-	Locale,
+	Message,
 	LocaleString,
 	SlashCommandBuilder,
 	TextChannel,
@@ -14,13 +14,13 @@ import { parseResult, roll } from "./dice";
 import dedent from "ts-dedent";
 import fr from "./locales/fr";
 import en from "./locales/en";
-
+import { findThread } from "./utils";
 const TRANSLATION = {
 	fr,
 	en
 }
 
-function deleteAfter(message: InteractionResponse, time: number): void {
+export function deleteAfter(message: InteractionResponse | Message, time: number): void {
 	setTimeout(() => {
 		message.delete();
 	}, time);
@@ -57,40 +57,11 @@ export const diceRoll = {
 			const parser = parseResult(rollDice)
 			if (channel instanceof TextChannel) {
 				//sort threads by date by most recent
-				const mostRecentThread = channel.threads.cache.sort((a, b) => {
-					const aDate = a.createdTimestamp;
-					const bDate = b.createdTimestamp;
-					if (aDate && bDate) {
-						return bDate - aDate;
-					}
-					return 0;
-				});
-				const thread = mostRecentThread.find(thread => thread.name.startsWith("🎲") && !thread.archived);
-				//archive old threads
-				let idMessage = "";
-				if (thread) {
-					const threadThatMustBeArchived = mostRecentThread.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id);
-					for (const thread of threadThatMustBeArchived) {
-						await thread[1].setArchived(true);
-					}
-					const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
-					const msgToEdit = await thread.send("_ _");
-					await msgToEdit.edit(msg);
-					idMessage = msgToEdit.url;
-				} else {
-					//create thread
-					const date = moment().format("YYYY-MM-DD:HH:mm");
-					const newThread = await channel.threads.create({
-						name: `🎲 ${date}`,
-						reason: userLang.roll.reason,
-					});
-					//send a empty message to prevent mention...
-					const msgToEdit = await newThread.send("_ _");
-					const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
-					await msgToEdit.edit(msg);
-					idMessage = msgToEdit.url;
-				}
-				idMessage = `↪ ${idMessage}`
+				const thread = await findThread(channel, userLang.roll.reason);
+				const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
+				const msgToEdit = await thread.send("_ _");
+				await msgToEdit.edit(msg);
+				const idMessage = `↪ ${msgToEdit.url}`;
 				const inter = await interaction.reply({ content: `${parser}\n\n${idMessage}`});
 				deleteAfter(inter, 180000);
 				return;
