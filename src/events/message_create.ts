@@ -35,7 +35,6 @@ export default (client: Client): void => {
 		const channel = message.channel;
 		const dice = roll(content);
 		const parser = parseResult(dice);
-		console.log(channel.parent);
 		if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
 			let linkToOriginal = "";
 			if (deleteInput) {
