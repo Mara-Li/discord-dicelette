@@ -22,6 +22,12 @@ Les commandes peuvent également fonctionner dans un fil. Dans ce cas, le bot y 
 
 Il est également possible de créer un nouveau fil avec la commande [Créer une nouvelle scène](#créer-une-nouvelle-scène).
 
+> [!NOTE]
+> Le bot fonctionne aussi dans les forums. La différence étant que :
+> - Plusieurs logs peuvent exister en même temps (sauf s'ils ont exactement le même nom)
+> - Les logs seront appelés par défaut `🎲 [nom du sujet]`
+> - C'est donc un poste qui sera créé à la place d'un fil
+
 ### Canaux
 
 Le bot enverra **également** le résultat dans le canal où la commande a été envoyée. Le message :

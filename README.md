@@ -23,6 +23,9 @@ The commands can also work in threads. In this case, the bot will just send the 
 
 It is also possible to create a new thread with the command [Create a new scene](#create-a-new-scene).
 
+> [!NOTE]
+> The exac same behavior work in forum. The only different is, in the place of a "thread", it's a new post that will be created.
+
 ### Channels
 
 The bot will **also** send the result in the channel where the command was sent. The message:
