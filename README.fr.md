@@ -25,7 +25,7 @@ Il est également possible de créer un nouveau fil avec la commande [Créer une
 > [!NOTE]
 > Le bot fonctionne aussi dans les forums. La différence étant que :
 > - Plusieurs logs peuvent exister en même temps (sauf s'ils ont exactement le même nom)
-> - Les logs seront appelés par défaut `🎲 [nom du sujet]`
+> - Les logs seront appelés par défaut `🎲 [nom du sujet]` et le tag `🪡 Dice Roll` sera automatiquement appliqué (et créé s'il n'existe pas).
 > - C'est donc un poste qui sera créé à la place d'un fil
 
 ### Canaux
