@@ -2,7 +2,7 @@ import { DiceRoller, exportFormats } from '@dice-roller/rpg-dice-roller';
 import dedent from 'ts-dedent';
 import { Resultat } from './interface';
 
-const COMMENT_REGEX = /\s+(#|\/{2}|\[|\/\*)(.*)/;
+export const COMMENT_REGEX = /\s+(#|\/{2}|\[|\/\*)(.*)/;
 
 export function roll(dice: string): Resultat {
 	//parse dice string
