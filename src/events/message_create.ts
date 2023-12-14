@@ -48,9 +48,7 @@ export default (client: Client): void => {
 			const msg = `${authorMention} - <t:${moment().unix()}>\n${parser}${linkToOriginal}`;
 			await msgToEdit.edit(msg);
 			const idMessage = `↪ ${msgToEdit.url}`;
-			let reply;
-			if (!deleteInput) reply = await message.reply({ content: `${parser}\n\n${idMessage}` })
-			else reply = await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` });
+			const reply = deleteInput ? await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` }) : await message.reply({ content: `${parser}\n\n${idMessage}` });
 			deleteAfter(reply, 180000)
 			return;
 		}
