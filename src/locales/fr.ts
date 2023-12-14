@@ -3,9 +3,18 @@ export default {
 		name: "aide",
 		description: "Affiche l'aide",
 		message: (rollId: string, sceneId: string) => `
+			:game_die: **Dice Roller** :game_die:
+			-> Retrouvez le *bot* sur [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.fr.md>)
+
+			## Usage
 			- </roll:${rollId}> : Lance un dé
 			- </scene:${sceneId}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.
 
+			Vous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :
+			- __Un dé direct__ : \`dés\`, comme \`d6\` ou \`2d6\`
+			- __Un dé indirect__ : \`mon message [dés]\`, comme \`*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*\`.
+
+			## Notation des dés
 			[Voir la documentation pour la notation des dés (en anglais)](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).
 
 			Le bot supporte aussi :
@@ -14,10 +23,6 @@ export default {
 			- [Les commentaires](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)
 			- [Les mathématiques](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)
 			- Ainsi que les "bulk rolls" (lancer plusieurs dés en même temps) avec la notation suivante : \`[nombre de dés]#[dés]\`, comme par exemple \`2#d6\` pour lancer 2 dés à 6 faces.
-
-			De plus, vous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :
-			- __Un dé direct__ : \`dés\`, comme \`d6\` ou \`2d6\`
-			- __Un dé indirect__ : \`mon message [dés]\`, comme \`*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*\`.
 		`,
 	},
 	scene: {
