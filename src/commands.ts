@@ -8,14 +8,15 @@ import {
 	TextChannel,
 	channelMention,
 	userMention,
-	ForumChannel
+	ForumChannel,
+	ThreadChannel
 } from "discord.js";
 import moment from "moment";
 import { parseResult, roll } from "./dice";
 import dedent from "ts-dedent";
 import fr from "./locales/fr";
 import en from "./locales/en";
-import { findForumChannel, findThread } from "./utils";
+import { findForumChannel, findThread, setTagsForRoll } from "./utils";
 const TRANSLATION = {
 	fr,
 	en
@@ -57,9 +58,9 @@ export const diceRoll = {
 		try {
 			const rollDice = roll(dice)
 			const parser = parseResult(rollDice)
-			if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
+			if (channel instanceof TextChannel || (channel.parent instanceof ForumChannel && !channel.name.startsWith("🎲"))) {
 				//sort threads by date by most recent
-				const thread = channel instanceof TextChannel ? await findThread(channel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel.name);
+				const thread = channel instanceof TextChannel ? await findThread(channel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
 				const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
 				const msgToEdit = await thread.send("_ _");
 				await msgToEdit.edit(msg);
@@ -115,7 +116,8 @@ export const newScene = {
 				reason: userLang.scene.reason,
 			}) : await (channel.parent as ForumChannel).threads.create({
 				name: `🎲 ${scene}`,
-				message: {content: userLang.scene.reason}
+				message: {content: userLang.scene.reason},
+				appliedTags: [(await setTagsForRoll(channel.parent as ForumChannel)).id as string]
 			})
 
 			const threadMention = channelMention(newThread.id);

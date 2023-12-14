@@ -35,14 +35,14 @@ export default (client: Client): void => {
 		const channel = message.channel;
 		const dice = roll(content);
 		const parser = parseResult(dice);
-		if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
+		if (channel instanceof TextChannel || (channel.parent instanceof ForumChannel && !channel.name.startsWith("🎲"))) {
 			let linkToOriginal = "";
 			if (deleteInput) {
 				message.delete()
 			} else {
 				linkToOriginal = `\n\n__Original__: ${message.url}`;
 			}
-			const thread = channel instanceof TextChannel ? await findThread(channel, translation.roll.reason) : await findForumChannel(channel.parent as ForumChannel, translation.roll.reason, channel.name);
+			const thread = channel instanceof TextChannel ? await findThread(channel, translation.roll.reason) : await findForumChannel(channel.parent as ForumChannel, translation.roll.reason, channel as ThreadChannel);
 			const msgToEdit = await thread.send("_ _");
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${dice.dice.replace(COMMENT_REGEX, "")}\`)`;
 			const msg = `${authorMention} - <t:${moment().unix()}>\n${parser}${linkToOriginal}`;

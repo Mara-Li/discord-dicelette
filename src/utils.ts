@@ -1,5 +1,6 @@
-import { ForumChannel, TextChannel } from "discord.js";
+import { ForumChannel, GuildForumTagData, TextChannel, ThreadChannel } from "discord.js";
 import moment from "moment";
+import { roll } from "./dice";
 
 export async function findThread(channel: TextChannel, reason?: string) {
 	const mostRecentThread = channel.threads.cache.sort((a, b) => {
@@ -26,7 +27,7 @@ export async function findThread(channel: TextChannel, reason?: string) {
 	});
 }
 
-export async function findForumChannel(forum: ForumChannel, reason: string, topic :string) {
+export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel) {
 	const allForumChannel = forum.threads.cache.sort((a, b) => {
 		const aDate = a.createdTimestamp;
 		const bDate = b.createdTimestamp;
@@ -35,20 +36,23 @@ export async function findForumChannel(forum: ForumChannel, reason: string, topi
 		}
 		return 0;
 	})
+	const topic = thread.name;
 	const rollTopic = allForumChannel.find(thread => thread.name === `🎲 ${topic}` && !thread.archived)
+	const tags = await setTagsForRoll(forum);
 	if (rollTopic) {
 		//archive all other roll topic
 		const threadThatMustBeArchived = allForumChannel.filter(tr => tr.name === `🎲 ${topic}` && !tr.archived && tr.id !== rollTopic.id);
 		for (const topic of threadThatMustBeArchived) {
 			await topic[1].setArchived(true);
 		}
+		rollTopic.setAppliedTags([tags.id as string]);
 		return rollTopic
 	}
 	//create new forum thread
 	return await forum.threads.create({
 		name: `🎲 ${topic}`,
 		message: {content: reason},
-
+		appliedTags: [tags.id as string],
 	});
 
 }
@@ -56,5 +60,23 @@ export async function findForumChannel(forum: ForumChannel, reason: string, topi
 
 export async function setTagsForRoll(forum: ForumChannel) {
 	//check if the tags `🪡 roll logs` exists
-	const allTags = forum.
+	const allTags = forum.availableTags;
+	const diceRollTag = allTags.find(tag => tag.name === "Dice Roll" && tag.emoji?.name === "🪡");
+	if (diceRollTag) {
+		return diceRollTag;
+	}
+	const availableTags: GuildForumTagData[] = allTags.map(tag => {
+		return {
+			id: tag.id,
+			moderated: tag.moderated,
+			name: tag.name,
+			emoji: tag.emoji,
+		}
+	});
+	availableTags.push({
+		name: "Dice Roll",
+		emoji: {id: null, name: "🪡"},
+	})
+	await forum.setAvailableTags(availableTags);
+	return availableTags.find(tag => tag.name === "Dice Roll" && tag.emoji?.name === "🪡") as GuildForumTagData;
 }
