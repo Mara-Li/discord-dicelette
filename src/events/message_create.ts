@@ -42,7 +42,7 @@ export default (client: Client): void => {
 			} else {
 				linkToOriginal = `\n\n__Original__: ${message.url}`;
 			}
-			const thread = channel instanceof TextChannel ? await findThread(channel, translation.roll.reason) : await findForumChannel(channel.parent as ForumChannel, translation.roll.reason);
+			const thread = channel instanceof TextChannel ? await findThread(channel, translation.roll.reason) : await findForumChannel(channel.parent as ForumChannel, translation.roll.reason, channel.name);
 			const msgToEdit = await thread.send("_ _");
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${dice.dice.replace(COMMENT_REGEX, "")}\`)`;
 			const msg = `${authorMention} - <t:${moment().unix()}>\n${parser}${linkToOriginal}`;

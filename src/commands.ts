@@ -59,7 +59,7 @@ export const diceRoll = {
 			const parser = parseResult(rollDice)
 			if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
 				//sort threads by date by most recent
-				const thread = channel instanceof TextChannel ? await findThread(channel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason);
+				const thread = channel instanceof TextChannel ? await findThread(channel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel.name);
 				const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
 				const msgToEdit = await thread.send("_ _");
 				await msgToEdit.edit(msg);
@@ -106,7 +106,7 @@ export const newScene = {
 		}
 		//archive old threads
 		if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
-			const threads = channel instanceof TextChannel ? channel.threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived) : (channel.parent as ForumChannel).threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived);
+			const threads = channel instanceof TextChannel ? channel.threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived) : (channel.parent as ForumChannel).threads.cache.filter(thread => thread.name === `🎲 ${scene}`&& !thread.archived);
 			for (const thread of threads) {
 				await thread[1].setArchived(true);
 			}
