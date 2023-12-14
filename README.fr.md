@@ -48,6 +48,9 @@ La notation des dés peut être faite de deux manières :
 - Directe, comme `1d20` : Dans ce cas, le message "commandes" sera supprimé et le résultat sera envoyé dans le même canal (et dans le log).
 - Indirecte, entre crochets, comme : `mon contenu de message [1d20]`. Dans ce cas, le message sera conservé, et le contenu des crochets sera lancé. Vous recevrez une réponse avec le résultat et le log sera envoyé dans le fil. Les logs contiendront un lien vers le message d'origine.
 
+Petite remarque pour les commentaires dans la notation directe : vous ne pouvez pas lancer `1d20 mon action` comme avec [Rollem](https://rollem.rocks/). Il faut utiliser la notation indirecte pour cela, ou bien utiliser la notation spécifique des commentaires que [vous retrouverez ici](https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html).
+
+
 ### Slashcommands
 #### Lancer les dés
 

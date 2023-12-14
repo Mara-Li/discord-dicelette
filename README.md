@@ -49,6 +49,8 @@ The dice notation can be in two ways:
 - Direct, like `1d20`: In this case, the message "commands" will be deleted, and the result will be sent in the same channel (and in the logs).
 - Indirect, in brackets, like: `my message content [1d20]`. In this case, the message will be preserved, and the content of the brackets will be rolled. You will get a reply with the result, and the log will be sent in the thread. The logs will contain a link to the original message.
 
+A quick note about comments in direct notation: you can't roll `1d20 my action` as with [Rollem](https://rollem.rocks/). You need to use indirect notation for this, or use the specific comment notation that [you'll find here](https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html).
+
 ### Slash Commands
 #### Throw Dice
 
