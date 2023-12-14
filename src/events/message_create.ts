@@ -18,13 +18,17 @@ export default (client: Client): void => {
 		let content = message.content;
 		//detect roll between bracket
 		const detectRoll = content.match(/\[(.*)\]/)?.[1]
+		let deleteInput=true;
 		try {
 			if (detectRoll) roll(detectRoll);
 			else roll(content);
 		} catch(e) {
 			return;
 		}
-		if (detectRoll) content = detectRoll
+		if (detectRoll) {
+			content = detectRoll;
+			deleteInput = false;
+		}
 		//is a valid roll as we are in the function so we can work as always
 		const userLang = message.guild.preferredLocale ?? "en"
 		const translation = TRANSLATION[userLang as keyof typeof TRANSLATION] || TRANSLATION.en;
@@ -32,14 +36,19 @@ export default (client: Client): void => {
 		const dice = roll(content);
 		const parser = parseResult(dice);
 		if (channel instanceof TextChannel) {
-			message.delete();
+			if (deleteInput) message.delete()
 			const thread = await findThread(channel, translation.roll.reason);
 			const msgToEdit = await thread.send("_ _");
 			const msg = `${userMention(message.author.id)} - <t:${moment().unix()}>\n${parser}`;
 			await msgToEdit.edit(msg);
 			const idMessage = `↪ ${msgToEdit.url}`;
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${dice.dice.replace(COMMENT_REGEX, "")}\`)`;
-			const reply = await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` });
+			let reply;
+			if (!deleteInput) {
+				reply = await message.reply({ content: `${authorMention}\n${parser}\n\n${idMessage}` })
+			} else {
+				reply = await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` });
+			}
 			deleteAfter(reply, 180000)
 			return;
 		}
