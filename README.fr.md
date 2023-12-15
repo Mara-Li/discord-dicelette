@@ -18,7 +18,7 @@ Le bot fonctionne avec des threads. Lors du premier lancer, il recherchera un fi
 > [!NOTE]
 > Si plusieurs fils sont trouvés, le bot utilisera le plus récent et archivera les autres.
 
-Les commandes peuvent également fonctionner dans un fil. Dans ce cas, le bot y enverra simplement le résultat.
+Les commandes peuvent également fonctionner dans un fil. Dans ce cas, le bot y enverra simplement le résultat. Ce resultat peut être retrouvé dans les channels dont le nom commence par `🎲`.
 
 Il est également possible de créer un nouveau fil avec la commande [Créer une nouvelle scène](#créer-une-nouvelle-scène).
 

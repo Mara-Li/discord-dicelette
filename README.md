@@ -19,7 +19,7 @@ The bot operates with threads. In the first roll, it will search for threads pre
 > [!NOTE]
 > If multiple thread logs are found, the bot will use the most recent and archive the others.
 
-The commands can also work in threads. In this case, the bot will just send the result in it.
+The commands can also work in threads. In this case, the bot will just send the result in it. This result can be found in channels whose name begins with `🎲`.
 
 It is also possible to create a new thread with the command [Create a new scene](#create-a-new-scene).
 
