@@ -4,8 +4,9 @@ import { Resultat } from './interface';
 
 export const COMMENT_REGEX = /\s+(#|\/{2}|\[|\/\*)(.*)/;
 
-export function roll(dice: string): Resultat {
+export function roll(dice: string): Resultat | undefined{
 	//parse dice string
+	if (!dice.includes("d")) return undefined;
 	if (dice.match(/\d+?#(.*)/)) {
 		const diceArray = dice.split("#");
 		const numberOfDice = parseInt(diceArray[0]);

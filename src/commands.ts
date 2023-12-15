@@ -57,6 +57,10 @@ export const diceRoll = {
 		//get thread starting with "🎲"
 		try {
 			const rollDice = roll(dice)
+			if (!rollDice) {
+				await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
+				return;
+			}
 			const parser = parseResult(rollDice)
 			if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
 				await interaction.reply({ content: parser });

@@ -6,6 +6,7 @@ import fr from "../locales/fr";
 import { COMMENT_REGEX, parseResult, roll } from "../dice";
 import moment from "moment";
 import { findForumChannel, findThread } from "../utils";
+import { Resultat } from "src/interface";
 const TRANSLATION = {
 	fr,
 	en
@@ -19,9 +20,9 @@ export default (client: Client): void => {
 		//detect roll between bracket
 		const detectRoll = content.match(/\[(.*)\]/)?.[1]
 		let deleteInput=true;
+		let result: Resultat| undefined;
 		try {
-			if (detectRoll) roll(detectRoll);
-			else roll(content);
+			result = detectRoll ? roll(detectRoll) : roll(content);
 		} catch(e) {
 			return;
 		}
@@ -33,8 +34,9 @@ export default (client: Client): void => {
 		const userLang = message.guild.preferredLocale ?? "en"
 		const translation = TRANSLATION[userLang as keyof typeof TRANSLATION] || TRANSLATION.en;
 		const channel = message.channel;
-		const dice = roll(content);
-		const parser = parseResult(dice);
+		if (!result) return;
+		const parser = parseResult(result);
+
 		if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
 			await message.reply({content: parser});
 			return;
@@ -48,7 +50,7 @@ export default (client: Client): void => {
 			}
 			const thread = channel instanceof TextChannel ? await findThread(channel, translation.roll.reason) : await findForumChannel(channel.parent as ForumChannel, translation.roll.reason, channel as ThreadChannel);
 			const msgToEdit = await thread.send("_ _");
-			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${dice.dice.replace(COMMENT_REGEX, "")}\`)`;
+			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")}\`)`;
 			const msg = `${authorMention} - <t:${moment().unix()}>\n${parser}${linkToOriginal}`;
 			await msgToEdit.edit(msg);
 			const idMessage = `↪ ${msgToEdit.url}`;
