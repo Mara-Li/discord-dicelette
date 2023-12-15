@@ -58,6 +58,10 @@ export const diceRoll = {
 		try {
 			const rollDice = roll(dice)
 			const parser = parseResult(rollDice)
+			if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
+				await interaction.reply({ content: parser });
+				return;
+			}
 			if (channel instanceof TextChannel || (channel.parent instanceof ForumChannel && !channel.name.startsWith("🎲"))) {
 				//sort threads by date by most recent
 				const thread = channel instanceof TextChannel ? await findThread(channel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
@@ -106,7 +110,7 @@ export const newScene = {
 			return;
 		}
 		//archive old threads
-		if (channel instanceof TextChannel || channel.parent instanceof ForumChannel) {
+		if (channel instanceof TextChannel || channel.parent instanceof ForumChannel || !channel.name.startsWith("🎲")) {
 			const threads = channel instanceof TextChannel ? channel.threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived) : (channel.parent as ForumChannel).threads.cache.filter(thread => thread.name === `🎲 ${scene}`&& !thread.archived);
 			for (const thread of threads) {
 				await thread[1].setArchived(true);
