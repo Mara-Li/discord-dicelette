@@ -42,7 +42,6 @@ export function parseResult(output: Resultat) {
 	//parse into
 	const result = `\n${output.result.replaceAll("; ", "\n").replaceAll(":", " ⟶ ").replaceAll(/ = (\d+)/g, " = ` $1 `")}`;
 	const comment = output.comment ? `*${output.comment.replaceAll(/[\*\/]/g, "").trim()}*` : "";
-	console.log(comment);
 	return dedent(`${comment}${result}`);
 }
 
