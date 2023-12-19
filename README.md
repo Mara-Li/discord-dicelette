@@ -48,7 +48,7 @@ The message will detect the dice notation and send the result.
 The dice notation can be in two ways:
 - Direct, like `1d20`: In this case, the message "commands" will be deleted, and the result will be sent in the same channel (and in the logs).
 - Indirect, in brackets, like: `my message content [1d20]`. In this case, the message will be preserved, and the content of the brackets will be rolled. You will get a reply with the result, and the log will be sent in the thread. The logs will contain a link to the original message.
-- Semi-direct, as `1d20 My message` : Will have the same behavior as the indirect method. The dice found at the beginning will be rolled, and the rest of the message will be sent to the log and considered as a comment.
+- Semi-direct, as `1d20 My message` : Will have the same behavior as the direct method. The dice found at the beginning will be rolled, and the rest of the message will be sent to the log and considered as a comment.
 
 ### Slash Commands
 #### Throw Dice
