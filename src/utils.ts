@@ -1,8 +1,9 @@
 import { ForumChannel, GuildForumTagData, TextChannel, ThreadChannel } from "discord.js";
-import moment from "moment";
 
 
 export async function findThread(channel: TextChannel, reason?: string) {
+	await channel.threads.fetch();
+	await channel.threads.fetchArchived();
 	const mostRecentThread = channel.threads.cache.sort((a, b) => {
 		const aDate = a.createdTimestamp;
 		const bDate = b.createdTimestamp;
@@ -11,6 +12,7 @@ export async function findThread(channel: TextChannel, reason?: string) {
 		}
 		return 0;
 	});
+	const threadName = `🎲 ${ channel.name.replaceAll("-", " ")}`;
 	const thread = mostRecentThread.find(thread => thread.name.startsWith("🎲") && !thread.archived);
 	if (thread) {
 		const threadThatMustBeArchived = mostRecentThread.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id);
@@ -18,11 +20,16 @@ export async function findThread(channel: TextChannel, reason?: string) {
 			await thread[1].setArchived(true);
 		}
 		return thread;
+	} else if (mostRecentThread.find(thread => thread.name === threadName && thread.archived)){
+		const thread = mostRecentThread.find(thread => thread.name === threadName && thread.archived);
+		if (thread) {
+			thread.setArchived(false);
+			return thread;
+		}
 	}
 	//create thread
-	const date = "[" + moment().format("YYYY-MM-DD") + "] " + moment().format("HH:mm");
 	return await channel.threads.create({
-		name: `🎲 ${date}`,
+		name: threadName,
 		reason,
 	});
 }
@@ -37,14 +44,11 @@ export async function findForumChannel(forum: ForumChannel, reason: string, thre
 		return 0;
 	});
 	const topic = thread.name;
-	const rollTopic = allForumChannel.find(thread => thread.name === `🎲 ${topic}` && !thread.archived);
+	const rollTopic = allForumChannel.find(thread => thread.name === `🎲 ${topic}`);
 	const tags = await setTagsForRoll(forum);
 	if (rollTopic) {
 		//archive all other roll topic
-		const threadThatMustBeArchived = allForumChannel.filter(tr => tr.name === `🎲 ${topic}` && !tr.archived && tr.id !== rollTopic.id);
-		for (const topic of threadThatMustBeArchived) {
-			await topic[1].setArchived(true);
-		}
+		if (rollTopic.archived) rollTopic.setArchived(false);
 		rollTopic.setAppliedTags([tags.id as string]);
 		return rollTopic;
 	}
