@@ -1,26 +1,27 @@
 import {
+	channelMention,
 	CommandInteraction,
 	CommandInteractionOptionResolver,
+	ForumChannel,
 	InteractionResponse,
-	Message,
 	LocaleString,
+	Message,
 	SlashCommandBuilder,
 	TextChannel,
-	channelMention,
-	userMention,
-	ForumChannel,
-	ThreadChannel
-} from "discord.js";
+	ThreadChannel,
+	userMention} from "discord.js";
 import moment from "moment";
-import { parseResult, roll } from "./dice";
 import dedent from "ts-dedent";
-import fr from "./locales/fr";
+
+import { parseResult, roll } from "./dice";
 import en from "./locales/en";
+import fr from "./locales/fr";
 import { findForumChannel, findThread, setTagsForRoll } from "./utils";
+
 const TRANSLATION = {
 	fr,
 	en
-}
+};
 
 export function deleteAfter(message: InteractionResponse | Message, time: number): void {
 	setTimeout(() => {
@@ -56,12 +57,12 @@ export const diceRoll = {
 		}
 		//get thread starting with "🎲"
 		try {
-			const rollDice = roll(dice)
+			const rollDice = roll(dice);
 			if (!rollDice) {
 				await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
 				return;
 			}
-			const parser = parseResult(rollDice)
+			const parser = parseResult(rollDice);
 			if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
 				await interaction.reply({ content: parser });
 				return;
@@ -83,7 +84,7 @@ export const diceRoll = {
 			return;
 		}
 	},
-}
+};
 
 export const newScene = {
 	data : new SlashCommandBuilder()
@@ -126,7 +127,7 @@ export const newScene = {
 				name: `🎲 ${scene}`,
 				message: {content: userLang.scene.reason},
 				appliedTags: [(await setTagsForRoll(channel.parent as ForumChannel)).id as string]
-			})
+			});
 
 			const threadMention = channelMention(newThread.id);
 			const reply = await interaction.reply({ content: userLang.scene.interaction(threadMention) });
@@ -138,7 +139,7 @@ export const newScene = {
 		}
 		return;
 	}
-}
+};
 
 export const help = {
 	data: new SlashCommandBuilder()
@@ -155,7 +156,7 @@ export const help = {
 		const locales: { [key: string]: string } = {
 			"fr" : fr.help.message(rollID || "", sceneID || ""),
 			"en" : en.help.message(rollID || "", sceneID || "")
-		}
+		};
 		const userLocale = interaction.locale as LocaleString;
 		const message = locales[userLocale] || locales.en;
 		const reply = await interaction.reply({ content: dedent(message)});
@@ -163,6 +164,6 @@ export const help = {
 		return;
 	}
 
-}
+};
 
 export const commandsList = [diceRoll, newScene, help];

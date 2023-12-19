@@ -4,9 +4,10 @@ import * as process from "process";
 
 import * as pkg from "../package.json";
 import interaction from "./events/interaction";
-import ready from "./events/ready";
 import join from "./events/join";
 import message_create from "./events/message_create";
+import ready from "./events/ready";
+
 dotenv.config({ path: ".env" });
 
 export const client = new Client({
