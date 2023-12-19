@@ -34,7 +34,7 @@ export default (client: Client): void => {
 		} catch(e) {
 			return;
 		}
-		if (detectRoll || rollWithMessage) {
+		if (detectRoll) {
 			deleteInput = false;
 		}
 		//is a valid roll as we are in the function so we can work as always
