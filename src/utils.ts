@@ -1,6 +1,6 @@
 import { ForumChannel, GuildForumTagData, TextChannel, ThreadChannel } from "discord.js";
 import moment from "moment";
-import { roll } from "./dice";
+
 
 export async function findThread(channel: TextChannel, reason?: string) {
 	const mostRecentThread = channel.threads.cache.sort((a, b) => {
@@ -20,7 +20,7 @@ export async function findThread(channel: TextChannel, reason?: string) {
 		return thread;
 	}
 	//create thread
-	const date = moment().format("YYYY-MM-DD:HH:mm");
+	const date = "[" + moment().format("YYYY-MM-DD") + "] " + moment().format("HH:mm");
 	return await channel.threads.create({
 		name: `🎲 ${date}`,
 		reason,
@@ -35,9 +35,9 @@ export async function findForumChannel(forum: ForumChannel, reason: string, thre
 			return bDate - aDate;
 		}
 		return 0;
-	})
+	});
 	const topic = thread.name;
-	const rollTopic = allForumChannel.find(thread => thread.name === `🎲 ${topic}` && !thread.archived)
+	const rollTopic = allForumChannel.find(thread => thread.name === `🎲 ${topic}` && !thread.archived);
 	const tags = await setTagsForRoll(forum);
 	if (rollTopic) {
 		//archive all other roll topic
@@ -46,7 +46,7 @@ export async function findForumChannel(forum: ForumChannel, reason: string, thre
 			await topic[1].setArchived(true);
 		}
 		rollTopic.setAppliedTags([tags.id as string]);
-		return rollTopic
+		return rollTopic;
 	}
 	//create new forum thread
 	return await forum.threads.create({
@@ -71,12 +71,12 @@ export async function setTagsForRoll(forum: ForumChannel) {
 			moderated: tag.moderated,
 			name: tag.name,
 			emoji: tag.emoji,
-		}
+		};
 	});
 	availableTags.push({
 		name: "Dice Roll",
 		emoji: {id: null, name: "🪡"},
-	})
+	});
 	await forum.setAvailableTags(availableTags);
 	return availableTags.find(tag => tag.name === "Dice Roll" && tag.emoji?.name === "🪡") as GuildForumTagData;
 }
