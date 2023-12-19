@@ -33,7 +33,7 @@ export function roll(dice: string): Resultat | undefined{
 	return {
 		dice,
 		result: roller.output,
-		comment: comment,
+		comment,
 	};
 }
 
@@ -41,7 +41,7 @@ export function parseResult(output: Resultat) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
 	const result = `\n${output.result.replaceAll("; ", "\n").replaceAll(":", " ⟶ ").replaceAll(/ = (\d+)/g, " = ` $1 `")}`;
-	const comment = output.comment ? `*${output.comment.replaceAll(/[\*\/]/g, "").trim()}*` : "";
+	const comment = output.comment ? `*${output.comment.replaceAll(/[\*\/#]/g, "").trim()}*` : "";
 	return dedent(`${comment}${result}`);
 }
 
