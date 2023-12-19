@@ -13,6 +13,7 @@ export default {
 			You can use the bot directly dice in a message (**without using a slash commands**), using :
 			- Direct: \`dice\`, like \`d6\` or \`2d6\`
 			- Undirect : \`my message content [dice]\`, like \`*Phibi jump on Wumpus and inflict [2d6] damage*\`.
+			- Semi-direct : \`1d100 my message content\`, like \`1d100 Phibi jump on Wumpus and inflict damage\`.
 
 			## Dice notation
 			[See the documentation for dice notation](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).
@@ -49,4 +50,4 @@ export default {
 		noValidDice: "Error: Invalid dice",
 		reason: "New roll thread",
 	}
-}
+};

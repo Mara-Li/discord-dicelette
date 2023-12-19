@@ -13,6 +13,7 @@ export default {
 			Vous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :
 			- __Un dé direct__ : \`dés\`, comme \`d6\` ou \`2d6\`
 			- __Un dé indirect__ : \`mon message [dés]\`, comme \`*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*\`.
+			- __Un dé semi-direct__ : \`1d100 mon message\`, comme \`1d100 Phibi saute sur Wumpus et lui inflige des dégâts\`.
 
 			## Notation des dés
 			[Voir la documentation pour la notation des dés (en anglais)](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).
@@ -48,4 +49,4 @@ export default {
 		noValidDice: "Erreur : Dé invalide",
 		reason: "Nouveau thread de lancer",
 	}
-}
+};
