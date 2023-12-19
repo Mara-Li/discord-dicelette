@@ -13,7 +13,7 @@ const TRANSLATION = {
 	en
 };
 
-const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
+export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
 
 export default (client: Client): void => {
 	client.on("messageCreate", async (message) => {

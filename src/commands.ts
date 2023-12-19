@@ -14,6 +14,7 @@ import moment from "moment";
 import dedent from "ts-dedent";
 
 import { parseResult, roll } from "./dice";
+import { DETECT_DICE_MESSAGE } from "./events/message_create";
 import en from "./locales/en";
 import fr from "./locales/fr";
 import { findForumChannel, findThread, setTagsForRoll } from "./utils";
@@ -50,13 +51,17 @@ export const diceRoll = {
 		const userLang = TRANSLATION[interaction.locale as keyof typeof TRANSLATION] || TRANSLATION.en;
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const dice = option.getString(en.roll.option.name);
+		let dice = option.getString(en.roll.option.name);
 		if (!dice) {
 			await interaction.reply({ content: userLang.roll.noDice, ephemeral: true });
 			return;
 		}
 		//get thread starting with "🎲"
 		try {
+			const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
+			if (rollWithMessage) {
+				dice = dice.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
+			}
 			const rollDice = roll(dice);
 			if (!rollDice) {
 				await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
