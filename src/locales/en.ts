@@ -8,7 +8,8 @@ export default {
 
 			## Usage
 			- </roll:${rollId}> : Roll a dice
-			- </scene:${sceneId}> : Create a new scene thread for future rolls, it will also archive all previous scene threads
+			- </scene:${sceneId}> : Create a new scene thread for future rolls, it will also archive all previous scene threads if they starts with "🎲".
+			 You can also create "time bubble" with settings \`/scene bubble:True\`. By default, it will use the date as thread name.
 
 			You can use the bot directly dice in a message (**without using a slash commands**), using :
 			- Direct: \`dice\`, like \`d6\` or \`2d6\`

@@ -9,8 +9,9 @@ export default {
 			## Usage
 			- </roll:${rollId}> : Lance un dé
 			- </scene:${sceneId}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.
+			 Vous pouvez aussi créer une "bulle temporelle" avec les paramètres \`/scene tempo:True\`. Par défaut, le nom du thread sera la date du jour.
 
-			Vous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :
+			 Vous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :
 			- __Un dé direct__ : \`dés\`, comme \`d6\` ou \`2d6\`
 			- __Un dé indirect__ : \`mon message [dés]\`, comme \`*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*\`.
 			- __Un dé semi-direct__ : \`1d100 mon message\`, comme \`1d100 Phibi saute sur Wumpus et lui inflige des dégâts\`.
