@@ -28,10 +28,13 @@ export async function findThread(channel: TextChannel, reason?: string) {
 		}
 	}
 	//create thread
-	return await channel.threads.create({
+	const newThread = await channel.threads.create({
 		name: threadName,
 		reason,
 	});
+	//delete the message about thread creation
+	await channel.lastMessage?.delete();
+	return newThread;
 }
 
 export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel) {
@@ -58,7 +61,6 @@ export async function findForumChannel(forum: ForumChannel, reason: string, thre
 		message: {content: reason},
 		appliedTags: [tags.id as string],
 	});
-
 }
 
 
