@@ -36,7 +36,8 @@ export default {
 		noScene: "Aucune scène spécifiée",
 		reason: "Nouvelle scène",
 		interaction: (scene: string) => `Nouveau thread de scène créé : ${scene}`,
-		underscore: "__Nouvelle scène__ :"
+		underscore: "__Nouvelle scène__ :",
+		time: "Bulle temporelle",
 	},
 	roll: {
 		name: "roll",

@@ -24,6 +24,11 @@ const TRANSLATION = {
 	en
 };
 
+const keywords = [
+	...fr.scene.time.split(" "),
+	...en.scene.time.split(" "),
+];
+
 export function deleteAfter(message: InteractionResponse | Message, time: number): void {
 	setTimeout(() => {
 		message.delete();
@@ -125,11 +130,16 @@ export const newScene = {
 			for (const thread of threads) {
 				await thread[1].setArchived(true);
 			}
+			const sceneList = scene.split(" ");
+			let threadName = sceneList.some(keyword => keywords.some(key => key.toLowerCase().includes(keyword.toLowerCase()))) ? `${moment().format("DD-MM-YYYY")}` : `🎲 ${scene}`;
+			if (threadName.includes("{{date}}"))
+				threadName = threadName.replace("{{date}}", moment().format("DD-MM-YYYY"));
+
 			const newThread = channel instanceof TextChannel ? await channel.threads.create({
-				name: `🎲 ${scene}`,
+				name: threadName,
 				reason: userLang.scene.reason,
 			}) : await (channel.parent as ForumChannel).threads.create({
-				name: `🎲 ${scene}`,
+				name: threadName,
 				message: {content: userLang.scene.reason},
 				appliedTags: [(await setTagsForRoll(channel.parent as ForumChannel)).id as string]
 			});

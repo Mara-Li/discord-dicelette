@@ -37,7 +37,8 @@ export default {
 		noScene: "No scene provided",
 		reason: "New scene",
 		interaction: (scene: string) => `New created thread: ${scene}`,
-		underscore: "__New scene__:"
+		underscore: "__New scene__:",
+		time: "Time bubble",
 	},
 	roll: {
 		name: "roll",
