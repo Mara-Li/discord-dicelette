@@ -24,11 +24,6 @@ const TRANSLATION = {
 	en
 };
 
-const keywords = [
-	...fr.scene.time.split(" "),
-	...en.scene.time.split(" "),
-];
-
 export function deleteAfter(message: InteractionResponse | Message, time: number): void {
 	setTimeout(() => {
 		message.delete();
@@ -108,7 +103,15 @@ export const newScene = {
 				.setNameLocalizations({ "fr": fr.scene.option.name })
 				.setDescription(en.scene.option.description)
 				.setDescriptionLocalizations({ "fr": fr.scene.option.description })
-				.setRequired(true)
+				.setRequired(false)
+		)
+		.addBooleanOption(option =>
+			option
+				.setName(en.scene.time.name)
+				.setNameLocalizations({ "fr": fr.scene.time.name })
+				.setDescription(en.scene.time.description)
+				.setDescriptionLocalizations({ "fr": fr.scene.time.description })
+				.setRequired(false)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
@@ -119,8 +122,9 @@ export const newScene = {
 		const option = interaction.options as CommandInteractionOptionResolver;
 		const locales: keyof typeof TRANSLATION = interaction.locale as keyof typeof TRANSLATION;
 		const userLang = TRANSLATION[locales] || TRANSLATION.en;
-		const scene = option.getString(userLang.scene.option.name);
-		if (!scene) {
+		const scene = option.getString(en.scene.option.name);
+		const bubble = option.getBoolean(en.scene.time.name);
+		if (!scene && !bubble) {
 			await interaction.reply({ content: userLang.scene.noScene, ephemeral: true });
 			return;
 		}
@@ -130,8 +134,11 @@ export const newScene = {
 			for (const thread of threads) {
 				await thread[1].setArchived(true);
 			}
-			const sceneList = scene.split(" ");
-			let threadName = sceneList.some(keyword => keywords.some(key => key.toLowerCase().includes(keyword.toLowerCase()))) ? `${moment().format("DD-MM-YYYY")}` : `🎲 ${scene}`;
+			let threadName = "";
+			if (bubble) {
+				threadName = scene ? ` ⏲️ ${scene}` : ` ⏲️ ${moment().format("DD-MM-YYYY")}`;
+			} else threadName = `🎲 ${scene}`;
+
 			if (threadName.includes("{{date}}"))
 				threadName = threadName.replace("{{date}}", moment().format("DD-MM-YYYY"));
 

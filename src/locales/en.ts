@@ -38,7 +38,10 @@ export default {
 		reason: "New scene",
 		interaction: (scene: string) => `New created thread: ${scene}`,
 		underscore: "__New scene__:",
-		time: "Time bubble",
+		time: {
+			name: "bubble",
+			description: "Time bubble: replace the dice by a clock. By default, use the date as thread name",
+		}
 	},
 	roll: {
 		name: "roll",

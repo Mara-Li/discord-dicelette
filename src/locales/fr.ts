@@ -37,7 +37,10 @@ export default {
 		reason: "Nouvelle scène",
 		interaction: (scene: string) => `Nouveau thread de scène créé : ${scene}`,
 		underscore: "__Nouvelle scène__ :",
-		time: "Bulle temporelle",
+		time: {
+			name: "tempo",
+			description: "Bulle temporelle : replace le dé par une horloge. Par défaut, utilise la date comme nom de thread",
+		}
 	},
 	roll: {
 		name: "roll",
