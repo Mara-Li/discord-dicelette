@@ -54,5 +54,7 @@ export default {
 		noDice: "No dice provided",
 		noValidDice: "Error: Invalid dice",
 		reason: "New roll thread",
+		failure: "Failure",
+		success: "Success",
 	}
 };

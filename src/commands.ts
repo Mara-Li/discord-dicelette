@@ -67,7 +67,7 @@ export const diceRoll = {
 				await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
 				return;
 			}
-			const parser = parseResult(rollDice);
+			const parser = parseResult(rollDice, userLang);
 			if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
 				await interaction.reply({ content: parser });
 				return;

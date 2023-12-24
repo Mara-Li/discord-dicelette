@@ -53,5 +53,7 @@ export default {
 		noDice: "Aucun dé spécifié",
 		noValidDice: "Erreur : Dé invalide",
 		reason: "Nouveau thread de lancer",
+		failure: "Échec",
+		success: "Succès",
 	}
 };

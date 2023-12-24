@@ -25,7 +25,7 @@ export default (client: Client): void => {
 		const detectRoll = content.match(/\[(.*)\]/)?.[1];
 		const rollWithMessage = content.match(DETECT_DICE_MESSAGE)?.[3];
 		if (rollWithMessage) {
-			const diceValue = content.match(/^\d*#?d[\w\.%!<=>]+|\{.*\}/);
+			const diceValue = content.match(/^\S*#?d\S+|\{.*\}/);
 			if (!diceValue) return;
 			content = content.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
 		}
@@ -44,7 +44,7 @@ export default (client: Client): void => {
 		const translation = TRANSLATION[userLang as keyof typeof TRANSLATION] || TRANSLATION.en;
 		const channel = message.channel;
 		if (!result) return;
-		const parser = parseResult(result);
+		const parser = parseResult(result, translation);
 
 		if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
 			await message.reply({content: parser, allowedMentions: { repliedUser: false }});
