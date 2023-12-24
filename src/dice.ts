@@ -1,4 +1,4 @@
-import { DiceRoller, exportFormats } from "@dice-roller/rpg-dice-roller";
+import { DiceRoller } from "@dice-roller/rpg-dice-roller";
 import dedent from "ts-dedent";
 
 import { Resultat } from "./interface";
@@ -30,8 +30,6 @@ export function roll(dice: string): Resultat | undefined{
 	roller.roll(diceWithoutComment);
 	const commentMatch = dice.match(COMMENT_REGEX);
 	const comment = commentMatch ? commentMatch[2] : undefined;
-	//@ts-ignore
-	console.log(realTotal(roller));
 	return {
 		dice,
 		result: roller.output,
@@ -44,38 +42,33 @@ export function roll(dice: string): Resultat | undefined{
 export function parseResult(output: Resultat, lng: any) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
-	let msgSuccess = "";
+	let msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	const messageResult = output.result.split(";");
 	let succ = "";
 	if (output.dice.match(/[><=>]/g)) {
+		msgSuccess = "";
+		let total = 0;
 		for (const r of messageResult) {
-			const result = r.match(/= (\d+)/);
-			if (result) {
-				const numberOfSuccess = parseInt(result[1]);
-				if (numberOfSuccess > 0) {
-					succ = `**${lng.roll.success}**`;
-				} else if (numberOfSuccess === 0) {
-					succ = `**${lng.roll.failure}**`;
+			const result = r.match(/[><=>](\d+)/);
+			const tot = r.match(/\[(.*)\]/);
+			if (tot) {
+				//detect all number in the tot
+				const totalValue = tot[1].replaceAll("*", "").split(",");
+				for (const t of totalValue) {
+					total += parseInt(t);
 				}
 			}
-			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
+			if (result) {
+				const numberOfSuccess = parseInt(result[1]);
+				succ = total >= numberOfSuccess ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			}
+			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, ` = \` ${total} \``).replaceAll("*", "\\*")}`;
+			total = 0;
 		}
 	} else {
-		msgSuccess = `\n${output.result.replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
+		msgSuccess = `${output.result.replaceAll(";","\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	}
-	const result = `\n${msgSuccess}`;
+	const result = msgSuccess;
 	const comment = output.comment ? `*${output.comment.replaceAll(/[\*\/#]/g, "").trim()}*` : "";
 	return dedent(`${comment}${result}`);
-}
-
-function realTotal(roll: DiceRoller) {
-	//@ts-ignore
-	console.log(roll.rolls);
-	//@ts-ignore
-	const log = roll.export(exportFormats.OBJECT).log;
-	const rolls = log.map((roll: { rolls: any; }) => roll.rolls);
-	console.log(rolls);
-	const total = 0;
-
-	return total;
 }
