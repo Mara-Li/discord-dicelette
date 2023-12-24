@@ -40,7 +40,7 @@ export function roll(dice: string): Resultat | undefined{
 export function parseResult(output: Resultat) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
-	const result = `\n${output.result.replaceAll("; ", "\n").replaceAll(":", " ⟶ ").replaceAll(/ = (\d+)/g, " = ` $1 `")}`;
+	const result = `\n${output.result.replaceAll("; ", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	const comment = output.comment ? `*${output.comment.replaceAll(/[\*\/#]/g, "").trim()}*` : "";
 	return dedent(`${comment}${result}`);
 }
