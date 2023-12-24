@@ -25,6 +25,8 @@ export default (client: Client): void => {
 		const detectRoll = content.match(/\[(.*)\]/)?.[1];
 		const rollWithMessage = content.match(DETECT_DICE_MESSAGE)?.[3];
 		if (rollWithMessage) {
+			const diceValue = content.match(/^\d*#?d[\w\.]+|\{.*\}/);
+			if (!diceValue) return;
 			content = content.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
 		}
 		let deleteInput=true;
