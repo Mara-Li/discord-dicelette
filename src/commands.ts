@@ -34,7 +34,7 @@ export function deleteAfter(message: InteractionResponse | Message, time: number
 export const diceRoll = {
 	data: new SlashCommandBuilder()
 		.setName(en.roll.name)
-		.setNameLocalizations({ "fr": fr.roll.name })
+		.setNameLocalizations(cmdLn("roll.name"))
 		.setDescription(en.roll.description)
 		.setDescriptionLocalizations(cmdLn("roll.description"))
 		.addStringOption(option =>
