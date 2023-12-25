@@ -1,13 +1,26 @@
 import { DiceRoller } from "@dice-roller/rpg-dice-roller";
 import dedent from "ts-dedent";
 
-import { Resultat } from "./interface";
+import { Modifier, Resultat } from "./interface";
 
 export const COMMENT_REGEX = /\s+(#|\/{2}|\[|\/\*)(.*)/;
 
 export function roll(dice: string): Resultat | undefined{
 	//parse dice string
 	if (!dice.includes("d")) return undefined;
+	const compare = dice.match(/[><=](\d+)/);
+	if (compare) {
+		dice = dice.replace(/[><=](\d+)/, "");
+	}
+	const modifier = dice.match(/(\+|\-|%|\/|\^|\*|\*{2})(\d+)/);
+	let modificator : Modifier | undefined;
+	if (modifier) {
+		modificator = {
+			sign: modifier[1],
+			value: parseInt(modifier[2]),
+		};
+	}
+
 	if (dice.match(/\d+?#(.*)/)) {
 		const diceArray = dice.split("#");
 		const numberOfDice = parseInt(diceArray[0]);
@@ -23,6 +36,8 @@ export function roll(dice: string): Resultat | undefined{
 			dice: diceToRoll,
 			result: roller.output,
 			comment: comments,
+			compare: compare ? parseInt(compare[1]) : undefined,
+			modifier: modificator,
 		};
 	}
 	const roller = new DiceRoller();
@@ -34,7 +49,8 @@ export function roll(dice: string): Resultat | undefined{
 		dice,
 		result: roller.output,
 		comment,
-		total: roller.total,
+		compare: compare ? parseInt(compare[1]) : undefined,
+		modifier: modificator,
 	};
 }
 
@@ -45,11 +61,11 @@ export function parseResult(output: Resultat, lng: any) {
 	let msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	const messageResult = output.result.split(";");
 	let succ = "";
-	if (output.dice.match(/[><=>]/g)) {
+	console.log(output);
+	if (output.compare) {
 		msgSuccess = "";
 		let total = 0;
 		for (const r of messageResult) {
-			const result = r.match(/[><=>](\d+)/);
 			const tot = r.match(/\[(.*)\]/);
 			if (tot) {
 				//detect all number in the tot
@@ -58,15 +74,41 @@ export function parseResult(output: Resultat, lng: any) {
 					total += parseInt(t);
 				}
 			}
-			if (result) {
-				const numberOfSuccess = parseInt(result[1]);
-				succ = total >= numberOfSuccess ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			if (output.modifier) {
+				const {sign, value} = output.modifier;
+				switch (sign) {
+				case "+":
+					total += value;
+					break;
+				case "-":
+					total -= value;
+					break;
+				case "*":
+					total *= value;
+					break;
+				case "/":
+					total /= value;
+					break;
+				case "%":
+					total %= value;
+					break;
+				case "^":
+					total **= value;
+					break;
+				case "**":
+					total **= value;
+					break;
+				default:
+					break;
+				}
+
 			}
-			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, ` = \` ${total} \``).replaceAll("*", "\\*")}`;
+			succ = total >= output.compare ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, ` = \` ${total} \``).replaceAll("*", "\\*")}`;
 			total = 0;
 		}
 	} else {
-		msgSuccess = `${output.result.replaceAll(";","\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
+		msgSuccess = `${output.result.replaceAll(";","\n").replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	}
 	const result = msgSuccess;
 	const comment = output.comment ? `*${output.comment.replaceAll(/[\*\/#]/g, "").trim()}*` : "";

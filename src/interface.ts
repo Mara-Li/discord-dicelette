@@ -3,6 +3,11 @@ export interface Resultat {
 	dice: string;
 	result: string;
 	comment?: string;
-	total?: number;
+	compare?: number;
+	modifier?: Modifier;
 }
 
+export interface Modifier {
+	sign: string;
+	value: number;
+}
