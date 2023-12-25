@@ -61,7 +61,6 @@ export function parseResult(output: Resultat, lng: any) {
 	let msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	const messageResult = output.result.split(";");
 	let succ = "";
-	console.log(output);
 	if (output.compare) {
 		msgSuccess = "";
 		let total = 0;
