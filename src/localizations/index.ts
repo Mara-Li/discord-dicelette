@@ -1,22 +1,25 @@
 import { Locale, LocalizationMap } from "discord.js";
 
-import en from "./locales/en";
-import fr from "./locales/fr";
+import EnglishUS from "./locales/en";
+import French from "./locales/fr";
 
 export const TRANSLATIONS = {
-	fr,
-	en
+	French,
+	EnglishUS,
 };
 
 export function ln(userLang: Locale) {
-	return TRANSLATIONS[userLang as keyof typeof TRANSLATIONS] || TRANSLATIONS.en;
+	const localeName = Object.entries(Locale).find(([, locale],) => {
+		return locale === userLang as Locale;
+	});
+	return TRANSLATIONS[localeName?.[0] as keyof typeof TRANSLATIONS] ?? TRANSLATIONS.EnglishUS;
 }
 
 export function cmdLn(key: string) {
 	const localized: LocalizationMap = {};
-	const allValidLocale = Object.values(Locale);
+	const allValidLocale = Object.keys(Locale);
 	for (const lg in TRANSLATIONS) {
-		if (lg === "en") continue;
+		if (lg === "EnglishUS") continue;
 		if (!allValidLocale.includes(lg as Locale)) continue;
 		if (Object.prototype.hasOwnProperty.call(TRANSLATIONS, lg)) {
 			const translation = TRANSLATIONS[lg as keyof typeof TRANSLATIONS];

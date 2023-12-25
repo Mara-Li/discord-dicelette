@@ -1,4 +1,4 @@
-import {ChannelType, Client, ForumChannel, TextChannel, ThreadChannel, userMention} from "discord.js";
+import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 import moment from "moment";
 
 import { deleteAfter } from "../commands";
@@ -35,7 +35,8 @@ export default (client: Client): void => {
 			deleteInput = false;
 		}
 		//is a valid roll as we are in the function so we can work as always
-		const userLang = message.guild.preferredLocale ?? "en";
+
+		const userLang = message.guild.preferredLocale ?? Locale.EnglishUS;
 		const translation = ln(userLang);
 		const channel = message.channel;
 		if (!result) return;
