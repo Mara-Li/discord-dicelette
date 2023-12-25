@@ -65,3 +65,16 @@ The bot will create a new thread, prefixed by `🎲`, and send the log to it. Th
 #### Help
 
 `/help`: Display the help message.
+
+## Translation
+
+The bot is fully translated into French and English.
+
+To create your own translation, you need to copy and translate the `en.ts` file. 
+
+Slash-commands will be automatically translated into the language of the client used.
+
+> [!EXAMPLE]
+> For example, an user with a client in Korean will get a reply in Korean, while an English user will get a English reply.
+
+But, if you use the `on message` type of roll detection, the reply will be in the guild's language, which will only can be set for community guild.
