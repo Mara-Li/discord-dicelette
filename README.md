@@ -74,7 +74,7 @@ To create your own translation, you need to copy and translate the `en.ts` file.
 
 Slash-commands will be automatically translated into the language of the client used.
 
-> [!EXAMPLE]
+> [!TIP]
 > For example, an user with a client in Korean will get a reply in Korean, while an English user will get a English reply.
 
-But, if you use the `on message` type of roll detection, the reply will be in the guild's language, which will only can be set for community guild.
+But, if you use the `on message` type of roll detection, the reply will be in the guild's language, which will only can be set for community guild. By default, the reply will be in English.
