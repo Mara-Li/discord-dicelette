@@ -4,7 +4,7 @@ import {
 	CommandInteractionOptionResolver,
 	ForumChannel,
 	InteractionResponse,
-	LocaleString,
+	Locale,
 	Message,
 	SlashCommandBuilder,
 	TextChannel,
@@ -15,8 +15,9 @@ import dedent from "ts-dedent";
 
 import { parseResult, roll } from "./dice";
 import { DETECT_DICE_MESSAGE } from "./events/message_create";
-import en from "./locales/en";
-import fr from "./locales/fr";
+import { cmdLn, ln } from "./localizations";
+import en from "./localizations/locales/en";
+import fr from "./localizations/locales/fr";
 import { findForumChannel, findThread, setTagsForRoll } from "./utils";
 
 const TRANSLATION = {
@@ -35,13 +36,13 @@ export const diceRoll = {
 		.setName(en.roll.name)
 		.setNameLocalizations({ "fr": fr.roll.name })
 		.setDescription(en.roll.description)
-		.setDescriptionLocalizations({ "fr": fr.roll.description })
+		.setDescriptionLocalizations(cmdLn("roll.description"))
 		.addStringOption(option =>
 			option
 				.setName(en.roll.option.name)
-				.setNameLocalizations({ "fr": fr.roll.option.name })
+				.setNameLocalizations(cmdLn("roll.option.name"))
 				.setDescription(en.roll.option.description)
-				.setDescriptionLocalizations({ "fr": fr.roll.option.description })
+				.setDescriptionLocalizations(cmdLn("roll.option.description"))
 				.setRequired(true)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
@@ -95,22 +96,22 @@ export const newScene = {
 	data : new SlashCommandBuilder()
 		.setName(en.scene.name)
 		.setDescription(en.scene.description)
-		.setDescriptionLocalizations({ "fr": fr.scene.description })
-		.setNameLocalizations({ "fr": fr.scene.name })
+		.setDescriptionLocalizations(cmdLn("scene.description"))
+		.setNameLocalizations(cmdLn("scene.name"))
 		.addStringOption(option =>
 			option
 				.setName(en.scene.option.name)
-				.setNameLocalizations({ "fr": fr.scene.option.name })
+				.setNameLocalizations(cmdLn("scene.option.name"))
 				.setDescription(en.scene.option.description)
-				.setDescriptionLocalizations({ "fr": fr.scene.option.description })
+				.setDescriptionLocalizations(cmdLn("scene.option.description"))
 				.setRequired(false)
 		)
 		.addBooleanOption(option =>
 			option
 				.setName(en.scene.time.name)
-				.setNameLocalizations({ "fr": fr.scene.time.name })
+				.setNameLocalizations(cmdLn("scene.time.name"))
 				.setDescription(en.scene.time.description)
-				.setDescriptionLocalizations({ "fr": fr.scene.time.description })
+				.setDescriptionLocalizations(cmdLn("scene.time.description"))
 				.setRequired(false)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
@@ -120,8 +121,7 @@ export const newScene = {
 		if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
 
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const locales: keyof typeof TRANSLATION = interaction.locale as keyof typeof TRANSLATION;
-		const userLang = TRANSLATION[locales] || TRANSLATION.en;
+		const userLang = ln(interaction.locale as Locale);
 		const scene = option.getString(en.scene.option.name);
 		const bubble = option.getBoolean(en.scene.time.name);
 		if (!scene && !bubble) {
@@ -166,21 +166,16 @@ export const newScene = {
 export const help = {
 	data: new SlashCommandBuilder()
 		.setName(en.help.name)
-		.setNameLocalizations({ "fr": fr.help.name })
+		.setNameLocalizations(cmdLn("help.name"))
 		.setDescription(en.help.description)
-		.setDescriptionLocalizations({ "fr": fr.help.description }),
+		.setDescriptionLocalizations(cmdLn("help.description")),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		const commandsID = await interaction.guild?.commands.fetch();
 		if (!commandsID) return;
 		const rollID = commandsID.findKey(command => command.name === "roll");
 		const sceneID = commandsID.findKey(command => command.name === "scene");
 
-		const locales: { [key: string]: string } = {
-			"fr" : fr.help.message(rollID || "", sceneID || ""),
-			"en" : en.help.message(rollID || "", sceneID || "")
-		};
-		const userLocale = interaction.locale as LocaleString;
-		const message = locales[userLocale] || locales.en;
+		const message = ln(interaction.locale as Locale).help.message(rollID as string, sceneID as string);
 		const reply = await interaction.reply({ content: dedent(message)});
 		deleteAfter(reply, 60000);
 		return;

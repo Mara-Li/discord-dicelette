@@ -45,7 +45,7 @@ export default {
 	},
 	roll: {
 		name: "roll",
-		description: "lancer un dé",
+		description: "Lancer un dé",
 		option: {
 			name: "dé",
 			description: "Dé à lancer",

@@ -1,17 +1,12 @@
 import {ChannelType, Client, ForumChannel, TextChannel, ThreadChannel, userMention} from "discord.js";
 import moment from "moment";
-import { Resultat } from "src/interface";
 
 import { deleteAfter } from "../commands";
 import { COMMENT_REGEX, parseResult, roll } from "../dice";
-import en from "../locales/en";
-import fr from "../locales/fr";
+import { Resultat } from "../interface";
+import { ln } from "../localizations";
 import { findForumChannel, findThread } from "../utils";
 
-const TRANSLATION = {
-	fr,
-	en
-};
 
 export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
 
@@ -41,7 +36,7 @@ export default (client: Client): void => {
 		}
 		//is a valid roll as we are in the function so we can work as always
 		const userLang = message.guild.preferredLocale ?? "en";
-		const translation = TRANSLATION[userLang as keyof typeof TRANSLATION] || TRANSLATION.en;
+		const translation = ln(userLang);
 		const channel = message.channel;
 		if (!result) return;
 		const parser = parseResult(result, translation);
