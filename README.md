@@ -1,4 +1,4 @@
-# Dice Thread
+# Dicelette
 
 -> [FRENCH TRANSLATION](README.fr.md) <-
 
