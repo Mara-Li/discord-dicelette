@@ -73,24 +73,8 @@ export function roll(dice: string): Resultat | undefined{
 }
 
 function calculator(sign: Sign, value: number, total: number): number {
-	switch (sign) {
-	case "+":
-		return total + value;
-	case "-":
-		return total - value;
-	case "*":
-		return total * value;
-	case "/":
-		return total / value;
-	case "%":
-		return total % value;
-	case "^":
-		return total ** value;
-	case "**":
-		return total ** value;
-	default:
-		return total;
-	}
+	if (sign === "^") sign = "**";
+	return eval(`${total} ${sign} ${value}`);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
