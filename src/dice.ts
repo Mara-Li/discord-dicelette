@@ -1,22 +1,40 @@
 import { DiceRoller } from "@dice-roller/rpg-dice-roller";
 import dedent from "ts-dedent";
 
-import { Modifier, Resultat } from "./interface";
+import { Compare, Modifier, Resultat, Sign } from "./interface";
 
 export const COMMENT_REGEX = /\s+(#|\/{2}|\[|\/\*)(.*)/;
+const SIGN_REGEX =/[><=]=?/;
+
 
 export function roll(dice: string): Resultat | undefined{
 	//parse dice string
 	if (!dice.includes("d")) return undefined;
-	const compare = dice.match(/[><=](\d+)/);
-	if (compare) {
-		dice = dice.replace(/[><=](\d+)/, "");
+	const compareRegex = dice.match(/[><=]=?(\S+)/);
+	let compare : Compare | undefined;
+	if (compareRegex) {
+		dice = dice.replace(/[><=]=?(\S+)/, "");
+		const calc = compareRegex[1];
+		const sign = calc.match(/[+-\/\*\^]/)?.[0];
+		const compareSign = compareRegex[0].match(SIGN_REGEX)?.[0];
+		if (sign) {
+			const toCalc = calc.replace(SIGN_REGEX, "").replace(/\s/g, "");
+			const total = eval(toCalc);
+			dice = dice.replace(/[><=]=?(\S+)/, `${compareSign}${total}`);
+			compare = {
+				sign: compareSign as "<" | ">" | ">=" | "<=" | "=",
+				value: total,
+			};
+		} else compare = {
+			sign: compareSign as "<" | ">" | ">=" | "<=" | "=",
+			value: parseInt(calc),
+		};
 	}
 	const modifier = dice.match(/(\+|\-|%|\/|\^|\*|\*{2})(\d+)/);
 	let modificator : Modifier | undefined;
 	if (modifier) {
 		modificator = {
-			sign: modifier[1],
+			sign: modifier[1] as Sign,
 			value: parseInt(modifier[2]),
 		};
 	}
@@ -36,7 +54,7 @@ export function roll(dice: string): Resultat | undefined{
 			dice: diceToRoll,
 			result: roller.output,
 			comment: comments,
-			compare: compare ? parseInt(compare[1]) : undefined,
+			compare: compare ? compare : undefined,
 			modifier: modificator,
 		};
 	}
@@ -49,9 +67,30 @@ export function roll(dice: string): Resultat | undefined{
 		dice,
 		result: roller.output,
 		comment,
-		compare: compare ? parseInt(compare[1]) : undefined,
+		compare: compare ? compare : undefined,
 		modifier: modificator,
 	};
+}
+
+function calculator(sign: Sign, value: number, total: number): number {
+	switch (sign) {
+	case "+":
+		return total + value;
+	case "-":
+		return total - value;
+	case "*":
+		return total * value;
+	case "/":
+		return total / value;
+	case "%":
+		return total % value;
+	case "^":
+		return total ** value;
+	case "**":
+		return total ** value;
+	default:
+		return total;
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,35 +114,12 @@ export function parseResult(output: Resultat, lng: any) {
 			}
 			if (output.modifier) {
 				const {sign, value} = output.modifier;
-				switch (sign) {
-				case "+":
-					total += value;
-					break;
-				case "-":
-					total -= value;
-					break;
-				case "*":
-					total *= value;
-					break;
-				case "/":
-					total /= value;
-					break;
-				case "%":
-					total %= value;
-					break;
-				case "^":
-					total **= value;
-					break;
-				case "**":
-					total **= value;
-					break;
-				default:
-					break;
-				}
+				total = calculator(sign as Sign, value, total);
 
 			}
-			succ = total >= output.compare ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
-			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, ` = \` ${total} \``).replaceAll("*", "\\*")}`;
+			succ = eval(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			const totSucc = output.compare ? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\`` : `= \`${total}\``;
+			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, totSucc).replaceAll("*", "\\*")}`;
 			total = 0;
 		}
 	} else {
@@ -112,4 +128,27 @@ export function parseResult(output: Resultat, lng: any) {
 	const result = msgSuccess;
 	const comment = output.comment ? `*${output.comment.replaceAll(/[\*\/#]/g, "").trim()}*` : "";
 	return dedent(`${comment}${result}`);
+}
+
+function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "≤" | "=" | "" {
+	//as the comparaison value is AFTER the total, we need to invert the sign to have a good comparaison string
+	const {sign, value} = compare;
+	const success = eval(`${total} ${sign} ${value}`);
+	if (success) {
+		return sign.replace(">=", "≥").replace("<=", "≤") as "<" | ">" | "≥" | "≤" | "=" | "";
+	}
+	switch (sign) {
+	case "<":
+		return ">";
+	case ">":
+		return "<";
+	case ">=":
+		return "≤";
+	case "<=":
+		return "≥";
+	case "=":
+		return "=";
+	default:
+		return "";
+	}
 }
