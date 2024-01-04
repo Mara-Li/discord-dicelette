@@ -19,7 +19,7 @@ export default (client: Client): void => {
 		//detect roll between bracket
 		const detectRoll = content.match(/\[(.*)\]/)?.[1];
 		const rollWithMessage = content.match(DETECT_DICE_MESSAGE)?.[3];
-		if (rollWithMessage) {
+		if (rollWithMessage && !detectRoll) {
 			const diceValue = content.match(/^\S*#?d\S+|\{.*\}/);
 			if (!diceValue) return;
 			content = content.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
