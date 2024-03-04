@@ -15,6 +15,9 @@ import dedent from "ts-dedent";
 
 import { verifyTemplateValue } from "./utils";
 
+type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
+type UsageSign = "+" | "-";
+
 export const generateTemplate = {
 	data: new SlashCommandBuilder()
 		.setName("generate")
@@ -24,6 +27,62 @@ export const generateTemplate = {
 				.setName("name")
 				.setDescription("The name of the statistique, separate them by a space or a coma")
 				.setRequired(true)
+		)
+		.addNumberOption(option =>
+			option
+				.setName("total")
+				.setDescription("The total statistique point - optional")
+				.setRequired(false)
+		)
+		.addStringOption(option =>
+			option
+				.setName("dice")
+				.setDescription("The dice type")
+				.setRequired(true)
+		)
+		.addStringOption(option =>
+			option
+				.setName("usage")
+				.setDescription("The usage of the statistique")
+				.addChoices({
+					"name" : "Plus",
+					"value" : "+",
+				}, {
+					"name" : "Minus",
+					"value" : "-",
+				})
+				.setRequired(true)
+		)
+		.addStringOption(option =>
+			option
+				.setName("comparator")
+				.setDescription("The comparator sign between the statistique or a number")
+				.addChoices({
+					"name" : "Greater",
+					"value" : ">",
+				}, {
+					"name" : "Greater or equal",
+					"value" : ">=",
+				}, {
+					"name" : "Less",
+					"value" : "<",
+				}, {
+					"name" : "Less or equal",
+					"value" : "<=",
+				}, {
+					"name" : "Equal",
+					"value" : "=",
+				}, {
+					"name" : "Different",
+					"value" : "!=",
+				})
+				.setRequired(true)		
+		)
+		.addNumberOption(option =>
+			option
+				.setName("value")
+				.setDescription("The value to compare with the result. Let empty to compare with the statistique value.")
+				.setRequired(false)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
@@ -40,13 +99,13 @@ export const generateTemplate = {
 		}
 		const statistiqueTemplate: StatistiqueTemplate = {
 			statistiques: statServer,
-			diceType: "",
-			statistiqueUsage: "+",
+			diceType: options.getString("dice") || "1d20",
+			statistiqueUsage: options.getString("usage", true) as UsageSign || "+",
 			comparator: {
-				sign: ">",
-				value: 0,
+				sign: options.getString("comparator") as ComparatorSign || ">",
+				value: options.getNumber("value") || undefined,
 			},
-			total: 0
+			total: options.getNumber("total") || 0,
 		};
 		const help = dedent(`
 			- Max and min must be number and can be optional : remove them if you don't want to set them
@@ -55,7 +114,7 @@ export const generateTemplate = {
 			- Value must be a number and can be optional : remove it if you don't want to set it
 			- statistiqueUsage can be \`+\`, \`-\` or undefined (optional). It allows to add / remove the statistique to the dice result
 			- Total is optional and can be set to 0 to disable it. You can also remove it. It allows to check the total statistiques point for an user.
-
+		Note that, everything can be edited later as you want, this is just a template to help you to create your statistiques.	
 		`);
 		await interaction.reply({ content: help + `Here is your template: \n\`\`\`json\n${JSON.stringify(statistiqueTemplate, null, 2)}\n\`\`\`` });
 	}
