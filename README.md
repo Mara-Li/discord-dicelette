@@ -1,14 +1,25 @@
-# Dicelette
+# Dicelette+
 
 -> [FRENCH TRANSLATION](README.fr.md) <-
 
 Allows you to throw dice and send the result in a thread.
 
+This fork allows to use Statistique in JSON form to register and get user for different type of roll. You can register the type of roll and how the statistiques will be compared.
+
+You must first send a template in JSON file to allow the bot to work with statistique! Use `/new` to get an empty template, and use your favorite notepad editor to edit it.
+
+The bot will register in a database:
+- The id of your server
+- The id of the template message and the channel
+- The id of the reference message 
+
+As the bot works with fetching message id, if you delete any message, the bot will be reset on your server. 
+
 Uses the [@diceRoller](https://dice-roller.github.io/documentation/) API to throw dice.
 
 It also supports the rollem notation `4#(dice)` for bulk rolls.
 
-[Invite the bot](https://discord.com/api/oauth2/authorize?client_id=1182819335878754385&permissions=395137215504&scope=bot+applications.commands)
+[Invite the bot](XXXXX)
 
 ## Behavior
 ### Logs Threads
