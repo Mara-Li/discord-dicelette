@@ -29,30 +29,13 @@ export interface GuildData {
 	}
 }
 
-export interface Statistique {
-	/**
-	 * Name of the statistic
-	 * ie: "Force"
-	 */
-	name: string;
-	/**
-	 * Value of the statistic
-	 * ie: 15
-	 */
-	value: number;
-	/**
-	 * Optional, the maximum value of the statistic
-	 * A warning will be show if the user have the value > max
-	 * ie: 20
-	 */
-	max?: number;
-	/**
-	 * Optional, the maximum value of the statistic
-	 * ie: 5
-	 * An error will be show if the user have the value > max
-	 */
-	min?: number;
+export type Statistique = {
+	[name: string] : {
+		max?: number;
+		min?: number;
+	}
 }
+
 /**
  * Interface of the JSON file that will be send to the bot when using /apply [idChannel] 
  * Use /new to send you a empty template of this interface in JSON format
@@ -74,21 +57,21 @@ export interface Statistique {
  * The dice throw will be 1d20 that must be <= statistique
  */
 export interface StatistiqueTemplate {
-	Statistiques: Statistique[];
+	statistiques: Statistique[]
 	/**
 	 * A total can be set, it allows to calculate the total value of a future register member
 	 * If the sum of the value > total, the bot will send a message to the user to inform him that the total is exceeded and an error will be thrown
 	 */
-	total?: number; 
+	total?: number
 	/** A dice type in the notation supported by the bot */
-	diceType: string;
+	diceType: string
 	/**
 	 * How the statistique will be used in the notation / calculation
 	 * + mean added to the default dice
 	 * - mean removed from the default dice
 	 * Undefined mean the statistique will be used as comparator based on the comparator.sign value
 	 */
-	statistiqueUsage?: "+" | "-" 
+	statistiqueUsage?: "+" | "-"
 	/**
 	 * How the success/echec will be done 
 	 */
@@ -96,7 +79,7 @@ export interface StatistiqueTemplate {
 		/**
 		 * How the dice value will be compared
 		 */
-		sign : "<" | ">" | ">=" | "<=" | "="
+		sign : "<" | ">" | ">=" | "<=" | "=" | "!="
 		/**
 		 * If not defined, the value will be the statistique value of the user
 		 * If defined, the dice will be compared this value
@@ -124,6 +107,7 @@ export interface User {
 /**
  * The reference default type for the "reference message" that list every registered user
  * Form of `@mention/character_shortcuts` : `url_message`
+ * Note: Reference message will be a JSON file too
  */
 export type DefaultReferenceMessage = {
 	[id: string] : string;

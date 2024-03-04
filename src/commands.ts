@@ -18,6 +18,7 @@ import { DETECT_DICE_MESSAGE } from "./events/message_create";
 import { cmdLn, ln } from "./localizations";
 import en from "./localizations/locales/en";
 import fr from "./localizations/locales/fr";
+import { commands } from "./Statistiques/commands";
 import { findForumChannel, findThread, setTagsForRoll } from "./utils";
 
 const TRANSLATION = {
@@ -183,4 +184,4 @@ export const help = {
 
 };
 
-export const commandsList = [diceRoll, newScene, help];
+export const commandsList = [diceRoll, newScene, help].concat(commands);

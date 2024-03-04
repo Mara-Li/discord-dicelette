@@ -33,6 +33,7 @@
     "eslint": "^8.55.0",
     "moment": "^2.29.4",
     "nodemon": "^3.0.2",
+    "remove-accents": "^0.5.0",
     "ts-dedent": "^2.2.0",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
