@@ -123,7 +123,7 @@ export interface User {
 }
 /**
  * The reference default type for the "reference message" that list every registered user
- * Form of `@mention/characterName` : `url_message`
+ * Form of `@mention/character_shortcuts` : `url_message`
  */
 export type DefaultReferenceMessage = {
 	[id: string] : string;

@@ -15,6 +15,8 @@ The bot will register in a database:
 
 As the bot works with fetching message id, if you delete any message, the bot will be reset on your server. 
 
+> [!warning] Direct mode is not supported with characters and statistique : you need to use the commands `/stat` to use it.
+
 Uses the [@diceRoller](https://dice-roller.github.io/documentation/) API to throw dice.
 
 It also supports the rollem notation `4#(dice)` for bulk rolls.
