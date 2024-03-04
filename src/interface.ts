@@ -116,14 +116,14 @@ export interface StatistiqueTemplate {
  * - If the user doesn't exists: the bot will send a message to inform the user that he is not registered and roll normally, ignoring the statistique
  */
 export interface User {
-	id: string; //will be send in the content of the message
+	userName?: string; //by default, will be the id of the user, if changed to a string, it will be used
 	stats: {
 		[name: string] : number;
 	}[];
 }
 /**
  * The reference default type for the "reference message" that list every registered user
- * Form of `@mention` : `url_message`
+ * Form of `@mention/characterName` : `url_message`
  */
 export type DefaultReferenceMessage = {
 	[id: string] : string;

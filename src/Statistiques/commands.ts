@@ -8,4 +8,5 @@
  * 	Into: /r <defaultDice><usagestats><comparesign><valuecompare> []
  * 		ie: /r 1d20+statistiqueValue<=X []
  * 		or: /r 1d20<=statistiqueValue []
+ * Use &character to use another characters?
  */
