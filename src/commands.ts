@@ -18,7 +18,7 @@ import { DETECT_DICE_MESSAGE } from "./events/message_create";
 import { cmdLn, ln } from "./localizations";
 import en from "./localizations/locales/en";
 import fr from "./localizations/locales/fr";
-import { commands } from "./Statistiques/commands";
+import { commands } from "./Statistiques/register";
 import { findForumChannel, findThread, setTagsForRoll } from "./utils";
 
 const TRANSLATION = {
