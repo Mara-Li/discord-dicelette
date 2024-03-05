@@ -15,25 +15,28 @@ import { StatistiqueTemplate } from "../interface";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function verifyTemplateValue(template: any): StatistiqueTemplate {
 	const statistiqueTemplate: StatistiqueTemplate = {
+		charName: false,
 		statistiques: [],
 		diceType: "",
-		statistiqueUsage: "+",
 		comparator: {
 			sign: ">",
 			value: 0,
+			formula: "",
 		},
 	};
 	if (template.statistiques) {
 		for (const stat of template.statistiques) {
-			const value = Object.values(stat)[0] as { max?: number, min?: number };
-			const key = removeAccents(Object.keys(stat)[0]) as string;
+			const value = Object.values(stat)[0] as { max?: number, min?: number, formula?: string };
+			const key = removeAccents(Object.keys(stat)[0]).toLowerCase() as string;
 			if (value.max && value.min && value.max <= value.min)
 				throw new Error("Max must be greater than min");
 			if (value.max && value.max <= 0 ) stat.max = undefined;
 			if (value.min && value.min <= 0 ) stat.min = undefined;
+			const formula = value.formula ? removeAccents(value.formula).toLowerCase() : undefined;
 			statistiqueTemplate.statistiques.push({ [key]: {
 				max: value.max,
 				min: value.min,
+				formula: formula || undefined,
 			} });
 		}
 	}
@@ -46,9 +49,7 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 			throw new Error("Invalid dice type");
 		}
 	}
-	if (template.statistiqueUsage) {
-		statistiqueTemplate.statistiqueUsage = template.statistiqueUsage;
-	}
+
 	if (!template.comparator)
 		throw new Error("Invalid comparator: missing sign");
 	if (template.comparator) {
@@ -56,6 +57,8 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 			throw new Error("Invalid comparator sign");
 		if (template.comparator.value <= 0)
 			template.comparator.value = undefined;
+		if (template.comparator.formula)
+			template.comparator.formula = removeAccents(template.comparator.formula);
 		statistiqueTemplate.comparator = template.comparator;
 	}
 	if (template.total) {

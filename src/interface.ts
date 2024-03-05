@@ -22,10 +22,15 @@ export type Sign = "+" | "-" | "*" | "/" | "%" | "^" | "**";
 export interface GuildData {
 	[id: string]: {
 		templateID: {
-			channel: string;
-			message: string;
+			channelId: string;
+			messageId: string;
 		},
-		referenceId: string;
+		user: {
+			[id: string]: {
+				userName?: string;
+				statId: string;
+			}
+		}
 	}
 }
 
@@ -33,6 +38,7 @@ export type Statistique = {
 	[name: string] : {
 		max?: number;
 		min?: number;
+		formula?: string;
 	}
 }
 
@@ -57,21 +63,17 @@ export type Statistique = {
  * The dice throw will be 1d20 that must be <= statistique
  */
 export interface StatistiqueTemplate {
+	/** Allow to force the user to choose a name for them characters */
+	charName?: boolean 
 	statistiques: Statistique[]
 	/**
 	 * A total can be set, it allows to calculate the total value of a future register member
 	 * If the sum of the value > total, the bot will send a message to the user to inform him that the total is exceeded and an error will be thrown
+	 * @note statistique that have a formula will be ignored from the total
 	 */
 	total?: number
 	/** A dice type in the notation supported by the bot */
-	diceType: string
-	/**
-	 * How the statistique will be used in the notation / calculation
-	 * + mean added to the default dice
-	 * - mean removed from the default dice
-	 * Undefined mean the statistique will be used as comparator based on the comparator.sign value
-	 */
-	statistiqueUsage?: "+" | "-"
+	diceType: string;
 	/**
 	 * How the success/echec will be done 
 	 */
@@ -84,7 +86,12 @@ export interface StatistiqueTemplate {
 		 * If not defined, the value will be the statistique value of the user
 		 * If defined, the dice will be compared this value
 		 */
-		value?: number
+		value?: number,
+		/** Edit the number that will be +/- to the result. Use $ to symbolise the statistique value"
+		 * @example +$ or -$ to add/remove the statistique (bonus/malus)
+		 * @example DND: ($-10)/2
+		*/
+		formula?: string
 	}
 }
 
@@ -103,13 +110,16 @@ export interface User {
 	stats: {
 		[name: string] : number;
 	}[];
-}
-/**
- * The reference default type for the "reference message" that list every registered user
- * Form of `@mention/character_shortcuts` : `url_message`
- * Note: Reference message will be a JSON file too
- */
-export type DefaultReferenceMessage = {
-	[id: string] : string;
+	/**
+	 * Allow to prevent returning each time to the JSON template for roll
+	 */
+	template: {
+		diceType: string;
+		comparator: {
+			sign: "<" | ">" | ">=" | "<=" | "=" | "!="
+			value?: number;
+			formula?: string;
+		}
+	}
 }
 

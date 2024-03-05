@@ -42,19 +42,6 @@ export const generateTemplate = {
 		)
 		.addStringOption(option =>
 			option
-				.setName("usage")
-				.setDescription("The usage of the statistique")
-				.addChoices({
-					"name" : "Plus",
-					"value" : "+",
-				}, {
-					"name" : "Minus",
-					"value" : "-",
-				})
-				.setRequired(true)
-		)
-		.addStringOption(option =>
-			option
 				.setName("comparator")
 				.setDescription("The comparator sign between the statistique or a number")
 				.addChoices({
@@ -83,7 +70,19 @@ export const generateTemplate = {
 				.setName("value")
 				.setDescription("The value to compare with the result. Let empty to compare with the statistique value.")
 				.setRequired(false)
-		),
+		)
+		.addBooleanOption(option =>
+			option
+				.setName("character")
+				.setDescription("If the user must set a name for them character")
+				.setRequired(false)
+		)
+		.addStringOption(option =>
+			option
+				.setName("formula")
+				.setDescription("The formula to edit the value when the statistique is used with dice. Use X to symbolise the statistique (+X, -X...)")
+				.setRequired(false)		
+	),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
 		const options = interaction.options as CommandInteractionOptionResolver;
@@ -95,15 +94,17 @@ export const generateTemplate = {
 			statServer.push({ [removeAccents(stat)]: {
 				max: 0,
 				min: 0,
+				formula: "Can be anything if you don't want to set a proper value. Will be automatically skipped when you register an user. Use statistique name in lowercase and without accent to create the formula"
 			} });
 		}
 		const statistiqueTemplate: StatistiqueTemplate = {
+			charName: options.getBoolean("character") || false,
 			statistiques: statServer,
 			diceType: options.getString("dice") || "1d20",
-			statistiqueUsage: options.getString("usage", true) as UsageSign || "+",
 			comparator: {
 				sign: options.getString("comparator") as ComparatorSign || ">",
 				value: options.getNumber("value") || undefined,
+				formula: options.getString("formula") || "",
 			},
 			total: options.getNumber("total") || 0,
 		};
