@@ -15,7 +15,6 @@ import { StatistiqueTemplate } from "../interface";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function verifyTemplateValue(template: any): StatistiqueTemplate {
 	const statistiqueTemplate: StatistiqueTemplate = {
-		charName: false,
 		statistiques: [],
 		diceType: "",
 		comparator: {
@@ -66,5 +65,8 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 			template.total = undefined;
 		statistiqueTemplate.total = template.total;
 	}
+	if (template.charName) statistiqueTemplate.charName = template.charName;
 	return statistiqueTemplate;
 }
+
+export function discordModalsTemplate() {}

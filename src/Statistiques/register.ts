@@ -118,7 +118,7 @@ export const generateTemplate = {
 		
 		Note that, everything can be edited later as you want, this is just a template to help you to create your statistiques.	
 		`);
-		await interaction.reply({ content: help + `Here is your template: \n\`\`\`json\n${JSON.stringify(statistiqueTemplate, null, 2)}\n\`\`\`` });
+		await interaction.reply({ content: help, files: [{ attachment: Buffer.from(JSON.stringify(statistiqueTemplate, null, 2), "utf-8"), name: "template.json" }]});
 	}
 };
 
