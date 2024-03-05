@@ -20,18 +20,17 @@ export interface Compare {
 export type Sign = "+" | "-" | "*" | "/" | "%" | "^" | "**";
 
 export interface GuildData {
-	[id: string]: {
-		templateID: {
-			channelId: string;
+	templateID: {
+		channelId: string;
+		messageId: string;
+	},
+	user: {
+		[userID: string]: {
+			charName?: string;
 			messageId: string;
-		},
-		user: {
-			[id: string]: {
-				charName?: string;
-				statId: string;
-			}
-		}
-	}
+		}[]
+	}[]
+	
 }
 
 export type Statistique = {

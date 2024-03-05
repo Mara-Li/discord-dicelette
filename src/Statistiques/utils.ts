@@ -7,6 +7,7 @@
  * 
  */
 
+import { ActionRowBuilder, ButtonInteraction, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import removeAccents from "remove-accents";
 
 import { roll } from "../dice";
@@ -69,4 +70,3 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 	return statistiqueTemplate;
 }
 
-export function discordModalsTemplate() {}

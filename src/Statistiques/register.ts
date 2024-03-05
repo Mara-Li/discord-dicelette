@@ -14,9 +14,9 @@ import { Statistique, StatistiqueTemplate } from "src/interface";
 import dedent from "ts-dedent";
 
 import { verifyTemplateValue } from "./utils";
+import { exp } from "mathjs";
 
 type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
-type UsageSign = "+" | "-";
 
 export const generateTemplate = {
 	data: new SlashCommandBuilder()
@@ -83,7 +83,7 @@ export const generateTemplate = {
 				.setName("formula")
 				.setDescription("The formula to edit the value. Use $ to symbolise statistique (ie: +$, -$")
 				.setRequired(false)		
-	),
+		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
 		const options = interaction.options as CommandInteractionOptionResolver;
@@ -151,12 +151,8 @@ export const registerTemplate = {
 			const channel = options.getChannel("channel");
 			if (!channel || !(channel instanceof TextChannel)) return;
 			//send template as JSON in the channel, send as file
-			const registerButton = new ButtonBuilder()
-			.setCustomId("register")
-			.setLabel("Register a new user")
-			.setStyle(ButtonStyle.Primary)
-			const row = new ActionRowBuilder<ButtonBuilder>().addComponents(registerButton)
-			const msg = await channel.send({ content: "# __TEMPLATE__", files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [row] });
+			
+			const msg = await channel.send({ content: "# __TEMPLATE__", files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }] });
 			msg.pin();
 			await interaction.reply({ content: "Template registered", ephemeral: true });
 			//save in database file
@@ -182,5 +178,7 @@ export const registerTemplate = {
 		}
 	}	
 };
+
+export 
 
 export const commands = [generateTemplate, registerTemplate];
