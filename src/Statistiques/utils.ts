@@ -36,7 +36,7 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 			statistiqueTemplate.statistiques.push({ [key]: {
 				max: value.max,
 				min: value.min,
-				formula: formula || undefined,
+				combinaison: formula || undefined,
 			} });
 		}
 	}

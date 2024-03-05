@@ -27,7 +27,7 @@ export interface GuildData {
 		},
 		user: {
 			[id: string]: {
-				userName?: string;
+				charName?: string;
 				statId: string;
 			}
 		}
@@ -38,7 +38,7 @@ export type Statistique = {
 	[name: string] : {
 		max?: number;
 		min?: number;
-		formula?: string;
+		combinaison?: string;
 	}
 }
 
@@ -93,13 +93,12 @@ export interface StatistiqueTemplate {
 
 /**
  * When a user is registered, a message will be sent in the corresponding channel for the template
- * There after, the "reference message" will be edited by the bot to add the id of the user and a link to the message where is their statistiques
  * When any user roll on a statistique:
- * - The bot will get the content of the `reference_id` message
- * - If the user is in it: the bot will parse the file and get the message link to the JSON statistique file
+ * - The bot will check the user in the database. 
+ * - If it is, it will get the message with the statistique attached:
  * 	- The bot will get the content of the JSON file and parse it to get the statistique of the user
  * 	- Using it, it will roll normally and send the result to the user 
- * - If the user doesn't exists: the bot will send a message to inform the user that he is not registered and roll normally, ignoring the statistique
+ * - If the user doesn't exists or their stat was deleted: the bot will send a message to inform the user that he is not registered and roll normally, ignoring the statistique/characters (theses will be send into the comments part)
  */
 export interface User {
 	userName?: string; //by default, will be the id of the user, if changed to a string, it will be used

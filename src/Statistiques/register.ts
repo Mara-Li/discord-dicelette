@@ -28,12 +28,7 @@ export const generateTemplate = {
 				.setDescription("The name of the statistique, separate them by a space or a coma")
 				.setRequired(true)
 		)
-		.addNumberOption(option =>
-			option
-				.setName("total")
-				.setDescription("The total statistique point - optional")
-				.setRequired(false)
-		)
+
 		.addStringOption(option =>
 			option
 				.setName("dice")
@@ -71,6 +66,12 @@ export const generateTemplate = {
 				.setDescription("The value to compare with the result. Let empty to compare with the statistique value.")
 				.setRequired(false)
 		)
+		.addNumberOption(option =>
+			option
+				.setName("total")
+				.setDescription("The total statistique point - optional")
+				.setRequired(false)
+		)
 		.addBooleanOption(option =>
 			option
 				.setName("character")
@@ -80,7 +81,7 @@ export const generateTemplate = {
 		.addStringOption(option =>
 			option
 				.setName("formula")
-				.setDescription("The formula to edit the value when the statistique is used with dice. Use X to symbolise the statistique (+X, -X...)")
+				.setDescription("The formula to edit the value. Use $ to symbolise statistique (ie: +$, -$")
 				.setRequired(false)		
 	),
 	async execute(interaction: CommandInteraction): Promise<void> {
@@ -94,7 +95,7 @@ export const generateTemplate = {
 			statServer.push({ [removeAccents(stat)]: {
 				max: 0,
 				min: 0,
-				formula: "Can be anything if you don't want to set a proper value. Will be automatically skipped when you register an user. Use statistique name in lowercase and without accent to create the formula"
+				combinaison: "Can be anything if you don't want to set a proper value. Will be automatically skipped when you register an user. Use statistique name in lowercase and without accent to create the formula"
 			} });
 		}
 		const statistiqueTemplate: StatistiqueTemplate = {
@@ -109,12 +110,12 @@ export const generateTemplate = {
 			total: options.getNumber("total") || 0,
 		};
 		const help = dedent(`
-			- Max and min must be number and can be optional : remove them if you don't want to set them
 			- Dice type must be a valid dice (will be tested when template is send)
-			- Comparator sign must be a valid sign in the list : \`>\`, \`<\`, \`>=\`, \`<=\`, \`=\`, \`!=\`
 			- Value must be a number and can be optional : remove it if you don't want to set it
-			- statistiqueUsage can be \`+\`, \`-\` or undefined (optional). It allows to add / remove the statistique to the dice result
-			- Total is optional and can be set to 0 to disable it. You can also remove it. It allows to check the total statistiques point for an user.
+			- Total is optional and can be set to 0 to disable it. It allows to check the total statistiques point for an user.
+			- Formula allow to edit the value when combined to the dice. Use $ to symbolise the statistique. For example: \`+$\`, \`-$\`, \`($-10)/2\`...
+			- A statistique can be a combinaison of multiple other statistique, like \`(strength + agility)/2\`. If the value \`combinaison\` is set, min-max will be disabled automatically, and you can't register it either : the value will be automatically calculated. More over, this statistique won't count in the total of points you allow. 
+		
 		Note that, everything can be edited later as you want, this is just a template to help you to create your statistiques.	
 		`);
 		await interaction.reply({ content: help + `Here is your template: \n\`\`\`json\n${JSON.stringify(statistiqueTemplate, null, 2)}\n\`\`\`` });
@@ -157,8 +158,6 @@ export const registerTemplate = {
 			const row = new ActionRowBuilder<ButtonBuilder>().addComponents(registerButton)
 			const msg = await channel.send({ content: "# __TEMPLATE__", files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [row] });
 			msg.pin();
-			//add button
-
 			await interaction.reply({ content: "Template registered", ephemeral: true });
 			//save in database file
 			const data = fs.readFileSync("database.json", "utf-8");
