@@ -7,7 +7,7 @@
  * 		ie: /r 1d20+statistiqueValue<=X []
  * 		or: /r 1d20<=statistiqueValue []
  */
-import { CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 import { Statistique, StatistiqueTemplate } from "src/interface";
@@ -150,7 +150,15 @@ export const registerTemplate = {
 			const channel = options.getChannel("channel");
 			if (!channel || !(channel instanceof TextChannel)) return;
 			//send template as JSON in the channel, send as file
-			const msg = await channel.send({ files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }] });
+			const registerButton = new ButtonBuilder()
+			.setCustomId("register")
+			.setLabel("Register a new user")
+			.setStyle(ButtonStyle.Primary)
+			const row = new ActionRowBuilder<ButtonBuilder>().addComponents(registerButton)
+			const msg = await channel.send({ content: "# __TEMPLATE__", files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [row] });
+			msg.pin();
+			//add button
+
 			await interaction.reply({ content: "Template registered", ephemeral: true });
 			//save in database file
 			const data = fs.readFileSync("database.json", "utf-8");

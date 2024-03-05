@@ -43,22 +43,18 @@ export type Statistique = {
 }
 
 /**
- * Interface of the JSON file that will be send to the bot when using /apply [idChannel] 
- * Use /new to send you a empty template of this interface in JSON format
  * @example
  * diceType: 1d20
- * statistiqueUsage: +
  * comparator: {
  * 	sign: ">="
  * 	value: 20
+ * 	formula: +$
  * }
  * The dice throw will be 1d20 + statistique that must be >= 20
  * @example
  * diceType: 1d20
- * statistiqueUsage: undefined
  * comparator: {
  * 	sign: "<="
- * 	value: undefined
  * }
  * The dice throw will be 1d20 that must be <= statistique
  */
