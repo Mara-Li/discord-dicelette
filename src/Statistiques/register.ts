@@ -7,7 +7,7 @@
  * 		ie: /r 1d20+statistiqueValue<=X []
  * 		or: /r 1d20<=statistiqueValue []
  */
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 import { Statistique, StatistiqueTemplate } from "src/interface";
@@ -139,6 +139,7 @@ export const generateTemplate = {
 export const registerTemplate = {
 	data: new SlashCommandBuilder()
 		.setName("register")
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 		.setDescription("Register a template for the statistique command")
 		.addChannelOption(option =>
 			option

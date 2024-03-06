@@ -7,6 +7,7 @@ export const rollForUser = {
 	data: new SlashCommandBuilder()
 		.setName("dice")
 		.setDescription("Roll a dice using your registered statistiques")
+		.setDefaultMemberPermissions(0)
 		.addStringOption(option =>
 			option
 				.setName("statistique")
