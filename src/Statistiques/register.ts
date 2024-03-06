@@ -10,29 +10,37 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
-import { Statistique, StatistiqueTemplate } from "src/interface";
 import dedent from "ts-dedent";
 
+import { Statistique, StatistiqueTemplate } from "../interface";
+import { cmdLn } from "../localizations";
+import en from "../localizations/locales/en";
 import { rollForUser } from "./roll";
 import { title,verifyTemplateValue } from "./utils";
 
 type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
 
+
 export const generateTemplate = {
 	data: new SlashCommandBuilder()
-		.setName("generate")
+		.setName(en.register.generate.name)
+		.setNameLocalizations(cmdLn("register.generate.name"))
 		.setDescription("Generate a template for the statistique command")
 		.addStringOption(option =>
 			option
-				.setName("name")
-				.setDescription("The name of the statistique, separate them by a space or a coma")
+				.setName(en.register.generate.options.stats.name)
+				.setNameLocalizations(cmdLn("register.generate.options.stats.name"))
+				.setDescription(en.register.generate.options.stats.description)
+				.setDescriptionLocalizations(cmdLn("register.generate.options.stats.description"))
 				.setRequired(true)
 		)
 
 		.addStringOption(option =>
 			option
-				.setName("dice")
-				.setDescription("The dice type")
+				.setName(en.register.generate.options.dice.name)
+				.setDescription(en.register.generate.options.dice.description)
+				.setDescriptionLocalizations(cmdLn("register.generate.options.dice.description"))
+				.setNameLocalizations(cmdLn("register.generate.options.dice.name"))
 				.setRequired(true)
 		)
 		.addStringOption(option =>

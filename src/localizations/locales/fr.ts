@@ -55,5 +55,24 @@ export default {
 		reason: "Nouveau thread de lancer",
 		failure: "Échec",
 		success: "Succès",
+		critical: {
+			success: "Succès critique",
+			failure: "Échec critique",
+		},
+	},
+	register: {
+		generate: {
+			name: "générer",
+			options: {
+				stats: {
+					name: "nom",
+					description: "Le nom de la statistique, séparez-les par un espace ou une virgule",
+				},
+				dice: {
+					name: "dé",
+					description: "Le type de dé à lancer",
+				}
+			}
+		}
 	}
 };

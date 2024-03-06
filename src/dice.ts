@@ -76,7 +76,7 @@ export function roll(dice: string): Resultat | undefined{
 
 function calculator(sign: Sign, value: number, total: number): number {
 	if (sign === "^") sign = "**";
-	return eval(`${total} ${sign} ${value}`);
+	return evaluate(`${total} ${sign} ${value}`);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,9 +106,9 @@ export function parseResult(output: Resultat, lng: any, critical?: {failure?: nu
 			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
 			if (critical) {
 				if (critical.failure && total === critical.failure) {
-					succ = "**Critical failure**";
+					succ = `**${lng.roll.critical.failure}**`;
 				} else if (critical.success && total === critical.success) {
-					succ = "**Critical success**";
+					succ = `**${lng.roll.critical.success}**`;
 				}
 			}
 			const totSucc = output.compare ? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\`` : `= \`${total}\``;

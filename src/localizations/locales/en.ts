@@ -56,5 +56,24 @@ export default {
 		reason: "New roll thread",
 		failure: "Failure",
 		success: "Success",
+		critical: {
+			success: "Critical success",
+			failure: "Critical failure"
+		}
+	},
+	register: {
+		generate: {
+			name: "generate",
+			options: {
+				stats:{
+					name: "name",
+					description: "The name of the statistique, seperate them by a comma or space",
+				},
+				dice: {
+					name: "dice",
+					description: "The dice type",
+				},
+			}
+		} 
 	}
 };
