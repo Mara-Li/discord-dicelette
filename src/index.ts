@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import * as process from "process";
 
 import * as pkg from "../package.json";
+import onChannelDelete from "./events/channel_delete";
+import onMessageDelete from "./events/delete_message";
 import interaction from "./events/interaction";
 import join from "./events/join";
 import message_create from "./events/message_create";
@@ -32,6 +34,8 @@ try {
 	interaction(client);
 	join(client);
 	message_create(client);
+	onMessageDelete(client);
+	onChannelDelete(client);
 }
 catch (error) {
 	console.error(error);

@@ -18,7 +18,7 @@
 	"comparator": {
 	  "sign": ">=",
 	  "value": 20,
-	  "formula": "ceil(($-10)/2))"
+	  "formula": "ceil(($-10)/2)"
 	},
 	"total": 88
 }

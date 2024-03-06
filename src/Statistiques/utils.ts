@@ -33,7 +33,6 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 	};
 	if (template.statistiques) {
 		for (const [key, value] of Object.entries(template.statistiques)) {
-			console.log(key, value);
 			const dataValue = value as { max?: number, min?: number, combinaison?: string };
 			const statName = removeAccents(key).toLowerCase();
 			if (dataValue.max && dataValue.min && dataValue.max <= dataValue.min)
@@ -113,9 +112,7 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 
 export function getUserData(guildData: GuildData, userId: string) {
 	if (!guildData.user) return undefined;
-	return guildData.user.find((userArray) => {
-		return Object.prototype.hasOwnProperty.call(userArray, userId);
-	});
+	return guildData.user[userId];
 }
 
 export function getStatistiqueFields(interaction: ModalSubmitInteraction, templateData: StatistiqueTemplate) {
@@ -287,15 +284,21 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			parsedFields[field.name.toLowerCase()] = field.value.toLowerCase();
 		}
 		const embedStats = Object.keys(parsedFields).filter(stat => allTemplateStat.includes(stat));
+		let combinaison:{[name: string]: number} = {};
 		if (embedStats.length === allTemplateStat.length) {
-			const combinaison = evalCombinaison(combinaisonFields, stats);
-			//add combinaison to the embed
-			for (const stat of Object.keys(combinaison)) {
-				embed.addFields({
-					name: title(stat),
-					value: combinaison[stat].toString(),
-					inline: true,
-				});
+			try {
+				combinaison = evalCombinaison(combinaisonFields, stats);
+				//add combinaison to the embed
+				for (const stat of Object.keys(combinaison)) {
+					embed.addFields({
+						name: title(stat),
+						value: combinaison[stat].toString(),
+						inline: true,
+					});
+				}
+			} catch (error) {
+				await interaction.reply({ content: (error as Error).message, ephemeral: true });
+				return;
 			}
 
 			let userID = oldEmbeds.fields.find(field => field.name === "User")?.value;
@@ -342,12 +345,15 @@ function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: s
 		//replace the stats in formula
 		let formula = combin;
 		for (const [statName, value] of Object.entries(stats)) {
-			console.log(statName, value);
 			const regex = new RegExp(statName, "g");
 			formula = formula.replace(regex, value.toString());
 		}
-		const result = evaluate(formula);
-		newStats[stat] = result;
+		try {
+			const result = evaluate(formula);
+			newStats[stat] = result;
+		} catch (error) {
+			throw new Error(`Invalid formula for ${stat}`);
+		}
 	}
 	return newStats;
 }
@@ -370,20 +376,20 @@ function registerUser(userID: string, interaction: ModalSubmitInteraction,msgId:
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
 	if (!guildData) return;
-	if (!guildData.user) guildData.user = [];
+	if (!guildData.user) guildData.user = {};
 	const user = getUserData(guildData, userID);
 	if (!user) {
-		guildData.user.push({ [userID]: [{
+		guildData.user[userID].push({
 			charName:charName?.toLowerCase(),
 			messageId: msgId
-		}]});
+		});
 	} else {
 		//search if charName already exists
-		const char = user[userID].find(char => char.charName?.toLowerCase() === charName?.toLowerCase());
+		const char = user.find(char => char.charName === charName);
 		if (char)
 			//overwrite the message id
 			char.messageId = msgId;
-		else user[userID].push({ charName, messageId: msgId });	
+		else user.push({ charName, messageId: msgId });	
 	}
 	//update the database
 	const data = fs.readFileSync("database.json", "utf-8");
@@ -395,20 +401,43 @@ function registerUser(userID: string, interaction: ModalSubmitInteraction,msgId:
 export async function getUserFromMessage(guildData: GuildData, userId: string, guild: Guild, charName?: string) {
 	const userData = getUserData(guildData, userId);
 	if (!userData) return;
-	const user = userData[userId].find(char => char.charName === charName);
+	const user = userData.find(char => char.charName === charName);
 	if (!user) return;
 	const mainChannel = guildData.templateID.channelId;
 	const userMessageId = user.messageId;
 	const channel = await guild.channels.fetch(mainChannel);
-	if (!channel || !(channel instanceof TextChannel)) return;
+	if (!channel || !(channel instanceof TextChannel)) {
+		//clean the database
+		guildData.templateID = {
+			channelId: "",
+			messageId: "",
+			statsName: [],
+		};
+		const data = fs.readFileSync("database.json", "utf-8");
+		const json = JSON.parse(data);
+		json[guild.id] = guildData;
+		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
+		return;
+	}
 	//search thread `📝 Registered User`
 	const thread = channel.threads.cache.find(thread => thread.name === "📝 Registered User");
 	if (!thread) return;
-	const message = await thread.messages.fetch(userMessageId);
-	if (!message) return;
-	const attachments = message.attachments.first();
-	if (!attachments) return;
-	return await fetch(attachments.url).then(res => res.json()) as User;
+	try {
+		const message = await thread.messages.fetch(userMessageId);
+		const attachments = message.attachments.first();
+		if (!attachments) return;
+		return await fetch(attachments.url).then(res => res.json()) as User;
+	} catch (error) {
+		const index = userData.findIndex(char => char.messageId === userMessageId);
+		userData.splice(index, 1);
+		//update the database
+		const data = fs.readFileSync("database.json", "utf-8");
+		const json = JSON.parse(data);
+		guildData.user[userId] = userData;
+		json[guild.id] = guildData;
+		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
+		return;
+	}
 
 	
 }

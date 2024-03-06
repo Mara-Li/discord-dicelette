@@ -7,7 +7,7 @@
  * 		ie: /r 1d20+statistiqueValue<=X []
  * 		or: /r 1d20<=statistiqueValue []
  */
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 import { Statistique, StatistiqueTemplate } from "src/interface";
@@ -78,6 +78,18 @@ export const generateTemplate = {
 				.setDescription("If the user must set a name for them character")
 				.setRequired(false)
 		)
+		.addNumberOption(option =>
+			option
+				.setName("critical_success")
+				.setDescription("if you use critical success (natural dice)")
+				.setRequired(false)
+		)
+		.addNumberOption(option =>
+			option
+				.setName("critical_fail")
+				.setDescription("if you use critical fail (natural dice)")
+				.setRequired(false)
+		)
 		.addStringOption(option =>
 			option
 				.setName("formula")
@@ -106,6 +118,8 @@ export const generateTemplate = {
 				sign: options.getString("comparator") as ComparatorSign || ">",
 				value: options.getNumber("value") || undefined,
 				formula: options.getString("formula") || "",
+				criticalFailure: options.getNumber("critical_fail") || 1,
+				criticalSuccess: options.getNumber("critical_success") || 20
 			},
 			total: options.getNumber("total") || 0,
 		};
@@ -131,6 +145,7 @@ export const registerTemplate = {
 				.setName("channel")
 				.setDescription("The channel to register the template")
 				.setRequired(true)
+				.addChannelTypes(ChannelType.GuildText)
 		)
 		.addAttachmentOption(option =>
 			option
@@ -147,7 +162,6 @@ export const registerTemplate = {
 			//fetch the template
 			const res = await fetch(template.url).then(res => res.json());
 			const templateData = verifyTemplateValue(res);
-			console.log(templateData);
 			const guildData = interaction.guild.id;
 			const channel = options.getChannel("channel");
 			if (!channel || !(channel instanceof TextChannel)) return;

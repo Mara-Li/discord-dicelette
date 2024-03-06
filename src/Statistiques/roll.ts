@@ -51,11 +51,13 @@ export const rollForUser = {
 			//get user characters 
 			const userData = getUserData(guildData, interaction.user.id);
 			if (!userData) return;
-			const allCharactersFromUser = userData[interaction.user.id]
+			const allCharactersFromUser = userData
 				.map((data) => data.charName ?? "")
 				.filter((data) => data.length > 0);
+				
 			choices = allCharactersFromUser;
 		}
+		if (choices.length === 0) return;
 		await interaction.respond(
 			choices.map(result => ({ name: result, value: result}))
 		);
@@ -91,10 +93,14 @@ export const rollForUser = {
 			success: template.comparator.criticalSuccess
 		};
 		if (formula) {
-			formula = evaluate(`${formula.replace("$", userStat.toString())}+ ${modificator}`).toString();
+			try {
+				formula = evaluate(`${formula.replace("$", userStat.toString())}+ ${modificator}`).toString();
+			} catch (error) {
+				await interaction.reply({ content: "No valid formula", ephemeral: true });
+				return;
+			}
 			formula = formula?.startsWith("-") ? formula : `+${formula}`;
 		} else formula = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
-		console.log(formula);
 		comments += ` *(${statistique})* - @${charName ? charName : interaction.user.displayName}`;
 		const roll = `${dice}${formula}${comparator}${comments ? ` ${comments}` : ""}`;
 		try {

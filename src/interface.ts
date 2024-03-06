@@ -30,7 +30,7 @@ export interface GuildData {
 			charName?: string;
 			messageId: string;
 		}[]
-	}[]
+	}
 	
 }
 
