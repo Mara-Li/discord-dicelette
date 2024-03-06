@@ -23,6 +23,7 @@ export interface GuildData {
 	templateID: {
 		channelId: string;
 		messageId: string;
+		statsName: string[];
 	},
 	user: {
 		[userID: string]: {
@@ -60,7 +61,7 @@ export type Statistique = {
 export interface StatistiqueTemplate {
 	/** Allow to force the user to choose a name for them characters */
 	charName?: boolean 
-	statistiques: Statistique[]
+	statistiques: Statistique
 	/**
 	 * A total can be set, it allows to calculate the total value of a future register member
 	 * If the sum of the value > total, the bot will send a message to the user to inform him that the total is exceeded and an error will be thrown
@@ -103,7 +104,7 @@ export interface User {
 	userName?: string; //by default, will be the id of the user, if changed to a string, it will be used
 	stats: {
 		[name: string] : number;
-	}[];
+	};
 	/**
 	 * Allow to prevent returning each time to the JSON template for roll
 	 */

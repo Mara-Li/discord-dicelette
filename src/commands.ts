@@ -8,18 +8,16 @@ import {
 	Message,
 	SlashCommandBuilder,
 	TextChannel,
-	ThreadChannel,
 	userMention} from "discord.js";
 import moment from "moment";
 import dedent from "ts-dedent";
 
-import { parseResult, roll } from "./dice";
-import { DETECT_DICE_MESSAGE } from "./events/message_create";
 import { cmdLn, ln } from "./localizations";
 import en from "./localizations/locales/en";
 import fr from "./localizations/locales/fr";
 import { commands } from "./Statistiques/register";
-import { findForumChannel, findThread, setTagsForRoll } from "./utils";
+import { rollWithInteraction } from "./Statistiques/utils";
+import { setTagsForRoll } from "./utils";
 
 const TRANSLATION = {
 	fr,
@@ -49,43 +47,17 @@ export const diceRoll = {
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
 		const channel = interaction.channel;
-		if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
 		const userLang = TRANSLATION[interaction.locale as keyof typeof TRANSLATION] || TRANSLATION.en;
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
-		let dice = option.getString(en.roll.option.name);
+		const dice = option.getString(en.roll.option.name);
 		if (!dice) {
 			await interaction.reply({ content: userLang.roll.noDice, ephemeral: true });
 			return;
 		}
-		//get thread starting with "🎲"
 		try {
-			const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
-			if (rollWithMessage) {
-				dice = dice.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
-			}
-			const rollDice = roll(dice);
-			if (!rollDice) {
-				await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
-				return;
-			}
-			const parser = parseResult(rollDice, userLang);
-			if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
-				await interaction.reply({ content: parser });
-				return;
-			}
-			if (channel instanceof TextChannel || (channel.parent instanceof ForumChannel && !channel.name.startsWith("🎲"))) {
-				//sort threads by date by most recent
-				const thread = channel instanceof TextChannel ? await findThread(channel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
-				const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
-				const msgToEdit = await thread.send("_ _");
-				await msgToEdit.edit(msg);
-				const idMessage = `↪ ${msgToEdit.url}`;
-				const inter = await interaction.reply({ content: `${parser}\n\n${idMessage}`});
-				deleteAfter(inter, 180000);
-				return;
-			} //run in thread ; no need to log and delete
-			await interaction.reply({ content: parser });
+			await rollWithInteraction(interaction, dice, channel);
+			
 		} catch (error) {
 			await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
 			return;
@@ -183,5 +155,5 @@ export const help = {
 	}
 
 };
-
+//@ts-ignore
 export const commandsList = [diceRoll, newScene, help].concat(commands);

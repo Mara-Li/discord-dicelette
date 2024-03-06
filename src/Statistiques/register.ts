@@ -7,14 +7,14 @@
  * 		ie: /r 1d20+statistiqueValue<=X []
  * 		or: /r 1d20<=statistiqueValue []
  */
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 import { Statistique, StatistiqueTemplate } from "src/interface";
 import dedent from "ts-dedent";
 
-import { verifyTemplateValue } from "./utils";
-import { exp } from "mathjs";
+import { rollForUser } from "./roll";
+import { title,verifyTemplateValue } from "./utils";
 
 type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
 
@@ -90,13 +90,13 @@ export const generateTemplate = {
 		const name = options.getString("name");
 		if (!name) return;
 		const statistiqueName = name.split(/[, ]+/);
-		const statServer: Statistique[] = [];
+		const statServer: Statistique = {};
 		for (const stat of statistiqueName ) {
-			statServer.push({ [removeAccents(stat)]: {
+			statServer[removeAccents(stat)] = {
 				max: 0,
 				min: 0,
 				combinaison: "Can be anything if you don't want to set a proper value. Will be automatically skipped when you register an user. Use statistique name in lowercase and without accent to create the formula"
-			} });
+			};
 		}
 		const statistiqueTemplate: StatistiqueTemplate = {
 			charName: options.getBoolean("character") || false,
@@ -147,38 +147,102 @@ export const registerTemplate = {
 			//fetch the template
 			const res = await fetch(template.url).then(res => res.json());
 			const templateData = verifyTemplateValue(res);
+			console.log(templateData);
 			const guildData = interaction.guild.id;
 			const channel = options.getChannel("channel");
 			if (!channel || !(channel instanceof TextChannel)) return;
 			//send template as JSON in the channel, send as file
-			
-			const msg = await channel.send({ content: "# __TEMPLATE__", files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }] });
+			//add register button
+			const button = new ButtonBuilder()
+				.setCustomId("register")
+				.setLabel("Register")
+				.setStyle(ButtonStyle.Primary);
+			const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);	
+			const embeds = [];
+			//limits of embeds fields = 25
+			//if more than 25, create a new embed
+			// count the number of fields
+			let count = 0;
+			let embedTemplate = new EmbedBuilder()
+				.setTitle("Template")
+				.setDescription("Click on the button to register an user")
+				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
+				.setColor("Random");
+			for (const [stat, value] of Object.entries(templateData.statistiques)) {
+				if (count <= 25) {
+					count++;
+				} else {
+					embeds.push(embedTemplate);
+					count = 0;
+					embedTemplate = new EmbedBuilder();
+				}
+				const min = value.min;
+				const max = value.max;
+				const combinaison = value.combinaison;
+				let msg = "";
+				if (combinaison) msg += `- Combinaison: \`${combinaison}\`\n`;
+				if (min) msg += `- Min: \`${min}\`\n`;
+				if (max) msg += `- Max: \`${max}\`\n`;
+				if (msg.length === 0) msg = "No value set";
+				embedTemplate.addFields({
+					name:title(stat),
+					value: msg,
+					inline: true,
+				});
+			}
+			//add the last embed
+			embeds.push(embedTemplate);
+
+			const lastEmbed = new EmbedBuilder()
+				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/dice.png?raw=true")
+				.setColor("Random");
+			lastEmbed.addFields({
+				name: "Dice",
+				value: templateData.diceType,
+			});
+			let msgComparator = "";
+			if (templateData.comparator.value) msgComparator += `- Value: \`${templateData.comparator.value}\`\n`;
+			if (templateData.comparator.formula) msgComparator += `- Formula: \`${templateData.comparator.formula}\`\n`;
+			if (templateData.comparator.sign) msgComparator += `- Comparator: \`${templateData.comparator.sign}\`\n`;
+			lastEmbed.addFields({
+				name: "Comparator",
+				value: msgComparator,
+			});
+			if (templateData.total) lastEmbed.addFields({
+				name: "Total",
+				value: `Total: ${templateData.total}`,
+			});
+			embeds.push(lastEmbed);
+			const msg = await channel.send({ content: "", embeds, files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
 			msg.pin();
 			await interaction.reply({ content: "Template registered", ephemeral: true });
 			//save in database file
 			const data = fs.readFileSync("database.json", "utf-8");
 			const json = JSON.parse(data);
+			const statsName = Object.keys(templateData.statistiques);
 			if (json[guildData]) {
 				json[guildData].templateID = {
-					channel: channel.id,
-					message: msg.id
+					channelId: channel.id,
+					messageId: msg.id,
+					statsName
 				};
 			} else {
 				json[guildData] = {
 					templateID: {
-						channel: channel.id,
-						message: msg.id
+						channelId: channel.id,
+						messageId: msg.id,
+						statsName
 					},
-					referenceId: "0"
+					user: [{}]
 				};
 			}
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
+			console.log(e);
 			await interaction.reply({ content: `Invalid template: \`\`\`\n${e}\`\`\``, ephemeral: true });
 		}
 	}	
 };
 
-export 
 
-export const commands = [generateTemplate, registerTemplate];
+export const commands = [generateTemplate, registerTemplate, rollForUser];
