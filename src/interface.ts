@@ -83,6 +83,8 @@ export interface StatistiqueTemplate {
 		 * If defined, the dice will be compared this value
 		 */
 		value?: number,
+		criticalSuccess?: number,
+		criticalFailure?: number,
 		/** Edit the number that will be +/- to the result. Use $ to symbolise the statistique value"
 		 * @example +$ or -$ to add/remove the statistique (bonus/malus)
 		 * @example DND: ($-10)/2
@@ -114,6 +116,8 @@ export interface User {
 			sign: "<" | ">" | ">=" | "<=" | "=" | "!="
 			value?: number;
 			formula?: string;
+			criticalSuccess?: number;
+			criticalFailure?: number;
 		}
 	}
 }

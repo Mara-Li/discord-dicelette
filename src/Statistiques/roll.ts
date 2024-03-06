@@ -40,10 +40,8 @@ export const rollForUser = {
 				.setRequired(false)
 		),
 	async autocomplete(interaction: AutocompleteInteraction) {
-		console.log("INTERACTIONS");
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
-		console.log(focused.name, focused.value, options);
 		const guildData = getGuildData(interaction);
 		if (!guildData) return;
 		let choices: string[] = [];
@@ -55,7 +53,6 @@ export const rollForUser = {
 			if (!userData) return;
 			const allCharactersFromUser = userData[interaction.user.id]
 				.map((data) => data.charName ?? "")
-				//remove undefined
 				.filter((data) => data.length > 0);
 			choices = allCharactersFromUser;
 		}
@@ -89,6 +86,10 @@ export const rollForUser = {
 			comparator += template.comparator.sign;
 			comparator += template.comparator.value ? template.comparator.value.toString() : userStat.toString();
 		} else comparator = override;
+		const critical: {failure?: number, success?: number} = {
+			failure: template.comparator.criticalFailure,
+			success: template.comparator.criticalSuccess
+		};
 		if (formula) {
 			formula = evaluate(`${formula.replace("$", userStat.toString())}+ ${modificator}`).toString();
 			formula = formula?.startsWith("-") ? formula : `+${formula}`;
@@ -97,7 +98,7 @@ export const rollForUser = {
 		comments += ` *(${statistique})* - @${charName ? charName : interaction.user.displayName}`;
 		const roll = `${dice}${formula}${comparator}${comments ? ` ${comments}` : ""}`;
 		try {
-			await rollWithInteraction(interaction, roll, interaction.channel);
+			await rollWithInteraction(interaction, roll, interaction.channel, critical);
 		} catch (error) {
 			await interaction.reply({ content: "No valid dice", ephemeral: true });
 		}

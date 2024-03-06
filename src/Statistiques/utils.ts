@@ -6,7 +6,7 @@
  * - Default template
  * 
  */
-import { ActionRowBuilder, AutocompleteInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, ColorResolvable, CommandInteraction, EmbedBuilder, ForumChannel, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextChannel, TextInputBuilder, TextInputStyle, ThreadChannel, userMention } from "discord.js";
+import { ActionRowBuilder, AutocompleteInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, CommandInteraction, EmbedBuilder, ForumChannel, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextChannel, TextInputBuilder, TextInputStyle, ThreadChannel, userMention } from "discord.js";
 import fs from "fs";
 import {evaluate} from "mathjs";
 import moment from "moment";
@@ -253,36 +253,24 @@ export function title(str: string) {
 
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatistiqueTemplate, page=2) {
 	if (!interaction.message) return;
-	const oldEmbeds = interaction.message?.embeds;
+	const oldEmbeds = interaction.message?.embeds[0];
 	if (!oldEmbeds) return;
 	try {
 		const {combinaisonFields, stats} = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
-		let combinedEmbed=oldEmbeds[0].toJSON();
-		for (const embed of oldEmbeds) {
-			combinedEmbed = {...combinedEmbed, ...embed.toJSON()};
-		}
+		
 
 		//add stats to the old embed
-		let embed = new EmbedBuilder()
+		const embed = new EmbedBuilder()
 			.setTitle("Registering User")
-			.setThumbnail(combinedEmbed.thumbnail?.url || "")
+			.setThumbnail(oldEmbeds.thumbnail?.url || "")
 			.setFooter({ text: `Page ${page}` });
 		//add old fields
-		if (!combinedEmbed.fields) return;
-		for (const field of combinedEmbed.fields) {
+		if (!oldEmbeds.fields) return;
+		for (const field of oldEmbeds.fields) {
 			embed.addFields(field);
 		}	
-		let count = combinedEmbed.fields.length;
-		const totalEmbeds = [];
 		for (const [stat, value] of Object.entries(stats)) {
-			console.log(stat, value);
-			if (count >= 25) {
-				totalEmbeds.push(embed);
-				count = 0;
-				embed = new EmbedBuilder()
-					.setColor(combinedEmbed.color as ColorResolvable);
-			} else count++;
 			embed.addFields({
 				name: title(stat),
 				value: value.toString(),
@@ -290,7 +278,6 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			});
 		}
 		
-		totalEmbeds.push(embed);
 		const allTemplateStat = Object.keys(template.statistiques).filter(stat => !Object.keys(combinaisonFields).includes(stat));
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
@@ -311,8 +298,8 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				});
 			}
 
-			let userID = combinedEmbed.fields.find(field => field.name === "User")?.value;
-			let charName: string |undefined = combinedEmbed.fields.find(field => field.name === "Character name")?.value;
+			let userID = oldEmbeds.fields.find(field => field.name === "User")?.value;
+			let charName: string |undefined = oldEmbeds.fields.find(field => field.name === "Character name")?.value;
 			if (charName && charName === "Not set")
 				charName = undefined;
 			if (!userID) {
@@ -329,7 +316,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				},	
 			};
 			await interaction.message.delete();
-			await repostInThread(totalEmbeds, interaction, userStatistique, userID);
+			await repostInThread(embed, interaction, userStatistique, userID);
 			await interaction.reply({ content: "Stats finished", ephemeral: true });
 			return;
 		}
@@ -341,7 +328,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			.setCustomId("cancel")
 			.setLabel("Cancel")
 			.setStyle(ButtonStyle.Danger);
-		await interaction.message.edit({ embeds: totalEmbeds, components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
+		await interaction.message.edit({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
 		await interaction.reply({ content: "Stats added", ephemeral: true });
 	} catch (error) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -365,7 +352,7 @@ function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: s
 	return newStats;
 }
 
-async function repostInThread(embed: EmbedBuilder[], interaction: ModalSubmitInteraction, userTemplate: User, userId: string) {
+async function repostInThread(embed: EmbedBuilder, interaction: ModalSubmitInteraction, userTemplate: User, userId: string) {
 	const channel = interaction.channel;
 	if (!channel ||!(channel instanceof TextChannel)) return;
 	let thread = channel.threads.cache.find(thread => thread.name === "📝 Registered User");
@@ -375,7 +362,7 @@ async function repostInThread(embed: EmbedBuilder[], interaction: ModalSubmitInt
 			autoArchiveDuration: 60,
 		});
 	}
-	const msg = await thread.send({ embeds: embed, files: [{ attachment: Buffer.from(JSON.stringify(userTemplate, null, 2), "utf-8"), name: "template.json" }] },);
+	const msg = await thread.send({ embeds: [embed], files: [{ attachment: Buffer.from(JSON.stringify(userTemplate, null, 2), "utf-8"), name: "template.json" }] },);
 	registerUser(userId, interaction, msg.id, userTemplate.userName);
 }
 
@@ -426,7 +413,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 	
 }
 
-export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel) {
+export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
 	const TRANSLATION = {
 		fr,
@@ -442,7 +429,7 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 		await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
 		return;
 	}
-	const parser = parseResult(rollDice, userLang);
+	const parser = parseResult(rollDice, userLang, critical);
 	if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
 		await interaction.reply({ content: parser });
 		return;

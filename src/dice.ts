@@ -1,4 +1,6 @@
+/* eslint-disable no-useless-escape */
 import { DiceRoller } from "@dice-roller/rpg-dice-roller";
+import { evaluate } from "mathjs";
 import dedent from "ts-dedent";
 
 import { Compare, Modifier, Resultat, Sign } from "./interface";
@@ -78,7 +80,7 @@ function calculator(sign: Sign, value: number, total: number): number {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseResult(output: Resultat, lng: any) {
+export function parseResult(output: Resultat, lng: any, critical?: {failure?: number, success?: number}) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
 	let msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
@@ -101,7 +103,14 @@ export function parseResult(output: Resultat, lng: any) {
 				total = calculator(sign as Sign, value, total);
 
 			}
-			succ = eval(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			if (critical) {
+				if (critical.failure && total === critical.failure) {
+					succ = "**Critical failure**";
+				} else if (critical.success && total === critical.success) {
+					succ = "**Critical success**";
+				}
+			}
 			const totSucc = output.compare ? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\`` : `= \`${total}\``;
 			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, totSucc).replaceAll("*", "\\*")}`;
 			total = 0;

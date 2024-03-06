@@ -158,24 +158,21 @@ export const registerTemplate = {
 				.setLabel("Register")
 				.setStyle(ButtonStyle.Primary);
 			const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);	
-			const embeds = [];
-			//limits of embeds fields = 25
-			//if more than 25, create a new embed
-			// count the number of fields
-			let count = 0;
-			let embedTemplate = new EmbedBuilder()
+			const embedTemplate = new EmbedBuilder()
 				.setTitle("Template")
 				.setDescription("Click on the button to register an user")
 				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
 				.setColor("Random");
+			if (Object.keys(templateData.statistiques).length === 0) {
+				interaction.reply({ content: "No statistique found", ephemeral: true });
+				return;
+			}
+			if (Object.keys(templateData.statistiques).length >= 20) {
+				interaction.reply({ content: "You can't have more than 20 statistical value", ephemeral: true });
+				return;
+			}
+				
 			for (const [stat, value] of Object.entries(templateData.statistiques)) {
-				if (count <= 25) {
-					count++;
-				} else {
-					embeds.push(embedTemplate);
-					count = 0;
-					embedTemplate = new EmbedBuilder();
-				}
 				const min = value.min;
 				const max = value.max;
 				const combinaison = value.combinaison;
@@ -191,12 +188,7 @@ export const registerTemplate = {
 				});
 			}
 			//add the last embed
-			embeds.push(embedTemplate);
-
-			const lastEmbed = new EmbedBuilder()
-				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/dice.png?raw=true")
-				.setColor("Random");
-			lastEmbed.addFields({
+			embedTemplate.addFields({
 				name: "Dice",
 				value: templateData.diceType,
 			});
@@ -204,16 +196,15 @@ export const registerTemplate = {
 			if (templateData.comparator.value) msgComparator += `- Value: \`${templateData.comparator.value}\`\n`;
 			if (templateData.comparator.formula) msgComparator += `- Formula: \`${templateData.comparator.formula}\`\n`;
 			if (templateData.comparator.sign) msgComparator += `- Comparator: \`${templateData.comparator.sign}\`\n`;
-			lastEmbed.addFields({
+			embedTemplate.addFields({
 				name: "Comparator",
 				value: msgComparator,
 			});
-			if (templateData.total) lastEmbed.addFields({
+			if (templateData.total) embedTemplate.addFields({
 				name: "Total",
 				value: `Total: ${templateData.total}`,
 			});
-			embeds.push(lastEmbed);
-			const msg = await channel.send({ content: "", embeds, files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
+			const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
 			msg.pin();
 			await interaction.reply({ content: "Template registered", ephemeral: true });
 			//save in database file
