@@ -12,11 +12,11 @@ import {
 import moment from "moment";
 import dedent from "ts-dedent";
 
-import { cmdLn, ln } from "./localizations";
-import en from "./localizations/locales/en";
-import fr from "./localizations/locales/fr";
-import { rollWithInteraction , setTagsForRoll } from "./utils";
-import { commands } from "./utils/register";
+import { cmdLn, ln } from "../localizations";
+import en from "../localizations/locales/en";
+import fr from "../localizations/locales/fr";
+import { rollWithInteraction , setTagsForRoll } from "../utils";
+import { commands } from "./register";
 
 
 const TRANSLATION = {

@@ -1,7 +1,7 @@
 import { CommandInteraction, EmbedBuilder, ForumChannel, GuildForumTagData, ModalSubmitInteraction, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
 import moment from "moment";
 
-import { deleteAfter } from "../commands";
+import { deleteAfter } from "../commands/base";
 import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
 import {User} from "../interface";

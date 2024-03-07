@@ -1,7 +1,7 @@
 import { AutocompleteInteraction, BaseInteraction, Client } from "discord.js";
 
-import { commandsList } from "../commands";
-import { autCompleteCmd } from "../Statistiques/roll";
+import { commandsList } from "../commands/base";
+import { autCompleteCmd } from "../commands/dbroll";
 import { createEmbedFirstPage, embedStatistiques } from "../utils/create_embed";
 import { getTemplate, getTemplateWithDB } from "../utils/db";
 import { showFistPageModal, showStatistiqueModal } from "../utils/modals";

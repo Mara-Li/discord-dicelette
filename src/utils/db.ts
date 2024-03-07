@@ -1,10 +1,10 @@
 import { AutocompleteInteraction, ButtonInteraction, CommandInteraction, Guild, ModalSubmitInteraction, TextChannel } from "discord.js";
 import fs from "fs";
-import { GuildData, StatistiqueTemplate, User } from "src/interface";
+import { GuildData, StatisticalTemplate, User } from "../interface";
 
-import { verifyTemplateValue } from "../Statistiques/verify_template";
+import { verifyTemplateValue } from "./verify_template";
 
-export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatistiqueTemplate|undefined> {
+export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
 	const template = interaction.message?.attachments.first();
 	if (!template) return;
 	const res = await fetch(template.url).then(res => res.json());

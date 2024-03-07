@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonInteraction, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
-import { StatistiqueTemplate } from "src/interface";
+import { StatisticalTemplate } from "../interface";
 
-export async function showFistPageModal(interaction: ButtonInteraction, template: StatistiqueTemplate) {
-	const nbOfStatistique = Object.keys(template.statistiques).length;
+export async function showFistPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
+	const nbOfStatistique = Object.keys(template.statistic).length;
 	const nbOfPages = Math.floor(nbOfStatistique / 5) > 0 ? Math.floor(nbOfStatistique / 5) : 2;
 	const modal = new ModalBuilder()
 		.setCustomId("firstPage")
@@ -30,11 +30,11 @@ export async function showFistPageModal(interaction: ButtonInteraction, template
 
 }
 
-export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatistiqueTemplate, stats?: string[], page = 1) {
+export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page = 1) {
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
-		.setTitle(`Registering User - Page ${page}/${Math.ceil(Object.keys(template.statistiques).length / 5)}`);
-	let statToDisplay = Object.keys(template.statistiques);
+		.setTitle(`Registering User - Page ${page}/${Math.ceil(Object.keys(template.statistic).length / 5)}`);
+	let statToDisplay = Object.keys(template.statistic);
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
 		if (statToDisplay.length === 0) {
@@ -45,7 +45,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	//take 5 stats
 	const statsToDisplay = statToDisplay.slice(0, 4);
 	for (const stat of statsToDisplay) {
-		const value = template.statistiques[stat];
+		const value = template.statistic[stat];
 		if (value.combinaison) continue;
 		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()

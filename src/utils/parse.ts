@@ -1,14 +1,14 @@
 import { ButtonInteraction, Locale, ModalSubmitInteraction } from "discord.js";
 import removeAccents from "remove-accents";
-import { StatistiqueTemplate } from "src/interface";
-import { ln } from "src/localizations";
+import { StatisticalTemplate } from "../interface";
+import { ln } from "../localizations";
 
-export function getStatistiqueFields(interaction: ModalSubmitInteraction, templateData: StatistiqueTemplate) {
+export function getStatistiqueFields(interaction: ModalSubmitInteraction, templateData: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
 	const combinaisonFields: {[name: string]: string} = {};
 	const stats: { [name: string]: number } = {};
 	let total = templateData.total;
-	for (const [key, value] of Object.entries(templateData.statistiques)) {
+	for (const [key, value] of Object.entries(templateData.statistic)) {
 		const name = removeAccents(key).toLowerCase();
 		if (value.combinaison) {
 			combinaisonFields[name] = value.combinaison;

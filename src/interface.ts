@@ -58,7 +58,7 @@ export type Statistic = {
  * }
  * The dice throw will be 1d20 that must be <= statistique
  */
-export interface StatistiqueTemplate {
+export interface StatisticalTemplate {
 	/** Allow to force the user to choose a name for them characters */
 	charName?: boolean 
 	statistic: Statistic

@@ -1,6 +1,6 @@
 import {Client} from "discord.js";
 import fs from "fs";
-import { GuildData } from "src/interface";
+import { GuildData } from "../interface";
 
 export default (client	: Client): void => {
 	client.on("messageDelete", async (message) => {

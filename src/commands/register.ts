@@ -3,12 +3,13 @@ import fs from "fs";
 import removeAccents from "remove-accents";
 import dedent from "ts-dedent";
 
-import { Statistique, StatistiqueTemplate } from "../interface";
+import { Statistic, StatisticalTemplate } from "../interface";
 import { cmdLn, ln } from "../localizations";
 import en from "../localizations/locales/en";
-import { rollForUser } from "../Statistiques/roll";
-import { verifyTemplateValue } from "../Statistiques/verify_template";
-import { title } from ".";
+import { rollForUser } from "./dbroll";
+import { verifyTemplateValue } from "../utils/verify_template";
+import { title } from "../utils";
+import fr from "../localizations/locales/fr";
 
 type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
 
@@ -16,14 +17,14 @@ type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
 export const generateTemplate = {
 	data: new SlashCommandBuilder()
 		.setName(en.generate.name)
-		.setNameLocalizations(cmdLn("register.name"))
+		.setNameLocalizations(cmdLn("generate.name"))
 		.setDescription("Generate a template for the statistique command")
 		.addStringOption(option =>
 			option
 				.setName(en.generate.options.stats.name)
-				.setNameLocalizations(cmdLn("register.options.stats.name"))
+				.setNameLocalizations(cmdLn("generate.options.stats.name"))
 				.setDescription(en.generate.options.stats.description)
-				.setDescriptionLocalizations(cmdLn("register.options.stats.description"))
+				.setDescriptionLocalizations(cmdLn("generate.options.stats.description"))
 				.setRequired(true)
 		)
 
@@ -31,40 +32,40 @@ export const generateTemplate = {
 			option
 				.setName(en.generate.options.dice.name)
 				.setDescription(en.generate.options.dice.description)
-				.setDescriptionLocalizations(cmdLn("register.options.dice.description"))
-				.setNameLocalizations(cmdLn("register.options.dice.name"))
+				.setDescriptionLocalizations(cmdLn("generate.options.dice.description"))
+				.setNameLocalizations(cmdLn("generate.options.dice.name"))
 				.setRequired(true)
 		)
 		.addStringOption(option =>
 			option
 				.setName(en.generate.options.comparator.name)
 				.setDescription(en.generate.options.comparator.description)
-				.setDescriptionLocalizations(cmdLn("register.options.comparator.description"))
-				.setNameLocalizations(cmdLn("register.options.comparator.name"))
+				.setDescriptionLocalizations(cmdLn("generate.options.comparator.description"))
+				.setNameLocalizations(cmdLn("generate.options.comparator.name"))
 				.addChoices({
 					"name" : en.generate.options.comparator.value.greater,
-					"name_localizations" : cmdLn("register.options.comparator.value.greater"),
 					"value" : ">",
+					"name_localizations" : cmdLn("generate.options.comparator.value.greater")
 				}, {
 					"name" : en.generate.options.comparator.value.greaterEqual,
-					"name_localizations" : cmdLn("register.options.comparator.value.greaterEqual"),
 					"value" : ">=",
+					"name_localizations" : cmdLn("generate.options.comparator.value.greaterEqual")
 				}, {
 					"name" : en.generate.options.comparator.value.less,
-					"name_localizations" : cmdLn("register.options.comparator.value.less"),
 					"value" : "<",
+					"name_localizations" : cmdLn("generate.options.comparator.value.less")
 				}, {
 					"name" : en.generate.options.comparator.value.lessEqual,
-					"name_localizations" : cmdLn("register.options.comparator.value.lessEqual"),
+					"name_localizations" : cmdLn("generate.options.comparator.value.lessEqual"),
 					"value" : "<=",
 				}, {
 					"name" : en.generate.options.comparator.value.equal,
-					"name_localizations" : cmdLn("register.options.comparator.value.equal"),
 					"value" : "=",
+					"name_localizations" : cmdLn("generate.options.comparator.value.equal")
 				}, {
 					"name" : en.generate.options.comparator.value.different,
-					"name_localizations" : cmdLn("register.options.comparator.value.different"),
 					"value" : "!=",
+					"name_localizations" : cmdLn("generate.options.comparator.value.different")
 				})
 				.setRequired(true)		
 		)
@@ -72,32 +73,32 @@ export const generateTemplate = {
 			option
 				.setName(en.generate.options.value.name)
 				.setDescription(en.generate.options.value.description)
-				.setDescriptionLocalizations(cmdLn("register.options.value.description"))
-				.setNameLocalizations(cmdLn("register.options.value.name"))
+				.setDescriptionLocalizations(cmdLn("generate.options.value.description"))
+				.setNameLocalizations(cmdLn("generate.options.value.name"))
 				.setRequired(false)
 		)
 		.addNumberOption(option =>
 			option
 				.setName(en.generate.options.total.name)
 				.setDescription(en.generate.options.total.description)
-				.setDescriptionLocalizations(cmdLn("register.options.total.description"))
-				.setNameLocalizations(cmdLn("register.options.total.name"))
+				.setDescriptionLocalizations(cmdLn("generate.options.total.description"))
+				.setNameLocalizations(cmdLn("generate.options.total.name"))
 				.setRequired(false)
 		)
 		.addBooleanOption(option =>
 			option
 				.setName(en.generate.options.character.name)
 				.setDescription(en.generate.options.character.description)
-				.setDescriptionLocalizations(cmdLn("register.options.character.description"))
-				.setNameLocalizations(cmdLn("register.options.character.name"))
+				.setDescriptionLocalizations(cmdLn("generate.options.character.description"))
+				.setNameLocalizations(cmdLn("generate.options.character.name"))
 				.setRequired(false)
 		)
 		.addNumberOption(option =>
 			option
 				.setName(en.generate.options.critical_success.name)
 				.setDescription(en.generate.options.critical_success.description)
-				.setDescriptionLocalizations(cmdLn("register.options.critical_success.description"))
-				.setNameLocalizations(cmdLn("register.options.critical_success.name"))
+				.setDescriptionLocalizations(cmdLn("generate.options.critical_success.description"))
+				.setNameLocalizations(cmdLn("generate.options.critical_success.name"))
 				.setRequired(false)
 		)
 		.addNumberOption(option =>
@@ -110,19 +111,20 @@ export const generateTemplate = {
 			option
 				.setName(en.generate.options.formula.name)
 				.setDescription(en.generate.options.formula.description)
-				.setDescriptionLocalizations(cmdLn("register.options.formula.description"))
-				.setNameLocalizations(cmdLn("register.options.formula.name"))
+				.setDescriptionLocalizations(cmdLn("generate.options.formula.description"))
+				.setNameLocalizations(cmdLn("generate.options.formula.name"))
 				.setRequired(false)		
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
+		console.log(cmdLn("generate.options.comparator.value.greater"))
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const lnOpt=en.generate.options;
 		const ul = ln(interaction.locale as Locale);
 		const name = options.getString(lnOpt.stats.name);
 		if (!name) return;
 		const statistiqueName = name.split(/[, ]+/);
-		const statServer: Statistique = {};
+		const statServer: Statistic = {};
 		for (const stat of statistiqueName ) {
 			statServer[removeAccents(stat)] = {
 				max: 0,
@@ -130,16 +132,16 @@ export const generateTemplate = {
 				combinaison: ""
 			};
 		}
-		const statistiqueTemplate: StatistiqueTemplate = {
+		const statistiqueTemplate: StatisticalTemplate = {
 			charName: options.getBoolean(lnOpt.character.name) || false,
-			statistiques: statServer,
+			statistic: statServer,
 			diceType: options.getString(lnOpt.dice.name) || "1d20",
 			comparator: {
 				sign: options.getString(lnOpt.comparator.name) as ComparatorSign || ">",
-				value: options.getNumber(lnOpt.value.name) || undefined,
-				formula: options.getString(lnOpt.formula.name) || "",
-				criticalFailure: options.getNumber(lnOpt.critical_fail.name) || 1,
-				criticalSuccess: options.getNumber(lnOpt.critical_success.name) || 20
+				value: options.getNumber(lnOpt.value.name) ?? 0,
+				formula: options.getString(lnOpt.formula.name) ?? "",
+				criticalFailure: options.getNumber(lnOpt.critical_fail.name) ?? 1,
+				criticalSuccess: options.getNumber(lnOpt.critical_success.name) ?? 20
 			},
 			total: options.getNumber(lnOpt.total.name) || 0,
 		};
@@ -197,16 +199,16 @@ export const registerTemplate = {
 				.setDescription(ul.register.embed.description)
 				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
 				.setColor("Random");
-			if (Object.keys(templateData.statistiques).length === 0) {
+			if (Object.keys(templateData.statistic).length === 0) {
 				interaction.reply({ content: ul.error.noStat, ephemeral: true });
 				return;
 			}
-			if (Object.keys(templateData.statistiques).length >= 20) {
+			if (Object.keys(templateData.statistic).length >= 20) {
 				interaction.reply({ content: ul.register.error.tooMuchStats, ephemeral: true });
 				return;
 			}
 				
-			for (const [stat, value] of Object.entries(templateData.statistiques)) {
+			for (const [stat, value] of Object.entries(templateData.statistic)) {
 				const min = value.min;
 				const max = value.max;
 				const combinaison = value.combinaison;
@@ -244,7 +246,7 @@ export const registerTemplate = {
 			//save in database file
 			const data = fs.readFileSync("database.json", "utf-8");
 			const json = JSON.parse(data);
-			const statsName = Object.keys(templateData.statistiques);
+			const statsName = Object.keys(templateData.statistic);
 			if (json[guildData]) {
 				json[guildData].templateID = {
 					channelId: channel.id,

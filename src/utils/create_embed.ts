@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
-import { StatistiqueTemplate, User } from "src/interface";
-import { ln } from "src/localizations";
+import { StatisticalTemplate, User } from "../interface";
+import { ln } from "../localizations";
 
-import { evalCombinaison } from "../Statistiques/verify_template";
+import { evalCombinaison } from "./verify_template";
 import { repostInThread, title } from ".";
 import { getStatistiqueFields } from "./parse";
 
@@ -36,7 +36,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction) 
 	await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
 }
 
-export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatistiqueTemplate, page=2) {
+export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page=2) {
 	if (!interaction.message) return;
 	const oldEmbeds = interaction.message?.embeds[0];
 	if (!oldEmbeds) return;
@@ -63,7 +63,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			});
 		}
 		
-		const allTemplateStat = Object.keys(template.statistiques).filter(stat => !Object.keys(combinaisonFields).includes(stat));
+		const allTemplateStat = Object.keys(template.statistic).filter(stat => !Object.keys(combinaisonFields).includes(stat));
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;

@@ -36,7 +36,8 @@ export function cmdLn(key: string) {
 				}
 				return translationString as string;
 			};
-			localized[lg as Locale] = getTranslation(key);
+			const localValue = Locale[lg as keyof typeof Locale];
+			localized[localValue] = getTranslation(key);
 		}
 	}
 	return localized;

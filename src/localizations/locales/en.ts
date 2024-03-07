@@ -106,7 +106,7 @@ export default {
 			},
 			formula: {
 				name: "formula",
-				description: "The formula to edit the value when statistic is added to the result. Use $ to symbolise the value (ie: +$)",
+				description: "The formula to edit the value. Use $ to symbolise the value (ie: +$)",
 			}
 		},
 		help: `

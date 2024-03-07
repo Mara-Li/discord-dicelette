@@ -105,7 +105,7 @@ export default {
 			},
 			formula: {
 				name: "formule",
-				description: "La formule pour modifier la valeur du statistique rajouté au dé. Utiliser $ pour symboliser la valeur (ie: +$)",
+				description: "La formule pour modifier la valeur de la statistique. Utiliser $ pour symboliser la valeur (ie: +$)",
 			}
 		},
 		help: `

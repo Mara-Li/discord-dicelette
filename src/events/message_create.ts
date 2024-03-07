@@ -2,7 +2,7 @@
 import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 import moment from "moment";
 
-import { deleteAfter } from "../commands";
+import { deleteAfter } from "../commands/base";
 import { COMMENT_REGEX, parseResult, roll } from "../dice";
 import { Resultat } from "../interface";
 import { ln } from "../localizations";
