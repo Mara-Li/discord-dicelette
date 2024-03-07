@@ -191,6 +191,7 @@ export default {
 		mustBeGreater: (value: string, min: number) => `La valeur ${value} doit être plus grande que ${min}`,
 		totalExceededBy: (value: string, max: number) => `Le total de ${value} est dépassé de ${max}`,
 		noTemplate: "Aucun modèle ou channel configuré",
+		noThread: "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé"
 	},
 	modals: {
 		continue: "Continuer",

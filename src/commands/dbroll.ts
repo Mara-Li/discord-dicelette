@@ -86,45 +86,46 @@ export const rollForUser = {
 		const ul = ln(interaction.locale as Locale).dbRoll;
 		const lError = ln(interaction.locale as Locale).error;
 		const charName = options.getString(common.character) ?? undefined;
-		const userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, charName);
-		if (!userStatistique) {
-			await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
-			return;
-		}
-		//create the string for roll
-		const statistique = options.getString(common.statistic, true);
-		//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
-		let comments = options.getString(lOpt.comments.name) ?? "";
-		const override = options.getString(lOpt.override.name);
-		const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
-		const userStat = userStatistique.stats[statistique];
-		const template = userStatistique.template;
-		let formula = template.comparator.formula;
-		const dice = template.diceType;
-		let comparator: string = "";
-		if (!override) {
-			comparator += template.comparator.sign;
-			comparator += template.comparator.value ? template.comparator.value.toString() : userStat.toString();
-		} else comparator = override;
-		const critical: {failure?: number, success?: number} = {
-			failure: template.comparator.criticalFailure,
-			success: template.comparator.criticalSuccess
-		};
-		if (formula) {
-			try {
-				formula = evaluate(`${formula.replace("$", userStat.toString())}+ ${modificator}`).toString();
-			} catch (error) {
-				await interaction.reply({ content: lError.invalidFormula, ephemeral: true });
+		try {
+			const userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
+			if (!userStatistique) {
+				await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
 				return;
 			}
-			formula = formula?.startsWith("-") ? formula : `+${formula}`;
-		} else formula = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
-		comments += ` *(${statistique})* - @${charName ? charName : interaction.user.displayName}`;
-		const roll = `${dice}${formula}${comparator}${comments ? ` ${comments}` : ""}`;
-		try {
+			//create the string for roll
+			const statistique = options.getString(common.statistic, true);
+			//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
+			let comments = options.getString(lOpt.comments.name) ?? "";
+			const override = options.getString(lOpt.override.name);
+			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
+			const userStat = userStatistique.stats[statistique];
+			const template = userStatistique.template;
+			let formula = template.comparator.formula;
+			const dice = template.diceType;
+			let comparator: string = "";
+			if (!override) {
+				comparator += template.comparator.sign;
+				comparator += template.comparator.value ? template.comparator.value.toString() : userStat.toString();
+			} else comparator = override;
+			const critical: {failure?: number, success?: number} = {
+				failure: template.comparator.criticalFailure,
+				success: template.comparator.criticalSuccess
+			};
+			if (formula) {
+				try {
+					formula = evaluate(`${formula.replace("$", userStat.toString())}+ ${modificator}`).toString();
+				} catch (error) {
+					await interaction.reply({ content: lError.invalidFormula, ephemeral: true });
+					return;
+				}
+				formula = formula?.startsWith("-") ? formula : `+${formula}`;
+			} else formula = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
+			comments += ` *(${statistique})* - @${charName ? charName : interaction.user.displayName}`;
+			const roll = `${dice}${formula}${comparator}${comments ? ` ${comments}` : ""}`;
 			await rollWithInteraction(interaction, roll, interaction.channel, critical);
-		} catch (error) {
-			await interaction.reply({ content: lError.invalidDice, ephemeral: true });
+		}
+		catch (error) {
+			await interaction.reply({ content: (error as Error).message, ephemeral: true });
 		}
 	}
 };

@@ -1,8 +1,9 @@
-import { AutocompleteInteraction, ButtonInteraction, CommandInteraction, Guild, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, CommandInteraction, Guild, ModalSubmitInteraction, TextChannel } from "discord.js";
 import fs from "fs";
 import { GuildData, StatisticalTemplate, User } from "../interface";
 
 import { verifyTemplateValue } from "./verify_template";
+import { ln } from "src/localizations";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
 	const template = interaction.message?.attachments.first();
@@ -43,7 +44,8 @@ export function getUserData(guildData: GuildData, userId: string) {
 }
 
 
-export async function getUserFromMessage(guildData: GuildData, userId: string, guild: Guild, charName?: string) {
+export async function getUserFromMessage(guildData: GuildData, userId: string, guild: Guild, interaction: BaseInteraction, charName?: string) {
+	const ul = ln(interaction.locale);
 	const userData = getUserData(guildData, userId);
 	if (!userData) return;
 	const user = userData.find(char => char.charName === charName);
@@ -62,11 +64,12 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		const json = JSON.parse(data);
 		json[guild.id] = guildData;
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
-		return;
+		throw new Error(ul.error.noTemplate);
 	}
 	//search thread `📝 Registered User`
-	const thread = channel.threads.cache.find(thread => thread.name === "📝 Registered User");
-	if (!thread) return;
+	const thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as TextChannel | undefined;
+	if (!thread) 
+		throw new Error(ul.error.noThread);
 	try {
 		const message = await thread.messages.fetch(userMessageId);
 		const attachments = message.attachments.first();
@@ -81,7 +84,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		guildData.user[userId] = userData;
 		json[guild.id] = guildData;
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
-		return;
+		throw new Error(ul.error.user);
 	}
 
 	

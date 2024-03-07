@@ -1,4 +1,4 @@
-import { CommandInteraction, EmbedBuilder, ForumChannel, GuildForumTagData, ModalSubmitInteraction, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { CommandInteraction, EmbedBuilder, FetchArchivedThreadOptions, FetchThreadsOptions, ForumChannel, GuildForumTagData, ModalSubmitInteraction, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
 import moment from "moment";
 
 import { deleteAfter } from "../commands/base";
@@ -9,14 +9,11 @@ import en from "../localizations/locales/en";
 import fr from "../localizations/locales/fr";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
+import { ln } from "../localizations";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
-	const TRANSLATION = {
-		fr,
-		en
-	};
-	const userLang = TRANSLATION[interaction.locale as keyof typeof TRANSLATION] || TRANSLATION.en;
+	const userLang = ln(interaction.locale);
 	const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
 	if (rollWithMessage) {
 		dice = dice.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
@@ -76,11 +73,11 @@ export function title(str: string) {
 export async function repostInThread(embed: EmbedBuilder, interaction: ModalSubmitInteraction, userTemplate: User, userId: string) {
 	const channel = interaction.channel;
 	if (!channel ||!(channel instanceof TextChannel)) return;
-	let thread = channel.threads.cache.find(thread => thread.name === "📝 Registered User");
+	let thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as ThreadChannel | undefined;
 	if (!thread) {
 		thread = await channel.threads.create({
-			name: "📝 Registered User",
-			autoArchiveDuration: 60,
+			name: "📝 • [STATS]",
+			autoArchiveDuration: 10080,
 		});
 	}
 	const msg = await thread.send({ embeds: [embed], files: [{ attachment: Buffer.from(JSON.stringify(userTemplate, null, 2), "utf-8"), name: "template.json" }] },);
