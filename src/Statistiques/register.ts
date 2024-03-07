@@ -189,7 +189,7 @@ export const registerTemplate = {
 		try {
 			//fetch the template
 			const res = await fetch(template.url).then(res => res.json());
-			const templateData = verifyTemplateValue(res);
+			const templateData = verifyTemplateValue(res, interaction);
 			const guildData = interaction.guild.id;
 			const channel = options.getChannel(lOpt.channel.name);
 			if (!channel || !(channel instanceof TextChannel)) return;

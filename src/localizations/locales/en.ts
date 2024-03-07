@@ -144,7 +144,6 @@ export default {
 			registered: "Template registered!"
 		},
 		error: {
-			noStatistics: "No statistics provided",
 			tooMuchStats: "You can't have more than 20 statistics",
 			invalid: "Invalid template:"
 		}
@@ -180,6 +179,14 @@ export default {
 	},
 	error: {
 		invalidFormula: "Invalid formula",
+		user: "User not found",
 		invalidDice: "Invalid dice",
+		invalidComparator: "Invalid comparator: missing sign",
+		incorrectSign: "Incorrect sign",
+		noStat: "No statistic provided",
+		onlyCombination: "Only combination was found",
+		mustBeLower: (value: string, max: number) => `${value} must be lower than ${max}`,
+		mustBeGreater: (value: string, min: number) => `${value} must be greater than ${min}`,
+		totalExceededBy: (value: string, max: number) => `The total of ${value} is exceeded by ${max}`,
 	}
 };

@@ -143,7 +143,6 @@ export default {
 			registered: "Modèle enregistré !"
 		},
 		error: {
-			noStatistics: "Aucune statistique fournie",
 			tooMuchStats: "Vous ne pouvez pas avoir plus de 20 statistiques",
 			invalid: "Modèle invalide : "
 		}
@@ -181,5 +180,13 @@ export default {
 	error: {
 		invalidFormula: "Formule invalide",
 		invalidDice: "Dé invalide",
+		user: "Utilisateur introuvable",
+		invalidComparator: "Comparateur invalide : signe manquant",
+		incorrectSign: "Signe incorrect",
+		noStat: "Aucune statistique fournie",
+		onlyCombination: "Seule des combinations ont été trouvées",
+		mustBeLower: (value: string, max: number) => `La valeur ${value} doit être plus petite que ${max}`,
+		mustBeGreater: (value: string, min: number) => `La valeur ${value} doit être plus grande que ${min}`,
+		totalExceededBy: (value: string, max: number) => `Le total de ${value} est dépassé de ${max}`,
 	}
 };

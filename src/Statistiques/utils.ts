@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { ActionRowBuilder, AutocompleteInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, CommandInteraction, EmbedBuilder, ForumChannel, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextChannel, TextInputBuilder, TextInputStyle, ThreadChannel, userMention } from "discord.js";
+import { ActionRowBuilder, AutocompleteInteraction, BaseInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, CommandInteraction, EmbedBuilder, ForumChannel, Guild, Locale, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextChannel, TextInputBuilder, TextInputStyle, ThreadChannel, userMention } from "discord.js";
 import fs from "fs";
 import {evaluate} from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
+import { ln } from "src/localizations";
 
 import { deleteAfter } from "../commands";
 import { parseResult, roll } from "../dice";
@@ -15,7 +16,8 @@ import fr from "../localizations/locales/fr";
 import { findForumChannel, findThread } from "../utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function verifyTemplateValue(template: any): StatistiqueTemplate {
+export function verifyTemplateValue(template: any, interaction: BaseInteraction): StatistiqueTemplate {
+	const ul = ln(interaction.locale as Locale);
 	const statistiqueTemplate: StatistiqueTemplate = {
 		statistiques: {},
 		diceType: "",
@@ -47,15 +49,15 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 			roll(template.diceType);
 			statistiqueTemplate.diceType = template.diceType;
 		} catch (e) {
-			throw new Error("Invalid dice type");
+			throw new Error(ul.error.invalidDice);
 		}
 	}
 
 	if (!template.comparator)
-		throw new Error("Invalid comparator: missing sign");
+		throw new Error(ul.error.invalidComparator);
 	if (template.comparator) {
 		if (!template.comparator.sign.match(/(>|<|>=|<=|=|!=)/))
-			throw new Error("Invalid comparator sign");
+			throw new Error(ul.error.incorrectSign);
 		if (template.comparator.value <= 0)
 			template.comparator.value = undefined;
 		if (template.comparator.formula){
@@ -75,8 +77,8 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 	if (template.charName) statistiqueTemplate.charName = template.charName;
 
 	try {
-		testFormula(statistiqueTemplate);
-		testCombinaison(statistiqueTemplate);
+		testFormula(statistiqueTemplate, interaction);
+		testCombinaison(statistiqueTemplate, interaction);
 	} catch (error) {
 		throw new Error((error as Error).message);
 	}
@@ -84,13 +86,14 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 	return statistiqueTemplate;
 }
 
-function testCombinaison(template: StatistiqueTemplate) {
+function testCombinaison(template: StatistiqueTemplate, interaction: BaseInteraction) {
+	const ul = ln(interaction.locale as Locale);
 	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistiques).filter(([_, value]) => value.combinaison !== undefined));
 	const allOtherStats = Object.fromEntries(Object.entries(template.statistiques).filter(([_, value]) => !value.combinaison));	
 	if (Object.keys(onlyCombinaisonStats).length===0) return;
 	const allStats = Object.keys(template.statistiques).filter(stat => !template.statistiques[stat].combinaison);
 	if (allStats.length === 0) 
-		throw new Error("No stats found");
+		throw new Error(ul.error.noStat);
 	const error= [];
 	for (const [stat, value] of Object.entries(onlyCombinaisonStats)) {
 		let formula = value.combinaison as string;
@@ -108,14 +111,15 @@ function testCombinaison(template: StatistiqueTemplate) {
 		}
 	}
 	if (error.length > 0) 
-		throw new Error(`Invalid formula for ${error.join(", ")}`);
+		throw new Error(`${ul.error.invalidFormula}${ul.common.space}: ${error.join(", ")}`);
 	return;
 }
 
-function testFormula(template: StatistiqueTemplate) {
+function testFormula(template: StatistiqueTemplate, interaction: BaseInteraction) {
+	const ul = ln(interaction.locale as Locale);
 	const firstStatNotCombinaison = Object.keys(template.statistiques).find(stat => !template.statistiques[stat].combinaison);
 	if (!firstStatNotCombinaison) 
-		throw new Error("No stat found, only combinaison");
+		throw new Error(`${ul.error.noStat} : ${ul.error.onlyCombination}`);
 	if (!template.comparator.formula) return;
 	const stats = template.statistiques[firstStatNotCombinaison];
 	const {min, max} = stats;
@@ -136,7 +140,7 @@ function testFormula(template: StatistiqueTemplate) {
 		evaluate(formula);
 		return true;
 	} catch (error) {
-		throw new Error("Invalid formula");
+		throw new Error(ul.error.invalidFormula);
 	}
 }
 
@@ -144,7 +148,7 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
 	const template = interaction.message?.attachments.first();
 	if (!template) return;
 	const res = await fetch(template.url).then(res => res.json());
-	return verifyTemplateValue(res);
+	return verifyTemplateValue(res, interaction);
 }
 
 export function getGuildData(interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction|AutocompleteInteraction): GuildData|undefined {
@@ -169,7 +173,7 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 	const template = message.attachments.first();
 	if (!template) return;
 	const res = await fetch(template.url).then(res => res.json());
-	return verifyTemplateValue(res);
+	return verifyTemplateValue(res, interaction);
 
 }
 
@@ -179,6 +183,7 @@ export function getUserData(guildData: GuildData, userId: string) {
 }
 
 export function getStatistiqueFields(interaction: ModalSubmitInteraction, templateData: StatistiqueTemplate) {
+	const ul = ln(interaction.locale as Locale);
 	const combinaisonFields: {[name: string]: string} = {};
 	const stats: { [name: string]: number } = {};
 	let total = templateData.total;
@@ -192,15 +197,15 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 		if (!statValue) continue;
 		const num = parseInt(statValue);
 		if (value.min && num < value.min) {
-			throw new Error(`Invalid value for ${name} : must be greater than ${value.min}`);
+			throw new Error(ul.error.mustBeGreater(name, value.min));
 		} else if (value.max && num > value.max) {
-			throw new Error(`Invalid value for ${name} : must be lower than ${value.max}`);
+			throw new Error(ul.error.mustBeLower(name, value.max));
 		}
 		if (total) {
 			total -= num;
 			if (total < 0) {
 				const exceeded = total * -1;
-				throw new Error(`Invalid value for ${name}: Total exceeded by ${exceeded}`);
+				throw new Error(ul.error.totalExceededBy(name, exceeded));
 			} else stats[name] = num;
 		} else stats[name] = num;
 	}
@@ -219,12 +224,13 @@ export function parseEmbed(interaction: ButtonInteraction | ModalSubmitInteracti
 }
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction) {
+	const ul = ln(interaction.locale as Locale);
 	const channel = interaction.channel;
 	if (!channel) return;
 	const userFromField = interaction.fields.getTextInputValue("userID");
 	const user = interaction.guild?.members.cache.find(member => member.id === userFromField || member.user.username === userFromField.toLowerCase());
 	if (!user)
-		throw new Error("Invalid user");
+		throw new Error(ul.error.user);
 	const charName = interaction.fields.getTextInputValue("charName");
 	const embed = new EmbedBuilder()
 		.setTitle("Registering User")
