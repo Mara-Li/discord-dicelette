@@ -117,7 +117,6 @@ export const generateTemplate = {
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
-		console.log(cmdLn("generate.options.comparator.value.greater"))
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const lnOpt=en.generate.options;
 		const ul = ln(interaction.locale as Locale);
@@ -218,7 +217,7 @@ export const registerTemplate = {
 				if (max) msg += `- Max${ul.common.space}: \`${max}\`\n`;
 				if (msg.length === 0) msg = ul.register.embed.noValue;
 				embedTemplate.addFields({
-					name:title(stat),
+					name: title(stat) ?? "",
 					value: msg,
 					inline: true,
 				});

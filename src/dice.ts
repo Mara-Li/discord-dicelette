@@ -119,7 +119,6 @@ export function parseResult(output: Resultat, lng: any, critical?: {failure?: nu
 		msgSuccess = `${output.result.replaceAll(";","\n").replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	}
 	const result = msgSuccess;
-	console.log(output.comment);
 	const comment = output.comment ? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*\n` : "";
 	return dedent(`${comment}${result}`);
 }
