@@ -206,7 +206,7 @@ export const registerTemplate = {
 				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
 				.setColor("Random");
 			if (Object.keys(templateData.statistiques).length === 0) {
-				interaction.reply({ content: ul.register.error.noStatistics, ephemeral: true });
+				interaction.reply({ content: ul.error.noStat, ephemeral: true });
 				return;
 			}
 			if (Object.keys(templateData.statistiques).length >= 20) {
