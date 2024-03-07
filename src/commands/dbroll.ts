@@ -51,6 +51,8 @@ export const rollForUser = {
 			option
 				.setName(en.dbRoll.options.modificator.name)
 				.setDescription(en.dbRoll.options.modificator.description)
+				.setNameLocalizations(cmdLn("dbRoll.options.modificator.name"))
+				.setDescriptionLocalizations(cmdLn("dbRoll.options.modificator.description"))
 				.setRequired(false)
 		),
 	async autocomplete(interaction: AutocompleteInteraction) {
