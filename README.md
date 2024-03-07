@@ -191,7 +191,7 @@ The dbRoll will have the same result of the normal roll, but it will ask you:
 - The name of the character
 - Modificator to add to the roll (like advantage, disadvantage, etc.)
 - Remplacement of the success value (for example, for difficult roll)
-- Any character (that must be registered in the database)
+- Any character (that must be registered in the database) -- Note: If you have only character registered and the user set no value, the first registered character will be used
 - Any comments to your action
 
 ---
