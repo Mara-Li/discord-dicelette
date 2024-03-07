@@ -65,7 +65,8 @@ export async function setTagsForRoll(forum: ForumChannel) {
 	return availableTags.find(tag => tag.name === "Dice Roll" && tag.emoji?.name === "🪡") as GuildForumTagData;
 }
 
-export function title(str: string) {
+export function title(str?: string) {
+	if (!str) return;
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 

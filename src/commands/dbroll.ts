@@ -3,7 +3,7 @@ import { evaluate } from "mathjs";
 
 import { cmdLn, ln } from "../localizations";
 import en from "../localizations/locales/en";
-import { rollWithInteraction } from "../utils";
+import { rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 
 export const rollForUser = {
@@ -85,9 +85,20 @@ export const rollForUser = {
 		const lOpt = en.dbRoll.options;
 		const ul = ln(interaction.locale as Locale).dbRoll;
 		const lError = ln(interaction.locale as Locale).error;
-		const charName = options.getString(common.character) ?? undefined;
+		let charName = options.getString(common.character) ?? undefined;
 		try {
-			const userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
+			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
+			if (!userStatistique && !charName){
+			//find the first character registered
+				const userData = getUserData(guildData, interaction.user.id);
+				if (!userData) {
+					await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
+					return;
+				}
+				const firstChar = userData[0];
+				charName = title(firstChar.charName);
+				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
+			}
 			if (!userStatistique) {
 				await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
 				return;
@@ -120,7 +131,8 @@ export const rollForUser = {
 				}
 				formula = formula?.startsWith("-") ? formula : `+${formula}`;
 			} else formula = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
-			comments += ` *(${statistique})* - @${charName ? charName : interaction.user.displayName}`;
+			const charNameComments = charName ? `**@${charName}**` : "";
+			comments += `__[${title(statistique)}]__ - ${charNameComments}`;
 			const roll = `${dice}${formula}${comparator}${comments ? ` ${comments}` : ""}`;
 			await rollWithInteraction(interaction, roll, interaction.channel, critical);
 		}
