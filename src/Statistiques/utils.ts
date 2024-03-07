@@ -1,12 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/**
- * TODO:
- * - Edit the reference message
- * - Parse the different message with JSON.parse()
- * - Search user in reference message
- * - Default template
- * 
- */
+
 import { ActionRowBuilder, AutocompleteInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, CommandInteraction, EmbedBuilder, ForumChannel, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextChannel, TextInputBuilder, TextInputStyle, ThreadChannel, userMention } from "discord.js";
 import fs from "fs";
 import {evaluate} from "mathjs";
