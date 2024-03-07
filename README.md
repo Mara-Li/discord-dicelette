@@ -77,6 +77,96 @@ The bot will create a new thread, prefixed by `🎲`, and send the log to it. Th
 
 `/help`: Display the help message.
 
+# Database roll (dbroll)
+
+> [!warning] 
+> By default, the `/dbroll` is disabled! You need to enable it via the Discord server panel configuration.
+
+
+## Generate new template (`/generate`)
+
+For my own sanity, I choose to use directly JSON file to create statistic. Using modals has some limitations, and I don't want to use it for that (for example, modals are limited to 5 fields per modals, registering only 2 statistic will create 2 modals, and so on).
+
+The `/generate` commands allow to get a personnalized template. You can direcly add:
+- The name of the differents statistic, separated by a space of a comma.
+- The dice type (using the same notation as the roll command).
+- The way dice are compared with statistic,
+- The value to compare with the result. Let empty to compare with the statistic value.
+- An optional number of statistic points
+- If the user **must** set a name for registering a character.
+- An critical success value (natural dice)
+- An critical failure value (natural dice)
+- A formula to edit the value added to the dice result. Use `$` to symbolise the statistic. Example: `+$` will add the value of the statistic to the dice result. It supports mathematical operation like `floor(($-10)/2)`. The evaluation is done with the [`mathjs`](https://mathjs.org/) library.
+
+The generated file must be downloaded and edited using any editor (even online!) to add any value/edit you want.
+
+Here the reference for the different fields:
+- `charName`: A boolean flag indicating whether to enforce the user to choose a name for their characters. Default is `false`.
+- `statistic`: Object containing statistics for the characters.
+  - Each statistic is defined by a string key and an object value with the following optional properties:
+    - `max`: Maximum value for the statistic.
+    - `min`: Minimum value for the statistic.
+    - `combination`: Allows calculation of the statistic based on a formula involving other statistics. The calculated statistic will be excluded from the total.
+- `total`: Optional total value that can be set to calculate the total value of a future registered member. If the sum of the values exceeds the total, an error will be thrown, and the user will be informed.
+- `diceType`: Mandatory field specifying the type of dice to use for the statistic.
+- `comparator`: Object defining how to compare the dice result with the statistic.
+  - `sign`: Sign to use for comparison ("<", ">", ">=", "<=", "=", "!=").
+  - `value`: Value to compare with the result. Leave empty to compare with the statistic value.
+  - `criticalSuccess`: Critical success value for natural dice rolls.
+  - `criticalFailure`: Critical failure value for natural dice rolls.
+  - `formula`: Formula to modify the value added to the dice result. Use `$` to symbolize the statistic. Example: `+$` will add the value of the statistic to the dice result. Supports mathematical operations like `floor(($-10)/2)`.
+
+Template JSON example:
+```json
+{
+  "charName": true,
+  "statistic": {
+	"strength": {
+	  "max": 20,
+	  "min": 3,
+	},
+	"dexterity": {
+	  "max": 20,
+	  "min": 3
+	},
+	"constitution": {
+	  "max": 20,
+	  "min": 3
+	},
+	"intelligence": {
+	  "max": 20,
+	  "min": 3
+	},
+	"wisdom": {
+	  "max": 20,
+	  "min": 3
+	},
+	"charisma": {
+	  "max": 20,
+	  "min": 3
+	}
+  },
+  "total": 100,
+  "diceType": "1d20",
+  "comparator": {
+	"sign": "<=",
+	"value": "20",
+	"criticalSuccess": 20,
+	"criticalFailure": 1,
+	"formula": "ceil(($-10)/2)"
+  }
+}
+```
+> [!important]
+> You can take a look into [template][./template] for some common tested example.
+
+## Registering the template (`/register`)
+
+-> `/register <name> <path to the file>`
+
+
+
+---
 ## Translation
 
 The bot is fully translated into French and English.
@@ -88,11 +178,6 @@ Slash-commands will be automatically translated into the language of the client 
 
 But, if you use the `on message` type of roll detection, the reply will be in the guild's language, which will only can be set for community guild. By default, the reply will be in English.
 
-# Database roll (dbroll)
-## Generate new template
-
-
-
 ### Add a translation
 
 To create your own translation, you need to copy and translate the [`en.ts`](./src/localizations/locales/en.ts) file.
@@ -102,7 +187,7 @@ To create your own translation, you need to copy and translate the [`en.ts`](./s
 > For example, `ChineseCN` for Chinese (China) or `ChineseTW` for Chinese (Taiwan).
 
 You need, after that, to update the [`index.ts`](./src/localizations/index.ts) file to add your translation :
-```
+```ts
 import newTranslation from "./locales/{translation}";
 
 export const TRANSLATIONS = {
