@@ -1,13 +1,13 @@
 {
   "charName": false,
-  "statistic": {
+  "statistics": {
     "Force": {
       "min": 1
     },
-    "endurance": {
+    "Endurance": {
       "min": 1
     },
-    "agilite": {
+    "Agilité": {
       "min": 1
     },
     "logique": {
