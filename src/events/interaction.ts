@@ -2,7 +2,10 @@ import { AutocompleteInteraction, BaseInteraction, Client } from "discord.js";
 
 import { commandsList } from "../commands";
 import { autCompleteCmd } from "../Statistiques/roll";
-import { createEmbedFirstPage, embedStatistiques, getTemplate, getTemplateWithDB, parseEmbed, showFistPageModal, showStatistiqueModal } from "../Statistiques/utils";
+import { createEmbedFirstPage, embedStatistiques } from "../utils/create_embed";
+import { getTemplate, getTemplateWithDB } from "../utils/db";
+import { showFistPageModal, showStatistiqueModal } from "../utils/modals";
+import { parseEmbed } from "../utils/parse";
 
 export default (client: Client): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {

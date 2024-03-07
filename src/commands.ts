@@ -15,9 +15,9 @@ import dedent from "ts-dedent";
 import { cmdLn, ln } from "./localizations";
 import en from "./localizations/locales/en";
 import fr from "./localizations/locales/fr";
-import { commands } from "./Statistiques/register";
-import { rollWithInteraction } from "./Statistiques/utils";
-import { setTagsForRoll } from "./utils";
+import { rollWithInteraction , setTagsForRoll } from "./utils";
+import { commands } from "./utils/register";
+
 
 const TRANSLATION = {
 	fr,
