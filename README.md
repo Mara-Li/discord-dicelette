@@ -85,6 +85,7 @@ The bot will create a new thread, prefixed by `🎲`, and send the log to it. Th
 ![Enable dbroll 2](./assets/tuto/allow_commands_2.png)
 ![Enable dbroll 3](./assets/tuto/allow_commands_3.png)
 ![Enable dbroll 4](./assets/tuto/allow_commands_4.png)
+![Enable dbroll 4](./assets/tuto/allow_commands_5.png)
 
 ## Generate new template (`/generate`)
 
