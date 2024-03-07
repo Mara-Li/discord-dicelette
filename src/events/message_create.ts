@@ -5,9 +5,10 @@ import { deleteAfter } from "../commands";
 import { COMMENT_REGEX, parseResult, roll } from "../dice";
 import { Resultat } from "../interface";
 import { ln } from "../localizations";
-import { findForumChannel, findThread } from "../utils";
+import { findForumChannel, findThread } from "../utils/find";
 
 
+// eslint-disable-next-line no-useless-escape
 export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
 
 export default (client: Client): void => {

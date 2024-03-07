@@ -3,7 +3,8 @@ import { evaluate } from "mathjs";
 
 import { cmdLn, ln } from "../localizations";
 import en from "../localizations/locales/en";
-import { getGuildData, getUserData, getUserFromMessage, rollWithInteraction } from "./utils";
+import { rollWithInteraction } from "../utils";
+import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 
 export const rollForUser = {
 	data: new SlashCommandBuilder()

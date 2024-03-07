@@ -1,12 +1,3 @@
-/**
- * TODO:
- * - Register USER
- * - Parse dice ie:
- * 	Transform this: /r <characters> <statistique> [<bonus/malus> <comments>]
- * 	Into: /r <defaultDice><usagestats><comparesign><valuecompare> []
- * 		ie: /r 1d20+statistiqueValue<=X []
- * 		or: /r 1d20<=statistiqueValue []
- */
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
@@ -15,8 +6,9 @@ import dedent from "ts-dedent";
 import { Statistique, StatistiqueTemplate } from "../interface";
 import { cmdLn, ln } from "../localizations";
 import en from "../localizations/locales/en";
-import { rollForUser } from "./roll";
-import { title,verifyTemplateValue } from "./utils";
+import { rollForUser } from "../Statistiques/roll";
+import { verifyTemplateValue } from "../Statistiques/verify_template";
+import { title } from ".";
 
 type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
 
