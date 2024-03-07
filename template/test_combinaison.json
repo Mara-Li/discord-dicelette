@@ -1,24 +1,24 @@
 {
-	"charName": false,
-	"statistiques": {
-	  "Force": {
-		"min": 1
-	  },
-	  "endurance": {
-		"min": 1
-	  },
-	  "agilite": {
-		"min": 1
-	  },
-	  "logique": {
-		"combinaison": "force+endurance"
-	  }
-	},
-	"diceType": "1d20",
-	"comparator": {
-	  "sign": ">=",
-	  "value": 20,
-	  "formula": "ceil(($-10)/2)"
-	},
-	"total": 88
+  "charName": false,
+  "statistic": {
+    "Force": {
+      "min": 1
+    },
+    "endurance": {
+      "min": 1
+    },
+    "agilite": {
+      "min": 1
+    },
+    "logique": {
+      "combinaison": "force+endurance"
+    }
+  },
+  "diceType": "1d20",
+  "comparator": {
+    "sign": ">=",
+    "value": 20,
+    "formula": "ceil(($-10)/2)"
+  },
+  "total": 88
 }

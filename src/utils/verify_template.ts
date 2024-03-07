@@ -29,7 +29,7 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 export function verifyTemplateValue(template: any, interaction: BaseInteraction): StatisticalTemplate {
 	const ul = ln(interaction.locale as Locale);
 	const statistiqueTemplate: StatisticalTemplate = {
-		statistic: {},
+		statistics: {},
 		diceType: "",
 		comparator: {
 			sign: ">",
@@ -46,7 +46,7 @@ export function verifyTemplateValue(template: any, interaction: BaseInteraction)
 			if (dataValue.max && dataValue.max <= 0 ) dataValue.max = undefined;
 			if (dataValue.min && dataValue.min <= 0 ) dataValue.min = undefined;
 			const formula = dataValue.combinaison ? removeAccents(dataValue.combinaison).toLowerCase() : undefined;
-			statistiqueTemplate.statistic[statName] = {
+			statistiqueTemplate.statistics[statName] = {
 				max: dataValue.max,
 				min: dataValue.min,
 				combinaison: formula || undefined,
@@ -98,10 +98,10 @@ export function verifyTemplateValue(template: any, interaction: BaseInteraction)
 
 function testCombinaison(template: StatisticalTemplate, interaction: BaseInteraction) {
 	const ul = ln(interaction.locale as Locale);
-	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistic).filter(([_, value]) => value.combinaison !== undefined));
-	const allOtherStats = Object.fromEntries(Object.entries(template.statistic).filter(([_, value]) => !value.combinaison));	
+	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistics).filter(([_, value]) => value.combinaison !== undefined));
+	const allOtherStats = Object.fromEntries(Object.entries(template.statistics).filter(([_, value]) => !value.combinaison));	
 	if (Object.keys(onlyCombinaisonStats).length===0) return;
-	const allStats = Object.keys(template.statistic).filter(stat => !template.statistic[stat].combinaison);
+	const allStats = Object.keys(template.statistics).filter(stat => !template.statistics[stat].combinaison);
 	if (allStats.length === 0) 
 		throw new Error(ul.error.noStat);
 	const error= [];
@@ -127,11 +127,11 @@ function testCombinaison(template: StatisticalTemplate, interaction: BaseInterac
 
 function testFormula(template: StatisticalTemplate, interaction: BaseInteraction) {
 	const ul = ln(interaction.locale as Locale);
-	const firstStatNotCombinaison = Object.keys(template.statistic).find(stat => !template.statistic[stat].combinaison);
+	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics[stat].combinaison);
 	if (!firstStatNotCombinaison) 
 		throw new Error(`${ul.error.noStat} : ${ul.error.onlyCombination}`);
 	if (!template.comparator.formula) return;
-	const stats = template.statistic[firstStatNotCombinaison];
+	const stats = template.statistics[firstStatNotCombinaison];
 	const {min, max} = stats;
 	const total = template.total || 100;
 	

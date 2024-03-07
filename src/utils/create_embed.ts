@@ -61,7 +61,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			});
 		}
 		
-		const allTemplateStat = Object.keys(template.statistic).filter(stat => !Object.keys(combinaisonFields).includes(stat));
+		const allTemplateStat = Object.keys(template.statistics).filter(stat => !Object.keys(combinaisonFields).includes(stat));
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;

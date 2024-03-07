@@ -134,7 +134,7 @@ export const generateTemplate = {
 		}
 		const statistiqueTemplate: StatisticalTemplate = {
 			charName: options.getBoolean(lnOpt.character.name) || false,
-			statistic: statServer,
+			statistics: statServer,
 			diceType: options.getString(lnOpt.dice.name) || "1d20",
 			comparator: {
 				sign: options.getString(lnOpt.comparator.name) as ComparatorSign || ">",
@@ -199,16 +199,16 @@ export const registerTemplate = {
 				.setDescription(ul.register.embed.description)
 				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
 				.setColor("Random");
-			if (Object.keys(templateData.statistic).length === 0) {
+			if (Object.keys(templateData.statistics).length === 0) {
 				interaction.reply({ content: ul.error.noStat, ephemeral: true });
 				return;
 			}
-			if (Object.keys(templateData.statistic).length >= 20) {
+			if (Object.keys(templateData.statistics).length >= 20) {
 				interaction.reply({ content: ul.register.error.tooMuchStats, ephemeral: true });
 				return;
 			}
 				
-			for (const [stat, value] of Object.entries(templateData.statistic)) {
+			for (const [stat, value] of Object.entries(templateData.statistics)) {
 				const min = value.min;
 				const max = value.max;
 				const combinaison = value.combinaison;
@@ -246,7 +246,7 @@ export const registerTemplate = {
 			//save in database file
 			const data = fs.readFileSync("database.json", "utf-8");
 			const json = JSON.parse(data);
-			const statsName = Object.keys(templateData.statistic);
+			const statsName = Object.keys(templateData.statistics);
 			if (json[guildData]) {
 				json[guildData].templateID = {
 					channelId: channel.id,

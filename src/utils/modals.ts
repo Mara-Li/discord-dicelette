@@ -3,7 +3,7 @@ import { StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
 
 export async function showFistPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
-	const nbOfStatistique = Object.keys(template.statistic).length;
+	const nbOfStatistique = Object.keys(template.statistics).length;
 	const nbOfPages = Math.floor(nbOfStatistique / 5) > 0 ? Math.floor(nbOfStatistique / 5) : 2;
 	const ul = ln(interaction.locale as Locale);
 	const modal = new ModalBuilder()
@@ -35,8 +35,8 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	const ul = ln(interaction.locale as Locale);
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
-		.setTitle(ul.modals.steps(page, Math.ceil(Object.keys(template.statistic).length / 5)) + 1);
-	let statToDisplay = Object.keys(template.statistic);
+		.setTitle(ul.modals.steps(page, Math.ceil(Object.keys(template.statistics).length / 5)) + 1);
+	let statToDisplay = Object.keys(template.statistics);
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
 		if (statToDisplay.length === 0) {
@@ -47,7 +47,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	//take 5 stats
 	const statsToDisplay = statToDisplay.slice(0, 4);
 	for (const stat of statsToDisplay) {
-		const value = template.statistic[stat];
+		const value = template.statistics[stat];
 		if (value.combinaison) continue;
 		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()

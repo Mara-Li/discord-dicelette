@@ -61,7 +61,7 @@ export type Statistic = {
 export interface StatisticalTemplate {
 	/** Allow to force the user to choose a name for them characters */
 	charName?: boolean 
-	statistic: Statistic
+	statistics: Statistic
 	/**
 	 * A total can be set, it allows to calculate the total value of a future register member
 	 * If the sum of the value > total, the bot will send a message to the user to inform him that the total is exceeded and an error will be thrown
