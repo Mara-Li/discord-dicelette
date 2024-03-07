@@ -185,6 +185,15 @@ After, each 5 statistic (excepted for combinaison stat), it will ask for the val
 > - The value can be verified / forced during registration (only text entry are allowed)
 > - Only 5 value are autorized at time:	If you have more than 5 statistic, you need to re-entered the modals by clicking on the "continue" button.
 
+## dbroll commands
+
+The dbRoll will have the same result of the normal roll, but it will ask you:
+- The name of the character
+- Modificator to add to the roll (like advantage, disadvantage, etc.)
+- Remplacement of the success value (for example, for difficult roll)
+- Any character (that must be registered in the database)
+- Any comments to your action
+
 ---
 ## Translation
 
