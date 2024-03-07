@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 import moment from "moment";
 
