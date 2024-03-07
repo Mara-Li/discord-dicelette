@@ -17,7 +17,7 @@ import { findForumChannel, findThread } from "../utils";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function verifyTemplateValue(template: any): StatistiqueTemplate {
 	const statistiqueTemplate: StatistiqueTemplate = {
-		statistiques: {},
+		statistic: {},
 		diceType: "",
 		comparator: {
 			sign: ">",
@@ -34,7 +34,7 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 			if (dataValue.max && dataValue.max <= 0 ) dataValue.max = undefined;
 			if (dataValue.min && dataValue.min <= 0 ) dataValue.min = undefined;
 			const formula = dataValue.combinaison ? removeAccents(dataValue.combinaison).toLowerCase() : undefined;
-			statistiqueTemplate.statistiques[statName] = {
+			statistiqueTemplate.statistic[statName] = {
 				max: dataValue.max,
 				min: dataValue.min,
 				combinaison: formula || undefined,
@@ -85,10 +85,10 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 }
 
 function testCombinaison(template: StatistiqueTemplate) {
-	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistiques).filter(([_, value]) => value.combinaison !== undefined));
-	const allOtherStats = Object.fromEntries(Object.entries(template.statistiques).filter(([_, value]) => !value.combinaison));	
+	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistic).filter(([_, value]) => value.combinaison !== undefined));
+	const allOtherStats = Object.fromEntries(Object.entries(template.statistic).filter(([_, value]) => !value.combinaison));	
 	if (Object.keys(onlyCombinaisonStats).length===0) return;
-	const allStats = Object.keys(template.statistiques).filter(stat => !template.statistiques[stat].combinaison);
+	const allStats = Object.keys(template.statistic).filter(stat => !template.statistic[stat].combinaison);
 	if (allStats.length === 0) 
 		throw new Error("No stats found");
 	const error= [];
@@ -113,11 +113,11 @@ function testCombinaison(template: StatistiqueTemplate) {
 }
 
 function testFormula(template: StatistiqueTemplate) {
-	const firstStatNotCombinaison = Object.keys(template.statistiques).find(stat => !template.statistiques[stat].combinaison);
+	const firstStatNotCombinaison = Object.keys(template.statistic).find(stat => !template.statistic[stat].combinaison);
 	if (!firstStatNotCombinaison) 
 		throw new Error("No stat found, only combinaison");
 	if (!template.comparator.formula) return;
-	const stats = template.statistiques[firstStatNotCombinaison];
+	const stats = template.statistic[firstStatNotCombinaison];
 	const {min, max} = stats;
 	const total = template.total || 100;
 	
@@ -182,7 +182,7 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 	const combinaisonFields: {[name: string]: string} = {};
 	const stats: { [name: string]: number } = {};
 	let total = templateData.total;
-	for (const [key, value] of Object.entries(templateData.statistiques)) {
+	for (const [key, value] of Object.entries(templateData.statistic)) {
 		const name = removeAccents(key).toLowerCase();
 		if (value.combinaison) {
 			combinaisonFields[name] = value.combinaison;
@@ -248,7 +248,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction) 
 }
 
 export async function showFistPageModal(interaction: ButtonInteraction, template: StatistiqueTemplate) {
-	const nbOfStatistique = Object.keys(template.statistiques).length;
+	const nbOfStatistique = Object.keys(template.statistic).length;
 	const nbOfPages = Math.floor(nbOfStatistique / 5) > 0 ? Math.floor(nbOfStatistique / 5) : 2;
 	const modal = new ModalBuilder()
 		.setCustomId("firstPage")
@@ -279,8 +279,8 @@ export async function showFistPageModal(interaction: ButtonInteraction, template
 export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatistiqueTemplate, stats?: string[], page = 1) {
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
-		.setTitle(`Registering User - Page ${page}/${Math.ceil(Object.keys(template.statistiques).length / 5)}`);
-	let statToDisplay = Object.keys(template.statistiques);
+		.setTitle(`Registering User - Page ${page}/${Math.ceil(Object.keys(template.statistic).length / 5)}`);
+	let statToDisplay = Object.keys(template.statistic);
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
 		if (statToDisplay.length === 0) {
@@ -291,7 +291,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	//take 5 stats
 	const statsToDisplay = statToDisplay.slice(0, 4);
 	for (const stat of statsToDisplay) {
-		const value = template.statistiques[stat];
+		const value = template.statistic[stat];
 		if (value.combinaison) continue;
 		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()
@@ -338,7 +338,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			});
 		}
 		
-		const allTemplateStat = Object.keys(template.statistiques).filter(stat => !Object.keys(combinaisonFields).includes(stat));
+		const allTemplateStat = Object.keys(template.statistic).filter(stat => !Object.keys(combinaisonFields).includes(stat));
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;

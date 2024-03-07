@@ -39,7 +39,7 @@ export default (client: Client): void => {
 			}
 			const embed = parseEmbed(interaction);
 			if (!embed) return;
-			const allTemplateStat = Object.keys(template.statistiques);
+			const allTemplateStat = Object.keys(template.statistic);
 			const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(stat));
 			if (statsAlreadySet.length === allTemplateStat.length) {
 				await interaction.reply({ content: "All stats are already set", ephemeral: true });

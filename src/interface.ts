@@ -34,7 +34,7 @@ export interface GuildData {
 	
 }
 
-export type Statistique = {
+export type Statistic = {
 	[name: string] : {
 		max?: number;
 		min?: number;
@@ -61,7 +61,7 @@ export type Statistique = {
 export interface StatistiqueTemplate {
 	/** Allow to force the user to choose a name for them characters */
 	charName?: boolean 
-	statistiques: Statistique
+	statistic: Statistic
 	/**
 	 * A total can be set, it allows to calculate the total value of a future register member
 	 * If the sum of the value > total, the bot will send a message to the user to inform him that the total is exceeded and an error will be thrown

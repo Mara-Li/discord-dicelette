@@ -1,18 +1,9 @@
-/**
- * TODO:
- * - Register USER
- * - Parse dice ie:
- * 	Transform this: /r <characters> <statistique> [<bonus/malus> <comments>]
- * 	Into: /r <defaultDice><usagestats><comparesign><valuecompare> []
- * 		ie: /r 1d20+statistiqueValue<=X []
- * 		or: /r 1d20<=statistiqueValue []
- */
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 import dedent from "ts-dedent";
 
-import { Statistique, StatistiqueTemplate } from "../interface";
+import { Statistic, StatistiqueTemplate } from "../interface";
 import { cmdLn } from "../localizations";
 import en from "../localizations/locales/en";
 import { rollForUser } from "./roll";
@@ -71,13 +62,13 @@ export const generateTemplate = {
 		.addNumberOption(option =>
 			option
 				.setName("value")
-				.setDescription("The value to compare with the result. Let empty to compare with the statistique value.")
+				.setDescription("The value to compare with the result. Let empty to compare with the statistic value.")
 				.setRequired(false)
 		)
 		.addNumberOption(option =>
 			option
 				.setName("total")
-				.setDescription("The total statistique point - optional")
+				.setDescription("The total statistic points - optional")
 				.setRequired(false)
 		)
 		.addBooleanOption(option =>
@@ -110,17 +101,17 @@ export const generateTemplate = {
 		const name = options.getString("name");
 		if (!name) return;
 		const statistiqueName = name.split(/[, ]+/);
-		const statServer: Statistique = {};
+		const statServer: Statistic = {};
 		for (const stat of statistiqueName ) {
 			statServer[removeAccents(stat)] = {
 				max: 0,
 				min: 0,
-				combinaison: "Can be anything if you don't want to set a proper value. Will be automatically skipped when you register an user. Use statistique name in lowercase and without accent to create the formula"
+				combinaison: ""
 			};
 		}
 		const statistiqueTemplate: StatistiqueTemplate = {
 			charName: options.getBoolean("character") || false,
-			statistiques: statServer,
+			statistic: statServer,
 			diceType: options.getString("dice") || "1d20",
 			comparator: {
 				sign: options.getString("comparator") as ComparatorSign || ">",
@@ -186,16 +177,16 @@ export const registerTemplate = {
 				.setDescription("Click on the button to register an user")
 				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
 				.setColor("Random");
-			if (Object.keys(templateData.statistiques).length === 0) {
+			if (Object.keys(templateData.statistic).length === 0) {
 				interaction.reply({ content: "No statistique found", ephemeral: true });
 				return;
 			}
-			if (Object.keys(templateData.statistiques).length >= 20) {
+			if (Object.keys(templateData.statistic).length >= 20) {
 				interaction.reply({ content: "You can't have more than 20 statistical value", ephemeral: true });
 				return;
 			}
 				
-			for (const [stat, value] of Object.entries(templateData.statistiques)) {
+			for (const [stat, value] of Object.entries(templateData.statistic)) {
 				const min = value.min;
 				const max = value.max;
 				const combinaison = value.combinaison;
@@ -233,7 +224,7 @@ export const registerTemplate = {
 			//save in database file
 			const data = fs.readFileSync("database.json", "utf-8");
 			const json = JSON.parse(data);
-			const statsName = Object.keys(templateData.statistiques);
+			const statsName = Object.keys(templateData.statistic);
 			if (json[guildData]) {
 				json[guildData].templateID = {
 					channelId: channel.id,
