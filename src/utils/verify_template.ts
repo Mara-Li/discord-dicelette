@@ -12,7 +12,7 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 		//replace the stats in formula
 		let formula = combin;
 		for (const [statName, value] of Object.entries(stats)) {
-			const regex = new RegExp(statName, "g");
+			const regex = new RegExp(statName, "gi");
 			formula = formula.replace(regex, value.toString());
 		}
 		try {
@@ -37,15 +37,16 @@ export function verifyTemplateValue(template: any, interaction: BaseInteraction)
 			formula: "",
 		},
 	};
-	if (template.statistic) {
-		for (const [key, value] of Object.entries(template.statistic)) {
+	if (template.statistics) {
+		for (const [key, value] of Object.entries(template.statistics)) {
 			const dataValue = value as { max?: number, min?: number, combinaison?: string };
 			const statName = removeAccents(key).toLowerCase();
 			if (dataValue.max && dataValue.min && dataValue.max <= dataValue.min)
-				throw new Error("Max must be greater than min");
+				throw new Error(ul.error.maxGreater);				
 			if (dataValue.max && dataValue.max <= 0 ) dataValue.max = undefined;
 			if (dataValue.min && dataValue.min <= 0 ) dataValue.min = undefined;
-			const formula = dataValue.combinaison ? removeAccents(dataValue.combinaison).toLowerCase() : undefined;
+			let formula = dataValue.combinaison ? removeAccents(dataValue.combinaison).toLowerCase() : undefined;
+			formula = formula && formula.trim().length > 0 ? formula : undefined;
 			statistiqueTemplate.statistics[statName] = {
 				max: dataValue.max,
 				min: dataValue.min,
@@ -107,11 +108,11 @@ function testCombinaison(template: StatisticalTemplate, interaction: BaseInterac
 	const error= [];
 	for (const [stat, value] of Object.entries(onlyCombinaisonStats)) {
 		let formula = value.combinaison as string;
-		for (const [_, data] of Object.entries(allOtherStats)) {
+		for (const [other, data] of Object.entries(allOtherStats)) {
 			const {max, min} = data;
 			const total = template.total || 100;
-			const randomStatValue = max && min ? Math.floor(Math.random() * (max - min + 1)) + min : Math.floor(Math.random() * total);
-			const regex = new RegExp(stat, "g");
+			const randomStatValue = generateRandomStat(total, max, min);
+			const regex = new RegExp(other, "gi");
 			formula = formula.replace(regex, randomStatValue.toString());
 		}
 		try {
@@ -135,6 +136,17 @@ function testFormula(template: StatisticalTemplate, interaction: BaseInteraction
 	const {min, max} = stats;
 	const total = template.total || 100;
 	
+	const randomStatValue = generateRandomStat(total, max, min);
+	const formula = template.comparator.formula.replace("$", randomStatValue.toString());	
+	try {
+		evaluate(formula);
+		return true;
+	} catch (error) {
+		throw new Error(ul.error.invalidFormula);
+	}
+}
+
+function generateRandomStat(total: number | undefined = 100, max?: number, min?: number) {
 	let randomStatValue = 0;
 	while (randomStatValue < total)
 		if (max && min)
@@ -145,11 +157,5 @@ function testFormula(template: StatisticalTemplate, interaction: BaseInteraction
 			randomStatValue = Math.floor(Math.random() * (total - min + 1)) + min;
 		else
 			randomStatValue = Math.floor(Math.random() * total);
-	const formula = template.comparator.formula.replace("$", randomStatValue.toString());	
-	try {
-		evaluate(formula);
-		return true;
-	} catch (error) {
-		throw new Error(ul.error.invalidFormula);
-	}
+	return randomStatValue;
 }

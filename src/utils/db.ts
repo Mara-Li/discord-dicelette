@@ -3,7 +3,8 @@ import fs from "fs";
 import { GuildData, StatisticalTemplate, User } from "../interface";
 
 import { verifyTemplateValue } from "./verify_template";
-import { ln } from "src/localizations";
+import { ln } from "../localizations";
+import removeAccents from "remove-accents";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
 	const template = interaction.message?.attachments.first();
@@ -66,7 +67,6 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
 		throw new Error(ul.error.noTemplate);
 	}
-	//search thread `📝 Registered User`
 	const thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as TextChannel | undefined;
 	if (!thread) 
 		throw new Error(ul.error.noThread);
@@ -93,21 +93,21 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 export function registerUser(userID: string, interaction: ModalSubmitInteraction,msgId: string, charName?: string, ) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
+	if (charName) charName = removeAccents(charName).toLowerCase();
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
 	const user = getUserData(guildData, userID);
 	if (user) {
-		//search if charName already exists
 		const char = user.find(char => char.charName === charName);
 		if (char)
 			//overwrite the message id
 			char.messageId = msgId;
 		else user.push({ charName, messageId: msgId });	
 	} else {
-		guildData.user[userID].push({
-			charName:charName?.toLowerCase(),
+		guildData.user[userID] = [{
+			charName,
 			messageId: msgId
-		});
+		}];
 	}
 	//update the database
 	const data = fs.readFileSync("database.json", "utf-8");

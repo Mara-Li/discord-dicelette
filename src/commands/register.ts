@@ -213,9 +213,9 @@ export const registerTemplate = {
 				const max = value.max;
 				const combinaison = value.combinaison;
 				let msg = "";
-				if (combinaison) msg += `- Combinaison: \`${combinaison}\`\n`;
-				if (min) msg += `- Min: \`${min}\`\n`;
-				if (max) msg += `- Max: \`${max}\`\n`;
+				if (combinaison) msg += `- Combinaison${ul.common.space}: \`${combinaison}\`\n`;
+				if (min) msg += `- Min${ul.common.space}: \`${min}\`\n`;
+				if (max) msg += `- Max${ul.common.space}: \`${max}\`\n`;
 				if (msg.length === 0) msg = ul.register.embed.noValue;
 				embedTemplate.addFields({
 					name:title(stat),
@@ -231,7 +231,7 @@ export const registerTemplate = {
 			let msgComparator = "";
 			if (templateData.comparator.value) msgComparator += `- ${ul.register.embed.value} \`${templateData.comparator.value}\`\n`;
 			if (templateData.comparator.formula) msgComparator += `- ${ul.register.embed.formula} \`${templateData.comparator.formula}\`\n`;
-			if (templateData.comparator.sign) msgComparator += `- ${ul.register.embed.comparator}: \`${templateData.comparator.sign}\`\n`;
+			if (templateData.comparator.sign) msgComparator += `- ${ul.register.embed.comparator} \`${templateData.comparator.sign}\`\n`;
 			embedTemplate.addFields({
 				name: ul.register.embed.comparator,
 				value: msgComparator,
@@ -260,13 +260,13 @@ export const registerTemplate = {
 						messageId: msg.id,
 						statsName
 					},
-					user: [{}]
+					user: {}
 				};
 			}
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
 			console.log(e);
-			await interaction.reply({ content: `${ul.register.error.invalid}:\n \`\`\`\n${(e as Error).message}\`\`\``, ephemeral: true });
+			await interaction.reply({ content: `${ul.register.error.invalid}\`\`\`\n${(e as Error).message}\`\`\``, ephemeral: true });
 		}
 	}	
 };

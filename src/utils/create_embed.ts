@@ -12,16 +12,18 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction) 
 	if (!channel) return;
 	const userFromField = interaction.fields.getTextInputValue("userID");
 	const user = interaction.guild?.members.cache.find(member => member.id === userFromField || member.user.username === userFromField.toLowerCase());
-	if (!user)
-		throw new Error(ul.error.user);
+	if (!user) {	
+		interaction.reply({ content: ul.error.user, ephemeral: true });
+		return;
+	}
 	const charName = interaction.fields.getTextInputValue("charName");
 	const embed = new EmbedBuilder()
-		.setTitle("Registering User")
+		.setTitle(ul.modals.registering)
 		.setThumbnail(user.user.displayAvatarURL())
 		.setFooter({ text: ul.common.page(1) })
 		.addFields(
-			{ name: "Character name", value: charName.length > 0 ? charName : ul.common.noSet, inline: true},
-			{ name: "User", value: userMention(user.id), inline: true},
+			{ name: ul.common.charName, value: charName.length > 0 ? charName : ul.common.noSet, inline: true},
+			{ name: ul.common.user, value: userMention(user.id), inline: true},
 			{name: "\u200B", value: "_ _", inline: true}
 		);
 	//add continue button
@@ -87,8 +89,8 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				return;
 			}
 
-			let userID = oldEmbeds.fields.find(field => field.name === "User")?.value;
-			let charName: string |undefined = oldEmbeds.fields.find(field => field.name === "Character name")?.value;
+			let userID = oldEmbeds.fields.find(field => field.name === ul.common.user)?.value;
+			let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul.common.charName)?.value;
 			if (charName && charName === ul.common.noSet)
 				charName = undefined;
 			if (!userID) {

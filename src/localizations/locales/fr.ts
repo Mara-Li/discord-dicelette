@@ -155,6 +155,8 @@ export default {
 		comments: "commentaires",
 		noSet: "/",
 		page: (nb: number) => `Page ${nb}`,
+		charName: "Nom du personnage",
+		user: "Joueur",
 	},
 	dbRoll: {
 		name: "dbroll",
@@ -180,7 +182,7 @@ export default {
 		}
 	},
 	error: {
-		invalidFormula: "Formule invalide",
+		invalidFormula: "Formule invalide pour",
 		invalidDice: "Dé invalide",
 		user: "Utilisateur introuvable",
 		invalidComparator: "Comparateur invalide : signe manquant",
@@ -191,7 +193,8 @@ export default {
 		mustBeGreater: (value: string, min: number) => `La valeur ${value} doit être plus grande que ${min}`,
 		totalExceededBy: (value: string, max: number) => `Le total de ${value} est dépassé de ${max}`,
 		noTemplate: "Aucun modèle ou channel configuré",
-		noThread: "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé"
+		noThread: "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
+		maxGreater: "Le maximum doit être plus grand que minimum",
 	},
 	modals: {
 		continue: "Continuer",
@@ -203,6 +206,7 @@ export default {
 			name: "Nom du personnage",
 			description: "Entrez le nom de votre personnage"
 		},
+		registering: "Enregistrement de l'utilisateur",
 		firstPage: (page: number) => `Enregistrement de l'utilisateur - Page 1/${page}`,
 		steps: (page: number, max: number) => `Enregistrement de l'utilisateur - Page ${page}/${max}`,
 		user: {

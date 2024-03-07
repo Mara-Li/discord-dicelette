@@ -5,11 +5,10 @@ import { deleteAfter } from "../commands/base";
 import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
 import {User} from "../interface";
-import en from "../localizations/locales/en";
-import fr from "../localizations/locales/fr";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
 import { ln } from "../localizations";
+import removeAccents from "remove-accents";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
@@ -80,6 +79,7 @@ export async function repostInThread(embed: EmbedBuilder, interaction: ModalSubm
 			autoArchiveDuration: 10080,
 		});
 	}
+	userTemplate.userName = userTemplate.userName ? removeAccents(userTemplate.userName).toLowerCase() : undefined;
 	const msg = await thread.send({ embeds: [embed], files: [{ attachment: Buffer.from(JSON.stringify(userTemplate, null, 2), "utf-8"), name: "template.json" }] },);
 	registerUser(userId, interaction, msg.id, userTemplate.userName);
 }

@@ -178,9 +178,11 @@ export default {
 		character: "character",
 		noSet: "/",
 		page: (nb: number) => `Page ${nb}`,
+		charName: "Character name",
+		user: "Joueur",
 	},
 	error: {
-		invalidFormula: "Invalid formula",
+		invalidFormula: "Invalid formula for",
 		user: "User not found",
 		invalidDice: "Invalid dice",
 		invalidComparator: "Invalid comparator: missing sign",
@@ -192,6 +194,7 @@ export default {
 		totalExceededBy: (value: string, max: number) => `The total of ${value} is exceeded by ${max}`,
 		noTemplate: "No template or configured channel",
 		noThread: "No thread found — Please re-register the user if the thread has been deleted",
+		maxGreater: "Max must be greater than min",
 	},
 	modals: {
 		continue: "Continue",
@@ -199,6 +202,7 @@ export default {
 		embedTitle: "Registered user",
 		finished: "Stats finished",
 		added: "Stats added",
+		registering: "Registering User",
 		firstPage: (page: number) => `Registering User - Page 1/${page}`,
 		steps: (page: number, max: number) => `Registering User - Page ${page}/${max}`,
 		charName: {
@@ -216,5 +220,5 @@ export default {
 			if (max) return `Enter a value lower than ${max}`;
 			return "Enter a value";
 		}
-	}
+	},
 };

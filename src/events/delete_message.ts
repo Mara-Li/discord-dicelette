@@ -17,8 +17,9 @@ export default (client	: Client): void => {
 				delete guildData.templateID;
 			}
 			const dbUser = guildData?.user;
-			if (dbUser) {
+			if (dbUser && Object.keys(dbUser).length > 0){
 				for (const values of Object.values(dbUser)) {
+					if (values.length === 0) continue;
 					for (const [index, value] of values.entries()) {
 						if (value.messageId === messageId) {
 							values.splice(index, 1);
