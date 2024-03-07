@@ -60,19 +60,126 @@ export default {
 			failure: "Échec critique",
 		},
 	},
-	register: {
-		generate: {
-			name: "générer",
-			options: {
-				stats: {
-					name: "nom",
-					description: "Le nom de la statistique, séparez-les par un espace ou une virgule",
-				},
-				dice: {
-					name: "dé",
-					description: "Le type de dé à lancer",
+	generate: {
+		name: "générer",
+		options: {
+			stats: {
+				name: "nom",
+				description: "Le nom de la statistique, séparez-les par un espace ou une virgule",
+			},
+			dice: {
+				name: "dé",
+				description: "Le type de dé à lancer",
+			},
+			comparator: {
+				name: "comparateur",
+				description: "Le signe du comparateur entre le résultat et la statistique/une valeur",
+				value: {
+					greater: "Plus grand",
+					greaterEqual: "Plus grand ou égal",
+					equal: "Égal",
+					lessEqual: "Plus petit ou égal",
+					less: "Plus petit",
+					different: "Différent"
 				}
+			},
+			value: {
+				name: "valeur",
+				description: "La valeur à comparer avec le résultat du dé. Laissez vide pour comparer avec la statistique",
+			},
+			total: {
+				name: "total",
+				description: "Le total des points de statistiques (sera calculé quand l'utilisateur sera enregistré)",
+			},
+			character: {
+				name: "personnage",
+				description: "Rendre le nom du personnage obligatoire pour l'enregistrement",
+			},
+			critical_success: {
+				name: "succès_critique",
+				description: "Définir un succès critique (dé naturel)",
+			},
+			critical_fail: {
+				name: "échec_critique",
+				description: "Définir un échec critique (dé naturel)",
+			},
+			formula: {
+				name: "formule",
+				description: "La formule pour modifier la valeur du statistique rajouté au dé. Utiliser $ pour symboliser la valeur (ie: +$)",
 			}
+		},
+		help: `
+				- Le type de dé doit être un type valide (il sera testé quand vous enregistrerez le modèle).
+				- La valeur doit être un nombre, et peut être optionnel. Si vous l'enlevez, le dé sera comparé à la statistique plutôt qu'une valeur.
+				- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.
+				- La formule permet d'éditer la valeur combinée au dé. Utiliser \`$\` pour symboliser la valeur (ie: \`+$\`, \`-$\`, \`($-10)/2\`...).
+				- Une statistique peut être une combinaison d'autre statistique, comme \`force+endurance\`. Si la valeur de \`combinaison\` est définie, alors que les paramètres \`min\` et \`max\` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.
+
+			Noter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.	
+			`
+	},
+	register: {
+		name: "enregistrer",
+		description: "Enregistre un nouveau modèle pour la commande dbroll",
+		options: {
+			channel: {
+				name: "channel",
+				description: "Le channel où le modèle et les utilisateurs seront enregistrés"
+			},
+			template: {
+				name: "template",
+				description: "Le modèle à enregistrer"
+			}
+		},
+		button: "Enregistrer un personnage",
+		embed: {
+			title: "Modèle",
+			description: "Clickez sur le bouton pour enregistrer un personnage",
+			noValue: "Aucune valeur",
+			dice: "Dé",
+			value: "Valeur :",
+			formula: "Formule :",
+			comparator: "Comparateur :",
+			registered: "Modèle enregistré !"
+		},
+		error: {
+			noStatistics: "Aucune statistique fournie",
+			tooMuchStats: "Vous ne pouvez pas avoir plus de 20 statistiques",
+			invalid: "Modèle invalide : "
 		}
+	},
+	common: {
+		total: "Total",
+		space: " ",
+		statistic: "statistique",
+		character: "personnage",
+		comments: "commentaires",
+	},
+	dbRoll: {
+		name: "dbroll",
+		description: "Lance un dé avec une statistique enregistrée",
+		options: {
+			statistic: "La statistique à utiliser",
+			character: "Le personnage où prendre la valeur.",
+			comments: {
+				name: "commentaires",
+				description: "Description de l'action",
+			},
+			override: {
+				name: "remplacer",
+				description: "Remplacer le seuil de réussite",
+			},
+			modificator: {
+				name: "modificateur",
+				description: "Bonus/malus ajouté au lancer",
+			}
+		},
+		error: {
+			notRegistered: "Vous n'êtes pas enregistré",
+		}
+	},
+	error: {
+		invalidFormula: "Formule invalide",
+		invalidDice: "Dé invalide",
 	}
 };

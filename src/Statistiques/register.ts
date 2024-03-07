@@ -7,13 +7,13 @@
  * 		ie: /r 1d20+statistiqueValue<=X []
  * 		or: /r 1d20<=statistiqueValue []
  */
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 import dedent from "ts-dedent";
 
 import { Statistique, StatistiqueTemplate } from "../interface";
-import { cmdLn } from "../localizations";
+import { cmdLn, ln } from "../localizations";
 import en from "../localizations/locales/en";
 import { rollForUser } from "./roll";
 import { title,verifyTemplateValue } from "./utils";
@@ -23,91 +23,111 @@ type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
 
 export const generateTemplate = {
 	data: new SlashCommandBuilder()
-		.setName(en.register.generate.name)
-		.setNameLocalizations(cmdLn("register.generate.name"))
+		.setName(en.generate.name)
+		.setNameLocalizations(cmdLn("register.name"))
 		.setDescription("Generate a template for the statistique command")
 		.addStringOption(option =>
 			option
-				.setName(en.register.generate.options.stats.name)
-				.setNameLocalizations(cmdLn("register.generate.options.stats.name"))
-				.setDescription(en.register.generate.options.stats.description)
-				.setDescriptionLocalizations(cmdLn("register.generate.options.stats.description"))
+				.setName(en.generate.options.stats.name)
+				.setNameLocalizations(cmdLn("register.options.stats.name"))
+				.setDescription(en.generate.options.stats.description)
+				.setDescriptionLocalizations(cmdLn("register.options.stats.description"))
 				.setRequired(true)
 		)
 
 		.addStringOption(option =>
 			option
-				.setName(en.register.generate.options.dice.name)
-				.setDescription(en.register.generate.options.dice.description)
-				.setDescriptionLocalizations(cmdLn("register.generate.options.dice.description"))
-				.setNameLocalizations(cmdLn("register.generate.options.dice.name"))
+				.setName(en.generate.options.dice.name)
+				.setDescription(en.generate.options.dice.description)
+				.setDescriptionLocalizations(cmdLn("register.options.dice.description"))
+				.setNameLocalizations(cmdLn("register.options.dice.name"))
 				.setRequired(true)
 		)
 		.addStringOption(option =>
 			option
-				.setName("comparator")
-				.setDescription("The comparator sign between the statistique or a number")
+				.setName(en.generate.options.comparator.name)
+				.setDescription(en.generate.options.comparator.description)
+				.setDescriptionLocalizations(cmdLn("register.options.comparator.description"))
+				.setNameLocalizations(cmdLn("register.options.comparator.name"))
 				.addChoices({
-					"name" : "Greater",
+					"name" : en.generate.options.comparator.value.greater,
+					"name_localizations" : cmdLn("register.options.comparator.value.greater"),
 					"value" : ">",
 				}, {
-					"name" : "Greater or equal",
+					"name" : en.generate.options.comparator.value.greaterEqual,
+					"name_localizations" : cmdLn("register.options.comparator.value.greaterEqual"),
 					"value" : ">=",
 				}, {
-					"name" : "Less",
+					"name" : en.generate.options.comparator.value.less,
+					"name_localizations" : cmdLn("register.options.comparator.value.less"),
 					"value" : "<",
 				}, {
-					"name" : "Less or equal",
+					"name" : en.generate.options.comparator.value.lessEqual,
+					"name_localizations" : cmdLn("register.options.comparator.value.lessEqual"),
 					"value" : "<=",
 				}, {
-					"name" : "Equal",
+					"name" : en.generate.options.comparator.value.equal,
+					"name_localizations" : cmdLn("register.options.comparator.value.equal"),
 					"value" : "=",
 				}, {
-					"name" : "Different",
+					"name" : en.generate.options.comparator.value.different,
+					"name_localizations" : cmdLn("register.options.comparator.value.different"),
 					"value" : "!=",
 				})
 				.setRequired(true)		
 		)
 		.addNumberOption(option =>
 			option
-				.setName("value")
-				.setDescription("The value to compare with the result. Let empty to compare with the statistique value.")
+				.setName(en.generate.options.value.name)
+				.setDescription(en.generate.options.value.description)
+				.setDescriptionLocalizations(cmdLn("register.options.value.description"))
+				.setNameLocalizations(cmdLn("register.options.value.name"))
 				.setRequired(false)
 		)
 		.addNumberOption(option =>
 			option
-				.setName("total")
-				.setDescription("The total statistique point - optional")
+				.setName(en.generate.options.total.name)
+				.setDescription(en.generate.options.total.description)
+				.setDescriptionLocalizations(cmdLn("register.options.total.description"))
+				.setNameLocalizations(cmdLn("register.options.total.name"))
 				.setRequired(false)
 		)
 		.addBooleanOption(option =>
 			option
-				.setName("character")
-				.setDescription("If the user must set a name for them character")
+				.setName(en.generate.options.character.name)
+				.setDescription(en.generate.options.character.description)
+				.setDescriptionLocalizations(cmdLn("register.options.character.description"))
+				.setNameLocalizations(cmdLn("register.options.character.name"))
 				.setRequired(false)
 		)
 		.addNumberOption(option =>
 			option
-				.setName("critical_success")
-				.setDescription("if you use critical success (natural dice)")
+				.setName(en.generate.options.critical_success.name)
+				.setDescription(en.generate.options.critical_success.description)
+				.setDescriptionLocalizations(cmdLn("register.options.critical_success.description"))
+				.setNameLocalizations(cmdLn("register.options.critical_success.name"))
 				.setRequired(false)
 		)
 		.addNumberOption(option =>
 			option
-				.setName("critical_fail")
-				.setDescription("if you use critical fail (natural dice)")
+				.setName(en.generate.options.critical_fail.name)
+				.setDescription(en.generate.options.critical_fail.description)
 				.setRequired(false)
 		)
 		.addStringOption(option =>
 			option
-				.setName("formula")
-				.setDescription("The formula to edit the value. Use $ to symbolise statistique (ie: +$, -$")
+				.setName(en.generate.options.formula.name)
+				.setDescription(en.generate.options.formula.description)
+				.setDescriptionLocalizations(cmdLn("register.options.formula.description"))
+				.setNameLocalizations(cmdLn("register.options.formula.name"))
 				.setRequired(false)		
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const name = options.getString("name");
+		const lnOpt=en.generate.options;
+		const ul = ln(interaction.locale as Locale);
+		const name = options.getString(lnOpt.stats.name);
 		if (!name) return;
 		const statistiqueName = name.split(/[, ]+/);
 		const statServer: Statistique = {};
@@ -115,83 +135,82 @@ export const generateTemplate = {
 			statServer[removeAccents(stat)] = {
 				max: 0,
 				min: 0,
-				combinaison: "Can be anything if you don't want to set a proper value. Will be automatically skipped when you register an user. Use statistique name in lowercase and without accent to create the formula"
+				combinaison: ""
 			};
 		}
 		const statistiqueTemplate: StatistiqueTemplate = {
-			charName: options.getBoolean("character") || false,
+			charName: options.getBoolean(lnOpt.character.name) || false,
 			statistiques: statServer,
-			diceType: options.getString("dice") || "1d20",
+			diceType: options.getString(lnOpt.dice.name) || "1d20",
 			comparator: {
-				sign: options.getString("comparator") as ComparatorSign || ">",
-				value: options.getNumber("value") || undefined,
-				formula: options.getString("formula") || "",
-				criticalFailure: options.getNumber("critical_fail") || 1,
-				criticalSuccess: options.getNumber("critical_success") || 20
+				sign: options.getString(lnOpt.comparator.name) as ComparatorSign || ">",
+				value: options.getNumber(lnOpt.value.name) || undefined,
+				formula: options.getString(lnOpt.formula.name) || "",
+				criticalFailure: options.getNumber(lnOpt.critical_fail.name) || 1,
+				criticalSuccess: options.getNumber(lnOpt.critical_success.name) || 20
 			},
-			total: options.getNumber("total") || 0,
+			total: options.getNumber(lnOpt.total.name) || 0,
 		};
-		const help = dedent(`
-			- Dice type must be a valid dice (will be tested when template is send)
-			- Value must be a number and can be optional : remove it if you don't want to set it
-			- Total is optional and can be set to 0 to disable it. It allows to check the total statistiques point for an user.
-			- Formula allow to edit the value when combined to the dice. Use $ to symbolise the statistique. For example: \`+$\`, \`-$\`, \`($-10)/2\`...
-			- A statistique can be a combinaison of multiple other statistique, like \`(strength + agility)/2\`. If the value \`combinaison\` is set, min-max will be disabled automatically, and you can't register it either : the value will be automatically calculated. More over, this statistique won't count in the total of points you allow. 
-		
-		Note that, everything can be edited later as you want, this is just a template to help you to create your statistiques.	
-		`);
+		const help = dedent(ul.generate.help);
 		await interaction.reply({ content: help, files: [{ attachment: Buffer.from(JSON.stringify(statistiqueTemplate, null, 2), "utf-8"), name: "template.json" }]});
 	}
 };
 
 export const registerTemplate = {
 	data: new SlashCommandBuilder()
-		.setName("register")
+		.setName(en.register.name)
+		.setNameLocalizations(cmdLn("register.name"))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-		.setDescription("Register a template for the statistique command")
+		.setDescription(en.register.description)
 		.addChannelOption(option =>
 			option
-				.setName("channel")
-				.setDescription("The channel to register the template")
+				.setName(en.register.options.channel.name)
+				.setDescription(en.register.options.channel.description)
+				.setNameLocalizations(cmdLn("register.options.channel.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.channel.description"))
 				.setRequired(true)
 				.addChannelTypes(ChannelType.GuildText)
 		)
 		.addAttachmentOption(option =>
 			option
-				.setName("template")
-				.setDescription("The template to register")
+				.setName(en.register.options.template.name)
+				.setDescription(en.register.options.template.description)
+				.setNameLocalizations(cmdLn("register.options.template.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.template.description"))
 				.setRequired(true)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const template = options.getAttachment("template");
+		const lOpt = en.register.options;
+		const ul = ln(interaction.locale as Locale);
+		const template = options.getAttachment(lOpt.template.name);
 		if (!template) return;
 		try {
 			//fetch the template
 			const res = await fetch(template.url).then(res => res.json());
 			const templateData = verifyTemplateValue(res);
 			const guildData = interaction.guild.id;
-			const channel = options.getChannel("channel");
+			const channel = options.getChannel(lOpt.channel.name);
 			if (!channel || !(channel instanceof TextChannel)) return;
 			//send template as JSON in the channel, send as file
 			//add register button
 			const button = new ButtonBuilder()
 				.setCustomId("register")
-				.setLabel("Register")
+				.setLabel(ul.register.button)
 				.setStyle(ButtonStyle.Primary);
 			const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);	
 			const embedTemplate = new EmbedBuilder()
-				.setTitle("Template")
-				.setDescription("Click on the button to register an user")
+				.setTitle(ul.register.embed.title)
+				.setDescription(ul.register.embed.description)
 				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
 				.setColor("Random");
 			if (Object.keys(templateData.statistiques).length === 0) {
-				interaction.reply({ content: "No statistique found", ephemeral: true });
+				interaction.reply({ content: ul.register.error.noStatistics, ephemeral: true });
 				return;
 			}
 			if (Object.keys(templateData.statistiques).length >= 20) {
-				interaction.reply({ content: "You can't have more than 20 statistical value", ephemeral: true });
+				interaction.reply({ content: ul.register.error.tooMuchStats, ephemeral: true });
 				return;
 			}
 				
@@ -203,7 +222,7 @@ export const registerTemplate = {
 				if (combinaison) msg += `- Combinaison: \`${combinaison}\`\n`;
 				if (min) msg += `- Min: \`${min}\`\n`;
 				if (max) msg += `- Max: \`${max}\`\n`;
-				if (msg.length === 0) msg = "No value set";
+				if (msg.length === 0) msg = ul.register.embed.noValue;
 				embedTemplate.addFields({
 					name:title(stat),
 					value: msg,
@@ -212,24 +231,24 @@ export const registerTemplate = {
 			}
 			//add the last embed
 			embedTemplate.addFields({
-				name: "Dice",
+				name: ul.register.embed.dice,
 				value: templateData.diceType,
 			});
 			let msgComparator = "";
-			if (templateData.comparator.value) msgComparator += `- Value: \`${templateData.comparator.value}\`\n`;
-			if (templateData.comparator.formula) msgComparator += `- Formula: \`${templateData.comparator.formula}\`\n`;
-			if (templateData.comparator.sign) msgComparator += `- Comparator: \`${templateData.comparator.sign}\`\n`;
+			if (templateData.comparator.value) msgComparator += `- ${ul.register.embed.value} \`${templateData.comparator.value}\`\n`;
+			if (templateData.comparator.formula) msgComparator += `- ${ul.register.embed.formula} \`${templateData.comparator.formula}\`\n`;
+			if (templateData.comparator.sign) msgComparator += `- ${ul.register.embed.comparator}: \`${templateData.comparator.sign}\`\n`;
 			embedTemplate.addFields({
-				name: "Comparator",
+				name: ul.register.embed.comparator,
 				value: msgComparator,
 			});
 			if (templateData.total) embedTemplate.addFields({
-				name: "Total",
-				value: `Total: ${templateData.total}`,
+				name: ul.common.total,
+				value: `${ul.common.total}${ul.common.space}: ${templateData.total}`,
 			});
 			const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
 			msg.pin();
-			await interaction.reply({ content: "Template registered", ephemeral: true });
+			await interaction.reply({ content: ul.register.embed.registered, ephemeral: true });
 			//save in database file
 			const data = fs.readFileSync("database.json", "utf-8");
 			const json = JSON.parse(data);
@@ -253,7 +272,7 @@ export const registerTemplate = {
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
 			console.log(e);
-			await interaction.reply({ content: `Invalid template:\n \`\`\`\n${(e as Error).message}\`\`\``, ephemeral: true });
+			await interaction.reply({ content: `${ul.register.error.invalid}:\n \`\`\`\n${(e as Error).message}\`\`\``, ephemeral: true });
 		}
 	}	
 };
