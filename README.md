@@ -167,7 +167,7 @@ Template JSON example:
 
 -> `/register <channel> <path to the file>`
 
-The bot will verify the file and register it. An reference embed + the parsed / corrected file will be send into the choosen channel. This channel will be saved as an id in the database, as well the message_id.
+The bot will verify the file and register it. An reference embed + the parsed / corrected file will be send into the choosen channel. This channel will be saved as an id in the database, as well the `message_id`.
 
 > [!important]
 > This channel will be used for saving user. A thread will be created for registering users. If a thread already exists (named as `📝 • [STATS]`), it will use it.
