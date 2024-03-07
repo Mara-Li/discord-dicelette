@@ -93,18 +93,18 @@ export function registerUser(userID: string, interaction: ModalSubmitInteraction
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
 	const user = getUserData(guildData, userID);
-	if (!user) {
-		guildData.user[userID].push({
-			charName:charName?.toLowerCase(),
-			messageId: msgId
-		});
-	} else {
+	if (user) {
 		//search if charName already exists
 		const char = user.find(char => char.charName === charName);
 		if (char)
 			//overwrite the message id
 			char.messageId = msgId;
 		else user.push({ charName, messageId: msgId });	
+	} else {
+		guildData.user[userID].push({
+			charName:charName?.toLowerCase(),
+			messageId: msgId
+		});
 	}
 	//update the database
 	const data = fs.readFileSync("database.json", "utf-8");

@@ -1,17 +1,19 @@
-import { ActionRowBuilder, ButtonInteraction, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { StatisticalTemplate } from "../interface";
+import { ln } from "../localizations";
 
 export async function showFistPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	const nbOfStatistique = Object.keys(template.statistic).length;
 	const nbOfPages = Math.floor(nbOfStatistique / 5) > 0 ? Math.floor(nbOfStatistique / 5) : 2;
+	const ul = ln(interaction.locale as Locale);
 	const modal = new ModalBuilder()
 		.setCustomId("firstPage")
-		.setTitle(`Registering User - Page 1/${nbOfPages}`);
+		.setTitle(ul.modals.firstPage(nbOfPages));
 	const charNameInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("charName")
-			.setLabel("Character name")
-			.setPlaceholder("Enter your character name")
+			.setLabel(ul.modals.charName.name)
+			.setPlaceholder(ul.modals.charName.description)
 			.setRequired(template.charName || false)
 			.setValue("")
 			.setStyle(TextInputStyle.Short),
@@ -19,26 +21,26 @@ export async function showFistPageModal(interaction: ButtonInteraction, template
 	const userIdInputs = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("userID")
-			.setLabel("User")
-			.setPlaceholder("Enter the user rattached to the character (id or global username)")
+			.setLabel(ul.modals.user.name)
+			.setPlaceholder(ul.modals.user.description)
 			.setRequired(true)
 			.setValue("")
 			.setStyle(TextInputStyle.Short),
 	);
 	modal.addComponents(charNameInput, userIdInputs);	
 	await interaction.showModal(modal);
-
 }
 
 export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page = 1) {
+	const ul = ln(interaction.locale as Locale);
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
-		.setTitle(`Registering User - Page ${page}/${Math.ceil(Object.keys(template.statistic).length / 5)}`);
+		.setTitle(ul.modals.steps(page, Math.ceil(Object.keys(template.statistic).length / 5)) + 1);
 	let statToDisplay = Object.keys(template.statistic);
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
 		if (statToDisplay.length === 0) {
-			await interaction.reply({ content: "All stats are already set", ephemeral: true });
+			await interaction.reply({ content: ul.modals.alreadySet, ephemeral: true });
 			return;
 		}
 	}
@@ -51,7 +53,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 			new TextInputBuilder()
 				.setCustomId(stat)
 				.setLabel(stat)
-				.setPlaceholder("Enter the value")
+				.setPlaceholder(ul.modals.enterValue(value.min, value.max))
 				.setRequired(true)
 				.setValue("")
 				.setStyle(TextInputStyle.Short),

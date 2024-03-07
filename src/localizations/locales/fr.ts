@@ -109,14 +109,14 @@ export default {
 			}
 		},
 		help: `
-				- Le type de dé doit être un type valide (il sera testé quand vous enregistrerez le modèle).
-				- La valeur doit être un nombre, et peut être optionnel. Si vous l'enlevez, le dé sera comparé à la statistique plutôt qu'une valeur.
-				- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.
-				- La formule permet d'éditer la valeur combinée au dé. Utiliser \`$\` pour symboliser la valeur (ie: \`+$\`, \`-$\`, \`($-10)/2\`...).
-				- Une statistique peut être une combinaison d'autre statistique, comme \`force+endurance\`. Si la valeur de \`combinaison\` est définie, alors que les paramètres \`min\` et \`max\` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.
+		- Le type de dé doit être un type valide (il sera testé quand vous enregistrerez le modèle).
+		- La valeur doit être un nombre, et peut être optionnel. Si vous l'enlevez, le dé sera comparé à la statistique plutôt qu'une valeur.
+		- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.
+		- La formule permet d'éditer la valeur combinée au dé. Utiliser \`$\` pour symboliser la valeur (ie: \`+$\`, \`-$\`, \`($-10)/2\`...).
+		- Une statistique peut être une combinaison d'autre statistique, comme \`force+endurance\`. Si la valeur de \`combinaison\` est définie, alors que les paramètres \`min\` et \`max\` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.
 
-			Noter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.	
-			`
+		Noter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.	
+		`
 	},
 	register: {
 		name: "enregistrer",
@@ -153,6 +153,8 @@ export default {
 		statistic: "statistique",
 		character: "personnage",
 		comments: "commentaires",
+		noSet: "/",
+		page: (nb: number) => `Page ${nb}`,
 	},
 	dbRoll: {
 		name: "dbroll",
@@ -188,5 +190,31 @@ export default {
 		mustBeLower: (value: string, max: number) => `La valeur ${value} doit être plus petite que ${max}`,
 		mustBeGreater: (value: string, min: number) => `La valeur ${value} doit être plus grande que ${min}`,
 		totalExceededBy: (value: string, max: number) => `Le total de ${value} est dépassé de ${max}`,
+		noTemplate: "Aucun modèle ou channel configuré",
+	},
+	modals: {
+		continue: "Continuer",
+		cancel: "Annuler",
+		embedTitle: "Utilisateur enregistré",
+		finished: "Statistiques terminées",
+		added: "Statistiques ajoutées",
+		charName: {
+			name: "Nom du personnage",
+			description: "Entrez le nom de votre personnage"
+		},
+		firstPage: (page: number) => `Enregistrement de l'utilisateur - Page 1/${page}`,
+		steps: (page: number, max: number) => `Enregistrement de l'utilisateur - Page ${page}/${max}`,
+		user: {
+			name: "utilisateur",
+			description: "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)"
+		},
+		alreadySet: "Toutes les statistiques sont déjà définies",
+		enterValue: (min?: number, max?: number) => {
+			if (min && max) return `Entrez une valeur entre ${min} et ${max}`;
+			if (min) return `Entrez une valeur plus grande que ${min}`;
+			if (max) return `Entrez une valeur plus petite que ${max}`;
+			return "Entrez une valeur";
+		},
+		
 	}
 };

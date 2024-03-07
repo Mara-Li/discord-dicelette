@@ -18,38 +18,36 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction) 
 	const embed = new EmbedBuilder()
 		.setTitle("Registering User")
 		.setThumbnail(user.user.displayAvatarURL())
-		.setFooter({ text: "Page 1" })
+		.setFooter({ text: ul.common.page(1) })
 		.addFields(
-			{ name: "Character name", value: charName.length > 0 ? charName : "Not set", inline: true},
+			{ name: "Character name", value: charName.length > 0 ? charName : ul.common.noSet, inline: true},
 			{ name: "User", value: userMention(user.id), inline: true},
 			{name: "\u200B", value: "_ _", inline: true}
 		);
 	//add continue button
 	const continueButton = new ButtonBuilder()
 		.setCustomId("continue")
-		.setLabel("Continue")
+		.setLabel(ul.modals.continue)
 		.setStyle(ButtonStyle.Success);
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("cancel")
-		.setLabel("Cancel")
+		.setLabel(ul.modals.cancel)
 		.setStyle(ButtonStyle.Danger);
 	await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
 }
 
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page=2) {
 	if (!interaction.message) return;
+	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = interaction.message?.embeds[0];
 	if (!oldEmbeds) return;
 	try {
 		const {combinaisonFields, stats} = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
-		
-
-		//add stats to the old embed
 		const embed = new EmbedBuilder()
-			.setTitle("Registering User")
+			.setTitle(ul.modals.embedTitle)
 			.setThumbnail(oldEmbeds.thumbnail?.url || "")
-			.setFooter({ text: `Page ${page}` });
+			.setFooter({ text: ul.common.page(page) });
 		//add old fields
 		if (!oldEmbeds.fields) return;
 		for (const field of oldEmbeds.fields) {
@@ -91,10 +89,10 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 
 			let userID = oldEmbeds.fields.find(field => field.name === "User")?.value;
 			let charName: string |undefined = oldEmbeds.fields.find(field => field.name === "Character name")?.value;
-			if (charName && charName === "Not set")
+			if (charName && charName === ul.common.noSet)
 				charName = undefined;
 			if (!userID) {
-				await interaction.reply({ content: "Invalid user", ephemeral: true });
+				await interaction.reply({ content: ul.error.user, ephemeral: true });
 				return;
 			}
 			userID = userID.replace("<@", "").replace(">", "");
@@ -108,19 +106,19 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			};
 			await interaction.message.delete();
 			await repostInThread(embed, interaction, userStatistique, userID);
-			await interaction.reply({ content: "Stats finished", ephemeral: true });
+			await interaction.reply({ content: ul.modals.finished, ephemeral: true });
 			return;
 		}
 		const continueButton = new ButtonBuilder()
 			.setCustomId("continue")
-			.setLabel("Continue")
+			.setLabel(ul.modals.continue)
 			.setStyle(ButtonStyle.Success);
 		const cancelButton = new ButtonBuilder()
 			.setCustomId("cancel")
-			.setLabel("Cancel")
+			.setLabel(ul.modals.cancel)
 			.setStyle(ButtonStyle.Danger);
 		await interaction.message.edit({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
-		await interaction.reply({ content: "Stats added", ephemeral: true });
+		await interaction.reply({ content: ul.modals.added, ephemeral: true });
 	} catch (error) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		await interaction.reply({ content: (error as any).message, ephemeral: true });

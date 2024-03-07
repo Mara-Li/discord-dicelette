@@ -6,9 +6,12 @@ import { createEmbedFirstPage, embedStatistiques } from "../utils/create_embed";
 import { getTemplate, getTemplateWithDB } from "../utils/db";
 import { showFistPageModal, showStatistiqueModal } from "../utils/modals";
 import { parseEmbed } from "../utils/parse";
+import { ln } from "../localizations";
+import { Locale } from "moment";
 
 export default (client: Client): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
+		const ul = ln(interaction.locale)
 		if (interaction.isCommand()) {
 			const command = commandsList.find(
 				(cmd) => cmd.data.name === interaction.commandName
@@ -23,7 +26,7 @@ export default (client: Client): void => {
 		else if (interaction.isButton() && interaction.customId === "register") {
 			const template = await getTemplate(interaction);
 			if (!template) {
-				await interaction.reply({ content: "No template or configured channel"});
+				await interaction.reply({ content: ul.error.noTemplate});
 				return;
 			}
 			try {
@@ -37,7 +40,7 @@ export default (client: Client): void => {
 		} else if (interaction.isButton() && interaction.customId=="continue") {
 			const template = await getTemplateWithDB(interaction);
 			if (!template) {
-				await interaction.reply({ content: "No template or configured channel"});
+				await interaction.reply({ content: ul.error.noTemplate});
 				return;
 			}
 			const embed = parseEmbed(interaction);
@@ -45,7 +48,7 @@ export default (client: Client): void => {
 			const allTemplateStat = Object.keys(template.statistic);
 			const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(stat));
 			if (statsAlreadySet.length === allTemplateStat.length) {
-				await interaction.reply({ content: "All stats are already set", ephemeral: true });
+				await interaction.reply({ content: ul.modals.alreadySet, ephemeral: true });
 				return;
 			}
 			const page = isNaN(parseInt(interaction.customId.replace("page", ""))) ? 2 : parseInt(interaction.customId.replace("page", ""))+1;
@@ -55,7 +58,7 @@ export default (client: Client): void => {
 			if (isNaN(pageNumber)) return;
 			const template = await getTemplateWithDB(interaction);
 			if (!template) {
-				await interaction.reply({ content: "No template or configured channel"});
+				await interaction.reply({ content: ul.error.noTemplate});
 				return;
 			}
 			await embedStatistiques(interaction, template, pageNumber);

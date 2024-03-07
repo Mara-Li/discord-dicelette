@@ -176,6 +176,8 @@ export default {
 		space: "",
 		statistic: "statistic",
 		character: "character",
+		noSet: "/",
+		page: (nb: number) => `Page ${nb}`,
 	},
 	error: {
 		invalidFormula: "Invalid formula",
@@ -188,5 +190,30 @@ export default {
 		mustBeLower: (value: string, max: number) => `${value} must be lower than ${max}`,
 		mustBeGreater: (value: string, min: number) => `${value} must be greater than ${min}`,
 		totalExceededBy: (value: string, max: number) => `The total of ${value} is exceeded by ${max}`,
+		noTemplate: "No template or configured channel",
+	},
+	modals: {
+		continue: "Continue",
+		cancel: "Cancel",
+		embedTitle: "Registered user",
+		finished: "Stats finished",
+		added: "Stats added",
+		firstPage: (page: number) => `Registering User - Page 1/${page}`,
+		steps: (page: number, max: number) => `Registering User - Page ${page}/${max}`,
+		charName: {
+			name: "charName",
+			description: "Enter your character name",
+		},
+		user: {
+			name: "User",
+			description: "Enter the user attached to the character (id or global username)",
+		},
+		alreadySet: "All stats are already set",
+		enterValue: (min?: number, max?: number) => {
+			if (min && max) return `Enter a value between ${min} and ${max}`;
+			if (min) return `Enter a value greater than ${min}`;
+			if (max) return `Enter a value lower than ${max}`;
+			return "Enter a value";
+		}
 	}
 };
