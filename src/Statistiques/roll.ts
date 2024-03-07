@@ -5,7 +5,7 @@ import { getGuildData, getUserData, getUserFromMessage, rollWithInteraction } fr
 
 export const rollForUser = {
 	data: new SlashCommandBuilder()
-		.setName("dice")
+		.setName("dbroll")
 		.setDescription("Roll a dice using your registered statistiques")
 		.setDefaultMemberPermissions(0)
 		.addStringOption(option =>
