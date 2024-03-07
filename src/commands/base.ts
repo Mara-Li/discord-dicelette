@@ -57,7 +57,6 @@ export const diceRoll = {
 		}
 		try {
 			await rollWithInteraction(interaction, dice, channel);
-			
 		} catch (error) {
 			await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
 			return;
