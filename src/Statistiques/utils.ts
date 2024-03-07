@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * TODO:
  * - Edit the reference message
@@ -64,8 +65,13 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 			throw new Error("Invalid comparator sign");
 		if (template.comparator.value <= 0)
 			template.comparator.value = undefined;
-		if (template.comparator.formula)
+		if (template.comparator.formula){
 			template.comparator.formula = removeAccents(template.comparator.formula);
+		
+		}
+
+		if (template.comparator.criticalSuccess && template.comparator.criticalSuccess<=0) template.comparator.criticalSuccess = undefined;
+		if (template.comparator.criticalFailure && template.comparator.criticalFailure<=0) template.comparator.criticalFailure = undefined;
 		statistiqueTemplate.comparator = template.comparator;
 	}
 	if (template.total) {
@@ -74,7 +80,71 @@ export function verifyTemplateValue(template: any): StatistiqueTemplate {
 		statistiqueTemplate.total = template.total;
 	}
 	if (template.charName) statistiqueTemplate.charName = template.charName;
+
+	try {
+		testFormula(statistiqueTemplate);
+		testCombinaison(statistiqueTemplate);
+	} catch (error) {
+		throw new Error((error as Error).message);
+	}
+
 	return statistiqueTemplate;
+}
+
+function testCombinaison(template: StatistiqueTemplate) {
+	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistiques).filter(([_, value]) => value.combinaison !== undefined));
+	const allOtherStats = Object.fromEntries(Object.entries(template.statistiques).filter(([_, value]) => !value.combinaison));	
+	if (Object.keys(onlyCombinaisonStats).length===0) return;
+	const allStats = Object.keys(template.statistiques).filter(stat => !template.statistiques[stat].combinaison);
+	if (allStats.length === 0) 
+		throw new Error("No stats found");
+	const error= [];
+	for (const [stat, value] of Object.entries(onlyCombinaisonStats)) {
+		let formula = value.combinaison as string;
+		for (const [_, data] of Object.entries(allOtherStats)) {
+			const {max, min} = data;
+			const total = template.total || 100;
+			const randomStatValue = max && min ? Math.floor(Math.random() * (max - min + 1)) + min : Math.floor(Math.random() * total);
+			const regex = new RegExp(stat, "g");
+			formula = formula.replace(regex, randomStatValue.toString());
+		}
+		try {
+			evaluate(formula);
+		} catch (e) {
+			error.push(stat);
+		}
+	}
+	if (error.length > 0) 
+		throw new Error(`Invalid formula for ${error.join(", ")}`);
+	return;
+}
+
+function testFormula(template: StatistiqueTemplate) {
+	const firstStatNotCombinaison = Object.keys(template.statistiques).find(stat => !template.statistiques[stat].combinaison);
+	if (!firstStatNotCombinaison) 
+		throw new Error("No stat found, only combinaison");
+	if (!template.comparator.formula) return;
+	const stats = template.statistiques[firstStatNotCombinaison];
+	const {min, max} = stats;
+	const total = template.total || 100;
+	
+	let randomStatValue = 0;
+	while (randomStatValue < total)
+		if (max && min)
+			randomStatValue = Math.floor(Math.random() * (max - min + 1)) + min;
+		else if (max)
+			randomStatValue = Math.floor(Math.random() * (max - 1)) + 1;
+		else if (min)
+			randomStatValue = Math.floor(Math.random() * (total - min + 1)) + min;
+		else
+			randomStatValue = Math.floor(Math.random() * total);
+	const formula = template.comparator.formula.replace("$", randomStatValue.toString());	
+	try {
+		evaluate(formula);
+		return true;
+	} catch (error) {
+		throw new Error("Invalid formula");
+	}
 }
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatistiqueTemplate|undefined> {

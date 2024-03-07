@@ -253,7 +253,7 @@ export const registerTemplate = {
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
 			console.log(e);
-			await interaction.reply({ content: `Invalid template: \`\`\`\n${e}\`\`\``, ephemeral: true });
+			await interaction.reply({ content: `Invalid template:\n \`\`\`\n${(e as Error).message}\`\`\``, ephemeral: true });
 		}
 	}	
 };
