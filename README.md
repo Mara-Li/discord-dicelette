@@ -81,7 +81,10 @@ The bot will create a new thread, prefixed by `🎲`, and send the log to it. Th
 
 > [!warning] 
 > By default, the `/dbroll` is disabled! You need to enable it via the Discord server panel configuration.
-
+![Enable dbroll 1](./assets/tuto/allow_commands_1.png)
+![Enable dbroll 2](./assets/tuto/allow_commands_2.png)
+![Enable dbroll 3](./assets/tuto/allow_commands_3.png)
+![Enable dbroll 4](./assets/tuto/allow_commands_4.png)
 
 ## Generate new template (`/generate`)
 
@@ -123,7 +126,7 @@ Template JSON example:
   "statistic": {
 	"strength": {
 	  "max": 20,
-	  "min": 3,
+	  "min": 3
 	},
 	"dexterity": {
 	  "max": 20,
@@ -162,9 +165,25 @@ Template JSON example:
 
 ## Registering the template (`/register`)
 
--> `/register <name> <path to the file>`
+-> `/register <channel> <path to the file>`
 
+The bot will verify the file and register it. An reference embed + the parsed / corrected file will be send into the choosen channel. This channel will be saved as an id in the database, as well the message_id.
 
+> [!important]
+> This channel will be used for saving user. A thread will be created for registering users. If a thread already exists (named as `📝 • [STATS]`), it will use it.
+> Only one thread will be used at time.
+
+## Registering a character
+
+The registering of the user use the button under the embed created at the `/register` steps. First modals ask for an character name and the user rattached to the registering. Here, you can use an id or the global name of the user.
+
+After, each 5 statistic (excepted for combinaison stat), it will ask for the value. 
+
+> [!note]
+> Because of the limitation of modals:
+> - If an error is detected at a steps, you need to re-entered the corrected value, and you can save the "previous" modals. 
+> - The value can be verified / forced during registration (only text entry are allowed)
+> - Only 5 value are autorized at time:	If you have more than 5 statistic, you need to re-entered the modals by clicking on the "continue" button.
 
 ---
 ## Translation
