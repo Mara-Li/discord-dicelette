@@ -269,5 +269,30 @@ export const registerTemplate = {
 	}	
 };
 
+export const logs = {
+	data: new SlashCommandBuilder()
+		.setName("logs")
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDescription("Set a channel to send error logs")
+		.addChannelOption(option =>
+			option
+				.setName("channel")
+				.setDescription("The channel where to send the logs")
+				.setRequired(true)
+				.addChannelTypes(ChannelType.GuildText, ChannelType.PrivateThread, ChannelType.PublicThread)
+		),
+	async execute(interaction: CommandInteraction): Promise<void> {
+		if (!interaction.guild) return;
+		const options = interaction.options as CommandInteractionOptionResolver;
+		const channel = options.getChannel("channel", true);
+		if (!channel || !(channel instanceof TextChannel)) return;
+		const data = fs.readFileSync("database.json", "utf-8");
+		const json = JSON.parse(data);
+		const guildData = interaction.guild.id;
+		json[guildData].logs = channel.id;
+		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
+		await interaction.reply({ content: "Logs channel set", ephemeral: true });
+	}
+}
 
 export const commands = [generateTemplate, registerTemplate, rollForUser];

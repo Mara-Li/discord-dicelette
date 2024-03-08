@@ -20,6 +20,7 @@ export interface Compare {
 export type Sign = "+" | "-" | "*" | "/" | "%" | "^" | "**";
 
 export interface GuildData {
+	logs?: string,
 	templateID: {
 		channelId: string;
 		messageId: string;

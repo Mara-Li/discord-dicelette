@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, CommandInteraction, Guild, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, CommandInteraction, Guild, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 
@@ -86,11 +86,17 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
 		throw new Error(ul.error.user);
 	}
-
-	
 }
 
-export function registerUser(userID: string, interaction: ModalSubmitInteraction,msgId: string, charName?: string, ) {
+export function readDB(guildID: string) {
+	const database = fs.readFileSync("database.json", "utf-8");
+	const parsedDatabase = JSON.parse(database);
+	if (!parsedDatabase[guildID]) return;
+	const db = parsedDatabase[guildID] as Partial<GuildData>;
+	return {db, parsedDatabase};
+}
+
+export async function registerUser(userID: string, interaction: ModalSubmitInteraction,msgId: string, thread: ThreadChannel, charName?: string) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
 	if (charName) charName = removeAccents(charName).toLowerCase();
@@ -99,9 +105,12 @@ export function registerUser(userID: string, interaction: ModalSubmitInteraction
 	const user = getUserData(guildData, userID);
 	if (user) {
 		const char = user.find(char => char.charName === charName);
-		if (char)
+		if (char){
+			//delete old message
+			const oldMessage = await thread.messages.fetch(char.messageId);
+			if (oldMessage) oldMessage.delete();
 			//overwrite the message id
-			char.messageId = msgId;
+			char.messageId = msgId;}
 		else user.push({ charName, messageId: msgId });	
 	} else {
 		guildData.user[userID] = [{

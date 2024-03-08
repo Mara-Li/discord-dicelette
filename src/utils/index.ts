@@ -80,9 +80,10 @@ export async function repostInThread(embed: EmbedBuilder, interaction: ModalSubm
 			autoArchiveDuration: 10080,
 		});
 	}
+	
 	userTemplate.userName = userTemplate.userName ? removeAccents(userTemplate.userName).toLowerCase() : undefined;
 	const msg = await thread.send({ embeds: [embed], files: [{ attachment: Buffer.from(JSON.stringify(userTemplate, null, 2), "utf-8"), name: "template.json" }] },);
-	registerUser(userId, interaction, msg.id, userTemplate.userName);
+	registerUser(userId, interaction, msg.id, thread, userTemplate.userName);
 }
 
 

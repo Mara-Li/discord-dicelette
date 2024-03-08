@@ -1,10 +1,10 @@
-import { AutocompleteInteraction, BaseInteraction, Client } from "discord.js";
+import { AutocompleteInteraction, BaseInteraction, Client, TextChannel } from "discord.js";
 
 import { commandsList } from "../commands/base";
 import { autCompleteCmd } from "../commands/dbroll";
 import { lError, ln } from "../localizations";
 import { createEmbedFirstPage, embedStatistiques } from "../utils/create_embed";
-import { getTemplate, getTemplateWithDB } from "../utils/db";
+import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
 import { showFistPageModal, showStatistiqueModal } from "../utils/modals";
 import { parseEmbed } from "../utils/parse";
 
@@ -23,7 +23,7 @@ export default (client: Client): void => {
 				await interaction.reply({ content: ul.error.generic(error as Error), ephemeral: true });
 			}
 		}
-		else if (interaction.isButton() && interaction.customId === "register") {
+		if (interaction.isButton() && interaction.customId === "register") {
 			const template = await getTemplate(interaction);
 			if (!template) {
 				await interaction.reply({ content: ul.error.noTemplate});
@@ -86,7 +86,16 @@ export default (client: Client): void => {
 			try {
 				await command.autocomplete(interac);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
+				if (!interaction.guild) return;
+				const db = readDB(interaction.guild.id);
+				if (!db) return;
+				if (db.db.logs) {
+					const logs = await interaction.guild.channels.fetch(db.db.logs);
+					if (logs instanceof TextChannel) {
+						logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
+					}
+				}
 			}
 		}
 	});
