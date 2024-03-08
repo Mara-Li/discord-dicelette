@@ -95,7 +95,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	return statistiqueTemplate;
 }
 
-function testCombinaison(template: StatisticalTemplate) {
+export function testCombinaison(template: StatisticalTemplate) {
 	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistics).filter(([_, value]) => value.combinaison !== undefined));
 	const allOtherStats = Object.fromEntries(Object.entries(template.statistics).filter(([_, value]) => !value.combinaison));	
 	if (Object.keys(onlyCombinaisonStats).length===0) return;
@@ -123,7 +123,7 @@ function testCombinaison(template: StatisticalTemplate) {
 	return;
 }
 
-function testFormula(template: StatisticalTemplate) {
+export function testFormula(template: StatisticalTemplate) {
 	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics[stat].combinaison);
 	if (!firstStatNotCombinaison) 
 		throw new Error("[error.noStat, error.onlyCombination]");
@@ -142,7 +142,7 @@ function testFormula(template: StatisticalTemplate) {
 	}
 }
 
-function generateRandomStat(total: number | undefined = 100, max?: number, min?: number) {
+export function generateRandomStat(total: number | undefined = 100, max?: number, min?: number) {
 	let randomStatValue = 0;
 	while (randomStatValue < total)
 		if (max && min)

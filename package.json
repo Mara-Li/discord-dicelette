@@ -15,7 +15,8 @@
     "delete": "pm2 delete dice-plus",
     "dev": "ts-node-dev --respawn -- src/index.ts",
     "dev:prod": "cross-env ENV=production ts-node-dev --respawn -- src/index.ts",
-    "lint:fix": "eslint --fix --ext .ts src/"
+    "lint:fix": "eslint --fix --ext .ts src/",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -39,7 +40,12 @@
     "ts-dedent": "^2.2.0",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "tslib": "^2.6.2",
-    "typescript": "^5.3.2"
+    "tslib": "^2.6.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
   }
 }
