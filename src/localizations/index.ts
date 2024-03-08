@@ -43,7 +43,7 @@ export function lError(error: Error, interaction: BaseInteraction) {
 	for (const error of errors) {
 		msgError += getTranslation(error, ul);
 	}
-	return `${msgError}${ul.common.space}:\n\`\`\`\n${errorMessage}\n\`\`\``;
+	return `${msgError}\n\`\`\`\n${errorMessage}\n\`\`\``;
 
 }
 

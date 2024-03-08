@@ -18,7 +18,7 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 			const result = evaluate(formula);
 			newStats[stat] = result;
 		} catch (error) {
-			throw new Error(`Invalid formula for ${stat}`);
+			throw new Error(`[error.invalidFormula, common.space]: ${stat}`);
 		}
 	}
 	return newStats;
@@ -40,7 +40,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 			const dataValue = value as { max?: number, min?: number, combinaison?: string };
 			const statName = removeAccents(key).toLowerCase();
 			if (dataValue.max && dataValue.min && dataValue.max <= dataValue.min)
-				throw new Error("[ul.error.maxGreater]");				
+				throw new Error("[error.maxGreater]");				
 			if (dataValue.max && dataValue.max <= 0 ) dataValue.max = undefined;
 			if (dataValue.min && dataValue.min <= 0 ) dataValue.min = undefined;
 			let formula = dataValue.combinaison ? removeAccents(dataValue.combinaison).toLowerCase() : undefined;
@@ -58,15 +58,15 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 			roll(template.diceType);
 			statistiqueTemplate.diceType = template.diceType;
 		} catch (e) {
-			throw new Error("[ul.error.invalidDice]");
+			throw new Error("[error.invalidDice]");
 		}
 	}
 
 	if (!template.comparator)
-		throw new Error("[ul.error.invalidComparator]");
+		throw new Error("[error.invalidComparator]");
 	if (template.comparator) {
 		if (!template.comparator.sign.match(/(>|<|>=|<=|=|!=)/))
-			throw new Error("[ul.error.incorrectSign]");
+			throw new Error("[error.incorrectSign]");
 		if (template.comparator.value <= 0)
 			template.comparator.value = undefined;
 		if (template.comparator.formula){
@@ -101,7 +101,7 @@ function testCombinaison(template: StatisticalTemplate) {
 	if (Object.keys(onlyCombinaisonStats).length===0) return;
 	const allStats = Object.keys(template.statistics).filter(stat => !template.statistics[stat].combinaison);
 	if (allStats.length === 0) 
-		throw new Error("[ul.error.noStat]");
+		throw new Error("[error.noStat]");
 	const error= [];
 	for (const [stat, value] of Object.entries(onlyCombinaisonStats)) {
 		let formula = value.combinaison as string;
@@ -119,14 +119,14 @@ function testCombinaison(template: StatisticalTemplate) {
 		}
 	}
 	if (error.length > 0) 
-		throw new Error(`[ul.error.invalidFormula, ul.common.space] ${error.join(", ")}`);
+		throw new Error(`[error.invalidFormula, common.space] ${error.join(", ")}`);
 	return;
 }
 
 function testFormula(template: StatisticalTemplate) {
 	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics[stat].combinaison);
 	if (!firstStatNotCombinaison) 
-		throw new Error("[ul.error.noStat, ul.error.onlyCombination]");
+		throw new Error("[error.noStat, error.onlyCombination]");
 	if (!template.comparator.formula) return;
 	const stats = template.statistics[firstStatNotCombinaison];
 	const {min, max} = stats;
@@ -138,7 +138,7 @@ function testFormula(template: StatisticalTemplate) {
 		evaluate(formula);
 		return true;
 	} catch (error) {
-		throw new Error("[ul.error.invalidFormula]");
+		throw new Error("[error.invalidFormula]");
 	}
 }
 

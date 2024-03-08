@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+
 import { StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
 
@@ -33,9 +34,11 @@ export async function showFistPageModal(interaction: ButtonInteraction, template
 
 export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page = 1) {
 	const ul = ln(interaction.locale as Locale);
+	const statsWithoutCombinaison = Object.keys(template.statistics).filter(stat => !template.statistics[stat].combinaison) ?? [];
+	const nbOfPages = Math.ceil(statsWithoutCombinaison.length / 5) >= 1 ? Math.ceil(statsWithoutCombinaison.length / 5) : page;
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
-		.setTitle(ul.modals.steps(page, Math.ceil(Object.keys(template.statistics).length / 5)) + 1);
+		.setTitle(ul.modals.steps(page, nbOfPages +1 ));
 	let statToDisplay = Object.keys(template.statistics);
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
