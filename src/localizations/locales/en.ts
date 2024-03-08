@@ -123,11 +123,7 @@ export default {
 		name: "register",
 		description: "Register a template for the dbroll command",
 		options: {
-			channel: {
-				name: "channel",
-				description: "The channel where the template and the users will be saved"
-			},
-			template: {
+			channel: "The channel where the template and the users will be saved",			template: {
 				name: "template",
 				description: "The template to register"
 			},
@@ -180,6 +176,7 @@ export default {
 		page: (nb: number) => `Page ${nb}`,
 		charName: "Character name",
 		user: "Joueur",
+		channel: "channel"
 	},
 	error: {
 		invalidFormula: "Invalid formula for",
@@ -222,4 +219,10 @@ export default {
 			return "Enter a value";
 		}
 	},
+	logs: {
+		name: "logs",
+		description: "Set a channel to send error logs",
+		options: "The channel where to send the logs",
+		set: (channel: string) => `Logs channel set to ${channel}`,
+	}
 };

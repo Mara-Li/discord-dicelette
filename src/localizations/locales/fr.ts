@@ -122,10 +122,7 @@ export default {
 		name: "enregistrer",
 		description: "Enregistre un nouveau modèle pour la commande dbroll",
 		options: {
-			channel: {
-				name: "channel",
-				description: "Le channel où le modèle et les utilisateurs seront enregistrés"
-			},
+			channel: "Le channel où le modèle et les utilisateurs seront enregistrés",
 			template: {
 				name: "template",
 				description: "Le modèle à enregistrer"
@@ -157,6 +154,7 @@ export default {
 		page: (nb: number) => `Page ${nb}`,
 		charName: "Nom du personnage",
 		user: "Joueur",
+		channel: "channel"
 	},
 	dbRoll: {
 		name: "dbroll",
@@ -221,6 +219,11 @@ export default {
 			if (max) return `Entrez une valeur plus petite que ${max}`;
 			return "Entrez une valeur";
 		},
-		
+	},
+	logs: {
+		name: "logs",
+		description: "Choisir un channel où envoyer les logs d'erreurs",
+		options: "Le channel où envoyer les logs",
+		set: (channel: string) => `Logs configurés dans le channel ${channel}`,
 	}
 };

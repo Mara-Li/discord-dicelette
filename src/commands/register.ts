@@ -156,10 +156,10 @@ export const registerTemplate = {
 		.setDescription(en.register.description)
 		.addChannelOption(option =>
 			option
-				.setName(en.register.options.channel.name)
-				.setDescription(en.register.options.channel.description)
-				.setNameLocalizations(cmdLn("register.options.channel.name"))
-				.setDescriptionLocalizations(cmdLn("register.options.channel.description"))
+				.setName(en.common.channel)
+				.setDescription(en.register.options.channel)
+				.setNameLocalizations(cmdLn("common.channel"))
+				.setDescriptionLocalizations(cmdLn("register.options.channel"))
 				.setRequired(true)
 				.addChannelTypes(ChannelType.GuildText)
 		)
@@ -182,7 +182,7 @@ export const registerTemplate = {
 			const res = await fetch(template.url).then(res => res.json());
 			const templateData = verifyTemplateValue(res);
 			const guildData = interaction.guild.id;
-			const channel = options.getChannel(lOpt.channel.name);
+			const channel = options.getChannel(ul.common.channel);
 			if (!channel || !(channel instanceof TextChannel)) return;
 			//send template as JSON in the channel, send as file
 			//add register button
@@ -271,28 +271,33 @@ export const registerTemplate = {
 
 export const logs = {
 	data: new SlashCommandBuilder()
-		.setName("logs")
+		.setName(en.logs.name)
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-		.setDescription("Set a channel to send error logs")
+		.setDescription(en.logs.description)
+		.setDescriptionLocalizations(cmdLn("logs.description"))
+		.setNameLocalizations(cmdLn("logs.name"))
 		.addChannelOption(option =>
 			option
-				.setName("channel")
-				.setDescription("The channel where to send the logs")
+				.setName(en.common.channel)
+				.setDescription(en.logs.options)
+				.setDescriptionLocalizations(cmdLn("logs.options"))
+				.setNameLocalizations(cmdLn("common.channel"))
 				.setRequired(true)
 				.addChannelTypes(ChannelType.GuildText, ChannelType.PrivateThread, ChannelType.PublicThread)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
+		const ul = ln(interaction.locale as Locale);
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const channel = options.getChannel("channel", true);
+		const channel = options.getChannel(ul.common.channel, true);
 		if (!channel || !(channel instanceof TextChannel)) return;
 		const data = fs.readFileSync("database.json", "utf-8");
 		const json = JSON.parse(data);
 		const guildData = interaction.guild.id;
 		json[guildData].logs = channel.id;
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
-		await interaction.reply({ content: "Logs channel set", ephemeral: true });
+		await interaction.reply({ content:ul.logs.set(channel.name), ephemeral: true });
 	}
 }
 
-export const commands = [generateTemplate, registerTemplate, rollForUser];
+export const commands = [generateTemplate, registerTemplate, rollForUser, logs];

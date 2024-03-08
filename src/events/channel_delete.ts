@@ -2,8 +2,7 @@ import {Client, TextChannel} from "discord.js";
 import fs from "fs";
 
 import { GuildData } from "../interface";
-import { readDB } from "src/utils/db";
-import { lError } from "src/localizations";
+import { readDB } from "../utils/db";
 
 export const channel_delete = (client	: Client): void => {
 	client.on("channelDelete", async (channel) => {
