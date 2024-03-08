@@ -195,6 +195,7 @@ export default {
 		noTemplate: "No template or configured channel",
 		noThread: "No thread found — Please re-register the user if the thread has been deleted",
 		maxGreater: "Max must be greater than min",
+		generic: (e: Error) => `An error occured:\n\`\`\`${e.message}\n\`\`\``,
 	},
 	modals: {
 		continue: "Continue",

@@ -2,16 +2,15 @@ import { AutocompleteInteraction, BaseInteraction, Client } from "discord.js";
 
 import { commandsList } from "../commands/base";
 import { autCompleteCmd } from "../commands/dbroll";
+import { ln } from "../localizations";
 import { createEmbedFirstPage, embedStatistiques } from "../utils/create_embed";
 import { getTemplate, getTemplateWithDB } from "../utils/db";
 import { showFistPageModal, showStatistiqueModal } from "../utils/modals";
 import { parseEmbed } from "../utils/parse";
-import { ln } from "../localizations";
-import { Locale } from "moment";
 
 export default (client: Client): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
-		const ul = ln(interaction.locale)
+		const ul = ln(interaction.locale);
 		if (interaction.isCommand()) {
 			const command = commandsList.find(
 				(cmd) => cmd.data.name === interaction.commandName
@@ -21,6 +20,7 @@ export default (client: Client): void => {
 				await command.execute(interaction);
 			} catch (error) {
 				console.log(error);
+				await interaction.reply({ content: ul.error.generic(error as Error), ephemeral: true });
 			}
 		}
 		else if (interaction.isButton() && interaction.customId === "register") {
@@ -33,6 +33,7 @@ export default (client: Client): void => {
 				await showFistPageModal(interaction, template);
 			} catch (error) {
 				console.log(error);
+				await interaction.reply({ content: ul.error.generic(error as Error), ephemeral: true });
 			}
 		} else if (interaction.isModalSubmit() && interaction.customId=="firstPage") {
 			if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;

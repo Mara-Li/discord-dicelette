@@ -195,6 +195,7 @@ export default {
 		noTemplate: "Aucun modèle ou channel configuré",
 		noThread: "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
 		maxGreater: "Le maximum doit être plus grand que minimum",
+		generic: (e: Error) => `Une erreur est survenue :\n\`\`\`\n${e.message}\n\`\`\``,
 	},
 	modals: {
 		continue: "Continuer",

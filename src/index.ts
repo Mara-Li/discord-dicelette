@@ -3,12 +3,10 @@ import dotenv from "dotenv";
 import * as process from "process";
 
 import * as pkg from "../package.json";
-import onChannelDelete from "./events/channel_delete";
-import onMessageDelete from "./events/delete_message";
+import { channel_delete,delete_message, on_kick } from "./events/channel_delete";
 import interaction from "./events/interaction";
 import join from "./events/join";
 import message_create from "./events/message_create";
-import on_quit from "./events/on_quit";
 import ready from "./events/ready";
 
 dotenv.config({ path: ".env" });
@@ -35,9 +33,9 @@ try {
 	interaction(client);
 	join(client);
 	message_create(client);
-	onMessageDelete(client);
-	onChannelDelete(client);
-	on_quit(client);
+	on_kick(client);
+	delete_message(client);
+	channel_delete(client);
 }
 catch (error) {
 	console.error(error);
