@@ -1,7 +1,7 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 import { evaluate } from "mathjs";
 
-import { cmdLn, ln } from "../localizations";
+import { cmdLn, lError, ln } from "../localizations";
 import en from "../localizations/locales/en";
 import { rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
@@ -86,7 +86,7 @@ export const rollForUser = {
 		const common = en.common;
 		const lOpt = en.dbRoll.options;
 		const ul = ln(interaction.locale as Locale).dbRoll;
-		const lError = ln(interaction.locale as Locale).error;
+		const ulError = ln(interaction.locale as Locale).error;
 		let charName = options.getString(common.character) ?? undefined;
 		try {
 			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
@@ -128,7 +128,7 @@ export const rollForUser = {
 				try {
 					formula = evaluate(`${formula.replace("$", userStat.toString())}+ ${modificator}`).toString();
 				} catch (error) {
-					await interaction.reply({ content: lError.invalidFormula, ephemeral: true });
+					await interaction.reply({ content: ulError.invalidFormula, ephemeral: true });
 					return;
 				}
 				formula = formula?.startsWith("-") ? formula : `+${formula}`;
@@ -139,7 +139,8 @@ export const rollForUser = {
 			await rollWithInteraction(interaction, roll, interaction.channel, critical);
 		}
 		catch (error) {
-			await interaction.reply({ content: (error as Error).message, ephemeral: true });
+			const msgError = lError(error as Error, interaction);
+			await interaction.reply({ content: msgError, ephemeral: true });
 		}
 	}
 };

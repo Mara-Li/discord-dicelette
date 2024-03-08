@@ -1,16 +1,16 @@
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, CommandInteraction, Guild, ModalSubmitInteraction, TextChannel } from "discord.js";
 import fs from "fs";
-import { GuildData, StatisticalTemplate, User } from "../interface";
-
-import { verifyTemplateValue } from "./verify_template";
-import { ln } from "../localizations";
 import removeAccents from "remove-accents";
+
+import { GuildData, StatisticalTemplate, User } from "../interface";
+import { ln } from "../localizations";
+import { verifyTemplateValue } from "./verify_template";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
 	const template = interaction.message?.attachments.first();
 	if (!template) return;
 	const res = await fetch(template.url).then(res => res.json());
-	return verifyTemplateValue(res, interaction);
+	return verifyTemplateValue(res);
 }
 
 export function getGuildData(interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction|AutocompleteInteraction): GuildData|undefined {
@@ -35,7 +35,7 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 	const template = message.attachments.first();
 	if (!template) return;
 	const res = await fetch(template.url).then(res => res.json());
-	return verifyTemplateValue(res, interaction);
+	return verifyTemplateValue(res);
 
 }
 

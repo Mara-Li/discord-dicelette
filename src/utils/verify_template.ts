@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BaseInteraction, Locale } from "discord.js";
 import { evaluate } from "mathjs";
 import removeAccents from "remove-accents";
+
 import { roll } from "../dice";
 import { StatisticalTemplate } from "../interface";
-import { ln } from "../localizations";
 
 export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: number}) {
 	const newStats: {[name: string]: number} = {};
@@ -26,8 +25,7 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function verifyTemplateValue(template: any, interaction: BaseInteraction): StatisticalTemplate {
-	const ul = ln(interaction.locale as Locale);
+export function verifyTemplateValue(template: any): StatisticalTemplate {
 	const statistiqueTemplate: StatisticalTemplate = {
 		statistics: {},
 		diceType: "",
@@ -42,7 +40,7 @@ export function verifyTemplateValue(template: any, interaction: BaseInteraction)
 			const dataValue = value as { max?: number, min?: number, combinaison?: string };
 			const statName = removeAccents(key).toLowerCase();
 			if (dataValue.max && dataValue.min && dataValue.max <= dataValue.min)
-				throw new Error(ul.error.maxGreater);				
+				throw new Error("[ul.error.maxGreater]");				
 			if (dataValue.max && dataValue.max <= 0 ) dataValue.max = undefined;
 			if (dataValue.min && dataValue.min <= 0 ) dataValue.min = undefined;
 			let formula = dataValue.combinaison ? removeAccents(dataValue.combinaison).toLowerCase() : undefined;
@@ -60,15 +58,15 @@ export function verifyTemplateValue(template: any, interaction: BaseInteraction)
 			roll(template.diceType);
 			statistiqueTemplate.diceType = template.diceType;
 		} catch (e) {
-			throw new Error(ul.error.invalidDice);
+			throw new Error("[ul.error.invalidDice]");
 		}
 	}
 
 	if (!template.comparator)
-		throw new Error(ul.error.invalidComparator);
+		throw new Error("[ul.error.invalidComparator]");
 	if (template.comparator) {
 		if (!template.comparator.sign.match(/(>|<|>=|<=|=|!=)/))
-			throw new Error(ul.error.incorrectSign);
+			throw new Error("[ul.error.incorrectSign]");
 		if (template.comparator.value <= 0)
 			template.comparator.value = undefined;
 		if (template.comparator.formula){
@@ -88,8 +86,8 @@ export function verifyTemplateValue(template: any, interaction: BaseInteraction)
 	if (template.charName) statistiqueTemplate.charName = template.charName;
 
 	try {
-		testFormula(statistiqueTemplate, interaction);
-		testCombinaison(statistiqueTemplate, interaction);
+		testFormula(statistiqueTemplate);
+		testCombinaison(statistiqueTemplate);
 	} catch (error) {
 		throw new Error((error as Error).message);
 	}
@@ -97,14 +95,13 @@ export function verifyTemplateValue(template: any, interaction: BaseInteraction)
 	return statistiqueTemplate;
 }
 
-function testCombinaison(template: StatisticalTemplate, interaction: BaseInteraction) {
-	const ul = ln(interaction.locale as Locale);
+function testCombinaison(template: StatisticalTemplate) {
 	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistics).filter(([_, value]) => value.combinaison !== undefined));
 	const allOtherStats = Object.fromEntries(Object.entries(template.statistics).filter(([_, value]) => !value.combinaison));	
 	if (Object.keys(onlyCombinaisonStats).length===0) return;
 	const allStats = Object.keys(template.statistics).filter(stat => !template.statistics[stat].combinaison);
 	if (allStats.length === 0) 
-		throw new Error(ul.error.noStat);
+		throw new Error("[ul.error.noStat]");
 	const error= [];
 	for (const [stat, value] of Object.entries(onlyCombinaisonStats)) {
 		let formula = value.combinaison as string;
@@ -122,15 +119,14 @@ function testCombinaison(template: StatisticalTemplate, interaction: BaseInterac
 		}
 	}
 	if (error.length > 0) 
-		throw new Error(`${ul.error.invalidFormula}${ul.common.space}: ${error.join(", ")}`);
+		throw new Error(`[ul.error.invalidFormula, ul.common.space] ${error.join(", ")}`);
 	return;
 }
 
-function testFormula(template: StatisticalTemplate, interaction: BaseInteraction) {
-	const ul = ln(interaction.locale as Locale);
+function testFormula(template: StatisticalTemplate) {
 	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics[stat].combinaison);
 	if (!firstStatNotCombinaison) 
-		throw new Error(`${ul.error.noStat} : ${ul.error.onlyCombination}`);
+		throw new Error("[ul.error.noStat, ul.error.onlyCombination]");
 	if (!template.comparator.formula) return;
 	const stats = template.statistics[firstStatNotCombinaison];
 	const {min, max} = stats;
@@ -142,7 +138,7 @@ function testFormula(template: StatisticalTemplate, interaction: BaseInteraction
 		evaluate(formula);
 		return true;
 	} catch (error) {
-		throw new Error(ul.error.invalidFormula);
+		throw new Error("[ul.error.invalidFormula]");
 	}
 }
 

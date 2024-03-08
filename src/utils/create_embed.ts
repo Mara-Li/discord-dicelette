@@ -1,10 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
-import { StatisticalTemplate, User } from "../interface";
-import { ln } from "../localizations";
 
-import { evalCombinaison } from "./verify_template";
+import { StatisticalTemplate, User } from "../interface";
+import { lError, ln } from "../localizations";
 import { repostInThread, title } from ".";
 import { getStatistiqueFields } from "./parse";
+import { evalCombinaison } from "./verify_template";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction) {
 	const ul = ln(interaction.locale as Locale);
@@ -57,7 +57,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		}	
 		for (const [stat, value] of Object.entries(stats)) {
 			embed.addFields({
-				name: title(stat),
+				name: title(stat) ?? "",
 				value: value.toString(),
 				inline: true,
 			});
@@ -79,13 +79,14 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				//add combinaison to the embed
 				for (const stat of Object.keys(combinaison)) {
 					embed.addFields({
-						name: title(stat),
+						name: title(stat) ?? "",
 						value: combinaison[stat].toString(),
 						inline: true,
 					});
 				}
 			} catch (error) {
-				await interaction.reply({ content: (error as Error).message, ephemeral: true });
+				const errorMsg = lError(error as Error, interaction);
+				await interaction.reply({ content: errorMsg, ephemeral: true });
 				return;
 			}
 
@@ -122,7 +123,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		await interaction.message.edit({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
 		await interaction.reply({ content: ul.modals.added, ephemeral: true });
 	} catch (error) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		await interaction.reply({ content: (error as any).message, ephemeral: true });
+		const errorMsg = lError(error as Error, interaction);
+		await interaction.reply({ content: errorMsg, ephemeral: true });
 	}
 }

@@ -4,12 +4,11 @@ import removeAccents from "remove-accents";
 import dedent from "ts-dedent";
 
 import { Statistic, StatisticalTemplate } from "../interface";
-import { cmdLn, ln } from "../localizations";
+import { cmdLn, lError, ln } from "../localizations";
 import en from "../localizations/locales/en";
-import { rollForUser } from "./dbroll";
-import { verifyTemplateValue } from "../utils/verify_template";
 import { title } from "../utils";
-import fr from "../localizations/locales/fr";
+import { verifyTemplateValue } from "../utils/verify_template";
+import { rollForUser } from "./dbroll";
 
 type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
 
@@ -177,12 +176,11 @@ export const registerTemplate = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const lOpt = en.register.options;
 		const ul = ln(interaction.locale as Locale);
-		const template = options.getAttachment(lOpt.template.name);
-		if (!template) return;
+		const template = options.getAttachment(lOpt.template.name, true);
 		try {
 			//fetch the template
 			const res = await fetch(template.url).then(res => res.json());
-			const templateData = verifyTemplateValue(res, interaction);
+			const templateData = verifyTemplateValue(res);
 			const guildData = interaction.guild.id;
 			const channel = options.getChannel(lOpt.channel.name);
 			if (!channel || !(channel instanceof TextChannel)) return;
@@ -265,7 +263,8 @@ export const registerTemplate = {
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
 			console.log(e);
-			await interaction.reply({ content: `${ul.register.error.invalid}\`\`\`\n${(e as Error).message}\`\`\``, ephemeral: true });
+			const translationError = lError((e as Error), interaction);
+			await interaction.reply({ content: `${ul.register.error.invalid}\`\`\`\n${translationError}\`\`\``, ephemeral: true });
 		}
 	}	
 };

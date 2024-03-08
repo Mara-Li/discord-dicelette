@@ -1,5 +1,6 @@
 import { ButtonInteraction, Locale, ModalSubmitInteraction } from "discord.js";
 import removeAccents from "remove-accents";
+
 import { StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
 
