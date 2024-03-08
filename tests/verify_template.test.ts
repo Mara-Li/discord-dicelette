@@ -22,7 +22,7 @@ describe("verify_template", () => {
 		// Add more tests for different scenarios
 		it("should verify the template correctly", () => {
 			const template = {
-				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				statistics: { stat1: { max: 10, min: 1 } },
 				diceType: "d6",
 				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
 			};
@@ -42,13 +42,13 @@ describe("verify_template", () => {
 
 	describe("testCombinaison", () => {
 		// Add more tests for different scenarios
-		it("should test the combination correctly", () => {
+		it("should throw an error because they are no stat2", () => {
 			const template: StatisticalTemplate = {
 				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
 				diceType: "d6",
 				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
 			};
-			expect(() => testCombinaison(template)).not.toThrow();
+			expect(() => testCombinaison(template)).toThrow();
 		});
 	});
 
@@ -56,7 +56,7 @@ describe("verify_template", () => {
 		// Add more tests for different scenarios
 		it("should test the formula correctly", () => {
 			const template: StatisticalTemplate = {
-				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				statistics: { stat1: { max: 10, min: 1 } },
 				diceType: "d6",
 				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
 			};
