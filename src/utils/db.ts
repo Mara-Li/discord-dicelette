@@ -107,8 +107,13 @@ export async function registerUser(userID: string, interaction: ModalSubmitInter
 		const char = user.find(char => char.charName === charName);
 		if (char){
 			//delete old message
-			const oldMessage = await thread.messages.fetch(char.messageId);
-			if (oldMessage) oldMessage.delete();
+			try {
+				const oldMessage = await thread.messages.fetch(char.messageId);
+				if (oldMessage) oldMessage.delete();
+			} catch (error) {
+				console.log(error);
+				//skip unknow message
+			}
 			//overwrite the message id
 			char.messageId = msgId;}
 		else user.push({ charName, messageId: msgId });	

@@ -52,7 +52,7 @@ export const delete_thread = (client: Client): void => {
 				for (const [user, data] of Object.entries(dbUser)) {
 					const oldMessage = thread.messages.cache.find(message => data.some(char => char.messageId === message.id));
 					if (oldMessage) delete dbUser[user];
-				}			
+				}
 			}
 			if (guildDB.logs === thread.id) delete guildDB.logs;
 			fs.writeFileSync("database.json", JSON.stringify(parsedDatabase, null, 2), "utf-8");
@@ -87,13 +87,14 @@ export const delete_message = (client	: Client): void => {
 			}
 			const dbUser = guildData?.user;
 			if (dbUser && Object.keys(dbUser).length > 0){
-				for (const values of Object.values(dbUser)) {
+				for (const [user, values] of Object.entries(dbUser)) {
 					if (values.length === 0) continue;
 					for (const [index, value] of values.entries()) {
 						if (value.messageId === messageId) {
 							values.splice(index, 1);
 						}
 					}
+					if (values.length === 0) delete dbUser[user];
 				}
 			}
 			fs.writeFileSync("database.json", JSON.stringify(parsedDatabase, null, 2), "utf-8");

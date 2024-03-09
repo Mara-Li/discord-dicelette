@@ -245,6 +245,15 @@ export const registerTemplate = {
 			const json = JSON.parse(data);
 			const statsName = Object.keys(templateData.statistics);
 			if (json[guildData]) {
+				if (json[guildData].templateID.messageId && json[guildData].templateID.channelId) {
+					try {
+						const channel = await interaction.guild.channels.fetch(json[guildData].templateID.channelId);
+						const msg = await (channel as TextChannel).messages.fetch(json[guildData].templateID.messageId);
+						await msg.delete();
+					} catch (e) {
+						//ignore
+					}
+				}
 				json[guildData].templateID = {
 					channelId: channel.id,
 					messageId: msg.id,

@@ -183,6 +183,11 @@ The bot will verify the file and register it. An reference embed + the parsed / 
 > This channel will be used for saving user. A thread will be created for registering users. If a thread already exists (named as `📝 • [STATS]`), it will use it.
 > Only one thread will be used at time.
 
+The embed will be pinned to facilitate the access to the template.
+
+If another template is registered, the old template message will be automatically deleted.
+
+
 ## Registering a character
 
 The registering of the user use the button under the embed created at the `/register` steps. First modals ask for an character name and the user rattached to the registering. Here, you can use an id or the global username of the user (the `@`). By default, this field will be filled with the user who clicked on the button.

@@ -183,8 +183,12 @@ Exemple de modèle JSON:
 Le bot vérifiera le fichier et l'enregistrera. Un embed de référence + le fichier analysé / corrigé sera envoyé dans le canal choisi. Ce canal sera sauvegardé en tant qu'identifiant dans la base de données, ainsi que le `message_id`.
 
 > [!important]
-> Ce canal sera utilisé pour enregistrer les utilisateurs.Une discussion sera créée pour enregistrer les utilisateurs. Si une discussion existe déjà (nommée `📝 - [STATS]`), elle sera utilisée.
+> Ce canal sera utilisé pour enregistrer les utilisateurs.Une discussion sera créée pour enregistrer les utilisateurs. Si une discussion existe déjà (nommée `📝 • [STATS]`), elle sera utilisée.
 > Un seul thread sera utilisé à la fois.
+
+L'embed du modèle sera épinglé pour faciliter l'accès.
+
+Si un autre modèle est enregistré (sans que le précédent soit déjà supprimé), l'ancien message sera supprimé automatiquement.
 
 ## Enregistrer un utilisateur 
 
