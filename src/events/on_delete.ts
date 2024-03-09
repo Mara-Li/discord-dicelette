@@ -4,7 +4,7 @@ import fs from "fs";
 import { GuildData } from "../interface";
 import { readDB } from "../utils/db";
 
-export const channel_delete = (client	: Client): void => {
+export const delete_channel = (client	: Client): void => {
 	client.on("channelDelete", async (channel) => {
 		try {
 			if (channel.isDMBased()) return;
@@ -36,7 +36,7 @@ export const channel_delete = (client	: Client): void => {
 	});
 };
 
-export const delete_channel = (client: Client): void => {
+export const delete_thread = (client: Client): void => {
 	client.on("threadDelete", async (thread) => {
 		try {
 			//search channelID in database and delete it

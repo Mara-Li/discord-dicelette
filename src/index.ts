@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import * as process from "process";
 
 import * as pkg from "../package.json";
-import { channel_delete,delete_message, on_kick } from "./events/channel_delete";
+import { delete_channel,delete_message, on_kick, delete_thread } from "./events/on_delete";
 import interaction from "./events/interaction";
 import join from "./events/join";
 import message_create from "./events/message_create";
@@ -35,7 +35,8 @@ try {
 	message_create(client);
 	on_kick(client);
 	delete_message(client);
-	channel_delete(client);
+	delete_channel(client);
+	delete_thread(client);
 }
 catch (error) {
 	console.error(error);

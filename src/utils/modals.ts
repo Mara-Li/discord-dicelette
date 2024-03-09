@@ -25,7 +25,7 @@ export async function showFistPageModal(interaction: ButtonInteraction, template
 			.setLabel(ul.modals.user.name)
 			.setPlaceholder(ul.modals.user.description)
 			.setRequired(true)
-			.setValue("")
+			.setValue(interaction.user.username ?? interaction.user.id)
 			.setStyle(TextInputStyle.Short),
 	);
 	modal.addComponents(charNameInput, userIdInputs);	
