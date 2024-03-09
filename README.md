@@ -1,8 +1,13 @@
 # Dicelette
 
+-> [Invite the bot](https://discord.com/api/oauth2/authorize?client_id=1182819335878754385&permissions=395137215504&scope=bot+applications.commands)
 -> [FRENCH TRANSLATION](README.fr.md) <-
 
 Allows you to throw dice and send the result in a thread, but also register a template of statistic to roll them directly (so you're not obliged to write the same thing again and again).
+
+-> Uses the [@diceRoller](https://dice-roller.github.io/documentation/) API to throw dice.
+It also supports the rollem notation `4#(dice)` for bulk rolls.
+
 
 For statistic, instead of saving the entire sheet, it will use message and message_id. So, you have the entire control on how to delete the message, and the bot will not have access to the content of the message (better for privacy!).
 
@@ -11,16 +16,20 @@ The database is a simple JSON file, and will be clean if:
 - The reference statistic message is deleted
 - The registered channel for template is deleted - This will **not** remove user's references ids.
 - The registered message for template is deleted
+- Registered thread containing user data is deleted
 - The bot is kicked from the server
 
-See [#dbroll](#database-roll-dbroll) for more information.
+-> See [#dbroll](#database-roll-dbroll) for more information.
 
-Uses the [@diceRoller](https://dice-roller.github.io/documentation/) API to throw dice.
+The database is used **only** if you configure `/dbroll` and `/logs`.
 
-It also supports the rollem notation `4#(dice)` for bulk rolls.
+> [!NOTE]
+> If necessary, you can contact me to have your data deleted. I'll just need your Discord ID (the long number) to delete your data or that of your server (I'll then need the server ID).
+> To contact me privately :
+> - Discord: `@mara__li`
+> - Mail: `lisandra_dev@yahoo.com`
 
-[Invite the bot](XXXXX)
-
+---
 # Behavior
 ## Logs Threads
 The bot operates with threads. In the first roll, it will search for threads prefixed by `🎲`.
@@ -81,11 +90,11 @@ The bot will create a new thread, prefixed by `🎲`, and send the log to it. Th
 
 > [!warning] 
 > By default, the `/dbroll` is disabled! You need to enable it via the Discord server panel configuration.
-![Enable dbroll 1](./assets/tuto/allow_commands_1.png)
-![Enable dbroll 2](./assets/tuto/allow_commands_2.png)
-![Enable dbroll 3](./assets/tuto/allow_commands_3.png)
-![Enable dbroll 4](./assets/tuto/allow_commands_4.png)
-![Enable dbroll 4](./assets/tuto/allow_commands_5.png)
+> ![Enable dbroll 1](./assets/tuto/allow_commands_1.png)
+> ![Enable dbroll 2](./assets/tuto/allow_commands_2.png)
+> ![Enable dbroll 3](./assets/tuto/allow_commands_3.png)
+> ![Enable dbroll 4](./assets/tuto/allow_commands_4.png)
+> ![Enable dbroll 4](./assets/tuto/allow_commands_5.png)
 
 ## Generate new template (`/generate`)
 
@@ -176,15 +185,16 @@ The bot will verify the file and register it. An reference embed + the parsed / 
 
 ## Registering a character
 
-The registering of the user use the button under the embed created at the `/register` steps. First modals ask for an character name and the user rattached to the registering. Here, you can use an id or the global name of the user.
+The registering of the user use the button under the embed created at the `/register` steps. First modals ask for an character name and the user rattached to the registering. Here, you can use an id or the global username of the user (the `@`). By default, this field will be filled with the user who clicked on the button.
 
 After, each 5 statistic (excepted for combinaison stat), it will ask for the value. 
 
 > [!note]
-> Because of the limitation of modals:
-> - If an error is detected at a steps, you need to re-entered the corrected value, and you can save the "previous" modals. 
-> - The value can be verified / forced during registration (only text entry are allowed)
-> - Only 5 value are autorized at time:	If you have more than 5 statistic, you need to re-entered the modals by clicking on the "continue" button.
+> Because of the limitation of modals, it's impossible to check for errors at the time of sending and to use "number" fields. Everything is considered text, and checks are made during saving, which means that if an error is detected during a step, you have to redo the entire step.
+
+### Caveat
+- 20 statistic maximum (because of the limitation of Autocomplete in commands)
+- Doesn't support "quick" edit of a statistic, leveling up, etc. You need to re-register the character (the previous message will be deleted).
 
 ## dbroll commands (`/dbroll`)
 
