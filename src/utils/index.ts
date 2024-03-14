@@ -28,10 +28,9 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 		await interaction.reply({ content: parser });
 		return;
 	}
-	
 	//sort threads by date by most recent
-	const parentChanel = channel instanceof ThreadChannel ? channel.parent : channel;
-	const thread = parentChanel instanceof TextChannel ? await findThread(parentChanel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
+	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
+	const thread = parentChannel instanceof TextChannel ? await findThread(parentChannel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
 	const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
