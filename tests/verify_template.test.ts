@@ -18,13 +18,63 @@ describe("verify_template", () => {
 		});
 	});
 
+	describe("verifyRandomGenerator", () => {
+		// Add more tests for different scenarios
+		it("should verify the random generator correctly", () => {
+			const total = 100;
+			const max = 50;
+			const min = 10;
+			const result = generateRandomStat(total, max, min);
+			expect(result).toBeGreaterThanOrEqual(min);
+			expect(result).toBeLessThanOrEqual(max);
+			expect(result).toBeLessThanOrEqual(total);
+		});
+		
+		it ("should verify with no max", () => {
+			const total = 100;
+			const min = 1;
+			const result = generateRandomStat(total, undefined, min);
+			expect(result).toBeGreaterThanOrEqual(min);
+			expect(result).toBeLessThanOrEqual(total);
+		});
+
+		it ("should verify with no min", () => {
+			const total = 100;
+			const max = 99;
+			const result = generateRandomStat(total, max, undefined);
+			expect(result).toBeGreaterThanOrEqual(0);
+			expect(result).toBeLessThanOrEqual(max);
+		});
+
+		it ("should verify with no min and max", () => {
+			const total = 100;
+			const result = generateRandomStat(total, undefined, undefined);
+			expect(result).toBeGreaterThanOrEqual(0);
+			expect(result).toBeLessThanOrEqual(total);
+		});
+
+		it ("should verify with no total", () => {
+			const max = 99;
+			const min = 1;
+			const result = generateRandomStat(undefined, max, min);
+			expect(result).toBeGreaterThanOrEqual(min);
+			expect(result).toBeLessThanOrEqual(max);
+		});
+
+		it ("should verify with no total, min and max", () => {
+			const result = generateRandomStat(undefined, undefined, undefined);
+			expect(result).toBeGreaterThanOrEqual(0);
+			expect(result).toBeLessThanOrEqual(100);
+		});
+	});
+
 	describe("verifyTemplateValue", () => {
 		// Add more tests for different scenarios
 		it("should verify the template correctly", () => {
 			const template = {
 				statistics: { stat1: { max: 10, min: 1 } },
 				diceType: "d6",
-				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
+				comparator: { sign: ">", value: 5, formula: "$ * 2" },
 			};
 			const result = verifyTemplateValue(template);
 			expect(result).toEqual(template);
@@ -58,20 +108,9 @@ describe("verify_template", () => {
 			const template: StatisticalTemplate = {
 				statistics: { stat1: { max: 10, min: 1 } },
 				diceType: "d6",
-				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
+				comparator: { sign: ">", value: 5, formula: "$ * 2" },
 			};
 			expect(() => testFormula(template)).not.toThrow();
-		});
-	});
-
-	describe("generateRandomStat", () => {
-		it("should generate a random stat within the range", () => {
-			const total = 100;
-			const max = 50;
-			const min = 10;
-			const result = generateRandomStat(total, max, min);
-			expect(result).toBeGreaterThanOrEqual(min);
-			expect(result).toBeLessThanOrEqual(max);
 		});
 	});
 });

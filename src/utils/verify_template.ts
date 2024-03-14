@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { evaluate } from "mathjs";
+import { Random } from "random-js";
 import removeAccents from "remove-accents";
 
 import { roll } from "../dice";
@@ -133,25 +134,27 @@ export function testFormula(template: StatisticalTemplate) {
 	const total = template.total || 100;
 	
 	const randomStatValue = generateRandomStat(total, max, min);
-	const formula = template.comparator.formula.replace("$", randomStatValue.toString());	
+	const formula = template.comparator.formula.replace("$", randomStatValue.toString());
 	try {
 		evaluate(formula);
 		return true;
 	} catch (error) {
-		throw new Error("[error.invalidFormula]");
+		throw new Error(`[error.invalidFormula] ${formula}`);
 	}
 }
 
 export function generateRandomStat(total: number | undefined = 100, max?: number, min?: number) {
-	let randomStatValue = 0;
-	while (randomStatValue < total)
+	let randomStatValue = total + 1;
+	while (randomStatValue >= total) {
+		const random = new Random();
 		if (max && min)
-			randomStatValue = Math.floor(Math.random() * (max - min + 1)) + min;
+			randomStatValue = random.integer(min, max);
 		else if (max)
-			randomStatValue = Math.floor(Math.random() * (max - 1)) + 1;
+			randomStatValue = random.integer(0, max);
 		else if (min)
-			randomStatValue = Math.floor(Math.random() * (total - min + 1)) + min;
+			randomStatValue = random.integer(min, total);
 		else
-			randomStatValue = Math.floor(Math.random() * total);
+			randomStatValue = random.integer(0, total);
+	}
 	return randomStatValue;
 }
