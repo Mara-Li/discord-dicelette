@@ -53,7 +53,7 @@ export default (client: Client): void => {
 					await interaction.reply({ content: ul.modals.alreadySet, ephemeral: true });
 					return;
 				}
-				const page = isNaN(parseInt(interaction.customId.replace("page", ""))) ? 2 : parseInt(interaction.customId.replace("page", ""))+1;
+				const page = isNaN(parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : parseInt(interaction.customId.replace("page", ""), 10)+1;
 				await showStatistiqueModal(interaction, template, statsAlreadySet, page);
 			} catch (error) {
 				console.log(error);
@@ -62,7 +62,7 @@ export default (client: Client): void => {
 			}
 		} else if (interaction.isModalSubmit() && interaction.customId.includes("page")) {
 			try {
-				const pageNumber = parseInt(interaction.customId.replace("page", ""));
+				const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);
 				if (isNaN(pageNumber)) return;
 				const template = await getTemplateWithDB(interaction);
 				if (!template) {

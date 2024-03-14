@@ -29,7 +29,7 @@ export function roll(dice: string): Resultat | undefined{
 			};
 		} else compare = {
 			sign: compareSign as "<" | ">" | ">=" | "<=" | "=",
-			value: parseInt(calc),
+			value: parseInt(calc, 10),
 		};
 	}
 	const modifier = dice.match(/(\+|\-|%|\/|\^|\*|\*{2})(\d+)/);
@@ -37,13 +37,13 @@ export function roll(dice: string): Resultat | undefined{
 	if (modifier) {
 		modificator = {
 			sign: modifier[1] as Sign,
-			value: parseInt(modifier[2]),
+			value: parseInt(modifier[2], 10),
 		};
 	}
 
 	if (dice.match(/\d+?#(.*)/)) {
 		const diceArray = dice.split("#");
-		const numberOfDice = parseInt(diceArray[0]);
+		const numberOfDice = parseInt(diceArray[0], 10);
 		const diceToRoll = diceArray[1].replace(COMMENT_REGEX, "");
 		const commentsMatch = diceArray[1].match(COMMENT_REGEX);
 		const comments = commentsMatch ? commentsMatch[2] : undefined;
@@ -95,7 +95,7 @@ export function parseResult(output: Resultat, lng: any, critical?: {failure?: nu
 				//detect all number in the tot
 				const totalValue = tot[1].replaceAll("*", "").split(",");
 				for (const t of totalValue) {
-					total += parseInt(t);
+					total += parseInt(t, 10);
 				}
 			}
 			if (output.modifier) {

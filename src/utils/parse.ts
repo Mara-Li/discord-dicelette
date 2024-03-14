@@ -17,7 +17,7 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 		}
 		const statValue = interaction.fields.getTextInputValue(name);
 		if (!statValue) continue;
-		const num = parseInt(statValue);
+		const num = parseInt(statValue, 10);
 		if (value.min && num < value.min) {
 			throw new Error(ul.error.mustBeGreater(name, value.min));
 		} else if (value.max && num > value.max) {
