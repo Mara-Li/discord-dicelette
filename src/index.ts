@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 import * as process from "process";
 
 import * as pkg from "../package.json";
-import { delete_channel,delete_message, on_kick, delete_thread } from "./events/on_delete";
 import interaction from "./events/interaction";
 import join from "./events/join";
 import message_create from "./events/message_create";
+import { delete_channel,delete_message, delete_thread,on_kick } from "./events/on_delete";
 import ready from "./events/ready";
 
 dotenv.config({ path: ".env" });
