@@ -2,7 +2,7 @@ import { Client, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 import process from "process";
 
-import { commandsList } from "../commands";
+import { commandsList } from "../commands/base";
 import { VERSION } from "../index";
 
 

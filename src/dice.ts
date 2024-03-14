@@ -1,4 +1,6 @@
+/* eslint-disable no-useless-escape */
 import { DiceRoller } from "@dice-roller/rpg-dice-roller";
+import { evaluate } from "mathjs";
 import dedent from "ts-dedent";
 
 import { Compare, Modifier, Resultat, Sign } from "./interface";
@@ -27,7 +29,7 @@ export function roll(dice: string): Resultat | undefined{
 			};
 		} else compare = {
 			sign: compareSign as "<" | ">" | ">=" | "<=" | "=",
-			value: parseInt(calc),
+			value: parseInt(calc, 10),
 		};
 	}
 	const modifier = dice.match(/(\+|\-|%|\/|\^|\*|\*{2})(\d+)/);
@@ -35,13 +37,13 @@ export function roll(dice: string): Resultat | undefined{
 	if (modifier) {
 		modificator = {
 			sign: modifier[1] as Sign,
-			value: parseInt(modifier[2]),
+			value: parseInt(modifier[2], 10),
 		};
 	}
 
 	if (dice.match(/\d+?#(.*)/)) {
 		const diceArray = dice.split("#");
-		const numberOfDice = parseInt(diceArray[0]);
+		const numberOfDice = parseInt(diceArray[0], 10);
 		const diceToRoll = diceArray[1].replace(COMMENT_REGEX, "");
 		const commentsMatch = diceArray[1].match(COMMENT_REGEX);
 		const comments = commentsMatch ? commentsMatch[2] : undefined;
@@ -74,11 +76,11 @@ export function roll(dice: string): Resultat | undefined{
 
 function calculator(sign: Sign, value: number, total: number): number {
 	if (sign === "^") sign = "**";
-	return eval(`${total} ${sign} ${value}`);
+	return evaluate(`${total} ${sign} ${value}`);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseResult(output: Resultat, lng: any) {
+export function parseResult(output: Resultat, lng: any, critical?: {failure?: number, success?: number}) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
 	let msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
@@ -93,7 +95,7 @@ export function parseResult(output: Resultat, lng: any) {
 				//detect all number in the tot
 				const totalValue = tot[1].replaceAll("*", "").split(",");
 				for (const t of totalValue) {
-					total += parseInt(t);
+					total += parseInt(t, 10);
 				}
 			}
 			if (output.modifier) {
@@ -101,7 +103,14 @@ export function parseResult(output: Resultat, lng: any) {
 				total = calculator(sign as Sign, value, total);
 
 			}
-			succ = eval(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			if (critical) {
+				if (critical.failure && total === critical.failure) {
+					succ = `**${lng.roll.critical.failure}**`;
+				} else if (critical.success && total === critical.success) {
+					succ = `**${lng.roll.critical.success}**`;
+				}
+			}
 			const totSucc = output.compare ? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\`` : `= \`${total}\``;
 			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, totSucc).replaceAll("*", "\\*")}`;
 			total = 0;
@@ -110,7 +119,7 @@ export function parseResult(output: Resultat, lng: any) {
 		msgSuccess = `${output.result.replaceAll(";","\n").replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	}
 	const result = msgSuccess;
-	const comment = output.comment ? `*${output.comment.replaceAll(/[\*\/#]/g, "").trim()}*\n` : "";
+	const comment = output.comment ? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*\n` : "";
 	return dedent(`${comment}${result}`);
 }
 

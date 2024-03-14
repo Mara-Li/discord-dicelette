@@ -1,13 +1,15 @@
+/* eslint-disable no-useless-escape */
 import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
-import moment from "moment";
 
-import { deleteAfter } from "../commands";
+import { deleteAfter } from "../commands/base";
 import { COMMENT_REGEX, parseResult, roll } from "../dice";
 import { Resultat } from "../interface";
 import { ln } from "../localizations";
-import { findForumChannel, findThread } from "../utils";
+import { timestamp } from "../utils";
+import { findForumChannel, findThread } from "../utils/find";
 
 
+// eslint-disable-next-line no-useless-escape
 export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
 
 export default (client: Client): void => {
@@ -41,31 +43,29 @@ export default (client: Client): void => {
 		const channel = message.channel;
 		if (!result) return;
 		const parser = parseResult(result, translation);
-
-		if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
+		if (channel.name.startsWith("🎲")) {
 			await message.reply({content: parser, allowedMentions: { repliedUser: false }});
 			return;
 		}
-		if (channel instanceof TextChannel || (channel.parent instanceof ForumChannel && !channel.name.startsWith("🎲"))) {
-			let linkToOriginal = "";
-			if (deleteInput) {
-				message.delete();
-			} else {
-				linkToOriginal = `\n\n__Original__: ${message.url}`;
-			}
-			const thread = channel instanceof TextChannel ? await findThread(channel, translation.roll.reason) : await findForumChannel(channel.parent as ForumChannel, translation.roll.reason, channel as ThreadChannel);
-			const msgToEdit = await thread.send("_ _");
-			const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
-			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
-			const msg = `${authorMention} - <t:${moment().unix()}>\n${parser}${linkToOriginal}`;
-			await msgToEdit.edit(msg);
-			const idMessage = `↪ ${msgToEdit.url}`;
-			const reply = deleteInput ?
-				await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` })
-				: await message.reply({ content: `${parser}\n\n${idMessage}` , allowedMentions: { repliedUser: false }});
-			deleteAfter(reply, 180000);
-			return;
+		let linkToOriginal = "";
+		if (deleteInput) {
+			message.delete();
+		} else {
+			linkToOriginal = ` [↪ Source](${message.url})`;
 		}
-		await message.reply({content: parser, allowedMentions: { repliedUser: false }});
+		const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
+		const thread = parentChannel instanceof TextChannel ? await findThread(parentChannel, translation.roll.reason) : await findForumChannel(parentChannel as ForumChannel, translation.roll.reason, channel as ThreadChannel);
+		const msgToEdit = await thread.send("_ _");
+		const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
+		const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
+		const msg = `${authorMention} ${timestamp()}${linkToOriginal}\n${parser}`;
+		await msgToEdit.edit(msg);
+		const idMessage = `↪ ${msgToEdit.url}`;
+		const reply = deleteInput ?
+			await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` })
+			: await message.reply({ content: `${parser}\n\n${idMessage}` , allowedMentions: { repliedUser: false }});
+		deleteAfter(reply, 180000);
+		return;
+		
 	});
 };

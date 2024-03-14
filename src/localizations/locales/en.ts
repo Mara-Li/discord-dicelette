@@ -52,9 +52,180 @@ export default {
 			description: "Dice to roll",
 		},
 		noDice: "No dice provided",
-		noValidDice: "Error: Invalid dice",
+		noValidDice: (error: string|undefined, dice: string) => {
+			if (error) return `Error: Invalid dice ${dice}\n\`\`\`\n${error}\n\`\`\``;
+			return `Error: Invalid dice ${dice}`;
+		},
 		reason: "New roll thread",
 		failure: "Failure",
 		success: "Success",
+		critical: {
+			success: "Critical success",
+			failure: "Critical failure"
+		}
+	},
+	generate: {
+		name: "generate",
+		options: {
+			stats:{
+				name: "name",
+				description: "The name of the statistique, seperate them by a comma or space",
+			},
+			dice: {
+				name: "dice",
+				description: "The dice type",
+			},
+			comparator: {
+				name: "comparator",
+				description: "The comparator sign between the result and the statistique/a value",
+				value: {
+					greater: "Greater",
+					greaterEqual: "Greater or equal",
+					equal: "Equal",
+					lessEqual: "Less or equal",
+					less: "Lesser",
+					different: "Different"
+				}
+			},
+			value: {
+				name: "value",
+				description: "The value to compare with the dice result. Let empty to compare with the statistical value",
+			},
+			total: {
+				name: "total",
+				description: "The total of statistical points (will be calculated when user is registered)",
+			},
+			character: {
+				name: "character",
+				description: "Make the character name mandatory for the registration",
+			},
+			critical_success: {
+				name: "critical_success",
+				description: "The critical success value (natural dice)",
+			},
+			critical_fail: {
+				name: "critical_fail",
+				description: "The critical failure value (natural dice)",
+			},
+			formula: {
+				name: "formula",
+				description: "The formula to edit the value. Use $ to symbolise the value (ie: +$)",
+			}
+		},
+		help: `
+		- The type of die must be a valid type (it will be tested when you save the model).
+		- The value must be a number and can be optional. If you remove it, the die will be compared to the statistic rather than a value.
+		- The total must be a number and can be optional. If you remove it, the total will be automatically calculated when the user is saved.
+		- The formula allows editing the combined value with the die. Use \`$\` to symbolize the value (e.g., \`+$\`, \`-$\`, \`($-10)/2\`...).
+		- A statistic can be a combination of other statistics, such as \`strength+endurance\`. If the \`combination\` value is defined, then the \`min\` and \`max\` parameters will be disabled. Additionally, users will not have to enter the value manually. Finally, this value will be excluded from the calculation of the total allocated points.
+		
+		Note that the file provided here is just an example and should be customized before being saved.
+		` 
+	},
+	register: {
+		name: "register",
+		description: "Register a template for the dbroll command",
+		options: {
+			channel: "The channel where the template and the users will be saved",			template: {
+				name: "template",
+				description: "The template to register"
+			},
+		},
+		button: "Register a character",
+		embed: {
+			title: "Template",
+			description: "Click on the button to register a new character",
+			noValue: "No value set",
+			dice: "Dice",
+			value: "Value:",
+			formula: "Formula:",
+			comparator: "Comparator:",
+			registered: "Template registered!"
+		},
+		error: {
+			tooMuchStats: "You can't have more than 20 statistics",
+			invalid: "Invalid template:"
+		}
+	},
+	dbRoll: {
+		name: "dbroll",
+		description: "Roll a dice with a registered statistic",
+		options: {
+			statistic: "The statistic to roll",
+			character: "The character where to take value off.",
+			comments: {
+				name: "comments",
+				description: "Comments for the action",
+			},
+			override: {
+				name: "override",
+				description: "Override the success threshold",
+			},
+			modificator: {
+				name: "modificator",
+				description: "Bonus/malus added to the roll",
+			}
+		},
+		error: {
+			notRegistered: "You are not registered",
+		}
+	},
+	common: {
+		total: "Total",
+		space: "",
+		statistic: "statistic",
+		character: "character",
+		noSet: "/",
+		page: (nb: number) => `Page ${nb}`,
+		charName: "Character name",
+		user: "Joueur",
+		channel: "channel"
+	},
+	error: {
+		invalidFormula: "Invalid formula for",
+		user: "User not found",
+		invalidDice: "Invalid dice",
+		invalidComparator: "Invalid comparator: missing sign",
+		incorrectSign: "Incorrect sign",
+		noStat: "No statistic provided",
+		onlyCombination: "Only combination was found",
+		mustBeLower: (value: string, max: number) => `${value} must be lower than ${max}`,
+		mustBeGreater: (value: string, min: number) => `${value} must be greater than ${min}`,
+		totalExceededBy: (value: string, max: number) => `The total of ${value} is exceeded by ${max}`,
+		noTemplate: "No template or configured channel",
+		noThread: "No thread found — Please re-register the user if the thread has been deleted",
+		maxGreater: "Max must be greater than min",
+		generic: (e: Error) => `An error occured:\n\`\`\`${e.message}\n\`\`\``,
+	},
+	modals: {
+		continue: "Continue",
+		cancel: "Cancel",
+		embedTitle: "Registered user",
+		finished: "Stats finished",
+		added: "Stats added",
+		registering: "Registering User",
+		firstPage: (page: number) => `Registering User - Page 1/${page}`,
+		steps: (page: number, max: number) => `Registering User - Page ${page}/${max}`,
+		charName: {
+			name: "charName",
+			description: "Enter your character name",
+		},
+		user: {
+			name: "User",
+			description: "Enter the user attached to the character (id or global username)",
+		},
+		alreadySet: "All stats are already set",
+		enterValue: (min?: number, max?: number) => {
+			if (min && max) return `Enter a value between ${min} and ${max}`;
+			if (min) return `Enter a value greater than ${min}`;
+			if (max) return `Enter a value lower than ${max}`;
+			return "Enter a value";
+		}
+	},
+	logs: {
+		name: "logs",
+		description: "Set a channel to send error logs",
+		options: "The channel where to send the logs",
+		set: (channel: string) => `Logs channel set to ${channel}`,
 	}
 };

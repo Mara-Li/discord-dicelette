@@ -6,6 +6,7 @@ import * as pkg from "../package.json";
 import interaction from "./events/interaction";
 import join from "./events/join";
 import message_create from "./events/message_create";
+import { delete_channel,delete_message, delete_thread,on_kick } from "./events/on_delete";
 import ready from "./events/ready";
 
 dotenv.config({ path: ".env" });
@@ -32,6 +33,10 @@ try {
 	interaction(client);
 	join(client);
 	message_create(client);
+	on_kick(client);
+	delete_message(client);
+	delete_channel(client);
+	delete_thread(client);
 }
 catch (error) {
 	console.error(error);

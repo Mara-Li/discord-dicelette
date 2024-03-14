@@ -1,0 +1,24 @@
+{
+  "charName": false,
+  "statistics": {
+    "Force": {
+      "min": 1
+    },
+    "Endurance": {
+      "min": 1
+    },
+    "Agilité": {
+      "min": 1
+    },
+    "logique": {
+      "combinaison": "force+endurance"
+    }
+  },
+  "diceType": "1d20",
+  "comparator": {
+    "sign": ">=",
+    "value": 20,
+    "formula": "ceil(($-10)/2)"
+  },
+  "total": 88
+}

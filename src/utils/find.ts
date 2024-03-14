@@ -1,5 +1,6 @@
-import { ForumChannel, GuildForumTagData, TextChannel, ThreadChannel } from "discord.js";
+import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
 
+import { setTagsForRoll } from ".";
 
 export async function findThread(channel: TextChannel, reason?: string) {
 	await channel.threads.fetch();
@@ -63,26 +64,3 @@ export async function findForumChannel(forum: ForumChannel, reason: string, thre
 	});
 }
 
-
-export async function setTagsForRoll(forum: ForumChannel) {
-	//check if the tags `🪡 roll logs` exists
-	const allTags = forum.availableTags;
-	const diceRollTag = allTags.find(tag => tag.name === "Dice Roll" && tag.emoji?.name === "🪡");
-	if (diceRollTag) {
-		return diceRollTag;
-	}
-	const availableTags: GuildForumTagData[] = allTags.map(tag => {
-		return {
-			id: tag.id,
-			moderated: tag.moderated,
-			name: tag.name,
-			emoji: tag.emoji,
-		};
-	});
-	availableTags.push({
-		name: "Dice Roll",
-		emoji: {id: null, name: "🪡"},
-	});
-	await forum.setAvailableTags(availableTags);
-	return availableTags.find(tag => tag.name === "Dice Roll" && tag.emoji?.name === "🪡") as GuildForumTagData;
-}
