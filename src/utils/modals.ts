@@ -3,7 +3,7 @@ import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBui
 import { StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
 
-export async function showFistPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
+export async function showFirstPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	const nbOfStatistique = Object.keys(template.statistics).length;
 	const nbOfPages = Math.floor(nbOfStatistique / 5) > 0 ? Math.floor(nbOfStatistique / 5) : 2;
 	const ul = ln(interaction.locale as Locale);

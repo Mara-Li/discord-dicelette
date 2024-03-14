@@ -5,7 +5,7 @@ import { autCompleteCmd } from "../commands/dbroll";
 import { lError, ln } from "../localizations";
 import { createEmbedFirstPage, embedStatistiques } from "../utils/create_embed";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
-import { showFistPageModal, showStatistiqueModal } from "../utils/modals";
+import { showFirstPageModal, showStatistiqueModal } from "../utils/modals";
 import { parseEmbed } from "../utils/parse";
 
 export default (client: Client): void => {
@@ -30,7 +30,7 @@ export default (client: Client): void => {
 				return;
 			}
 			try {
-				await showFistPageModal(interaction, template);
+				await showFirstPageModal(interaction, template);
 			} catch (error) {
 				console.log(error);
 				await interaction.reply({ content: ul.error.generic(error as Error), ephemeral: true });
