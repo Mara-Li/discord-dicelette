@@ -52,7 +52,10 @@ export default {
 			description: "Dice to roll",
 		},
 		noDice: "No dice provided",
-		noValidDice: "Error: Invalid dice",
+		noValidDice: (error: string|undefined, dice: string) => {
+			if (error) return `Error: Invalid dice ${dice}\n\`\`\`\n${error}\n\`\`\``;
+			return `Error: Invalid dice ${dice}`;
+		},
 		reason: "New roll thread",
 		failure: "Failure",
 		success: "Success",

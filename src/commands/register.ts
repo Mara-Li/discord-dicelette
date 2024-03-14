@@ -307,6 +307,6 @@ export const logs = {
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		await interaction.reply({ content:ul.logs.set(channel.name), ephemeral: true });
 	}
-}
+};
 
 export const commands = [generateTemplate, registerTemplate, rollForUser, logs];

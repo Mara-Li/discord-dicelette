@@ -1,14 +1,14 @@
-import { CommandInteraction, EmbedBuilder, FetchArchivedThreadOptions, FetchThreadsOptions, ForumChannel, GuildForumTagData, ModalSubmitInteraction, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { CommandInteraction, EmbedBuilder, ForumChannel, GuildForumTagData, ModalSubmitInteraction, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
 import moment from "moment";
+import removeAccents from "remove-accents";
 
 import { deleteAfter } from "../commands/base";
 import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
 import {User} from "../interface";
+import { ln } from "../localizations";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
-import { ln } from "../localizations";
-import removeAccents from "remove-accents";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
@@ -19,26 +19,27 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	}
 	const rollDice = roll(dice);
 	if (!rollDice) {
-		await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
+		console.error("no valid dice :", dice);
+		await interaction.reply({ content: userLang.roll.noValidDice(undefined, dice), ephemeral: true });
 		return;
 	}
 	const parser = parseResult(rollDice, userLang, critical);
-	if (channel instanceof TextChannel && channel.name.startsWith("🎲")) {
+	if (channel.name.startsWith("🎲")) {
 		await interaction.reply({ content: parser });
 		return;
 	}
-	if (channel instanceof TextChannel || (channel.parent instanceof ForumChannel && !channel.name.startsWith("🎲"))) {
-		//sort threads by date by most recent
-		const thread = channel instanceof TextChannel ? await findThread(channel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
-		const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
-		const msgToEdit = await thread.send("_ _");
-		await msgToEdit.edit(msg);
-		const idMessage = `↪ ${msgToEdit.url}`;
-		const inter = await interaction.reply({ content: `${parser}\n\n${idMessage}`});
-		deleteAfter(inter, 180000);
-		return;
-	} //run in thread ; no need to log and delete
-	await interaction.reply({ content: parser });
+	
+	//sort threads by date by most recent
+	const parentChanel = channel instanceof ThreadChannel ? channel.parent : channel;
+	const thread = parentChanel instanceof TextChannel ? await findThread(parentChanel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
+	const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}>\n${parser}`;
+	const msgToEdit = await thread.send("_ _");
+	await msgToEdit.edit(msg);
+	const idMessage = `↪ ${msgToEdit.url}`;
+	const inter = await interaction.reply({ content: `${parser}\n\n${idMessage}`});
+	deleteAfter(inter, 180000);
+	return;
+	
 }
 
 

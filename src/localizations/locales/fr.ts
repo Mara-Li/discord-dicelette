@@ -51,7 +51,10 @@ export default {
 			description: "Dé à lancer",
 		},
 		noDice: "Aucun dé spécifié",
-		noValidDice: "Erreur : Dé invalide",
+		noValidDice: (error: string |undefined, dice: string) => {
+			if (error) return `Erreur : Dé invalide ${dice}\n\`\`\`\n${error}\n\`\`\``;
+			return `Erreur : Dé invalide ${dice}`;
+		},
 		reason: "Nouveau thread de lancer",
 		failure: "Échec",
 		success: "Succès",

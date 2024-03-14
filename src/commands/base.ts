@@ -50,15 +50,12 @@ export const diceRoll = {
 		const userLang = TRANSLATION[interaction.locale as keyof typeof TRANSLATION] || TRANSLATION.en;
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const dice = option.getString(en.roll.option.name);
-		if (!dice) {
-			await interaction.reply({ content: userLang.roll.noDice, ephemeral: true });
-			return;
-		}
+		const dice = option.getString(en.roll.option.name, true);
 		try {
 			await rollWithInteraction(interaction, dice, channel);
 		} catch (error) {
-			await interaction.reply({ content: userLang.roll.noValidDice, ephemeral: true });
+			console.error("no valid dice :", dice, error);
+			await interaction.reply({ content: userLang.roll.noValidDice((error as Error).message, dice), ephemeral: true });
 			return;
 		}
 	},
