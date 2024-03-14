@@ -5,6 +5,7 @@ import { deleteAfter } from "../commands/base";
 import { COMMENT_REGEX, parseResult, roll } from "../dice";
 import { Resultat } from "../interface";
 import { ln } from "../localizations";
+import { timestamp } from "../utils";
 import { findForumChannel, findThread } from "../utils/find";
 
 
@@ -50,14 +51,14 @@ export default (client: Client): void => {
 		if (deleteInput) {
 			message.delete();
 		} else {
-			linkToOriginal = ` *[↪ Source](<${message.url}>)*`;
+			linkToOriginal = ` [↪ Source](${message.url})`;
 		}
 		const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 		const thread = parentChannel instanceof TextChannel ? await findThread(parentChannel, translation.roll.reason) : await findForumChannel(parentChannel as ForumChannel, translation.roll.reason, channel as ThreadChannel);
 		const msgToEdit = await thread.send("_ _");
 		const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
 		const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
-		const msg = `${authorMention}${linkToOriginal}\n${parser}`;
+		const msg = `${authorMention} ${timestamp()}${linkToOriginal}\n${parser}`;
 		await msgToEdit.edit(msg);
 		const idMessage = `↪ ${msgToEdit.url}`;
 		const reply = deleteInput ?

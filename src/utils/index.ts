@@ -1,4 +1,5 @@
 import { CommandInteraction, EmbedBuilder, ForumChannel, GuildForumTagData, ModalSubmitInteraction, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import moment from "moment";
 import removeAccents from "remove-accents";
 
 import { deleteAfter } from "../commands/base";
@@ -30,7 +31,7 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	//sort threads by date by most recent
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 	const thread = parentChannel instanceof TextChannel ? await findThread(parentChannel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
-	const msg = `${userMention(interaction.user.id)}\n${parser}`;
+	const msg = `${userMention(interaction.user.id)} ${timestamp()}\n${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
 	const idMessage = `↪ ${msgToEdit.url}`;
@@ -86,3 +87,6 @@ export async function repostInThread(embed: EmbedBuilder, interaction: ModalSubm
 }
 
 
+export function timestamp() {
+	return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
+}
