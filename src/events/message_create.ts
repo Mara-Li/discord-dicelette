@@ -1,6 +1,5 @@
 /* eslint-disable no-useless-escape */
 import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
-import moment from "moment";
 
 import { deleteAfter } from "../commands/base";
 import { COMMENT_REGEX, parseResult, roll } from "../dice";
@@ -51,14 +50,14 @@ export default (client: Client): void => {
 		if (deleteInput) {
 			message.delete();
 		} else {
-			linkToOriginal = `[↪ Source](${message.url})`;
+			linkToOriginal = ` *[↪ Source](<${message.url}>)*`;
 		}
 		const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 		const thread = parentChannel instanceof TextChannel ? await findThread(parentChannel, translation.roll.reason) : await findForumChannel(parentChannel as ForumChannel, translation.roll.reason, channel as ThreadChannel);
 		const msgToEdit = await thread.send("_ _");
 		const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
 		const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
-		const msg = `${authorMention} - <t:${moment().unix()}> ${linkToOriginal}\n${parser}`;
+		const msg = `${authorMention}${linkToOriginal}\n${parser}`;
 		await msgToEdit.edit(msg);
 		const idMessage = `↪ ${msgToEdit.url}`;
 		const reply = deleteInput ?
