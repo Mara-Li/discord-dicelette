@@ -31,7 +31,6 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 		diceType: "",		
 	};
 	if (template.statistics && Object.keys(template.statistics).length > 0) {
-		console.warn(template.statistics);
 		for (const [key, value] of Object.entries(template.statistics)) {
 			const dataValue = value as { max?: number, min?: number, combinaison?: string };
 			const statName = removeAccents(key).toLowerCase();
@@ -49,7 +48,9 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 		}
 	}
 	if (template.diceType) {
-		//verify is dice is valid using API
+		if (template.diceType.match(/[[><=!]/)) {
+			throw new Error("[error.invalidDice]");
+		}
 		try {
 			roll(template.diceType);
 			statistiqueTemplate.diceType = template.diceType;

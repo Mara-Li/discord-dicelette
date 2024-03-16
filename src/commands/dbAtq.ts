@@ -56,13 +56,13 @@ export const dmgRoll = {
 		if (!user) return;
 		let choices: string[] = [];
 		
-		if (focused.name === "atq_name") {
+		if (focused.name === en.rAtq.atq_name.name) {
 			for (const [_, value] of Object.entries(user)) {
-				if (value.damageName) choices.concat(value.damageName);
+				if (value.damageName) choices = choices.concat(value.damageName);
 			}
-			choices.concat(db.templateID.damageName);
+			choices = choices.concat(db.templateID.damageName);
 			
-		} else if (focused.name === "character") {
+		} else if (focused.name === en.common.character) {
 			//get user characters 
 			const allCharactersFromUser = user
 				.map((data) => data.charName ?? "")
@@ -92,7 +92,7 @@ export const dmgRoll = {
 		let comments = options.getString(lOpt.comments.name) ?? "";
 		try {
 			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
-			if (!userStatistique && !charName){
+			if (!userStatistique && !charName) {
 				//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
@@ -102,28 +102,29 @@ export const dmgRoll = {
 				const firstChar = userData[0];
 				charName = title(firstChar.charName);
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
-				if (!userStatistique) {
-					await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
-					return;
-				}
-				if (!userStatistique.damage) {
-					await interaction.reply({ content: ul.error.noDamage, ephemeral: true });
-					return;
-				}
-				const charNameComments = charName ? `**@${charName}**` : "";
-				comments += `__[${title(atq)}]__ - ${charNameComments}`;
-				//search dice
-				const dice = userStatistique.damage?.[atq];
-				if (!dice) {
-					await interaction.reply({ content: ul.error.noDamage, ephemeral: true });
-					return;
-				}
-				const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
-				const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
-				const roll = `${dice}${modificatorString}${comments ? `${comments}` : ""}`;
-				await rollWithInteraction(interaction, roll, interaction.channel);
 			}
-		}	catch (error) {
+			if (!userStatistique) {
+				await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
+				return;
+			}
+			if (!userStatistique.damage) {
+				await interaction.reply({ content: ul.error.noDamage, ephemeral: true });
+				return;
+			}
+			const charNameComments = charName ? `• **@${charName}**` : "";
+			comments += `__[${title(atq)}]__${charNameComments}`;
+			//search dice
+			const dice = userStatistique.damage?.[atq];
+			if (!dice) {
+				await interaction.reply({ content: ul.error.noDamage, ephemeral: true });
+				return;
+			}
+			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
+			const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
+			const roll = `${dice}${modificatorString} ${comments}`;
+			console.log(roll);
+			await rollWithInteraction(interaction, roll, interaction.channel);
+		} catch (error) {
 			console.error(error);
 			await interaction.reply({ content: ulError.generic(error as Error), ephemeral: true });
 			return;

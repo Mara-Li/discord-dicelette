@@ -87,7 +87,7 @@ describe("verify_template", () => {
 			const template = {
 				diceType: "d6",
 				damage: {
-					"piercing": "1d6+2",
+					"piercing": "1d6+2>20",
 				}
 			};
 			const result = verifyTemplateValue(template);

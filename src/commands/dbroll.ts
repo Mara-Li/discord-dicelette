@@ -134,9 +134,9 @@ export const rollForUser = {
 				}
 				formula = formula?.startsWith("-") ? formula : `+${formula}`;
 			} else formula = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
-			const charNameComments = charName ? `**@${charName}**` : "";
-			comments += `__[${title(statistique)}]__ - ${charNameComments}`;
-			const roll = `${dice}${formula}${comparator}${comments ? ` ${comments}` : ""}`;
+			const charNameComments = charName ? `• **@${charName}**` : "";
+			comments += `__[${title(statistique)}]__${charNameComments}`;
+			const roll = `${dice}${formula}${comparator} ${comments}`;
 			await rollWithInteraction(interaction, roll, interaction.channel, critical);
 		}
 		catch (error) {

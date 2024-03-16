@@ -88,7 +88,7 @@ export interface Comparator {
 		/**
 		 * How the dice value will be compared
 		 */
-		sign? : "<" | ">" | ">=" | "<=" | "=" | "!="
+		sign : "<" | ">" | ">=" | "<=" | "=" | "!="
 		/**
 		 * If not defined, the value will be the statistique value of the user
 		 * If defined, the dice will be compared this value
