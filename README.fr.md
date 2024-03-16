@@ -89,7 +89,7 @@ Le bot créera un nouveau fil de discussion, préfixé par `🎲`, et enverra le
 
 `/help` : Affiche le message d'aide.
 
-# Database roll (`/dbroll`) et dabase dice (`/dbd`)
+# Database roll (`/dbroll`) et database dice (`/dbd`)
 
 > [!warning] 
 > Par défaut, le `/dbroll` et `/dbd` sont désactivées ! Vous devez les activer via la configuration du serveur.
@@ -114,7 +114,7 @@ La commande `/generer` permet de générer un fichier `JSON` personnalisé à pa
 - Une formule pour modifier la valeur lorsque la statistique est ajouté au résultat du dé. Vous devez utiliser `$` pour symboliser la statistique. Par exemple, `+$` pour ajouter la statistique au résultat du dé. La formule accepte des opérations mathématiques comme `floor(($-10)/2)`. L'évaluation se fait avec la librairie [`mathjs`](https://mathjs.org/).
 - Les noms pour les dés enregistrés pour la commande `/dbd` (qui permet de faire des dés de dégâts/compétences). Les dés sont sauvegardés dans un objet, avec le type de dégât comme clé et le dé comme valeur. N'importe quel type de dés (avec ou sans modificateur mais aussi un comparateur) peut être utilisé.
 
-La fichier généré doit être télécharger et éditer. Vous pouvez l'éditer en utilisation n'importe quel éditeur de texte (et même en ligne) pour modifier et ajouter toutes les valeurs.
+Le fichier généré doit être téléchargé et éditer. Vous pouvez l'éditer en utilisation n'importe quel éditeur de texte (et même en ligne) pour modifier et ajouter toutes les valeurs.
 
 Voici les références des différents champs :
 - `charName` : Un booléen indiquant s'il faut obliger l'utilisateur à choisir un nom pour ses personnages. La valeur par défaut est `false`.
@@ -184,7 +184,7 @@ Exemple de modèle JSON:
 > [!important]
 > Vous pouvez jeter un œil au dossier [template][./template] pour voir différents modèles.
 
-Il est tout à fait possible d'enregistrer que des dés de compétences, voire rien du tout et de donner une template "vide". Cela désactivera la commande `/dbroll` mais pas la commande `/dbd`. 
+Il est également possible d'enregistrer uniquement des dés de compétences, voire rien du tout et de donner une template "vide". Cela désactivera la commande `/dbroll` mais pas la commande `/dbd`. 
 
 ## Enregistrer un modèle (`/enregistrer`)
 
@@ -215,7 +215,7 @@ Une fois les statistiques enregistrées (ou sautée, si aucune n'est dans la tem
 
 ## Limitations
 
-- Seulement 20 statistiques sont supportés au maximum, à cause des limitations de l'autocomplète.
+- Seulement 20 statistiques sont supportées au maximum, à cause des limitations de l'autocomplète.
 - Seulement 25 (incluant modèles + personnels) compétences sont supportées, à cause des limitations de l'autocomplète.
 - Il est impossible de modifier une statistique déjà enregistrée. Vous devez recréer le personnage (le message précédent sera supprimé en cas de ré-enregistrement)
 - De même, il n'est pas possible de rajouter un dé de compétence, vous devez recréer le personnage.
@@ -251,7 +251,7 @@ Mais, pour les message "direct" (c'est-à-dire les messages qui ne sont pas des 
 
 ### Ajouter une langue
 
-Pour ajouter une lnague, vous devez copier et traduire le fichier [`en.ts`](./src/localizations/locales/en.ts).
+Pour ajouter une langue, vous devez copier et traduire le fichier [`en.ts`](./src/localizations/locales/en.ts).
 
 > [!IMPORTANT]
 > Le nom doit suivre le format des [locales discord.js](https://github.com/discordjs/discord-api-types/blob/main/rest/common.ts#L300).
