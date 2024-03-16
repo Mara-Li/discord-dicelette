@@ -251,6 +251,7 @@ export const registerTemplate = {
 			const data = fs.readFileSync("database.json", "utf-8");
 			const json = JSON.parse(data);
 			const statsName = Object.keys(templateData.statistics);
+			const damageName = templateData.damage ? Object.keys(templateData.damage) : undefined;
 			if (json[guildData]) {
 				if (json[guildData].templateID.messageId && json[guildData].templateID.channelId) {
 					try {
@@ -264,14 +265,16 @@ export const registerTemplate = {
 				json[guildData].templateID = {
 					channelId: channel.id,
 					messageId: msg.id,
-					statsName
+					statsName,
+					damageName
 				};
 			} else {
 				json[guildData] = {
 					templateID: {
 						channelId: channel.id,
 						messageId: msg.id,
-						statsName
+						statsName,
+						damageName
 					},
 					user: {}
 				};

@@ -31,7 +31,7 @@ export interface GuildData {
 		[userID: string]: {
 			charName?: string;
 			messageId: string;
-			damageName: string[];
+			damageName?: string[];
 		}[]
 	}
 	

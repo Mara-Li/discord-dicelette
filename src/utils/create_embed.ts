@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
 
 import { StatisticalTemplate, User } from "../interface";
 import { lError, ln } from "../localizations";
@@ -89,28 +89,20 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				await interaction.reply({ content: errorMsg, ephemeral: true });
 				return;
 			}
-
-			let userID = oldEmbeds.fields.find(field => field.name === ul.common.user)?.value;
-			let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul.common.charName)?.value;
-			if (charName && charName === ul.common.noSet)
-				charName = undefined;
-			if (!userID) {
-				await interaction.reply({ content: ul.error.user, ephemeral: true });
-				return;
-			}
-			userID = userID.replace("<@", "").replace(">", "");
-			const userStatistique: User = {
-				userName: charName,
-				stats: {...stats, ...combinaison},
-				template: {
-					diceType: template.diceType,
-					comparator: template.comparator,
-				},	
-			};
-			await interaction.message.delete();
-			await repostInThread(embed, interaction, userStatistique, userID);
-			await interaction.reply({ content: ul.modals.finished, ephemeral: true });
-			return;
+			const registerDmgButton = new ButtonBuilder()
+				.setCustomId("registerDmg")
+				.setLabel("Register damage dice")
+				.setStyle(ButtonStyle.Primary);
+			const validateButton = new ButtonBuilder()
+				.setCustomId("validate")
+				.setLabel("Validate")
+				.setStyle(ButtonStyle.Success);
+			const cancelButton = new ButtonBuilder()
+				.setCustomId("cancel")
+				.setLabel(ul.modals.cancel)
+				.setStyle(ButtonStyle.Danger);
+			await interaction.message.edit({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton])] });
+			await interaction.reply({ content: ul.modals.added, ephemeral: true });			
 		}
 		const continueButton = new ButtonBuilder()
 			.setCustomId("continue")
@@ -126,4 +118,97 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		const errorMsg = lError(error as Error, interaction);
 		await interaction.reply({ content: errorMsg, ephemeral: true });
 	}
+}
+
+export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate) {
+	const ul = ln(interaction.locale as Locale);
+	const oldEmbeds = interaction.message.embeds[0];
+	if (!oldEmbeds) return;
+	let userID = oldEmbeds.fields.find(field => field.name === ul.common.user)?.value;
+	let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul.common.charName)?.value;
+	if (charName && charName === ul.common.noSet)
+		charName = undefined;
+	if (!userID) {
+		await interaction.reply({ content: ul.error.user, ephemeral: true });
+		return;
+	}
+	userID = userID.replace("<@", "").replace(">", "");
+	const fields = oldEmbeds.fields;
+	if (!fields) return;
+	const parsedFields: {[name: string]: string} = {};
+	for (const field of fields) {
+		parsedFields[field.name.toLowerCase()] = field.value.toLowerCase();
+	}
+	const embed = new EmbedBuilder()
+		.setTitle(ul.modals.embedTitle)
+		.setThumbnail(oldEmbeds.thumbnail?.url || "");
+	//add old fields
+	for (const field of oldEmbeds.fields) {
+		embed.addFields(field);
+	}
+	const templateStat = Object.keys(template.statistics);
+	const stats: {[name: string]: number} = {};
+	for (const stat of templateStat) {
+		stats[stat] = parseInt(parsedFields[stat], 10);
+	}
+	const damageFields = oldEmbeds.fields.filter(field => field.name.startsWith("🔪"));
+	let templateDamage: {[name: string]: string} | undefined = undefined;
+	if (damageFields.length > 0) {
+		templateDamage = {};
+		for (const damage of damageFields) {
+			templateDamage[damage.name] = damage.value;
+		}
+	}
+
+	const userStatistique: User = {
+		userName: charName,
+		stats,
+		template: {
+			diceType: template.diceType,
+			comparator: template.comparator,
+		},	
+		damage: templateDamage,
+	};
+	await interaction?.message?.delete();
+	await repostInThread(embed, interaction, userStatistique, userID);
+	await interaction.reply({ content: ul.modals.finished, ephemeral: true });
+	return;
+}
+
+export async function registerDamageDice(interaction: ModalSubmitInteraction) {
+	const ul = ln(interaction.locale as Locale);
+	const name = interaction.fields.getTextInputValue("damageName");
+	const value = interaction.fields.getTextInputValue("damageValue");
+	const oldEmbeds = interaction.message?.embeds[0];
+	if (!oldEmbeds) return;
+	const embed = new EmbedBuilder()
+		.setTitle(ul.modals.embedTitle)
+		.setThumbnail(oldEmbeds.thumbnail?.url || "");
+	//add old fields
+	if (!oldEmbeds.fields) return;
+	for (const field of oldEmbeds.fields) {
+		embed.addFields(field);
+	}
+	//add damage fields
+	embed.addFields({
+		name: `🔪 ${name}`,
+		value,
+		inline: true,
+	});
+	const registerDmgButton = new ButtonBuilder()
+		.setCustomId("registerDmg")
+		.setLabel("Register damage dice")
+		.setStyle(ButtonStyle.Primary);
+	const validateButton = new ButtonBuilder()
+		.setCustomId("validate")
+		.setLabel("Validate")
+		.setStyle(ButtonStyle.Success);
+	const cancelButton = new ButtonBuilder()
+		.setCustomId("cancel")
+		.setLabel(ul.modals.cancel)
+		.setStyle(ButtonStyle.Danger);
+	const allButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
+	await interaction?.message?.edit({ embeds: [embed], components: [allButtons] });
+	await interaction.reply({ content: ul.modals.added, ephemeral: true });
+	return;
 }

@@ -3,9 +3,9 @@ import { AutocompleteInteraction, BaseInteraction, Client, TextChannel } from "d
 import { commandsList } from "../commands/base";
 import { autCompleteCmd } from "../commands/dbroll";
 import { lError, ln } from "../localizations";
-import { createEmbedFirstPage, embedStatistiques } from "../utils/create_embed";
+import { createEmbedFirstPage, embedStatistiques, registerDamageDice, validateUser } from "../utils/create_embed";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
-import { showFirstPageModal, showStatistiqueModal } from "../utils/modals";
+import { showDamageDiceModals, showFirstPageModal, showStatistiqueModal } from "../utils/modals";
 import { parseEmbed } from "../utils/parse";
 
 export default (client: Client): void => {
@@ -60,6 +60,30 @@ export default (client: Client): void => {
 				const translationError = lError(error as Error, interaction);
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}
+		} else if (interaction.isButton() && interaction.customId === "registerDmg") {
+			await showDamageDiceModals(interaction);
+		} else if (interaction.isButton() && interaction.customId === "validate") {
+			try {
+				const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);
+				if (isNaN(pageNumber)) return;
+				const template = await getTemplateWithDB(interaction);
+				if (!template) {
+					await interaction.reply({ content: ul.error.noTemplate});
+					return;
+				}
+				await validateUser(interaction, template);
+			} catch (error) {
+				console.error(error);
+				const translationError = lError(error as Error, interaction);
+				await interaction.reply({ content: translationError, ephemeral: true });
+			}
+		} else if (interaction.isModalSubmit() && interaction.customId === "damageDice") {
+			const template = await getTemplateWithDB(interaction);
+			if (!template) {
+				await interaction.reply({ content: ul.error.noTemplate});
+				return;
+			}
+			await registerDamageDice(interaction);
 		} else if (interaction.isModalSubmit() && interaction.customId.includes("page")) {
 			try {
 				const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);
@@ -71,7 +95,7 @@ export default (client: Client): void => {
 				}
 				await embedStatistiques(interaction, template, pageNumber);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				const translationError = lError(error as Error, interaction);
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}

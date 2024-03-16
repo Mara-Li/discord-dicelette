@@ -65,3 +65,31 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	}
 	await interaction.showModal(modal);
 }
+
+export async function showDamageDiceModals(interaction: ButtonInteraction) {
+	const ul = ln(interaction.locale as Locale);
+	const modal = new ModalBuilder()
+		.setCustomId("damageDice")
+		.setTitle(ul.register.embed.damage);
+	const damageDice = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+		new TextInputBuilder()
+			.setCustomId("damageName")
+			.setLabel("Name")
+			.setPlaceholder(ul.modals.enterValue(1, 100))
+			.setRequired(true)
+			.setValue("")
+			.setStyle(TextInputStyle.Short),	
+	);
+	const diceValue = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+		new TextInputBuilder()
+			.setCustomId("damageValue")
+			.setLabel("Value")
+			.setPlaceholder("1d5")
+			.setRequired(true)
+			.setValue("")
+			.setStyle(TextInputStyle.Short),	
+	);
+	modal.addComponents(damageDice);
+	modal.addComponents(diceValue);
+	await interaction.showModal(modal);
+}

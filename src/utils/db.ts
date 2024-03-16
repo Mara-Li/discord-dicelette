@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, CommandInteraction, Guild, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
+import { BaseInteraction, ButtonInteraction, Guild, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 
@@ -13,7 +13,7 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
 	return verifyTemplateValue(res);
 }
 
-export function getGuildData(interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction|AutocompleteInteraction): GuildData|undefined {
+export function getGuildData(interaction: BaseInteraction): GuildData|undefined {
 	if (!interaction.guild) return;
 	const guildData = interaction.guild.id;
 	const data = fs.readFileSync("database.json", "utf-8");
@@ -60,6 +60,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 			channelId: "",
 			messageId: "",
 			statsName: [],
+			damageName: []
 		};
 		const data = fs.readFileSync("database.json", "utf-8");
 		const json = JSON.parse(data);
@@ -96,7 +97,7 @@ export function readDB(guildID: string) {
 	return {db, parsedDatabase};
 }
 
-export async function registerUser(userID: string, interaction: ModalSubmitInteraction,msgId: string, thread: ThreadChannel, charName?: string) {
+export async function registerUser(userID: string, interaction: BaseInteraction,msgId: string, thread: ThreadChannel, charName?: string, damage?: string[]) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
 	if (charName) charName = removeAccents(charName).toLowerCase();
@@ -116,11 +117,12 @@ export async function registerUser(userID: string, interaction: ModalSubmitInter
 			}
 			//overwrite the message id
 			char.messageId = msgId;}
-		else user.push({ charName, messageId: msgId });	
+		else user.push({ charName, messageId: msgId, damageName: damage });	
 	} else {
 		guildData.user[userID] = [{
 			charName,
-			messageId: msgId
+			messageId: msgId, 
+			damageName: damage
 		}];
 	}
 	//update the database
