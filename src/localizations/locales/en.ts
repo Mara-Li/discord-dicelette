@@ -112,8 +112,8 @@ export default {
 				description: "The formula to edit the value. Use $ to symbolise the value (ie: +$)",
 			},
 			damage: {
-				name: "damage",
-				description: "Register a damage dice - Separate attack name by coma or space",
+				name: "skill",
+				description: "Register a skill dice - Separate skill name by coma or space",
 			}
 		},
 		help: `

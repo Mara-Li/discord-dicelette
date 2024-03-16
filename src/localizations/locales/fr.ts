@@ -111,8 +111,8 @@ export default {
 				description: "La formule pour modifier la valeur de la statistique. Utiliser $ pour symboliser la valeur (ie: +$)",
 			},
 			damage: {
-				name: "attaque",
-				description: "Enregistrer un dé de dégâts - Séparer le nom des attaques par un espace ou une virgule",
+				name: "competence",
+				description: "Enregistrer un dé de compétence - Séparer le nom des compétences par un espace ou une virgule",
 			}
 		},
 		help: `
