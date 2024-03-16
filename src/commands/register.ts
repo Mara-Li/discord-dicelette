@@ -225,7 +225,7 @@ export const registerTemplate = {
 				.setColor("Random");
 			
 			if (templateData.statistics && (Object.keys(templateData.statistics).length >= 20)) {
-				interaction.reply({ content: ul.register.error.tooMuchStats, ephemeral: true });
+				interaction.reply({ content: ul.error.tooMuchStats, ephemeral: true });
 				return;
 			}
 			if (templateData.statistics) {	
@@ -310,7 +310,7 @@ export const registerTemplate = {
 		} catch (e) {
 			console.log(e);
 			const translationError = lError((e as Error), interaction);
-			await interaction.reply({ content: `${ul.register.error.invalid}\`\`\`\n${translationError}\`\`\``, ephemeral: true });
+			await interaction.reply({ content: `${ul.error.invalid}\`\`\`\n${translationError}\`\`\``, ephemeral: true });
 		}
 	}	
 };

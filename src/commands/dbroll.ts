@@ -86,7 +86,6 @@ export const rollForUser = {
 		if (!guildData) return;
 		const common = en.common;
 		const lOpt = en.dbRoll.options;
-		const ul = ln(interaction.locale as Locale).dbRoll;
 		const ulError = ln(interaction.locale as Locale).error;
 		let charName = options.getString(common.character) ?? undefined;
 		try {
@@ -95,7 +94,7 @@ export const rollForUser = {
 			//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
-					await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
+					await interaction.reply({ content: ulError.notRegistered, ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
@@ -103,7 +102,7 @@ export const rollForUser = {
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
-				await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
+				await interaction.reply({ content: ulError.notRegistered, ephemeral: true });
 				return;
 			}
 			//create the string for roll

@@ -122,7 +122,7 @@ export default {
 		- The total must be a number and can be optional. If you remove it, the total will be automatically calculated when the user is saved.
 		- The formula allows editing the combined value with the die. Use \`$\` to symbolize the value (e.g., \`+$\`, \`-$\`, \`($-10)/2\`...).
 		- A statistic can be a combination of other statistics, such as \`strength+endurance\`. If the \`combination\` value is defined, then the \`min\` and \`max\` parameters will be disabled. Additionally, users will not have to enter the value manually. Finally, this value will be excluded from the calculation of the total allocated points.
-		- You can also register a skill dice. This will be used for the skill command from database. Also, user can have their own skill dice.
+		- You can also register a dice. This will be used for the \`/dbdice\` command from database. Also, user can have their own skill dice.
 		
 		Note that the file provided here is just an example and should be customized before being saved.
 
@@ -177,10 +177,10 @@ export default {
 		},
 	},
 	rAtq: {
-		name: "dbatk",
-		description: "Roll an attack dice",
+		name: "dbd",
+		description: "Roll a registered dice for skill/attack",
 		atq_name: {
-			name: "atq_name",
+			name: "dice_name",
 			description: "The attack name",
 		},
 	},
@@ -214,6 +214,8 @@ export default {
 		tooManyDice: "You can't have more than 25 damage dice",
 		emptyObject: "You can't have an empty object",
 		tooMuchStats: "You can't have more than 20 statistics",
+		notRegistered: "You are not registered",
+		noDamage: "No registered dice found",
 		invalid: "Invalid template:"
 	},
 	modals: {

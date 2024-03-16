@@ -121,7 +121,7 @@ export default {
 		- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.
 		- La formule permet d'éditer la valeur combinée au dé. Utiliser \`$\` pour symboliser la valeur (ie: \`+$\`, \`-$\`, \`($-10)/2\`...).
 		- Une statistique peut être une combinaison d'autre statistique, comme \`force+endurance\`. Si la valeur de \`combinaison\` est définie, alors que les paramètres \`min\` et \`max\` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.
-		- Vous pouvez aussi enregistrer des dés de compétences, qui seront ensuite utilisés pour la commande de compétences depuis la base de données. De plus, les utilisateurs pourront enregistrer leur propre dés de compétences.
+		- Vous pouvez aussi enregistrer des dés de compétences, qui seront ensuite utilisés pour la commande \`/dbdé\` depuis la base de données. De plus, les utilisateurs pourront enregistrer leur propre dés de compétences.
 
 		Noter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.	
 
@@ -189,11 +189,11 @@ export default {
 		}
 	},
 	rAtq: {
-		name: "dbatq",
-		description: "Lancer un dé de dégâts",
+		name: "dbd",
+		description: "Lancer un dé enrégistré pour une compétence/attaque",
 		atq_name: {
-			name: "nom_atq",
-			description: "Le nom de l'attaque",
+			name: "dé_nom",
+			description: "Le nom de la compétence",
 		}
 	},
 	error: {
@@ -214,7 +214,9 @@ export default {
 		tooManyDice: "Vous ne pouvez pas avoir plus de 25 dés de dégâts",
 		emptyObject: "Vous ne pouvez pas avoir un objet vide",
 		tooMuchStats: "Vous ne pouvez pas avoir plus de 20 statistiques",
-		invalid: "Modèle invalide : "
+		invalid: "Modèle invalide : ",
+		notRegistered: "Vous n'êtes pas enregistré",
+		noDamage: "Vous n'avez pas de dés enregistrés",
 	},
 	modals: {
 		continue: "Continuer",
