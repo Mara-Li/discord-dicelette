@@ -28,17 +28,30 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 		);
 	//add continue button
 	if (template.statistics) {
-		const continueButton = new ButtonBuilder()
-			.setCustomId("continue")
-			.setLabel(ul.modals.continue)
-			.setStyle(ButtonStyle.Success);
-		const cancelButton = new ButtonBuilder()
-			.setCustomId("cancel")
-			.setLabel(ul.modals.cancel)
-			.setStyle(ButtonStyle.Danger);
-		await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
+		
+		await interaction.reply({ embeds: [embed], components: [continueCancelButtons(ul)] });
 		return;
 	}
+	const allButtons = registerDmgButton(ul);
+	await interaction.reply({ embeds: [embed], components: [allButtons] });	
+}
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function continueCancelButtons(ul: any) {
+	const continueButton = new ButtonBuilder()
+		.setCustomId("continue")
+		.setLabel(ul.modals.continue)
+		.setStyle(ButtonStyle.Success);
+	const cancelButton = new ButtonBuilder()
+		.setCustomId("cancel")
+		.setLabel(ul.modals.cancel)
+		.setStyle(ButtonStyle.Danger);
+	return new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton]);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function registerDmgButton(ul: any) {
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
 		.setLabel(ul.common.validate)
@@ -51,8 +64,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 		.setCustomId("registerDmg")
 		.setLabel(ul.modals.register)
 		.setStyle(ButtonStyle.Primary);
-	const allButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
-	await interaction.reply({ embeds: [embed], components: [allButtons] });	
+	return new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
 }
 
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page=2) {
@@ -105,31 +117,11 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				await interaction.reply({ content: errorMsg, ephemeral: true });
 				return;
 			}
-			const registerDmgButton = new ButtonBuilder()
-				.setCustomId("registerDmg")
-				.setLabel("Register damage dice")
-				.setStyle(ButtonStyle.Primary);
-			const validateButton = new ButtonBuilder()
-				.setCustomId("validate")
-				.setLabel("Validate")
-				.setStyle(ButtonStyle.Success);
-			const cancelButton = new ButtonBuilder()
-				.setCustomId("cancel")
-				.setLabel(ul.modals.cancel)
-				.setStyle(ButtonStyle.Danger);
-			await interaction.message.edit({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton])] });
+			await interaction.message.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
 			await interaction.reply({ content: ul.modals.added, ephemeral: true });
 			return;	
 		}
-		const continueButton = new ButtonBuilder()
-			.setCustomId("continue")
-			.setLabel(ul.modals.continue)
-			.setStyle(ButtonStyle.Success);
-		const cancelButton = new ButtonBuilder()
-			.setCustomId("cancel")
-			.setLabel(ul.modals.cancel)
-			.setStyle(ButtonStyle.Danger);
-		await interaction.message.edit({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
+		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
 		await interaction.reply({ content: ul.modals.added, ephemeral: true });
 	} catch (error) {
 		const errorMsg = lError(error as Error, interaction);
@@ -219,20 +211,8 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 		inline: true,
 	});
 
-	const registerDmgButton = new ButtonBuilder()
-		.setCustomId("registerDmg")
-		.setLabel("Register damage dice")
-		.setStyle(ButtonStyle.Primary);
-	const validateButton = new ButtonBuilder()
-		.setCustomId("validate")
-		.setLabel("Validate")
-		.setStyle(ButtonStyle.Success);
-	const cancelButton = new ButtonBuilder()
-		.setCustomId("cancel")
-		.setLabel(ul.modals.cancel)
-		.setStyle(ButtonStyle.Danger);
-	const allButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
-	await interaction?.message?.edit({ embeds: [embed], components: [allButtons] });
+	
+	await interaction?.message?.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
 	await interaction.reply({ content: ul.modals.added, ephemeral: true });
 	return;
 }
