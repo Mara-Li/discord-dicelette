@@ -25,11 +25,13 @@ export interface GuildData {
 		channelId: string;
 		messageId: string;
 		statsName: string[];
+		damageName: string[];
 	},
 	user: {
 		[userID: string]: {
 			charName?: string;
 			messageId: string;
+			damageName: string[];
 		}[]
 	}
 	
@@ -91,8 +93,14 @@ export interface StatisticalTemplate {
 		 * @example DND: ($-10)/2
 		*/
 		formula?: string
+	},
+	/** Special dice for damage */
+	damage?: {
+		[name: string]: string;
 	}
 }
+
+
 
 /**
  * When a user is registered, a message will be sent in the corresponding channel for the template
@@ -120,6 +128,9 @@ export interface User {
 			criticalSuccess?: number;
 			criticalFailure?: number;
 		}
+	},
+	damage?: {
+		[name: string]: string;
 	}
 }
 

@@ -35,6 +35,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 			value: 0,
 			formula: "",
 		},
+		
 	};
 	if (template.statistics) {
 		for (const [key, value] of Object.entries(template.statistics)) {
@@ -85,15 +86,29 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 		statistiqueTemplate.total = template.total;
 	}
 	if (template.charName) statistiqueTemplate.charName = template.charName;
-
+	if (template.damage) statistiqueTemplate.damage = template.damage;
 	try {
+		testRoll(statistiqueTemplate);
 		testFormula(statistiqueTemplate);
 		testCombinaison(statistiqueTemplate);
 	} catch (error) {
 		throw new Error((error as Error).message);
 	}
-
 	return statistiqueTemplate;
+}
+
+export function testRoll(template: StatisticalTemplate) {
+	if (!template.damage) return;
+	if (Object.keys(template.damage).length === 0) throw new Error("[error.emptyObject]");
+	if (Object.keys(template.damage).length > 25) throw new Error("[error.tooManyDice]");
+	for (const [name, dice] of Object.entries(template.damage)) {
+		if (!dice) continue;
+		try {
+			roll(dice);
+		} catch (error) {
+			throw new Error(`[error.invalidDice, common.space] ${name}`);
+		}
+	}
 }
 
 export function testCombinaison(template: StatisticalTemplate) {

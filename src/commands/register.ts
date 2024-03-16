@@ -182,8 +182,8 @@ export const registerTemplate = {
 			const res = await fetch(template.url).then(res => res.json());
 			const templateData = verifyTemplateValue(res);
 			const guildData = interaction.guild.id;
-			const channel = options.getChannel(ul.common.channel);
-			if (!channel || !(channel instanceof TextChannel)) return;
+			const channel = options.getChannel(ul.common.channel, true);
+			if (!(channel instanceof TextChannel)) return;
 			//send template as JSON in the channel, send as file
 			//add register button
 			const button = new ButtonBuilder()
@@ -237,6 +237,13 @@ export const registerTemplate = {
 				name: ul.common.total,
 				value: `${ul.common.total}${ul.common.space}: ${templateData.total}`,
 			});
+			if (templateData.damage) {
+				const damage = Object.entries(templateData.damage).map(([name, value]) => `- ${name} : ${value}`).join("\n");
+				embedTemplate.addFields({
+					name: ul.register.embed.damage,
+					value: damage,
+				});
+			}
 			const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
 			msg.pin();
 			await interaction.reply({ content: ul.register.embed.registered, ephemeral: true });

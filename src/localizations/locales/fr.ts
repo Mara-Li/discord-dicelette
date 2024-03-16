@@ -140,7 +140,8 @@ export default {
 			value: "Valeur :",
 			formula: "Formule :",
 			comparator: "Comparateur :",
-			registered: "Modèle enregistré !"
+			registered: "Modèle enregistré !",
+			damage: "Dés de dégâts"
 		},
 		error: {
 			tooMuchStats: "Vous ne pouvez pas avoir plus de 20 statistiques",
@@ -197,6 +198,8 @@ export default {
 		noThread: "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
 		maxGreater: "Le maximum doit être plus grand que minimum",
 		generic: (e: Error) => `Une erreur est survenue :\n\`\`\`\n${e.message}\n\`\`\``,
+		tooManyDice: "Vous ne pouvez pas avoir plus de 25 dés de dégâts",
+		emptyObject: "Vous ne pouvez pas avoir un objet vide",
 	},
 	modals: {
 		continue: "Continuer",

@@ -126,7 +126,8 @@ export default {
 		name: "register",
 		description: "Register a template for the dbroll command",
 		options: {
-			channel: "The channel where the template and the users will be saved",			template: {
+			channel: "The channel where the template and the users will be saved",			
+			template: {
 				name: "template",
 				description: "The template to register"
 			},
@@ -140,7 +141,9 @@ export default {
 			value: "Value:",
 			formula: "Formula:",
 			comparator: "Comparator:",
-			registered: "Template registered!"
+			registered: "Template registered!",
+			damage: "Damage dice"
+
 		},
 		error: {
 			tooMuchStats: "You can't have more than 20 statistics",
@@ -196,6 +199,8 @@ export default {
 		noThread: "No thread found — Please re-register the user if the thread has been deleted",
 		maxGreater: "Max must be greater than min",
 		generic: (e: Error) => `An error occured:\n\`\`\`${e.message}\n\`\`\``,
+		tooManyDice: "You can't have more than 25 damage dice",
+		emptyObject: "You can't have an empty object",
 	},
 	modals: {
 		continue: "Continue",

@@ -32,7 +32,7 @@ export default (client: Client): void => {
 			try {
 				await showFirstPageModal(interaction, template);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				await interaction.reply({ content: ul.error.generic(error as Error), ephemeral: true });
 			}
 		} else if (interaction.isModalSubmit() && interaction.customId=="firstPage") {
@@ -56,7 +56,7 @@ export default (client: Client): void => {
 				const page = isNaN(parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : parseInt(interaction.customId.replace("page", ""), 10)+1;
 				await showStatistiqueModal(interaction, template, statsAlreadySet, page);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				const translationError = lError(error as Error, interaction);
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}
