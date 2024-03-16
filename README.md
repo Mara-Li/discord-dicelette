@@ -86,7 +86,7 @@ The bot will create a new thread, prefixed by `🎲`, and send the log to it. Th
 
 `/help`: Display the help message.
 
-# Database roll (dbroll)
+# Database roll (`/dbroll`) and database dice (`/dbd`)
 
 > [!warning] 
 > By default, the `/dbroll` is disabled! You need to enable it via the Discord server panel configuration.
@@ -110,7 +110,7 @@ The `/generate` commands allow to get a personnalized template. You can direcly 
 - An critical success value (natural dice)
 - An critical failure value (natural dice)
 - A formula to edit the value added to the dice result. Use `$` to symbolise the statistic. Example: `+$` will add the value of the statistic to the dice result. It supports mathematical operation like `floor(($-10)/2)`. The evaluation is done with the [`mathjs`](https://mathjs.org/) library.
-
+- Names for dice saved for the `/dbd` command (which allows you to make damage/skill dice). The dice are saved in an object, with the damage type as the key and the die as the value. Any type of dice (with or without modifier, but also a comparator) can be used.
 The generated file must be downloaded and edited using any editor (even online!) to add any value/edit you want.
 
 Here the reference for the different fields:
@@ -128,6 +128,7 @@ Here the reference for the different fields:
   - `criticalSuccess`: Critical success value for natural dice rolls.
   - `criticalFailure`: Critical failure value for natural dice rolls.
   - `formula`: Formula to modify the value added to the dice result. Use `$` to symbolize the statistic. Example: `+$` will add the value of the statistic to the dice result. Supports mathematical operations like `floor(($-10)/2)`.
+- `damage`: Object containing the name of the dice and its value, such as `"piercing": "1d6+2"`. You can also add a damage comparator, such as `"poison": "1d4+1>2"`.
 
 Template JSON example:
 ```json
@@ -167,11 +168,19 @@ Template JSON example:
 	"criticalSuccess": 20,
 	"criticalFailure": 1,
 	"formula": "ceil(($-10)/2)"
+  },
+  "damage": {
+	"piercing": "1d6+2",
+	"slashing": "1d8+1",
+	"blunt": "1d10+2",
+	"poison": "1d4+1>2"
   }
 }
 ```
 > [!important]
 > You can take a look into [template][./template] for some common tested example.
+
+It's perfectly possible to register only skill dice, or nothing at all, and give an "empty" template. This will disable the `/dbroll` command, but not the `/dbd` command. 
 
 ## Registering the template (`/register`)
 
@@ -197,9 +206,14 @@ After, each 5 statistic (excepted for combinaison stat), it will ask for the val
 > [!note]
 > Because of the limitation of modals, it's impossible to check for errors at the time of sending and to use "number" fields. Everything is considered text, and checks are made during saving, which means that if an error is detected during a step, you have to redo the entire step.
 
+Once the stats have been saved (or skipped, if none are in the template), you can save skill dice, which will be used for the `/dbd` command. Dice support modifiers (bonus/malus) as well as comparators.
+
+
 ### Caveat
 - 20 statistic maximum (because of the limitation of Autocomplete in commands)
+- Only 25 (including template and personal) skills are supported, due to the limitations of autocomplete.
 - Doesn't support "quick" edit of a statistic, leveling up, etc. You need to re-register the character (the previous message will be deleted).
+- Similarly, it's not possible to add a skill dice - you have to recreate the character.
 
 ## dbroll commands (`/dbroll`)
 
@@ -209,6 +223,14 @@ The dbRoll will have the same result of the normal roll, but it will ask you:
 - Remplacement of the success value (for example, for difficult roll)
 - Any character (that must be registered in the database) -- Note: If you have only character registered and the user set no value, the first registered character will be used
 - Any comments to your action
+
+## DBD commands (`/dbd`)
+
+The dbD will have the same effect as the `/roll` command, but will ask for :
+- skill (mandatory, will use autocompletion)
+- Character name (with autocompletion)
+- The modifier to be added to the roll (such as advantage, disadvantage, etc.)
+- Any comments on your action
 
 ---
 ## Translation

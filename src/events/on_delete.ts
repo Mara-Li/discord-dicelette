@@ -71,7 +71,7 @@ export const delete_thread = (client: Client): void => {
 	});
 };
 
-export const delete_message = (client	: Client): void => {
+export const delete_message = (client: Client): void => {
 	client.on("messageDelete", async (message) => {
 		try {
 			if (!message.guild) return;
@@ -99,7 +99,6 @@ export const delete_message = (client	: Client): void => {
 			}
 			fs.writeFileSync("database.json", JSON.stringify(parsedDatabase, null, 2), "utf-8");
 		} catch (error) {
-			console.error(error);
 			if (!message.guild) return;
 			const db = readDB(message.guild.id);
 			if (!db) return;

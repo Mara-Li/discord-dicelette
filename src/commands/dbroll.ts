@@ -5,6 +5,7 @@ import { cmdLn, lError, ln } from "../localizations";
 import en from "../localizations/locales/en";
 import { rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
+import { dmgRoll } from "./dbAtq";
 
 export const rollForUser = {
 	data: new SlashCommandBuilder()
@@ -85,7 +86,6 @@ export const rollForUser = {
 		if (!guildData) return;
 		const common = en.common;
 		const lOpt = en.dbRoll.options;
-		const ul = ln(interaction.locale as Locale).dbRoll;
 		const ulError = ln(interaction.locale as Locale).error;
 		let charName = options.getString(common.character) ?? undefined;
 		try {
@@ -94,7 +94,7 @@ export const rollForUser = {
 			//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
-					await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
+					await interaction.reply({ content: ulError.notRegistered, ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
@@ -102,7 +102,7 @@ export const rollForUser = {
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
-				await interaction.reply({ content: ul.error.notRegistered, ephemeral: true });
+				await interaction.reply({ content: ulError.notRegistered, ephemeral: true });
 				return;
 			}
 			//create the string for roll
@@ -113,16 +113,16 @@ export const rollForUser = {
 			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
 			const userStat = userStatistique.stats[statistique];
 			const template = userStatistique.template;
-			let formula = template.comparator.formula;
+			let formula = template.comparator?.formula;
 			const dice = template.diceType;
 			let comparator: string = "";
-			if (!override) {
+			if (!override && template.comparator) {
 				comparator += template.comparator.sign;
 				comparator += template.comparator.value ? template.comparator.value.toString() : userStat.toString();
-			} else comparator = override;
+			} else if (override) comparator = override;
 			const critical: {failure?: number, success?: number} = {
-				failure: template.comparator.criticalFailure,
-				success: template.comparator.criticalSuccess
+				failure: template.comparator?.criticalFailure,
+				success: template.comparator?.criticalSuccess
 			};
 			if (formula) {
 				try {
@@ -133,9 +133,9 @@ export const rollForUser = {
 				}
 				formula = formula?.startsWith("-") ? formula : `+${formula}`;
 			} else formula = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
-			const charNameComments = charName ? `**@${charName}**` : "";
-			comments += `__[${title(statistique)}]__ - ${charNameComments}`;
-			const roll = `${dice}${formula}${comparator}${comments ? ` ${comments}` : ""}`;
+			const charNameComments = charName ? `• **@${charName}**` : "";
+			comments += `__[${title(statistique)}]__${charNameComments}`;
+			const roll = `${dice}${formula}${comparator} ${comments}`;
 			await rollWithInteraction(interaction, roll, interaction.channel, critical);
 		}
 		catch (error) {
@@ -145,4 +145,4 @@ export const rollForUser = {
 	}
 };
 
-export const autCompleteCmd = [rollForUser];
+export const autCompleteCmd = [rollForUser, dmgRoll];

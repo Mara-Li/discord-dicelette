@@ -25,11 +25,13 @@ export interface GuildData {
 		channelId: string;
 		messageId: string;
 		statsName: string[];
+		damageName: string[];
 	},
 	user: {
 		[userID: string]: {
 			charName?: string;
 			messageId: string;
+			damageName?: string[];
 		}[]
 	}
 	
@@ -62,7 +64,7 @@ export type Statistic = {
 export interface StatisticalTemplate {
 	/** Allow to force the user to choose a name for them characters */
 	charName?: boolean 
-	statistics: Statistic
+	statistics?: Statistic
 	/**
 	 * A total can be set, it allows to calculate the total value of a future register member
 	 * If the sum of the value > total, the bot will send a message to the user to inform him that the total is exceeded and an error will be thrown
@@ -70,11 +72,19 @@ export interface StatisticalTemplate {
 	 */
 	total?: number
 	/** A dice type in the notation supported by the bot */
-	diceType: string;
+	diceType?: string;
 	/**
 	 * How the success/echec will be done 
 	 */
-	comparator: {
+	comparator?: Comparator;
+	/** Special dice for damage */
+	damage?: {
+		[name: string]: string;
+	}
+}
+
+export interface Comparator {
+	
 		/**
 		 * How the dice value will be compared
 		 */
@@ -91,8 +101,9 @@ export interface StatisticalTemplate {
 		 * @example DND: ($-10)/2
 		*/
 		formula?: string
-	}
 }
+
+
 
 /**
  * When a user is registered, a message will be sent in the corresponding channel for the template
@@ -112,14 +123,12 @@ export interface User {
 	 * Allow to prevent returning each time to the JSON template for roll
 	 */
 	template: {
-		diceType: string;
-		comparator: {
-			sign: "<" | ">" | ">=" | "<=" | "=" | "!="
-			value?: number;
-			formula?: string;
-			criticalSuccess?: number;
-			criticalFailure?: number;
-		}
+		diceType?: string;
+		comparator?: Comparator;
+		
+	},
+	damage?: {
+		[name: string]: string;
 	}
 }
 

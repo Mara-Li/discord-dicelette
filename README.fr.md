@@ -89,10 +89,10 @@ Le bot créera un nouveau fil de discussion, préfixé par `🎲`, et enverra le
 
 `/help` : Affiche le message d'aide.
 
-# Database roll (`/dbroll`)
+# Database roll (`/dbroll`) et database dice (`/dbd`)
 
 > [!warning] 
-> Par défaut, le `/dbroll` est désactivé ! Vous devez l'activer via la configuration du serveur.
+> Par défaut, le `/dbroll` et `/dbd` sont désactivées ! Vous devez les activer via la configuration du serveur.
 > ![Enable dbroll 1](./assets/tuto/allow_commands_1.png)
 > ![Enable dbroll 2](./assets/tuto/allow_commands_2.png)
 > ![Enable dbroll 3](./assets/tuto/allow_commands_3.png)
@@ -112,8 +112,9 @@ La commande `/generer` permet de générer un fichier `JSON` personnalisé à pa
 - Une valeur de succès critique (dé naturel)
 - Une valeur d'échec critique (dé naturel)
 - Une formule pour modifier la valeur lorsque la statistique est ajouté au résultat du dé. Vous devez utiliser `$` pour symboliser la statistique. Par exemple, `+$` pour ajouter la statistique au résultat du dé. La formule accepte des opérations mathématiques comme `floor(($-10)/2)`. L'évaluation se fait avec la librairie [`mathjs`](https://mathjs.org/).
+- Les noms pour les dés enregistrés pour la commande `/dbd` (qui permet de faire des dés de dégâts/compétences). Les dés sont sauvegardés dans un objet, avec le type de dégât comme clé et le dé comme valeur. N'importe quel type de dés (avec ou sans modificateur mais aussi un comparateur) peut être utilisé.
 
-La fichier généré doit être télécharger et éditer. Vous pouvez l'éditer en utilisation n'importe quel éditeur de texte (et même en ligne) pour modifier et ajouter toutes les valeurs.
+Le fichier généré doit être téléchargé et éditer. Vous pouvez l'éditer en utilisation n'importe quel éditeur de texte (et même en ligne) pour modifier et ajouter toutes les valeurs.
 
 Voici les références des différents champs :
 - `charName` : Un booléen indiquant s'il faut obliger l'utilisateur à choisir un nom pour ses personnages. La valeur par défaut est `false`.
@@ -130,6 +131,7 @@ Voici les références des différents champs :
   - `criticalSuccess` : Valeur de succès critique pour les jets de dés ( dé naturel).
   - `criticalFailure` : Valeur critique d'échec pour les jets de dés (dés naturels).
   - `formula` : Formule pour modifier la valeur ajoutée au résultat du dé. Utilisez `$` pour symboliser la statistique. Exemple : `+$` ajoutera la valeur de la statistique au résultat du dé. Supporte les opérations mathématiques comme `floor(($-10)/2)`.
+- `damage` : Objet contenant le nom du dés ainsi que sa valeur, tel que `"piercing": "1d6+2"`. Vous pouvez également ajouter un comparateur pour le dégât, tel que `"poison": "1d4+1>2"`.
 
 Exemple de modèle JSON:
 ```json
@@ -169,12 +171,20 @@ Exemple de modèle JSON:
 	"criticalSuccess": 20,
 	"criticalFailure": 1,
 	"formula": "ceil(($-10)/2)"
+  },
+  "damage": {
+	"perçant": "1d6+2",
+	"tranchant": "1d8+1",
+	"cotondant": "1d10+2",
+	"poison": "1d4+1>2"
   }
 }
 ```
 
 > [!important]
 > Vous pouvez jeter un œil au dossier [template][./template] pour voir différents modèles.
+
+Il est également possible d'enregistrer uniquement des dés de compétences, voire rien du tout et de donner une template "vide". Cela désactivera la commande `/dbroll` mais pas la commande `/dbd`. 
 
 ## Enregistrer un modèle (`/enregistrer`)
 
@@ -201,10 +211,14 @@ Après, vous devrez cliquer sur le bouton `<continuer>` et le bot continuera jus
 > [!note]
 > En raison de la limitation des modaux, il est impossible de vérifier les erreurs au moment de l'envoi et d'utiliser des champs "de nombre". Tous est considéré comme du texte, et les vérifications sont faites durant la sauvegarde, ce qui implique que si une erreur est détectée lors d'une étape, vous devez refaire l'étape en entier. 
 
+Une fois les statistiques enregistrées (ou sautée, si aucune n'est dans la template), vous avez la possibilité de sauvegarder des dés de compétences, qui seront utilisés pour la commande `/dbd`. Les dés supportent les modificateurs (bonus/malus) mais aussi les comparateurs.
+
 ## Limitations
 
-- Seulement 20 statistiques sont supportés au maximum, à cause des limitations de l'autocomplète.
+- Seulement 20 statistiques sont supportées au maximum, à cause des limitations de l'autocomplète.
+- Seulement 25 (incluant modèles + personnels) compétences sont supportées, à cause des limitations de l'autocomplète.
 - Il est impossible de modifier une statistique déjà enregistrée. Vous devez recréer le personnage (le message précédent sera supprimé en cas de ré-enregistrement)
+- De même, il n'est pas possible de rajouter un dé de compétence, vous devez recréer le personnage.
 
 ## DBRoll (`/dbroll`)
 
@@ -214,6 +228,14 @@ Le dbRoll aura les mêmes effets que la commande `/roll`, mais il vous demandera
 - Le modificateur à ajouter au jet (comme l'avantage, le désavantage, etc.)
 - Le remplacement de la valeur de réussite (par exemple, pour un jet difficile)
 - N'importe quel personnage (qui doit être enregistré dans la base de données) -- Note : Si vous n'avez qu'un seul personnage enregistré et que l'utilisateur ne met aucune valeur, le premier personnage enregistré sera utilisé.
+- Tout commentaire sur votre action
+
+## DBD (`/dbd`)
+
+Le dbD aura les mêmes effets que la commande `/roll`, mais il vous demandera :
+- La compétence (obligatoire, utilisera l'autocomplétion)
+- le nom du personnage (avec une autocomplétion)
+- Le modificateur à ajouter au jet (comme l'avantage, le désavantage, etc.)
 - Tout commentaire sur votre action
 
 ---
@@ -229,7 +251,7 @@ Mais, pour les message "direct" (c'est-à-dire les messages qui ne sont pas des 
 
 ### Ajouter une langue
 
-Pour ajouter une lnague, vous devez copier et traduire le fichier [`en.ts`](./src/localizations/locales/en.ts).
+Pour ajouter une langue, vous devez copier et traduire le fichier [`en.ts`](./src/localizations/locales/en.ts).
 
 > [!IMPORTANT]
 > Le nom doit suivre le format des [locales discord.js](https://github.com/discordjs/discord-api-types/blob/main/rest/common.ts#L300).

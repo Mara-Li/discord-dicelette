@@ -3,9 +3,9 @@ import { AutocompleteInteraction, BaseInteraction, Client, TextChannel } from "d
 import { commandsList } from "../commands/base";
 import { autCompleteCmd } from "../commands/dbroll";
 import { lError, ln } from "../localizations";
-import { createEmbedFirstPage, embedStatistiques } from "../utils/create_embed";
+import { createEmbedFirstPage, embedStatistiques, registerDamageDice, validateUser } from "../utils/create_embed";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
-import { showFirstPageModal, showStatistiqueModal } from "../utils/modals";
+import { showDamageDiceModals, showFirstPageModal, showStatistiqueModal } from "../utils/modals";
 import { parseEmbed } from "../utils/parse";
 
 export default (client: Client): void => {
@@ -32,12 +32,14 @@ export default (client: Client): void => {
 			try {
 				await showFirstPageModal(interaction, template);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				await interaction.reply({ content: ul.error.generic(error as Error), ephemeral: true });
 			}
 		} else if (interaction.isModalSubmit() && interaction.customId=="firstPage") {
 			if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
-			await createEmbedFirstPage(interaction);
+			const template = await getTemplateWithDB(interaction);
+			if (!template) return;
+			await createEmbedFirstPage(interaction, template);
 		} else if (interaction.isButton() && interaction.customId=="continue") {
 			try {
 				const template = await getTemplateWithDB(interaction);
@@ -47,6 +49,7 @@ export default (client: Client): void => {
 				}
 				const embed = parseEmbed(interaction);
 				if (!embed) return;
+				if (!template.statistics) return;
 				const allTemplateStat = Object.keys(template.statistics);
 				const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(stat));
 				if (statsAlreadySet.length === allTemplateStat.length) {
@@ -56,7 +59,35 @@ export default (client: Client): void => {
 				const page = isNaN(parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : parseInt(interaction.customId.replace("page", ""), 10)+1;
 				await showStatistiqueModal(interaction, template, statsAlreadySet, page);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
+				const translationError = lError(error as Error, interaction);
+				await interaction.reply({ content: translationError, ephemeral: true });
+			}
+		} else if (interaction.isButton() && interaction.customId === "registerDmg") {
+			await showDamageDiceModals(interaction);
+		} else if (interaction.isButton() && interaction.customId === "validate") {
+			try {
+				const template = await getTemplateWithDB(interaction);
+				if (!template) {
+					await interaction.reply({ content: ul.error.noTemplate});
+					return;
+				}
+				await validateUser(interaction, template);
+			} catch (error) {
+				console.error(error);
+				const translationError = lError(error as Error, interaction);
+				await interaction.reply({ content: translationError, ephemeral: true });
+			}
+		} else if (interaction.isModalSubmit() && interaction.customId === "damageDice") {
+			const template = await getTemplateWithDB(interaction);
+			if (!template) {
+				await interaction.reply({ content: ul.error.noTemplate});
+				return;
+			}
+			try {
+				await registerDamageDice(interaction);
+			} catch (error) {
+				console.error(error);
 				const translationError = lError(error as Error, interaction);
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}
@@ -71,7 +102,7 @@ export default (client: Client): void => {
 				}
 				await embedStatistiques(interaction, template, pageNumber);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				const translationError = lError(error as Error, interaction);
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}

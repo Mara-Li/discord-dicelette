@@ -4,8 +4,12 @@ import { StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
 
 export async function showFirstPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
-	const nbOfStatistique = Object.keys(template.statistics).length;
-	const nbOfPages = Math.floor(nbOfStatistique / 5) > 0 ? Math.floor(nbOfStatistique / 5) : 2;
+	let nbOfPages = 1;
+	if (template.statistics) {
+		const nbOfStatistique = Object.keys(template.statistics).length;
+		nbOfPages = Math.floor(nbOfStatistique / 5) > 0 ? Math.floor(nbOfStatistique / 5) : 2;
+	}
+
 	const ul = ln(interaction.locale as Locale);
 	const modal = new ModalBuilder()
 		.setCustomId("firstPage")
@@ -33,8 +37,9 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 }
 
 export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page = 1) {
+	if (!template.statistics) return;
 	const ul = ln(interaction.locale as Locale);
-	const statsWithoutCombinaison = Object.keys(template.statistics).filter(stat => !template.statistics[stat].combinaison) ?? [];
+	const statsWithoutCombinaison = Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison) ?? [];
 	const nbOfPages = Math.ceil(statsWithoutCombinaison.length / 5) >= 1 ? Math.ceil(statsWithoutCombinaison.length / 5) : page;
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
@@ -63,5 +68,33 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		);
 		modal.addComponents(input);
 	}
+	await interaction.showModal(modal);
+}
+
+export async function showDamageDiceModals(interaction: ButtonInteraction) {
+	const ul = ln(interaction.locale as Locale);
+	const modal = new ModalBuilder()
+		.setCustomId("damageDice")
+		.setTitle(ul.register.embed.damage);
+	const damageDice = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+		new TextInputBuilder()
+			.setCustomId("damageName")
+			.setLabel("Name")
+			.setPlaceholder(ul.modals.enterValue(1, 100))
+			.setRequired(true)
+			.setValue("")
+			.setStyle(TextInputStyle.Short),	
+	);
+	const diceValue = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+		new TextInputBuilder()
+			.setCustomId("damageValue")
+			.setLabel("Value")
+			.setPlaceholder("1d5")
+			.setRequired(true)
+			.setValue("")
+			.setStyle(TextInputStyle.Short),	
+	);
+	modal.addComponents(damageDice);
+	modal.addComponents(diceValue);
 	await interaction.showModal(modal);
 }

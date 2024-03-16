@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, CommandInteraction, Guild, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
+import { BaseInteraction, ButtonInteraction, Guild, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
 import removeAccents from "remove-accents";
 
@@ -13,7 +13,7 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
 	return verifyTemplateValue(res);
 }
 
-export function getGuildData(interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction|AutocompleteInteraction): GuildData|undefined {
+export function getGuildData(interaction: BaseInteraction): GuildData|undefined {
 	if (!interaction.guild) return;
 	const guildData = interaction.guild.id;
 	const data = fs.readFileSync("database.json", "utf-8");
@@ -60,6 +60,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 			channelId: "",
 			messageId: "",
 			statsName: [],
+			damageName: []
 		};
 		const data = fs.readFileSync("database.json", "utf-8");
 		const json = JSON.parse(data);
@@ -96,12 +97,16 @@ export function readDB(guildID: string) {
 	return {db, parsedDatabase};
 }
 
-export async function registerUser(userID: string, interaction: ModalSubmitInteraction,msgId: string, thread: ThreadChannel, charName?: string) {
+export async function registerUser(userID: string, interaction: BaseInteraction,msgId: string, thread: ThreadChannel, charName?: string, damage?: string[]) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
 	if (charName) charName = removeAccents(charName).toLowerCase();
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
+	if (damage && guildData.templateID.damageName.length > 0) {
+		//filter the damage list and remove the guildData.templateID.damageName
+		damage = damage.filter(damage => !guildData.templateID.damageName.includes(damage));
+	}
 	const user = getUserData(guildData, userID);
 	if (user) {
 		const char = user.find(char => char.charName === charName);
@@ -111,16 +116,19 @@ export async function registerUser(userID: string, interaction: ModalSubmitInter
 				const oldMessage = await thread.messages.fetch(char.messageId);
 				if (oldMessage) oldMessage.delete();
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				//skip unknow message
 			}
 			//overwrite the message id
-			char.messageId = msgId;}
-		else user.push({ charName, messageId: msgId });	
+			char.messageId = msgId;
+			char.damageName = damage;
+		}
+		else user.push({ charName, messageId: msgId, damageName: damage });	
 	} else {
 		guildData.user[userID] = [{
 			charName,
-			messageId: msgId
+			messageId: msgId, 
+			damageName: damage
 		}];
 	}
 	//update the database
