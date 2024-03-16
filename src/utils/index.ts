@@ -84,7 +84,8 @@ export async function repostInThread(embed: EmbedBuilder, interaction: BaseInter
 	const msg = await thread.send({ 
 		embeds: [embed], 
 		files: [{ attachment: Buffer.from(JSON.stringify(userTemplate, null, 2), "utf-8"), name: "template.json" }] },);
-	registerUser(userId, interaction, msg.id, thread, userTemplate.userName);
+	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
+	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
 }
 
 

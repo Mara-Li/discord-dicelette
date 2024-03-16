@@ -37,7 +37,9 @@ export default (client: Client): void => {
 			}
 		} else if (interaction.isModalSubmit() && interaction.customId=="firstPage") {
 			if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
-			await createEmbedFirstPage(interaction);
+			const template = await getTemplateWithDB(interaction);
+			if (!template) return;
+			await createEmbedFirstPage(interaction, template);
 		} else if (interaction.isButton() && interaction.customId=="continue") {
 			try {
 				const template = await getTemplateWithDB(interaction);
@@ -47,6 +49,7 @@ export default (client: Client): void => {
 				}
 				const embed = parseEmbed(interaction);
 				if (!embed) return;
+				if (!template.statistics) return;
 				const allTemplateStat = Object.keys(template.statistics);
 				const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(stat));
 				if (statsAlreadySet.length === allTemplateStat.length) {
@@ -64,8 +67,6 @@ export default (client: Client): void => {
 			await showDamageDiceModals(interaction);
 		} else if (interaction.isButton() && interaction.customId === "validate") {
 			try {
-				const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);
-				if (isNaN(pageNumber)) return;
 				const template = await getTemplateWithDB(interaction);
 				if (!template) {
 					await interaction.reply({ content: ul.error.noTemplate});

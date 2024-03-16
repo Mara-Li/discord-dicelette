@@ -109,6 +109,10 @@ export default {
 			formula: {
 				name: "formule",
 				description: "La formule pour modifier la valeur de la statistique. Utiliser $ pour symboliser la valeur (ie: +$)",
+			},
+			damage: {
+				name: "attaque",
+				description: "Enregistrer un dé de dégâts - Séparer le nom des attaques par un espace ou une virgule",
 			}
 		},
 		help: `
@@ -181,6 +185,15 @@ export default {
 		},
 		error: {
 			notRegistered: "Vous n'êtes pas enregistré",
+			noDamage: "Vous n'avez pas de dés de dégâts enregistrés",
+		}
+	},
+	rAtq: {
+		name: "dbatq",
+		description: "Lancer un dé de dégâts",
+		atq_name: {
+			name: "nom_atq",
+			description: "Le nom de l'attaque",
 		}
 	},
 	error: {

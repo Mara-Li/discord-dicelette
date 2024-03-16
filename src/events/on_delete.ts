@@ -71,7 +71,7 @@ export const delete_thread = (client: Client): void => {
 	});
 };
 
-export const delete_message = (client	: Client): void => {
+export const delete_message = (client: Client): void => {
 	client.on("messageDelete", async (message) => {
 		try {
 			if (!message.guild) return;
@@ -88,8 +88,10 @@ export const delete_message = (client	: Client): void => {
 			const dbUser = guildData?.user;
 			if (dbUser && Object.keys(dbUser).length > 0){
 				for (const [user, values] of Object.entries(dbUser)) {
+					console.log(user, values);
 					if (values.length === 0) continue;
 					for (const [index, value] of values.entries()) {
+						console.log(index, value.messageId, messageId);
 						if (value.messageId === messageId) {
 							values.splice(index, 1);
 						}

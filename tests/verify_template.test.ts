@@ -75,6 +75,20 @@ describe("verify_template", () => {
 				statistics: { stat1: { max: 10, min: 1 } },
 				diceType: "d6",
 				comparator: { sign: ">", value: 5, formula: "$ * 2" },
+				damage: {
+					"piercing": "1d6+2",
+				}
+			};
+			const result = verifyTemplateValue(template);
+			expect(result).toEqual(template);
+		});
+
+		it("testing no statistic, only damage", () => {
+			const template = {
+				diceType: "d6",
+				damage: {
+					"piercing": "1d6+2",
+				}
 			};
 			const result = verifyTemplateValue(template);
 			expect(result).toEqual(template);

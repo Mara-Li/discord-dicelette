@@ -5,6 +5,7 @@ import { cmdLn, lError, ln } from "../localizations";
 import en from "../localizations/locales/en";
 import { rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
+import { dmgRoll } from "./dbAtq";
 
 export const rollForUser = {
 	data: new SlashCommandBuilder()
@@ -113,16 +114,16 @@ export const rollForUser = {
 			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
 			const userStat = userStatistique.stats[statistique];
 			const template = userStatistique.template;
-			let formula = template.comparator.formula;
+			let formula = template.comparator?.formula;
 			const dice = template.diceType;
 			let comparator: string = "";
-			if (!override) {
+			if (!override && template.comparator) {
 				comparator += template.comparator.sign;
 				comparator += template.comparator.value ? template.comparator.value.toString() : userStat.toString();
-			} else comparator = override;
+			} else if (override) comparator = override;
 			const critical: {failure?: number, success?: number} = {
-				failure: template.comparator.criticalFailure,
-				success: template.comparator.criticalSuccess
+				failure: template.comparator?.criticalFailure,
+				success: template.comparator?.criticalSuccess
 			};
 			if (formula) {
 				try {
@@ -145,4 +146,4 @@ export const rollForUser = {
 	}
 };
 
-export const autCompleteCmd = [rollForUser];
+export const autCompleteCmd = [rollForUser, dmgRoll];

@@ -110,6 +110,10 @@ export default {
 			formula: {
 				name: "formula",
 				description: "The formula to edit the value. Use $ to symbolise the value (ie: +$)",
+			},
+			damage: {
+				name: "damage",
+				description: "Register a damage dice - Separate attack name by coma or space",
 			}
 		},
 		help: `
@@ -118,6 +122,7 @@ export default {
 		- The total must be a number and can be optional. If you remove it, the total will be automatically calculated when the user is saved.
 		- The formula allows editing the combined value with the die. Use \`$\` to symbolize the value (e.g., \`+$\`, \`-$\`, \`($-10)/2\`...).
 		- A statistic can be a combination of other statistics, such as \`strength+endurance\`. If the \`combination\` value is defined, then the \`min\` and \`max\` parameters will be disabled. Additionally, users will not have to enter the value manually. Finally, this value will be excluded from the calculation of the total allocated points.
+		- You can also register a damage dice. This will be used for the attack command from database. Also, user can have their own damage dice.
 		
 		Note that the file provided here is just an example and should be customized before being saved.
 		` 
@@ -171,7 +176,16 @@ export default {
 		},
 		error: {
 			notRegistered: "You are not registered",
+			noDamage: "You don't have any damage dice registered",
 		}
+	},
+	rAtq: {
+		name: "dbatk",
+		description: "Roll an attack dice",
+		atq_name: {
+			name: "atq_name",
+			description: "The attack name",
+		},
 	},
 	common: {
 		total: "Total",

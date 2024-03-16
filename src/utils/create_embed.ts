@@ -6,7 +6,7 @@ import { repostInThread, title } from ".";
 import { getStatistiqueFields } from "./parse";
 import { evalCombinaison } from "./verify_template";
 
-export async function createEmbedFirstPage(interaction: ModalSubmitInteraction) {
+export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
 	const channel = interaction.channel;
 	if (!channel) return;
@@ -27,15 +27,32 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction) 
 			{name: "\u200B", value: "_ _", inline: true}
 		);
 	//add continue button
-	const continueButton = new ButtonBuilder()
-		.setCustomId("continue")
-		.setLabel(ul.modals.continue)
+	if (template.statistics) {
+		const continueButton = new ButtonBuilder()
+			.setCustomId("continue")
+			.setLabel(ul.modals.continue)
+			.setStyle(ButtonStyle.Success);
+		const cancelButton = new ButtonBuilder()
+			.setCustomId("cancel")
+			.setLabel(ul.modals.cancel)
+			.setStyle(ButtonStyle.Danger);
+		await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
+		return;
+	}
+	const validateButton = new ButtonBuilder()
+		.setCustomId("validate")
+		.setLabel("Validate")
 		.setStyle(ButtonStyle.Success);
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("cancel")
 		.setLabel(ul.modals.cancel)
 		.setStyle(ButtonStyle.Danger);
-	await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton])] });
+	const registerDmgButton = new ButtonBuilder()
+		.setCustomId("registerDmg")
+		.setLabel("Register damage dice")
+		.setStyle(ButtonStyle.Primary);
+	const allButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
+	await interaction.reply({ embeds: [embed], components: [allButtons] });	
 }
 
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page=2) {
@@ -62,8 +79,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				inline: true,
 			});
 		}
-		
-		const allTemplateStat = Object.keys(template.statistics).filter(stat => !Object.keys(combinaisonFields).includes(stat));
+		const allTemplateStat = template.statistics ? Object.keys(template.statistics).filter(stat => !Object.keys(combinaisonFields).includes(stat)) : [];
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;
@@ -71,8 +87,9 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		for (const field of fields) {
 			parsedFields[field.name.toLowerCase()] = field.value.toLowerCase();
 		}
-		const embedStats = Object.keys(parsedFields).filter(stat => allTemplateStat.includes(stat));
+		const embedStats = template.statistics ? Object.keys(parsedFields).filter(stat => allTemplateStat.includes(stat)) : [];
 		let combinaison:{[name: string]: number} = {};
+		console.log(embedStats.length, allTemplateStat.length);
 		if (embedStats.length === allTemplateStat.length) {
 			try {
 				combinaison = evalCombinaison(combinaisonFields, stats);
@@ -102,7 +119,8 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				.setLabel(ul.modals.cancel)
 				.setStyle(ButtonStyle.Danger);
 			await interaction.message.edit({ embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton])] });
-			await interaction.reply({ content: ul.modals.added, ephemeral: true });			
+			await interaction.reply({ content: ul.modals.added, ephemeral: true });
+			return;	
 		}
 		const continueButton = new ButtonBuilder()
 			.setCustomId("continue")
@@ -123,7 +141,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = interaction.message.embeds[0];
-	if (!oldEmbeds) return;
+	if (!oldEmbeds) throw new Error("[ul.error.noEmbed]");
 	let userID = oldEmbeds.fields.find(field => field.name === ul.common.user)?.value;
 	let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul.common.charName)?.value;
 	if (charName && charName === ul.common.noSet)
@@ -146,7 +164,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	for (const field of oldEmbeds.fields) {
 		embed.addFields(field);
 	}
-	const templateStat = Object.keys(template.statistics);
+	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: {[name: string]: number} = {};
 	for (const stat of templateStat) {
 		stats[stat] = parseInt(parsedFields[stat], 10);
@@ -156,10 +174,16 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	if (damageFields.length > 0) {
 		templateDamage = {};
 		for (const damage of damageFields) {
-			templateDamage[damage.name] = damage.value;
+			templateDamage[damage.name.replace("🔪", "").trim()] = damage.value;
 		}
+		if (template.damage)
+			for (const [name, dice] of Object.entries(template.damage)) {
+				templateDamage[name] = dice;
+			}
 	}
-
+	//count the number of damage fields
+	const nbDmg = Object.keys(templateDamage || {}).length;
+	if (nbDmg > 25) throw new Error("[ul.error.tooManyDmg]");
 	const userStatistique: User = {
 		userName: charName,
 		stats,
@@ -195,6 +219,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 		value,
 		inline: true,
 	});
+
 	const registerDmgButton = new ButtonBuilder()
 		.setCustomId("registerDmg")
 		.setLabel("Register damage dice")

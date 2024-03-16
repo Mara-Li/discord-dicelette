@@ -112,11 +112,13 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 				const oldMessage = await thread.messages.fetch(char.messageId);
 				if (oldMessage) oldMessage.delete();
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				//skip unknow message
 			}
 			//overwrite the message id
-			char.messageId = msgId;}
+			char.messageId = msgId;
+			char.damageName = damage;
+		}
 		else user.push({ charName, messageId: msgId, damageName: damage });	
 	} else {
 		guildData.user[userID] = [{
