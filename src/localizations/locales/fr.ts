@@ -121,8 +121,11 @@ export default {
 		- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.
 		- La formule permet d'éditer la valeur combinée au dé. Utiliser \`$\` pour symboliser la valeur (ie: \`+$\`, \`-$\`, \`($-10)/2\`...).
 		- Une statistique peut être une combinaison d'autre statistique, comme \`force+endurance\`. Si la valeur de \`combinaison\` est définie, alors que les paramètres \`min\` et \`max\` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.
+		- Vous pouvez aussi enregistrer des dés de compétences, qui seront ensuite utilisés pour la commande de compétences depuis la base de données. De plus, les utilisateurs pourront enregistrer leur propre dés de compétences.
 
 		Noter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.	
+
+		Il est possible d'enregistrer uniquement des dés de compétences voire rien du tout, si vous souhaitez utiliser uniquement les commandes pour les dés de compétences.
 		`
 	},
 	register: {
@@ -147,10 +150,6 @@ export default {
 			registered: "Modèle enregistré !",
 			damage: "Dés de dégâts"
 		},
-		error: {
-			tooMuchStats: "Vous ne pouvez pas avoir plus de 20 statistiques",
-			invalid: "Modèle invalide : "
-		}
 	},
 	common: {
 		total: "Total",
@@ -162,7 +161,8 @@ export default {
 		page: (nb: number) => `Page ${nb}`,
 		charName: "Nom du personnage",
 		user: "Joueur",
-		channel: "channel"
+		channel: "channel",
+		validate: "Valider",
 	},
 	dbRoll: {
 		name: "dbroll",
@@ -213,6 +213,8 @@ export default {
 		generic: (e: Error) => `Une erreur est survenue :\n\`\`\`\n${e.message}\n\`\`\``,
 		tooManyDice: "Vous ne pouvez pas avoir plus de 25 dés de dégâts",
 		emptyObject: "Vous ne pouvez pas avoir un objet vide",
+		tooMuchStats: "Vous ne pouvez pas avoir plus de 20 statistiques",
+		invalid: "Modèle invalide : "
 	},
 	modals: {
 		continue: "Continuer",
@@ -238,6 +240,7 @@ export default {
 			if (max) return `Entrez une valeur plus petite que ${max}`;
 			return "Entrez une valeur";
 		},
+		register: "Enregistrer un dé de compétence",
 	},
 	logs: {
 		name: "logs",

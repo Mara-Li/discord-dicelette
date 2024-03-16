@@ -122,9 +122,11 @@ export default {
 		- The total must be a number and can be optional. If you remove it, the total will be automatically calculated when the user is saved.
 		- The formula allows editing the combined value with the die. Use \`$\` to symbolize the value (e.g., \`+$\`, \`-$\`, \`($-10)/2\`...).
 		- A statistic can be a combination of other statistics, such as \`strength+endurance\`. If the \`combination\` value is defined, then the \`min\` and \`max\` parameters will be disabled. Additionally, users will not have to enter the value manually. Finally, this value will be excluded from the calculation of the total allocated points.
-		- You can also register a damage dice. This will be used for the attack command from database. Also, user can have their own damage dice.
+		- You can also register a skill dice. This will be used for the skill command from database. Also, user can have their own skill dice.
 		
 		Note that the file provided here is just an example and should be customized before being saved.
+
+		It is possible to save only skill dice, or nothing at all, if you wish to use only skill dice commands.
 		` 
 	},
 	register: {
@@ -148,7 +150,6 @@ export default {
 			comparator: "Comparator:",
 			registered: "Template registered!",
 			damage: "Damage dice"
-
 		},
 		error: {
 			tooMuchStats: "You can't have more than 20 statistics",
@@ -174,10 +175,6 @@ export default {
 				description: "Bonus/malus added to the roll",
 			}
 		},
-		error: {
-			notRegistered: "You are not registered",
-			noDamage: "You don't have any damage dice registered",
-		}
 	},
 	rAtq: {
 		name: "dbatk",
@@ -196,7 +193,8 @@ export default {
 		page: (nb: number) => `Page ${nb}`,
 		charName: "Character name",
 		user: "Joueur",
-		channel: "channel"
+		channel: "channel",
+		validate: "Validate",
 	},
 	error: {
 		invalidFormula: "Invalid formula for",
@@ -215,6 +213,8 @@ export default {
 		generic: (e: Error) => `An error occured:\n\`\`\`${e.message}\n\`\`\``,
 		tooManyDice: "You can't have more than 25 damage dice",
 		emptyObject: "You can't have an empty object",
+		tooMuchStats: "You can't have more than 20 statistics",
+		invalid: "Invalid template:"
 	},
 	modals: {
 		continue: "Continue",
@@ -239,7 +239,8 @@ export default {
 			if (min) return `Enter a value greater than ${min}`;
 			if (max) return `Enter a value lower than ${max}`;
 			return "Enter a value";
-		}
+		},
+		register: "Register skill dice",
 	},
 	logs: {
 		name: "logs",

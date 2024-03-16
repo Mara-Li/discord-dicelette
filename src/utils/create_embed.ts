@@ -41,7 +41,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	}
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
-		.setLabel("Validate")
+		.setLabel(ul.common.validate)
 		.setStyle(ButtonStyle.Success);
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("cancel")
@@ -49,7 +49,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 		.setStyle(ButtonStyle.Danger);
 	const registerDmgButton = new ButtonBuilder()
 		.setCustomId("registerDmg")
-		.setLabel("Register damage dice")
+		.setLabel(ul.modals.register)
 		.setStyle(ButtonStyle.Primary);
 	const allButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
 	await interaction.reply({ embeds: [embed], components: [allButtons] });	
