@@ -84,7 +84,13 @@ export default (client: Client): void => {
 				await interaction.reply({ content: ul.error.noTemplate});
 				return;
 			}
-			await registerDamageDice(interaction);
+			try {
+				await registerDamageDice(interaction);
+			} catch (error) {
+				console.error(error);
+				const translationError = lError(error as Error, interaction);
+				await interaction.reply({ content: translationError, ephemeral: true });
+			}
 		} else if (interaction.isModalSubmit() && interaction.customId.includes("page")) {
 			try {
 				const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);

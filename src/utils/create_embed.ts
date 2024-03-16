@@ -59,7 +59,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = interaction.message?.embeds[0];
-	if (!oldEmbeds) return;
+	if (!oldEmbeds) throw new Error("[ul.error.noEmbed]");
 	try {
 		const {combinaisonFields, stats} = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
@@ -68,7 +68,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			.setThumbnail(oldEmbeds.thumbnail?.url || "")
 			.setFooter({ text: ul.common.page(page) });
 		//add old fields
-		if (!oldEmbeds.fields) return;
+		if (!oldEmbeds.fields) throw new Error("[ul.error.noEmbed]");
 		for (const field of oldEmbeds.fields) {
 			embed.addFields(field);
 		}	
@@ -203,12 +203,12 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 	const name = interaction.fields.getTextInputValue("damageName");
 	const value = interaction.fields.getTextInputValue("damageValue");
 	const oldEmbeds = interaction.message?.embeds[0];
-	if (!oldEmbeds) return;
+	if (!oldEmbeds) throw new Error("[ul.error.noEmbed]");
 	const embed = new EmbedBuilder()
 		.setTitle(ul.modals.embedTitle)
 		.setThumbnail(oldEmbeds.thumbnail?.url || "");
 	//add old fields
-	if (!oldEmbeds.fields) return;
+	if (!oldEmbeds.fields) throw new Error("[ul.error.noEmbed]");
 	for (const field of oldEmbeds.fields) {
 		embed.addFields(field);
 	}
