@@ -103,6 +103,10 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 	if (charName) charName = removeAccents(charName).toLowerCase();
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
+	if (damage && guildData.templateID.damageName.length > 0) {
+		//filter the damage list and remove the guildData.templateID.damageName
+		damage = damage.filter(damage => !guildData.templateID.damageName.includes(damage));
+	}
 	const user = getUserData(guildData, userID);
 	if (user) {
 		const char = user.find(char => char.charName === charName);
