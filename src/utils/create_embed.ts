@@ -89,7 +89,6 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		}
 		const embedStats = template.statistics ? Object.keys(parsedFields).filter(stat => allTemplateStat.includes(stat)) : [];
 		let combinaison:{[name: string]: number} = {};
-		console.log(embedStats.length, allTemplateStat.length);
 		if (embedStats.length === allTemplateStat.length) {
 			try {
 				combinaison = evalCombinaison(combinaisonFields, stats);

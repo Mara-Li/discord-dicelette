@@ -308,7 +308,7 @@ export const registerTemplate = {
 			}
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
-			console.log(e);
+			console.error(e);
 			const translationError = lError((e as Error), interaction);
 			await interaction.reply({ content: `${ul.error.invalid}\`\`\`\n${translationError}\`\`\``, ephemeral: true });
 		}

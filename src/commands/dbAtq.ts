@@ -121,7 +121,6 @@ export const dmgRoll = {
 			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
 			const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
 			const roll = `${dice}${modificatorString} ${comments}`;
-			console.log(roll);
 			await rollWithInteraction(interaction, roll, interaction.channel);
 		} catch (error) {
 			console.error(error);
