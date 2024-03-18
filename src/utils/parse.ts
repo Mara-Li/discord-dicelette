@@ -13,7 +13,7 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 	let total = templateData.total;
 	if (!templateData.statistics) return { combinaisonFields, stats };
 	for (const [key, value] of Object.entries(templateData.statistics)) {
-		const name = removeAccents(key).toLowerCase();
+		const name = removeAccents(key).toLowerCase().replace("✏️", "").trim();
 		if (value.combinaison) {
 			combinaisonFields[name] = value.combinaison;
 			continue;

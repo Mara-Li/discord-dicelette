@@ -33,11 +33,14 @@
     }
   },
   "error": {
+    "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{e.message}}\n```",
     "invalid": "Modèle invalide : ",
+    "invalidDice": "Dé invalide",
+    "invalidFormula": "Formule invalide",
     "mustBeGreater": "La valeur {{value}} doit être plus grande que {{min}}",
     "mustBeLower": "La valeur {{value}} doit être plus petite que {{max}}",
-    "noDamage": "Vous n'avez pas de dés enregistrés",
+    "noDamage": "{{atq}} n'est pas enregistré dans {{charName}}.",
     "noTemplate": "Aucun modèle ou channel configuré",
     "noThread": "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
     "noValidDice": "Erreur : Dé invalide {{dice}}",
@@ -120,7 +123,7 @@
   "rAtq": {
     "atq_name": {
       "description": "Le nom de la compétence",
-      "name": "dé_nom"
+      "name": "nom"
     },
     "description": "Lancer un dé enrégistré pour une compétence/attaque",
     "name": "dbd"

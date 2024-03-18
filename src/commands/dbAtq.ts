@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
+import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 
-import { cmdLn } from "../localizations";
+import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
@@ -53,7 +53,7 @@ export const dmgRoll = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
 		const db = getGuildData(interaction);
-		if (!db) return;
+		if (!db || !db.templateID) return;
 		const user = getUserData(db, interaction.user.id);
 		if (!user) return;
 		let choices: string[] = [];
@@ -62,8 +62,8 @@ export const dmgRoll = {
 			for (const [_, value] of Object.entries(user)) {
 				if (value.damageName) choices = choices.concat(value.damageName);
 			}
-			choices = choices.concat(db.templateID.damageName);
-			
+			if (db.templateID.damageName && db.templateID.damageName.length > 0)
+				choices = choices.concat(db.templateID.damageName);
 		} else if (focused.name === t("common.character")) {
 			//get user characters 
 			const allCharactersFromUser = user
@@ -74,7 +74,7 @@ export const dmgRoll = {
 		}
 		if (choices.length === 0) return;
 		await interaction.respond(
-			choices.map(result => ({ name: result, value: result}))
+			choices.map(result => ({ name: title(result) ?? result, value: result}))
 		);
 	},
 	async execute(interaction: CommandInteraction) {
@@ -83,18 +83,19 @@ export const dmgRoll = {
 		if (!db || !interaction.guild || !interaction.channel) return;
 		const user = getUserData(db, interaction.user.id);
 		if (!user) return;
-		const atq = options.getString(t("rAtq.atq_name.name"), true);
+		const atq = options.getString(t("rAtq.atq_name.name"), true).toLowerCase();
 		const guildData = getGuildData(interaction);
 		if (!guildData) return;
 		let charName = options.getString(t("common.character")) ?? undefined;
 		let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
+		const ul = ln(interaction.locale as Locale);
 		try {
-			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
+			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName?.toLowerCase());
 			if (!userStatistique && !charName) {
 				//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
-					await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
+					await interaction.reply({ content: ul("error.notRegistered"), ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
@@ -102,19 +103,19 @@ export const dmgRoll = {
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
-				await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
+				await interaction.reply({ content: ul("error.notRegistered"), ephemeral: true });
 				return;
 			}
 			if (!userStatistique.damage) {
-				await interaction.reply({ content: t("error.noDamage"), ephemeral: true });
+				await interaction.reply({ content: ul("error.emptyDamage"), ephemeral: true });
 				return;
 			}
-			const charNameComments = charName ? `• **@${charName}**` : "";
+			const charNameComments = charName ? ` • **@${charName}**` : "";
 			comments += `__[${title(atq)}]__${charNameComments}`;
 			//search dice
-			const dice = userStatistique.damage?.[atq];
+			const dice = userStatistique.damage?.[atq.toLowerCase()];
 			if (!dice) {
-				await interaction.reply({ content: t("error.noDamage"), ephemeral: true });
+				await interaction.reply({ content: ul("error.noDamage", {atq: title(atq), charName: charName ?? ""}), ephemeral: true });
 				return;
 			}
 			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;

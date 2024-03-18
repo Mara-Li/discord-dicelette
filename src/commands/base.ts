@@ -145,7 +145,6 @@ export const help = {
 		deleteAfter(reply, 60000);
 		return;
 	}
-
 };
 //@ts-ignore
 export const commandsList = [diceRoll, newScene, help].concat(commands);

@@ -15,19 +15,20 @@ export function lError(error: Error, interaction: BaseInteraction) {
 	let errorMessage = error.message;
 	let errors: string[] = [];
 	//check if errorMessage is a list
-	const errorList = errorMessage.match(/\[(.*)\]/gi);
-	if (errorList && errorList.groups?.[1]) {
-		errors = errorList.groups?.[1].split(",");
+	console.log(errorMessage);
+	const errorList = /\[(.*)\]/gi.exec(errorMessage);
+	if (errorList) {
+		errors = errorList?.[1].split(",");
 		errorMessage = errorMessage.replace(/\[(.*)\]/, "");
 	}
 	//get key from translation
 	const ul = ln(interaction.locale);
 	let msgError = "";
-	
 	for (const error of errors) {
 		msgError += ul(error.trim());
 	}
-	return `${msgError}\n\`\`\`\n${errorMessage}\n\`\`\``;
+	errorMessage = errorMessage.trim().length > 0 ? `\`\`\`\n${errorMessage}\n\`\`\`` : "";
+	return `${msgError}\n${errorMessage}`;
 
 }
 

@@ -255,7 +255,7 @@ export const registerTemplate = {
 		} catch (e) {
 			console.error(e);
 			const translationError = lError((e as Error), interaction);
-			await interaction.reply({ content: `${ul("error.invalid")}\`\`\`\n${translationError}\`\`\``, ephemeral: true });
+			await interaction.reply({ content: `${translationError}`, ephemeral: true });
 		}
 	}	
 };

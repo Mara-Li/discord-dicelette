@@ -21,7 +21,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	const embed = new EmbedBuilder()
 		.setTitle(ul("modals.registering"))
 		.setThumbnail(user.user.displayAvatarURL())
-		.setFooter({ text: ul("common.page", {page: 1})})
+		.setFooter({ text: ul("common.page", {nb: 1})})
 		.addFields(
 			{ name: ul("common.charName"), value: charName.length > 0 ? charName : ul("common.noSet"), inline: true},
 			{ name: ul("common.user"), value: userMention(user.id), inline: true},
@@ -29,7 +29,6 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 		);
 	//add continue button
 	if (template.statistics) {
-		
 		await interaction.reply({ embeds: [embed], components: [continueCancelButtons(ul)] });
 		return;
 	}
@@ -77,7 +76,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		const embed = new EmbedBuilder()
 			.setTitle(ul("modals.embedTitle"))
 			.setThumbnail(oldEmbeds.thumbnail?.url || "")
-			.setFooter({ text: ul("common.page", {page}) });
+			.setFooter({ text: ul("common.page", {nb: page}) });
 		//add old fields
 		if (!oldEmbeds.fields) throw new Error("[error.noEmbed]");
 		for (const field of oldEmbeds.fields) {
@@ -85,7 +84,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		}	
 		for (const [stat, value] of Object.entries(stats)) {
 			embed.addFields({
-				name: title(`✏️ ${stat}`) ?? "",
+				name: title(`✏️ ${title(stat)}`) ?? "",
 				value: value.toString(),
 				inline: true,
 			});
@@ -96,17 +95,18 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		if (!fields) return;
 		const parsedFields: {[name: string]: string} = {};
 		for (const field of fields) {
-			parsedFields[field.name.toLowerCase()] = field.value.toLowerCase();
+			parsedFields[field.name.toLowerCase().replace("✏️", "").trim()] = field.value.toLowerCase();
 		}
-		const embedStats = template.statistics ? Object.keys(parsedFields).filter(stat => allTemplateStat.includes(stat)) : [];
+		const embedStats = template.statistics ? Object.keys(parsedFields).filter(stat => allTemplateStat.includes(stat.trim())) : [];
 		let combinaison:{[name: string]: number} = {};
+		console.log(`embedStats: ${JSON.stringify(embedStats)}`);
 		if (embedStats.length === allTemplateStat.length) {
 			try {
 				combinaison = evalCombinaison(combinaisonFields, stats);
 				//add combinaison to the embed
 				for (const stat of Object.keys(combinaison)) {
 					embed.addFields({
-						name: title(`✏️ ${stat}`) ?? "",
+						name: title(`✏️ ${title(stat)}`) ?? "",
 						value: combinaison[stat].toString(),
 						inline: true,
 					});
@@ -154,7 +154,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: {[name: string]: number} = {};
 	for (const stat of templateStat) {
-		stats[stat] = parseInt(parsedFields[stat], 10);
+		stats[stat] = parseInt(parsedFields[stat.replace("✏️", "")], 10);
 	}
 	const damageFields = oldEmbeds.fields.filter(field => field.name.startsWith("🔪"));
 	let templateDamage: {[name: string]: string} | undefined = undefined;
@@ -166,6 +166,11 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		if (template.damage)
 			for (const [name, dice] of Object.entries(template.damage)) {
 				templateDamage[name] = dice;
+				embed.addFields({
+					name: `🔪 ${name}`,
+					value: dice,
+					inline: true,
+				});
 			}
 	}
 	//count the number of damage fields

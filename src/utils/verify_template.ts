@@ -57,7 +57,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 			statistiqueTemplate.diceType = template.diceType;
 			testFormula(statistiqueTemplate);
 		} catch (e) {
-			throw new Error("[error.invalidDice]");
+			throw new Error((e as Error).message);
 		}
 	}
 
@@ -173,20 +173,24 @@ export function testFormula(template: StatisticalTemplate) {
 	
 	const formule = formula.formula?.replace("$", randomStatValue.toString());
 	const compareFormule = formula.comparator?.replaceAll("$", randomStatValue.toString());
+	console.log(`formule: ${formule} compareFormule: ${compareFormule}`);
 	try {
 		let newDice = template.diceType;
-		if (formule){
+		if (formule && formula.formula){
 			const value = evaluate(formule);
-			newDice = newDice.replace(formule, value.toString());
+			const regexOriginalFormula = new RegExp(`\\{\\{${escapeRegex(formula.formula)}\\}\\}`, "gmi");
+			const valueString = value > 0 ? `+${value}` : value.toString();
+			newDice = newDice.replace(regexOriginalFormula, valueString);
 		}
-		if (compareFormule) {
+		if (compareFormule && formula.comparator) {
 			const value = evaluate(compareFormule);
-			newDice = newDice.replace(compareFormule, value.toString());
+			newDice = newDice.replace(formula.comparator, value.toString());
 		}
+		console.log(newDice);
 		roll(newDice);
 		return true;
 	} catch (error) {
-		throw new Error(`[error.invalidFormula] ${formula}`);
+		throw new Error(`[error.invalidFormula] ${JSON.stringify(formula)}`);
 	}
 	
 }
@@ -205,4 +209,8 @@ export function generateRandomStat(total: number | undefined = 100, max?: number
 			randomStatValue = random.integer(0, total);
 	}
 	return randomStatValue;
+}
+
+function escapeRegex(string: string) {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

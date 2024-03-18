@@ -33,11 +33,14 @@
     }
   },
   "error": {
+    "emptyDamage": "",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
     "invalid": "Invalid model: ",
+    "invalidDice": "",
+    "invalidFormula": "",
     "mustBeGreater": "The {{value}} value must be greater than {{min}}",
     "mustBeLower": "The {{value}} value must be smaller than {{max}}",
-    "noDamage": "You have no registered dice",
+    "noDamage": "{{atq}} is not saved in {{charName}}.",
     "noTemplate": "No template or channel configured",
     "noThread": "No thread found - Please re-register user if thread has been deleted",
     "noValidDice": "Error: Invalid Dice {{dice}}",
@@ -120,7 +123,7 @@
   "rAtq": {
     "atq_name": {
       "description": "The name of the skill",
-      "name": "de_name"
+      "name": "name"
     },
     "description": "Roll a registered die for a skill/attack",
     "name": "dbd"
