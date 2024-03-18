@@ -115,7 +115,7 @@ export const rollForUser = {
 			const {calculation, comparator} = calculate(userStat, template.diceType, override, modificator);
 			dice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
 				.replace(/[><=]=?(.*)/gmi, "");
-			const charNameComments = charName ? `• **@${charName}**` : "";
+			const charNameComments = charName ? ` • **@${title(charName)}**` : "";
 			comments += `__[${title(statistique)}]__${charNameComments}`;
 			const roll = `${dice}${calculation}${comparator} ${comments}`;
 			await rollWithInteraction(interaction, roll, interaction.channel, template.critical);

@@ -110,7 +110,7 @@ export const dmgRoll = {
 				await interaction.reply({ content: ul("error.emptyDamage"), ephemeral: true });
 				return;
 			}
-			const charNameComments = charName ? ` • **@${charName}**` : "";
+			const charNameComments = charName ? ` • **@${title(charName)}**` : "";
 			comments += `__[${title(atq)}]__${charNameComments}`;
 			//search dice
 			const dice = userStatistique.damage?.[atq.toLowerCase()];
