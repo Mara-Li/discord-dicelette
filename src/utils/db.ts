@@ -2,8 +2,9 @@ import { BaseInteraction, ButtonInteraction, Guild, ModalSubmitInteraction, Text
 import fs from "fs";
 import removeAccents from "remove-accents";
 
-import { GuildData, StatisticalTemplate, User } from "../interface";
+import { GuildData, StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
+import { getUserByEmbed } from "./parse";
 import { verifyTemplateValue } from "./verify_template";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
@@ -66,16 +67,16 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		const json = JSON.parse(data);
 		json[guild.id] = guildData;
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
-		throw new Error(ul.error.noTemplate);
+		throw new Error(ul("error.noTemplate"));
 	}
 	const thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as TextChannel | undefined;
 	if (!thread) 
-		throw new Error(ul.error.noThread);
+		throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId);
-		const attachments = message.attachments.first();
-		if (!attachments) return;
-		return await fetch(attachments.url).then(res => res.json()) as User;
+		const embed = message.embeds[0];
+		if (!embed) return;
+		return getUserByEmbed(embed, ul);
 	} catch (error) {
 		const index = userData.findIndex(char => char.messageId === userMessageId);
 		userData.splice(index, 1);
@@ -85,7 +86,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		guildData.user[userId] = userData;
 		json[guild.id] = guildData;
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
-		throw new Error(ul.error.user);
+		throw new Error(ul("error.user"));
 	}
 }
 

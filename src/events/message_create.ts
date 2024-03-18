@@ -39,10 +39,10 @@ export default (client: Client): void => {
 		//is a valid roll as we are in the function so we can work as always
 
 		const userLang = message.guild.preferredLocale ?? Locale.EnglishUS;
-		const translation = ln(userLang);
+		const ul = ln(userLang);
 		const channel = message.channel;
 		if (!result) return;
-		const parser = parseResult(result, translation);
+		const parser = parseResult(result, ul);
 		if (channel.name.startsWith("🎲")) {
 			await message.reply({content: parser, allowedMentions: { repliedUser: false }});
 			return;
@@ -54,7 +54,9 @@ export default (client: Client): void => {
 			linkToOriginal = ` [↪ Source](${message.url})`;
 		}
 		const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
-		const thread = parentChannel instanceof TextChannel ? await findThread(parentChannel, translation.roll.reason) : await findForumChannel(parentChannel as ForumChannel, translation.roll.reason, channel as ThreadChannel);
+		const thread = parentChannel instanceof TextChannel ? 
+			await findThread(parentChannel, ul("roll.reason")) : 
+			await findForumChannel(parentChannel as ForumChannel, ul("roll.reason"), channel as ThreadChannel);
 		const msgToEdit = await thread.send("_ _");
 		const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
 		const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;

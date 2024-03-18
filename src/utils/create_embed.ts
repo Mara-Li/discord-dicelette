@@ -1,9 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
+import { TFunction } from "i18next";
 
 import { StatisticalTemplate, User } from "../interface";
 import { lError, ln } from "../localizations";
 import { repostInThread, title } from ".";
-import { getStatistiqueFields } from "./parse";
+import { getStatistiqueFields, parseEmbedFields } from "./parse";
 import { evalCombinaison } from "./verify_template";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
@@ -13,17 +14,17 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	const userFromField = interaction.fields.getTextInputValue("userID");
 	const user = interaction.guild?.members.cache.find(member => member.id === userFromField || member.user.username === userFromField.toLowerCase());
 	if (!user) {	
-		interaction.reply({ content: ul.error.user, ephemeral: true });
+		interaction.reply({ content: ul("error.user"), ephemeral: true });
 		return;
 	}
 	const charName = interaction.fields.getTextInputValue("charName");
 	const embed = new EmbedBuilder()
-		.setTitle(ul.modals.registering)
+		.setTitle(ul("modals.registering"))
 		.setThumbnail(user.user.displayAvatarURL())
-		.setFooter({ text: ul.common.page(1) })
+		.setFooter({ text: ul("common.page", {page: 1})})
 		.addFields(
-			{ name: ul.common.charName, value: charName.length > 0 ? charName : ul.common.noSet, inline: true},
-			{ name: ul.common.user, value: userMention(user.id), inline: true},
+			{ name: ul("common.charName"), value: charName.length > 0 ? charName : ul("common.noSet"), inline: true},
+			{ name: ul("common.user"), value: userMention(user.id), inline: true},
 			{name: "\u200B", value: "_ _", inline: true}
 		);
 	//add continue button
@@ -37,32 +38,30 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 }
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function continueCancelButtons(ul: any) {
+function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 	const continueButton = new ButtonBuilder()
 		.setCustomId("continue")
-		.setLabel(ul.modals.continue)
+		.setLabel(ul("modals.continue"))
 		.setStyle(ButtonStyle.Success);
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("cancel")
-		.setLabel(ul.modals.cancel)
+		.setLabel(ul("modals.cancel"))
 		.setStyle(ButtonStyle.Danger);
 	return new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton]);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function registerDmgButton(ul: any) {
+function registerDmgButton(ul: TFunction<"translation", undefined>) {
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
-		.setLabel(ul.common.validate)
+		.setLabel(ul("common.validate"))
 		.setStyle(ButtonStyle.Success);
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("cancel")
-		.setLabel(ul.modals.cancel)
+		.setLabel(ul("modals.cancel"))
 		.setStyle(ButtonStyle.Danger);
 	const registerDmgButton = new ButtonBuilder()
 		.setCustomId("registerDmg")
-		.setLabel(ul.modals.register)
+		.setLabel(ul("modals.register"))
 		.setStyle(ButtonStyle.Primary);
 	return new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
 }
@@ -71,22 +70,22 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = interaction.message?.embeds[0];
-	if (!oldEmbeds) throw new Error("[ul.error.noEmbed]");
+	if (!oldEmbeds) throw new Error("[error.noEmbed]");
 	try {
 		const {combinaisonFields, stats} = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
 		const embed = new EmbedBuilder()
-			.setTitle(ul.modals.embedTitle)
+			.setTitle(ul("modals.embedTitle"))
 			.setThumbnail(oldEmbeds.thumbnail?.url || "")
-			.setFooter({ text: ul.common.page(page) });
+			.setFooter({ text: ul("common.page", {page}) });
 		//add old fields
-		if (!oldEmbeds.fields) throw new Error("[ul.error.noEmbed]");
+		if (!oldEmbeds.fields) throw new Error("[error.noEmbed]");
 		for (const field of oldEmbeds.fields) {
 			embed.addFields(field);
 		}	
 		for (const [stat, value] of Object.entries(stats)) {
 			embed.addFields({
-				name: title(stat) ?? "",
+				name: title(`✏️ ${stat}`) ?? "",
 				value: value.toString(),
 				inline: true,
 			});
@@ -107,7 +106,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				//add combinaison to the embed
 				for (const stat of Object.keys(combinaison)) {
 					embed.addFields({
-						name: title(stat) ?? "",
+						name: title(`✏️ ${stat}`) ?? "",
 						value: combinaison[stat].toString(),
 						inline: true,
 					});
@@ -118,11 +117,11 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				return;
 			}
 			await interaction.message.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
-			await interaction.reply({ content: ul.modals.added, ephemeral: true });
+			await interaction.reply({ content: ul("modals.added"), ephemeral: true });
 			return;	
 		}
 		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
-		await interaction.reply({ content: ul.modals.added, ephemeral: true });
+		await interaction.reply({ content: ul("modals.added"), ephemeral: true });
 	} catch (error) {
 		const errorMsg = lError(error as Error, interaction);
 		await interaction.reply({ content: errorMsg, ephemeral: true });
@@ -132,24 +131,21 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = interaction.message.embeds[0];
-	if (!oldEmbeds) throw new Error("[ul.error.noEmbed]");
-	let userID = oldEmbeds.fields.find(field => field.name === ul.common.user)?.value;
-	let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul.common.charName)?.value;
-	if (charName && charName === ul.common.noSet)
+	if (!oldEmbeds) throw new Error("[error.noEmbed]");
+	let userID = oldEmbeds.fields.find(field => field.name === ul("common.user"))?.value;
+	let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul("common.charName"))?.value;
+	if (charName && charName === ul("common.noSet"))
 		charName = undefined;
 	if (!userID) {
-		await interaction.reply({ content: ul.error.user, ephemeral: true });
+		await interaction.reply({ content: ul("error.user"), ephemeral: true });
 		return;
 	}
 	userID = userID.replace("<@", "").replace(">", "");
 	const fields = oldEmbeds.fields;
 	if (!fields) return;
-	const parsedFields: {[name: string]: string} = {};
-	for (const field of fields) {
-		parsedFields[field.name.toLowerCase()] = field.value.toLowerCase();
-	}
+	const parsedFields = parseEmbedFields(oldEmbeds);
 	const embed = new EmbedBuilder()
-		.setTitle(ul.modals.embedTitle)
+		.setTitle(ul("modals.embedTitle"))
 		.setThumbnail(oldEmbeds.thumbnail?.url || "");
 	//add old fields
 	for (const field of oldEmbeds.fields) {
@@ -174,7 +170,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	}
 	//count the number of damage fields
 	const nbDmg = Object.keys(templateDamage || {}).length;
-	if (nbDmg > 25) throw new Error("[ul.error.tooManyDmg]");
+	if (nbDmg > 25) throw new Error("[error.tooManyDmg]");
 	const userStatistique: User = {
 		userName: charName,
 		stats,
@@ -184,24 +180,34 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		},	
 		damage: templateDamage,
 	};
+	embed.addFields({
+		name: "_ _",
+		value: "_ _",
+		inline: false
+	});
 	if (template.diceType)
 		embed.addFields({
-			name: "Dice",
+			name: ul("common.dice"),
 			value: template.diceType,
 			inline: true,
 		});
-	if (template.critical){
-		let criticalSuccess = template.critical.success ? `${ul.roll.critical.success}${ul.common.space}:\n-${template.critical.success}\n` : "";
-		criticalSuccess += template.critical.failure ? `${ul.roll.critical.failure}${ul.common.space}:\n-${template.critical.failure}` : "";
+	if (template.critical?.success){
 		embed.addFields({
-			name: "Critical",
-			value: criticalSuccess,
+			name: ul("roll.critical.success"),
+			value: template.critical.success.toString(),
+			inline: true,
+		});	
+	}
+	if (template.critical?.failure){
+		embed.addFields({
+			name: ul("roll.critical.failure"),
+			value: template.critical.failure.toString(),
 			inline: true,
 		});	
 	}
 	await interaction?.message?.delete();
 	await repostInThread(embed, interaction, userStatistique, userID);
-	await interaction.reply({ content: ul.modals.finished, ephemeral: true });
+	await interaction.reply({ content: ul("modals.finished"), ephemeral: true });
 	return;
 }
 
@@ -210,12 +216,12 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 	const name = interaction.fields.getTextInputValue("damageName");
 	const value = interaction.fields.getTextInputValue("damageValue");
 	const oldEmbeds = interaction.message?.embeds[0];
-	if (!oldEmbeds) throw new Error("[ul.error.noEmbed]");
+	if (!oldEmbeds) throw new Error("[error.noEmbed]");
 	const embed = new EmbedBuilder()
-		.setTitle(ul.modals.embedTitle)
+		.setTitle(ul("modals.embedTitle"))
 		.setThumbnail(oldEmbeds.thumbnail?.url || "");
 	//add old fields
-	if (!oldEmbeds.fields) throw new Error("[ul.error.noEmbed]");
+	if (!oldEmbeds.fields) throw new Error("[error.noEmbed]");
 	for (const field of oldEmbeds.fields) {
 		embed.addFields(field);
 	}
@@ -228,6 +234,6 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 
 	
 	await interaction?.message?.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
-	await interaction.reply({ content: ul.modals.added, ephemeral: true });
+	await interaction.reply({ content: ul("modals.added"), ephemeral: true });
 	return;
 }

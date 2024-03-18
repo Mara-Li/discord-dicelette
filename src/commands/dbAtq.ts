@@ -1,31 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
+import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 
-import { cmdLn, ln } from "../localizations";
-import en from "../localizations/locales/en";
+import { cmdLn } from "../localizations";
+import { default as i18next } from "../localizations/i18next";
 import { rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 
+const t = i18next.getFixedT("en");
+
 export const dmgRoll = {
 	data: new SlashCommandBuilder()
-		.setName(en.rAtq.name)
-		.setDescription(en.rAtq.description)
+		.setName(t("rAtq.name"))
+		.setDescription(t("rAtq.description"))
 		.setNameLocalizations(cmdLn("rAtq.name"))
 		.setDescriptionLocalizations(cmdLn("rAtq.description"))
 		.setDefaultMemberPermissions(0)
 		.addStringOption(option =>
 			option
-				.setName(en.rAtq.atq_name.name)
+				.setName(t("rAtq.atq_name.name"))
 				.setNameLocalizations(cmdLn("rAtq.atq_name.name"))
-				.setDescription(en.rAtq.atq_name.description)
+				.setDescription(t("rAtq.atq_name.description"))
 				.setDescriptionLocalizations(cmdLn("rAtq.atq_name.description"))
 				.setRequired(true)
 				.setAutocomplete(true)				
 		)
 		.addStringOption(option =>
 			option
-				.setName(en.common.character)
-				.setDescription(en.dbRoll.options.character)
+				.setName(t("common.character"))
+				.setDescription(t("dbRoll.options.character"))
 				.setNameLocalizations(cmdLn("common.character"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.character"))
 				.setRequired(false)
@@ -33,16 +35,16 @@ export const dmgRoll = {
 		)
 		.addNumberOption(option =>
 			option
-				.setName(en.dbRoll.options.modificator.name)
-				.setDescription(en.dbRoll.options.modificator.description)
+				.setName(t("dbRoll.options.modificator.name"))
+				.setDescription(t("dbRoll.options.modificator.description"))
 				.setNameLocalizations(cmdLn("dbRoll.options.modificator.name"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.modificator.description"))
 				.setRequired(false)
 		)
 		.addStringOption(option =>
 			option
-				.setName(en.dbRoll.options.comments.name)
-				.setDescription(en.dbRoll.options.comments.description)
+				.setName(t("dbRoll.options.comments.name"))
+				.setDescription(t("dbRoll.options.comments.description"))
 				.setNameLocalizations(cmdLn("dbRoll.options.comments.name"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.comments.description"))
 				.setRequired(false)
@@ -56,13 +58,13 @@ export const dmgRoll = {
 		if (!user) return;
 		let choices: string[] = [];
 		
-		if (focused.name === en.rAtq.atq_name.name) {
+		if (focused.name === t("rAtq.atq_name.name")) {
 			for (const [_, value] of Object.entries(user)) {
 				if (value.damageName) choices = choices.concat(value.damageName);
 			}
 			choices = choices.concat(db.templateID.damageName);
 			
-		} else if (focused.name === en.common.character) {
+		} else if (focused.name === t("common.character")) {
 			//get user characters 
 			const allCharactersFromUser = user
 				.map((data) => data.charName ?? "")
@@ -81,21 +83,18 @@ export const dmgRoll = {
 		if (!db || !interaction.guild || !interaction.channel) return;
 		const user = getUserData(db, interaction.user.id);
 		if (!user) return;
-		const atq = options.getString(en.rAtq.atq_name.name, true);
+		const atq = options.getString(t("rAtq.atq_name.name"), true);
 		const guildData = getGuildData(interaction);
 		if (!guildData) return;
-		const common = en.common;
-		const lOpt = en.dbRoll.options;
-		const ulError = ln(interaction.locale as Locale).error;
-		let charName = options.getString(common.character) ?? undefined;
-		let comments = options.getString(lOpt.comments.name) ?? "";
+		let charName = options.getString(t("common.character")) ?? undefined;
+		let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 		try {
 			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
 			if (!userStatistique && !charName) {
 				//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
-					await interaction.reply({ content: ulError.notRegistered, ephemeral: true });
+					await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
@@ -103,11 +102,11 @@ export const dmgRoll = {
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
-				await interaction.reply({ content: ulError.notRegistered, ephemeral: true });
+				await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
 				return;
 			}
 			if (!userStatistique.damage) {
-				await interaction.reply({ content: ulError.noDamage, ephemeral: true });
+				await interaction.reply({ content: t("error.noDamage"), ephemeral: true });
 				return;
 			}
 			const charNameComments = charName ? `• **@${charName}**` : "";
@@ -115,16 +114,16 @@ export const dmgRoll = {
 			//search dice
 			const dice = userStatistique.damage?.[atq];
 			if (!dice) {
-				await interaction.reply({ content: ulError.noDamage, ephemeral: true });
+				await interaction.reply({ content: t("error.noDamage"), ephemeral: true });
 				return;
 			}
-			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
+			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 			const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
 			const roll = `${dice}${modificatorString} ${comments}`;
 			await rollWithInteraction(interaction, roll, interaction.channel);
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: ulError.generic(error as Error), ephemeral: true });
+			await interaction.reply({ content: t("error.generic", {error: error as Error}), ephemeral: true });
 			return;
 		}
 	},

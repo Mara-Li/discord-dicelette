@@ -14,7 +14,7 @@ import { getFormula } from "./verify_template";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
-	const userLang = ln(interaction.locale);
+	const ul = ln(interaction.locale);
 	const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
 	if (rollWithMessage) {
 		dice = dice.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
@@ -22,17 +22,19 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	const rollDice = roll(dice);
 	if (!rollDice) {
 		console.error("no valid dice :", dice);
-		await interaction.reply({ content: userLang.error.noValidDice(undefined, dice), ephemeral: true });
+		await interaction.reply({ content: ul("error.noValidDice", {dice}), ephemeral: true });
 		return;
 	}
-	const parser = parseResult(rollDice, userLang, critical);
+	const parser = parseResult(rollDice, ul, critical);
 	if (channel.name.startsWith("🎲")) {
 		await interaction.reply({ content: parser });
 		return;
 	}
 	//sort threads by date by most recent
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
-	const thread = parentChannel instanceof TextChannel ? await findThread(parentChannel, userLang.roll.reason) : await findForumChannel(channel.parent as ForumChannel, userLang.roll.reason, channel as ThreadChannel);
+	const thread = parentChannel instanceof TextChannel ? 
+		await findThread(parentChannel, ul("roll.reason")) : 
+		await findForumChannel(channel.parent as ForumChannel, ul("roll.reason"), channel as ThreadChannel);
 	const msg = `${userMention(interaction.user.id)} ${timestamp()}\n${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);

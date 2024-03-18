@@ -1,30 +1,14 @@
 import { BaseInteraction, Locale, LocalizationMap } from "discord.js";
+import {default as i18next} from "i18next";
 
-import EnglishUS from "./locales/en";
-import French from "./locales/fr";
+import { resources } from "./i18next";
 
-export const TRANSLATIONS = {
-	French,
-	EnglishUS,
-};
 
 export function ln(userLang: Locale) {
-	const localeName = Object.entries(Locale).find(([, locale],) => {
-		return locale === userLang as Locale;
+	const localeName = Object.entries(Locale).find(([name, abbr],) => {
+		return name === userLang || abbr === userLang;
 	});
-	return TRANSLATIONS[localeName?.[0] as keyof typeof TRANSLATIONS] ?? TRANSLATIONS.EnglishUS;
-}
-
-function getTranslation(key: string, ul: Record<string, unknown>) {
-	const keys = key.split(".");
-	//keys is now ["help", "description"]
-	//get the translation.help.description
-	let translationString: string | Record<string, unknown> = ul;
-	for (const k of keys) {
-		// @ts-ignore
-		translationString = translationString[k];
-	}
-	return translationString as string;
+	return i18next.getFixedT(localeName?.[1] ?? "en");
 }
 
 export function lError(error: Error, interaction: BaseInteraction) {
@@ -41,24 +25,33 @@ export function lError(error: Error, interaction: BaseInteraction) {
 	let msgError = "";
 	
 	for (const error of errors) {
-		msgError += getTranslation(error, ul);
+		msgError += ul(error.trim());
 	}
 	return `${msgError}\n\`\`\`\n${errorMessage}\n\`\`\``;
 
 }
 
+/**
+ * Create an object with all the translations for a specific key
+ * @example
+ * ```ts
+ * cmdLn("hello"):
+ * {
+ * 	"en": "Hello",
+ * 	"fr": "Bonjour"
+ * }
+ * ```
+ * @param key i18n key
+ * @returns 
+ */
 export function cmdLn(key: string) {
 	const localized: LocalizationMap = {};
-	const allValidLocale = Object.keys(Locale);
-	for (const lg in TRANSLATIONS) {
-		if (lg === "EnglishUS") continue;
-		if (!allValidLocale.includes(lg as Locale)) continue;
-		if (Object.prototype.hasOwnProperty.call(TRANSLATIONS, lg)) {
-			const translation = TRANSLATIONS[lg as keyof typeof TRANSLATIONS];
-			//get the translation string with the key
-			//key can be, for example, help.description
-			const localValue = Locale[lg as keyof typeof Locale];
-			localized[localValue] = getTranslation(key, translation);
+	const allValidLocale = Object.entries(Locale);
+	const allTranslatedLanguages = Object.keys(resources).filter((lang) => !lang.includes("en"));
+	for (const [name, locale] of allValidLocale) {
+		if (allTranslatedLanguages.includes(locale)) {
+			const ul = ln(name as Locale);
+			localized[locale as Locale] = ul(key);
 		}
 	}
 	return localized;
