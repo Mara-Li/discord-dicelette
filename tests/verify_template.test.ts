@@ -74,7 +74,7 @@ describe("verify_template", () => {
 		it("should verify the template correctly", () => {
 			const template = {
 				statistics: { stat1: { max: 10, min: 1 } },
-				diceType: "d6",
+				diceType: "1d20{{+ceil(($-10)/2)}}>20",
 				damage: {
 					"piercing": "1d6+2",
 				}
@@ -171,6 +171,16 @@ describe("verify_template", () => {
 				.replace(/[><=]=?(.*)/gmi, "");
 			const formula = `${cleanedDice}${calculation.calculation ?? ""}${calculation.comparator ?? ""} coucou`;
 			const expectedFormula = "1d20+5>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating roll dice with complicated formula", () => {
+			const dice = "1d20{{ceil((10-$)/2)}}>20";
+			const userStat = 5;
+			const calculation = calculate(userStat, dice);
+			const cleanedDice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
+				.replace(/[><=]=?(.*)/gmi, "");
+			const formula = `${cleanedDice}${calculation.calculation}${calculation.comparator} coucou`;
+			const expectedFormula = "1d20+3>20 coucou";
 			expect(formula).toEqual(expectedFormula);
 		});
 	});
