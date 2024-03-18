@@ -291,4 +291,41 @@ export const logs = {
 	}
 };
 
+export const editUser = {
+	data: new SlashCommandBuilder()
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setName(t("edit.name"))
+		.setDescription(t("edit.description"))
+		.setDescriptionLocalizations(cmdLn("edit.description"))
+		.setNameLocalizations(cmdLn("edit.name"))
+		.addUserOption(option =>
+			option
+				.setName(t("common.user"))
+				.setDescription(t("edit.options.user"))
+				.setDescriptionLocalizations(cmdLn("edit.options.user"))
+				.setNameLocalizations(cmdLn("common.user"))
+				.setRequired(true)
+		)
+		.addStringOption(option =>
+			option
+				.setName(t("edit.options.field.name"))
+				.setDescription(t("edit.options.field.description"))
+				.setDescriptionLocalizations(cmdLn("edit.options.field.description"))
+				.setNameLocalizations(cmdLn("edit.options.field.name"))
+				.setRequired(true)
+		)
+		.addStringOption(option =>
+			option
+				.setName(t("edit.options.value.name"))
+				.setDescription(t("edit.options.value.description"))
+				.setDescriptionLocalizations(cmdLn("edit.options.value.description"))
+				.setNameLocalizations(cmdLn("edit.options.value.name"))
+				.setRequired(true)
+		),
+	async execute(interaction: CommandInteraction): Promise<void> {
+		//TODO
+		await interaction.reply({ content: "Not implemented yet", ephemeral: true });
+	}
+};
+
 export const commands = [generateTemplate, registerTemplate, rollForUser, logs, dmgRoll];

@@ -32,6 +32,21 @@
       "statistic": "The statistic to use"
     }
   },
+  "edit": {
+    "description": "",
+    "name": "",
+    "options": {
+      "field": {
+        "description": "Field to edit (with emoji included)",
+        "name": "fields"
+      },
+      "user": "Mention the user to modify",
+      "value": {
+        "description": "New value of selected field",
+        "name": "value"
+      }
+    }
+  },
   "error": {
     "emptyDamage": "",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",

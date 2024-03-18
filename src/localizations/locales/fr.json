@@ -32,6 +32,21 @@
       "statistic": "La statistique à utiliser"
     }
   },
+  "edit": {
+    "description": "Modifier la fiche d'un joueur",
+    "name": "edit",
+    "options": {
+      "field": {
+        "description": "Champ à éditer (avec l'émoji compris)",
+        "name": "champs"
+      },
+      "user": "Mentionner l'utilisateur à modifier",
+      "value": {
+        "description": "Nouvelle valeur du champ sélectionné",
+        "name": "valeur"
+      }
+    }
+  },
   "error": {
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{e.message}}\n```",
