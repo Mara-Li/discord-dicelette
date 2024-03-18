@@ -147,10 +147,31 @@ describe("verify_template", () => {
 			const userStat = 10;
 			const diceType = "1d20+5>$";
 			const res = {
-				calculation: "+5",
+				calculation: "",
 				comparator: ">10"
 			};
 			expect(calculate(userStat, diceType)).toEqual(res);
+		});
+
+		it("creating roll dice with formula", () => {
+			const dice = "1d20{{+$}}>20";
+			const userStat = 10;
+			const calculation = calculate(userStat, dice);
+			const cleanedDice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
+				.replace(/[><=]=?(.*)/gmi, "");
+			const formula = `${cleanedDice}${calculation.calculation}${calculation.comparator} coucou`;
+			const expectedFormula = "1d20+10>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating roll dice with success formula", () => {
+			const dice = "1d20+5>$*2";
+			const userStat = 10;
+			const calculation = calculate(userStat, dice);
+			const cleanedDice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
+				.replace(/[><=]=?(.*)/gmi, "");
+			const formula = `${cleanedDice}${calculation.calculation ?? ""}${calculation.comparator ?? ""} coucou`;
+			const expectedFormula = "1d20+5>20 coucou";
+			expect(formula).toEqual(expectedFormula);
 		});
 	});
 

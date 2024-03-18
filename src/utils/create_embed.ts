@@ -180,10 +180,25 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		stats,
 		template: {
 			diceType: template.diceType,
-			comparator: template.comparator,
+			critical: template.critical,
 		},	
 		damage: templateDamage,
 	};
+	if (template.diceType)
+		embed.addFields({
+			name: "Dice",
+			value: template.diceType,
+			inline: true,
+		});
+	if (template.critical){
+		let criticalSuccess = template.critical.success ? `${ul.roll.critical.success}${ul.common.space}:\n-${template.critical.success}\n` : "";
+		criticalSuccess += template.critical.failure ? `${ul.roll.critical.failure}${ul.common.space}:\n-${template.critical.failure}` : "";
+		embed.addFields({
+			name: "Critical",
+			value: criticalSuccess,
+			inline: true,
+		});	
+	}
 	await interaction?.message?.delete();
 	await repostInThread(embed, interaction, userStatistique, userID);
 	await interaction.reply({ content: ul.modals.finished, ephemeral: true });

@@ -112,8 +112,10 @@ export const rollForUser = {
 			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
 			const userStat = userStatistique.stats[statistique];
 			const template = userStatistique.template;
-			const dice = template.diceType;
+			let dice = template.diceType;
 			const {calculation, comparator} = calculate(userStat, template.diceType, override, modificator);
+			dice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
+				.replace(/[><=]=?(.*)/gmi, "");
 			const charNameComments = charName ? `• **@${charName}**` : "";
 			comments += `__[${title(statistique)}]__${charNameComments}`;
 			const roll = `${dice}${calculation}${comparator} ${comments}`;

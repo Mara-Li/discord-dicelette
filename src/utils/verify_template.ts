@@ -135,9 +135,13 @@ export function getFormula(diceType?: string) {
 	const combinaison: {formula?: string; sign?: string; comparator?: string;}|undefined = {};
 	if (!formula) {
 		//search sign 
-		const sign = diceType.match(/[><=]=?/gmi);
-		if (sign) combinaison.sign = 
-	};
+		const sign = /(?<sign>[><=]=?)(?<compare>(.*))/gmi.exec(diceType);
+		if (sign?.groups) {
+			if (sign.groups.sign) combinaison.sign = sign.groups.sign;
+			if (sign.groups.compare) combinaison.comparator = sign.groups.compare;
+		} else return undefined;
+		return combinaison;
+	}
 	if (formula?.groups?.formula) {
 		combinaison.formula = formula?.groups?.formula.replaceAll("{{", "").replaceAll("}}", "");
 	}
