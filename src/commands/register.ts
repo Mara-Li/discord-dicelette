@@ -3,16 +3,13 @@ import fs from "fs";
 import removeAccents from "remove-accents";
 import dedent from "ts-dedent";
 
-import { Comparator, Statistic, StatisticalTemplate } from "../interface";
+import { Critical, Statistic, StatisticalTemplate } from "../interface";
 import { cmdLn, lError, ln } from "../localizations";
 import en from "../localizations/locales/en";
 import { title } from "../utils";
 import { verifyTemplateValue } from "../utils/verify_template";
 import { dmgRoll } from "./dbAtq";
 import { rollForUser } from "./dbroll";
-
-type ComparatorSign = ">" | "<" | ">=" | "<=" | "=" | "!=";
-
 
 export const generateTemplate = {
 	data: new SlashCommandBuilder()
@@ -151,22 +148,19 @@ export const generateTemplate = {
 				atqDice[removeAccents(name)] = "1d5";
 			}
 		}
-		let comparator : Comparator | undefined = {
-			sign: options.getString(lnOpt.comparator.name) as ComparatorSign || undefined,
-			value: options.getNumber(lnOpt.value.name) ?? undefined,
-			formula: options.getString(lnOpt.formula.name) ?? undefined,
-			criticalFailure: options.getNumber(lnOpt.critical_fail.name) ?? undefined,
-			criticalSuccess: options.getNumber(lnOpt.critical_success.name) ?? undefined
+		let critical : Critical | undefined = {
+			failure: options.getNumber(lnOpt.critical_fail.name) ?? undefined,
+			success: options.getNumber(lnOpt.critical_success.name) ?? undefined
 		};
 		//verify if everything is undefined in comparator object
-		const isUndefined = Object.values(comparator).every(value => value === undefined);
-		if (isUndefined) comparator = undefined;
+		const isUndefined = Object.values(critical).every(value => value === undefined);
+		if (isUndefined) critical = undefined;
 
 		const statistiqueTemplate: StatisticalTemplate = {
 			charName: options.getBoolean(lnOpt.character.name) || false,
 			statistics: statServer,
 			diceType: options.getString(lnOpt.dice.name) || undefined,
-			comparator,
+			critical,
 			total: options.getNumber(lnOpt.total.name) || undefined,
 			damage: atqDice
 		};
@@ -251,10 +245,9 @@ export const registerTemplate = {
 					value: templateData.diceType,
 				});
 			let msgComparator = "";
-			if (templateData.comparator) {
-				if (templateData.comparator.value) msgComparator += `- ${ul.register.embed.value} \`${templateData.comparator.value}\`\n`;
-				if (templateData.comparator.formula) msgComparator += `- ${ul.register.embed.formula} \`${templateData.comparator.formula}\`\n`;
-				if (templateData.comparator.sign) msgComparator += `- ${ul.register.embed.comparator} \`${templateData.comparator.sign}\`\n`;
+			if (templateData.critical) {
+				if (templateData.critical.success) msgComparator += `- ${ul.roll.critical.success} \`${templateData.critical.success}\`\n`;
+				if (templateData.critical.failure) msgComparator += `- ${ul.roll.critical.failure} \`${templateData.critical.failure}\`\n`;
 				embedTemplate.addFields({
 					name: ul.register.embed.comparator,
 					value: msgComparator,

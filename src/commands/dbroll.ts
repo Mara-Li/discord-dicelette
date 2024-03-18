@@ -1,9 +1,8 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
-import { evaluate } from "mathjs";
 
 import { cmdLn, lError, ln } from "../localizations";
 import en from "../localizations/locales/en";
-import { rollWithInteraction, title } from "../utils";
+import { calculate, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 import { dmgRoll } from "./dbAtq";
 
@@ -113,30 +112,12 @@ export const rollForUser = {
 			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
 			const userStat = userStatistique.stats[statistique];
 			const template = userStatistique.template;
-			let formula = template.comparator?.formula;
 			const dice = template.diceType;
-			let comparator: string = "";
-			if (!override && template.comparator) {
-				comparator += template.comparator.sign;
-				comparator += template.comparator.value ? template.comparator.value.toString() : userStat.toString();
-			} else if (override) comparator = override;
-			const critical: {failure?: number, success?: number} = {
-				failure: template.comparator?.criticalFailure,
-				success: template.comparator?.criticalSuccess
-			};
-			if (formula) {
-				try {
-					formula = evaluate(`${formula.replace("$", userStat.toString())}+ ${modificator}`).toString();
-				} catch (error) {
-					await interaction.reply({ content: ulError.invalidFormula, ephemeral: true });
-					return;
-				}
-				formula = formula?.startsWith("-") ? formula : `+${formula}`;
-			} else formula = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
+			const {calculation, comparator} = calculate(userStat, template.diceType, override, modificator);
 			const charNameComments = charName ? `• **@${charName}**` : "";
 			comments += `__[${title(statistique)}]__${charNameComments}`;
-			const roll = `${dice}${formula}${comparator} ${comments}`;
-			await rollWithInteraction(interaction, roll, interaction.channel, critical);
+			const roll = `${dice}${calculation}${comparator} ${comments}`;
+			await rollWithInteraction(interaction, roll, interaction.channel, template.critical);
 		}
 		catch (error) {
 			const msgError = lError(error as Error, interaction);

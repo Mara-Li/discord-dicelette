@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { evaluate } from "mathjs";
-import { Random } from "random-js";
+import {Random } from "random-js";
 import removeAccents from "remove-accents";
 
 import { roll } from "../dice";
-import { StatisticalTemplate } from "../interface";
+import { Statistic, StatisticalTemplate } from "../interface";
 
 export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: number}) {
 	const newStats: {[name: string]: number} = {};
@@ -28,9 +28,11 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function verifyTemplateValue(template: any): StatisticalTemplate {
 	const statistiqueTemplate: StatisticalTemplate = {
-		diceType: "",		
+		diceType: "",
+		statistics: {} as Statistic
 	};
-	if (template.statistics && Object.keys(template.statistics).length > 0) {
+	if (!template.statistics) statistiqueTemplate.statistics = undefined;
+	else if (template.statistics && Object.keys(template.statistics).length > 0) {
 		for (const [key, value] of Object.entries(template.statistics)) {
 			const dataValue = value as { max?: number, min?: number, combinaison?: string };
 			const statName = removeAccents(key).toLowerCase();
@@ -40,7 +42,10 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 			if (dataValue.min && dataValue.min <= 0 ) dataValue.min = undefined;
 			let formula = dataValue.combinaison ? removeAccents(dataValue.combinaison).toLowerCase() : undefined;
 			formula = formula && formula.trim().length > 0 ? formula : undefined;
-			statistiqueTemplate.statistics![statName] = {
+			if (!statistiqueTemplate.statistics) {
+				statistiqueTemplate.statistics = {} as Statistic;
+			}
+			statistiqueTemplate.statistics[statName] = {
 				max: dataValue.max,
 				min: dataValue.min,
 				combinaison: formula || undefined,
@@ -48,30 +53,21 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 		}
 	}
 	if (template.diceType) {
-		if (template.diceType.match(/[[><=!]/)) {
-			throw new Error("[error.invalidDice]");
-		}
 		try {
-			roll(template.diceType);
 			statistiqueTemplate.diceType = template.diceType;
+			testFormula(statistiqueTemplate);
 		} catch (e) {
 			throw new Error("[error.invalidDice]");
 		}
 	}
 
 	
-	if (template.comparator && Object.keys(template.comparator).length > 0){
-		if (!template.comparator.sign.match(/(>|<|>=|<=|=|!=)/))
-			throw new Error("[error.incorrectSign]");
-		if (template.comparator.value <= 0)
-			template.comparator.value = undefined;
-		if (template.comparator.formula){
-			template.comparator.formula = removeAccents(template.comparator.formula);
-		}
+	if (template.critical && Object.keys(template.critical).length > 0){
+		statistiqueTemplate.critical = {
+			failure: template.critical.failure ?? undefined,
+			success: template.critical.success ?? undefined
+		};
 
-		if (template.comparator.criticalSuccess && template.comparator.criticalSuccess<=0) template.comparator.criticalSuccess = undefined;
-		if (template.comparator.criticalFailure && template.comparator.criticalFailure<=0) template.comparator.criticalFailure = undefined;
-		statistiqueTemplate.comparator = template.comparator;
 	}
 	if (template.total) {
 		if (template.total <= 0)
@@ -82,7 +78,6 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	if (template.damage) statistiqueTemplate.damage = template.damage;
 	try {
 		testRoll(statistiqueTemplate);
-		testFormula(statistiqueTemplate);
 		testCombinaison(statistiqueTemplate);
 	} catch (error) {
 		throw new Error((error as Error).message);
@@ -133,23 +128,63 @@ export function testCombinaison(template: StatisticalTemplate) {
 	return;
 }
 
+export function getFormula(diceType?: string) {
+	if (!diceType) return undefined;
+	const regex = /(?<formula>\{{2}(.+?)\}{2})(?<comparison>(?<sign>[><=]=?)?(?<compare>.*)?)?/gmi;
+	const formula = regex.exec(diceType);
+	const combinaison: {formula?: string; sign?: string; comparator?: string;}|undefined = {};
+	if (!formula) {
+		//search sign 
+		const sign = diceType.match(/[><=]=?/gmi);
+		if (sign) combinaison.sign = 
+	};
+	if (formula?.groups?.formula) {
+		combinaison.formula = formula?.groups?.formula.replaceAll("{{", "").replaceAll("}}", "");
+	}
+	if (formula?.groups?.comparison) {
+		combinaison.sign = formula?.groups?.sign;
+		combinaison.comparator = formula?.groups?.compare;
+	}
+	return combinaison;
+}
+
 export function testFormula(template: StatisticalTemplate) {
-	if (!template.statistics) return;
-	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics![stat].combinaison);
+	if (!template.statistics || !template.diceType) return;
+	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics?.[stat].combinaison);
 	if (!firstStatNotCombinaison) return;
-	if (!template.comparator||!template.comparator.formula) return;
 	const stats = template.statistics[firstStatNotCombinaison];
 	const {min, max} = stats;
 	const total = template.total || 100;
 	
 	const randomStatValue = generateRandomStat(total, max, min);
-	const formula = template.comparator.formula.replace("$", randomStatValue.toString());
+	const formula = getFormula(template.diceType);
+	if (!formula) {
+		try {
+			roll(template.diceType);
+			return true;
+		} catch(e) {
+			throw new Error(`[error.invalidDice] ${template.diceType}`);
+		}
+	}
+	
+	const formule = formula.formula?.replace("$", randomStatValue.toString());
+	const compareFormule = formula.comparator?.replaceAll("$", randomStatValue.toString());
 	try {
-		evaluate(formula);
+		let newDice = template.diceType;
+		if (formule){
+			const value = evaluate(formule);
+			newDice = newDice.replace(formule, value.toString());
+		}
+		if (compareFormule) {
+			const value = evaluate(compareFormule);
+			newDice = newDice.replace(compareFormule, value.toString());
+		}
+		roll(newDice);
 		return true;
 	} catch (error) {
 		throw new Error(`[error.invalidFormula] ${formula}`);
 	}
+	
 }
 
 export function generateRandomStat(total: number | undefined = 100, max?: number, min?: number) {

@@ -52,10 +52,6 @@ export default {
 			description: "Dice to roll",
 		},
 		noDice: "No dice provided",
-		noValidDice: (error: string|undefined, dice: string) => {
-			if (error) return `Error: Invalid dice ${dice}\n\`\`\`\n${error}\n\`\`\``;
-			return `Error: Invalid dice ${dice}`;
-		},
 		reason: "New roll thread",
 		failure: "Failure",
 		success: "Success",
@@ -150,10 +146,6 @@ export default {
 			comparator: "Comparator:",
 			registered: "Template registered!",
 			damage: "Damage dice"
-		},
-		error: {
-			tooMuchStats: "You can't have more than 20 statistics",
-			invalid: "Invalid template:"
 		}
 	},
 	dbRoll: {
@@ -216,7 +208,11 @@ export default {
 		tooMuchStats: "You can't have more than 20 statistics",
 		notRegistered: "You are not registered",
 		noDamage: "No registered dice found",
-		invalid: "Invalid template:"
+		invalid: "Invalid template:",
+		noValidDice: (error: string|undefined, dice: string) => {
+			if (error) return `Error: Invalid dice ${dice}\n\`\`\`\n${error}\n\`\`\``;
+			return `Error: Invalid dice ${dice}`;
+		},
 	},
 	modals: {
 		continue: "Continue",

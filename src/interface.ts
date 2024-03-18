@@ -76,31 +76,16 @@ export interface StatisticalTemplate {
 	/**
 	 * How the success/echec will be done 
 	 */
-	comparator?: Comparator;
+	critical?: Critical;
 	/** Special dice for damage */
 	damage?: {
 		[name: string]: string;
 	}
 }
 
-export interface Comparator {
-	
-		/**
-		 * How the dice value will be compared
-		 */
-		sign : "<" | ">" | ">=" | "<=" | "=" | "!="
-		/**
-		 * If not defined, the value will be the statistique value of the user
-		 * If defined, the dice will be compared this value
-		 */
-		value?: number,
-		criticalSuccess?: number,
-		criticalFailure?: number,
-		/** Edit the number that will be +/- to the result. Use $ to symbolise the statistique value"
-		 * @example +$ or -$ to add/remove the statistique (bonus/malus)
-		 * @example DND: ($-10)/2
-		*/
-		formula?: string
+export interface Critical {
+		success?: number,
+		failure?: number,
 }
 
 
@@ -124,7 +109,7 @@ export interface User {
 	 */
 	template: {
 		diceType?: string;
-		comparator?: Comparator;
+		critical?: Critical;
 		
 	},
 	damage?: {

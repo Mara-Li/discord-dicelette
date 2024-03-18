@@ -1,4 +1,5 @@
 import { BaseInteraction, CommandInteraction, EmbedBuilder, ForumChannel, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
 
@@ -9,6 +10,7 @@ import {User} from "../interface";
 import { ln } from "../localizations";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
+import { getFormula } from "./verify_template";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
@@ -20,7 +22,7 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	const rollDice = roll(dice);
 	if (!rollDice) {
 		console.error("no valid dice :", dice);
-		await interaction.reply({ content: userLang.roll.noValidDice(undefined, dice), ephemeral: true });
+		await interaction.reply({ content: userLang.error.noValidDice(undefined, dice), ephemeral: true });
 		return;
 	}
 	const parser = parseResult(rollDice, userLang, critical);
@@ -91,4 +93,26 @@ export async function repostInThread(embed: EmbedBuilder, interaction: BaseInter
 
 export function timestamp() {
 	return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
+}
+
+export function calculate(userStat: number, diceType?: string, override?: string|null, modificator: number = 0) {
+	const formula = getFormula(diceType);
+	let comparator: string = "";
+	if (!override && formula) {
+		comparator += formula.sign;
+		const value = formula.comparator?.replace("$", userStat.toString());
+		comparator += value ? value.toString() : userStat.toString();
+	} else if (override) comparator = override;
+	let calculation = formula?.formula;
+	if (calculation) {
+		try {
+			calculation = calculation.replace("{{", "").replace("}}", "").replace("$", userStat.toString());
+			calculation = evaluate(`${calculation}+ ${modificator}`).toString();
+			console.warn(calculation);
+		} catch (error) {
+			throw `[ulError.invalidFormula], ${calculation}`;
+		}
+		calculation = calculation?.startsWith("-") ? calculation : `+${calculation}`;
+	} else calculation = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
+	return {calculation, comparator};
 }

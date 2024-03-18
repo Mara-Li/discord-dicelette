@@ -51,10 +51,6 @@ export default {
 			description: "Dé à lancer",
 		},
 		noDice: "Aucun dé spécifié",
-		noValidDice: (error: string |undefined, dice: string) => {
-			if (error) return `Erreur : Dé invalide ${dice}\n\`\`\`\n${error}\n\`\`\``;
-			return `Erreur : Dé invalide ${dice}`;
-		},
 		reason: "Nouveau thread de lancer",
 		failure: "Échec",
 		success: "Succès",
@@ -217,6 +213,10 @@ export default {
 		invalid: "Modèle invalide : ",
 		notRegistered: "Vous n'êtes pas enregistré",
 		noDamage: "Vous n'avez pas de dés enregistrés",
+		noValidDice: (error: string |undefined, dice: string) => {
+			if (error) return `Erreur : Dé invalide ${dice}\n\`\`\`\n${error}\n\`\`\``;
+			return `Erreur : Dé invalide ${dice}`;
+		},
 	},
 	modals: {
 		continue: "Continuer",

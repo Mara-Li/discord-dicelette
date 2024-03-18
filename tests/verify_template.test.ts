@@ -1,6 +1,7 @@
 // FILEPATH: /c:/Users/simonettili/Documents/Github/discord-dicelette/src/utils/verify_template.test.ts
 import { StatisticalTemplate } from "../src/interface";
-import { evalCombinaison, generateRandomStat,testCombinaison, testFormula, verifyTemplateValue } from "../src/utils/verify_template";
+import { calculate } from "../src/utils/index";
+import { evalCombinaison, generateRandomStat,getFormula,testCombinaison, verifyTemplateValue } from "../src/utils/verify_template";
 
 describe("verify_template", () => {
 	describe("evalCombinaison", () => {
@@ -74,7 +75,6 @@ describe("verify_template", () => {
 			const template = {
 				statistics: { stat1: { max: 10, min: 1 } },
 				diceType: "d6",
-				comparator: { sign: ">", value: 5, formula: "$ * 2" },
 				damage: {
 					"piercing": "1d6+2",
 				}
@@ -98,7 +98,6 @@ describe("verify_template", () => {
 			const template = {
 				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
 				diceType: "invalid",
-				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
 			};
 			expect(() => verifyTemplateValue(template)).toThrow();
 		});
@@ -110,21 +109,50 @@ describe("verify_template", () => {
 			const template: StatisticalTemplate = {
 				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
 				diceType: "d6",
-				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
 			};
 			expect(() => testCombinaison(template)).toThrow();
 		});
-	});
-
-	describe("testFormula", () => {
-		// Add more tests for different scenarios
-		it("should test the formula correctly", () => {
+		it("validate formula for dice", () => {
 			const template: StatisticalTemplate = {
-				statistics: { stat1: { max: 10, min: 1 } },
-				diceType: "d6",
-				comparator: { sign: ">", value: 5, formula: "$ * 2" },
+				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				diceType: "d6{{+$}}>20",
 			};
-			expect(() => testFormula(template)).not.toThrow();
+			expect(() => testCombinaison(template)).toThrow();
+		});
+		it("validate formula for dice", () => {
+			const template: StatisticalTemplate = {
+				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				diceType: "d6+5>{{$}}",
+			};
+			expect(() => testCombinaison(template)).toThrow();
+		});
+		it("simulate dice", () => {
+			const userStat = 10;
+			const diceType = "1d20{{+$}}>20";
+			const res = {
+				calculation: "+10",
+				comparator: ">20"
+			};
+			expect(calculate(userStat, diceType)).toEqual(res);
+		});
+		it("simulate formula", () => {
+			const res = {
+				formula: undefined,
+				sign: ">",
+				comparator: "$"
+			};
+			expect(getFormula("1d20+5>$")).toEqual(res);
+		});
+		it("simulate dice with comparator statistiques", () => {
+			const userStat = 10;
+			const diceType = "1d20+5>$";
+			const res = {
+				calculation: "+5",
+				comparator: ">10"
+			};
+			expect(calculate(userStat, diceType)).toEqual(res);
 		});
 	});
+
+	
 });
