@@ -239,19 +239,20 @@ Mais, pour les message "direct" (c'est-à-dire les messages qui ne sont pas des 
 
 ### Ajouter une langue
 
-Pour ajouter une langue, vous devez copier et traduire le fichier [`en.ts`](./src/localizations/locales/en.ts).
+Pour ajouter une langue, vous devez copier et traduire le fichier [`en.json`](./src/localizations/locales/en.json).
 
 > [!IMPORTANT]
 > Le nom doit suivre le format des [locales discord.js](https://github.com/discordjs/discord-api-types/blob/main/rest/common.ts#L300).
 > Par exemple, `ChineseCN` pour le Chinois (China) et `ChineseTW` pour le Chinois (Taiwan).
 
-Après cela, vous devez ajouter la langue dans le fichier [`index.ts`](./src/localizations/index.ts), tel que :
+Après cela, vous devez ajouter la langue dans le fichier [`i18next.ts`](./src/localizations/i18next.ts), tel que :
 ```ts
-import NouvelleTraduction from "./locales/nouvelleTraduction.ts";
+import NouvelleTraduction from "./locales/nouvelleTraduction.json";
 
-export const TRANSLATIONS = {
+export const resources = {
 	// ...
-	NouvelleTraduction,
-	// ...
-}
+	discordLocale: { //ie fr, en-US, etc...
+			translation: NouvelleTraduction,
+		},
+};
 ```
