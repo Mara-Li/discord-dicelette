@@ -134,7 +134,6 @@ export const help = {
 		.setDescription(t("help.description"))
 		.setDescriptionLocalizations(cmdLn("help.description")),
 	async execute(interaction: CommandInteraction): Promise<void> {
-		console.log(cmdLn("help.name"));
 		const commandsID = await interaction.guild?.commands.fetch();
 		if (!commandsID) return;
 		const rollID = commandsID.findKey(command => command.name === "roll");

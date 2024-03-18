@@ -15,7 +15,6 @@ export function lError(error: Error, interaction: BaseInteraction) {
 	let errorMessage = error.message;
 	let errors: string[] = [];
 	//check if errorMessage is a list
-	console.log(errorMessage);
 	const errorList = /\[(.*)\]/gi.exec(errorMessage);
 	if (errorList) {
 		errors = errorList?.[1].split(",");

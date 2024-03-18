@@ -108,9 +108,9 @@ export function calculate(userStat: number, diceType?: string, override?: string
 	if (calculation) {
 		try {
 			calculation = calculation.replace("{{", "").replace("}}", "").replace("$", userStat.toString());
-			calculation = evaluate(`${calculation}+ ${modificator}`).toString();
+			calculation = evaluate(`${calculation} + ${modificator}`).toString();
 		} catch (error) {
-			throw `[ulError.invalidFormula], ${calculation}`;
+			throw `[ulError.invalidFormula] ${calculation}`;
 		}
 		calculation = calculation?.startsWith("-") ? calculation : `+${calculation}`;
 	} else calculation = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";

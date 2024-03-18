@@ -173,7 +173,6 @@ export function testFormula(template: StatisticalTemplate) {
 	
 	const formule = formula.formula?.replace("$", randomStatValue.toString());
 	const compareFormule = formula.comparator?.replaceAll("$", randomStatValue.toString());
-	console.log(`formule: ${formule} compareFormule: ${compareFormule}`);
 	try {
 		let newDice = template.diceType;
 		if (formule && formula.formula){
@@ -186,7 +185,6 @@ export function testFormula(template: StatisticalTemplate) {
 			const value = evaluate(compareFormule);
 			newDice = newDice.replace(formula.comparator, value.toString());
 		}
-		console.log(newDice);
 		roll(newDice);
 		return true;
 	} catch (error) {
