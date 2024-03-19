@@ -33,29 +33,21 @@
     }
   },
   "edit": {
-    "description": "",
-    "name": "",
     "options": {
       "field": {
-        "description": "Field to edit (with emoji included)",
-        "name": "fields"
       },
-      "user": "Mention the user to modify",
       "value": {
-        "description": "New value of selected field",
-        "name": "value"
       }
     }
   },
   "error": {
     "emptyDamage": "",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
-    "invalid": "Invalid model: ",
-    "invalidDice": "",
-    "invalidFormula": "",
     "mustBeGreater": "The {{value}} value must be greater than {{min}}",
     "mustBeLower": "The {{value}} value must be smaller than {{max}}",
     "noDamage": "{{atq}} is not saved in {{charName}}.",
+    "noDice": "You cannot issue this command without having a registered die type!",
+    "noStats": "This command cannot be used: no statistics have been recorded.",
     "noTemplate": "No template or channel configured",
     "noThread": "No thread found - Please re-register user if thread has been deleted",
     "noValidDice": "Error: Invalid Dice {{dice}}",
@@ -111,6 +103,9 @@
     "set": "Logs configured in channel {{channel}}"
   },
   "modals": {
+    "add": {
+      "dice": ""
+    },
     "added": "Statistics added",
     "alreadySet": "All statistics already set",
     "cancel": "Cancel",
@@ -119,6 +114,11 @@
       "name": "Character name"
     },
     "continue": "Continue",
+    "edit": {
+      "dice": "",
+      "stats": "",
+      "template": ""
+    },
     "embedTitle": "Registered user",
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{max}}",

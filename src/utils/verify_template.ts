@@ -5,6 +5,43 @@ import removeAccents from "remove-accents";
 
 import { roll } from "../dice";
 import { Statistic, StatisticalTemplate } from "../interface";
+import { escapeRegex } from ".";
+
+export function evalStatsDice(testDice: string, stats?: {[name: string]: number}) {
+	let dice = testDice;
+	if (stats && Object.keys(stats).length > 0) {
+		const allStats = Object.keys(stats);
+		for (const stat of allStats) {
+			const regex = new RegExp(escapeRegex(removeAccents(stat)), "gi");
+			if (testDice.match(regex)) {
+				const statValue = stats[stat];
+				dice = testDice.replace(regex, statValue.toString());
+			}
+		}
+	}
+	try {
+		roll(dice);
+		return testDice;
+	} catch (error) {
+		throw new Error(`[error.invalidDice, common.space]: ${testDice}`);
+	}
+}
+
+export function testDiceType(value: string, template: StatisticalTemplate) {
+	if (!template.statistics) return value;
+	const allStats = Object.keys(template.statistics);
+	let newDice = value;
+	for (const stat of allStats) {
+		const regex = new RegExp(escapeRegex(removeAccents(stat)), "gi");
+		if (value.match(regex)) {
+			const {max, min} = template.statistics[stat];
+			const total = template.total || 100;
+			const randomStatValue = generateRandomStat(total, max, min);
+			newDice = value.replace(regex, randomStatValue.toString());
+		}
+	}
+	return newDice;
+}
 
 export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: number}) {
 	const newStats: {[name: string]: number} = {};
@@ -54,6 +91,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	}
 	if (template.diceType) {
 		try {
+			testDiceType(template.diceType, statistiqueTemplate);
 			statistiqueTemplate.diceType = template.diceType;
 			testFormula(statistiqueTemplate);
 		} catch (e) {
@@ -77,7 +115,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	if (template.charName) statistiqueTemplate.charName = template.charName;
 	if (template.damage) statistiqueTemplate.damage = template.damage;
 	try {
-		testRoll(statistiqueTemplate);
+		testDamageRoll(statistiqueTemplate);
 		testCombinaison(statistiqueTemplate);
 	} catch (error) {
 		throw new Error((error as Error).message);
@@ -85,14 +123,15 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	return statistiqueTemplate;
 }
 
-export function testRoll(template: StatisticalTemplate) {
+export function testDamageRoll(template: StatisticalTemplate) {
 	if (!template.damage) return;
 	if (Object.keys(template.damage).length === 0) throw new Error("[error.emptyObject]");
 	if (Object.keys(template.damage).length > 25) throw new Error("[error.tooManyDice]");
 	for (const [name, dice] of Object.entries(template.damage)) {
 		if (!dice) continue;
+		const randomDiceParsed = testDiceType(dice, template);
 		try {
-			roll(dice);
+			roll(randomDiceParsed);
 		} catch (error) {
 			throw new Error(`[error.invalidDice, common.space] ${name}`);
 		}
@@ -209,6 +248,3 @@ export function generateRandomStat(total: number | undefined = 100, max?: number
 	return randomStatValue;
 }
 
-function escapeRegex(string: string) {
-	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}

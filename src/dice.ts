@@ -22,7 +22,7 @@ export function roll(dice: string): Resultat | undefined{
 		const compareSign = compareRegex[0].match(SIGN_REGEX)?.[0];
 		if (sign) {
 			const toCalc = calc.replace(SIGN_REGEX, "").replace(/\s/g, "");
-			const total = eval(toCalc);
+			const total = evaluate(toCalc);
 			dice = dice.replace(/[><=]=?(\S+)/, `${compareSign}${total}`);
 			compare = {
 				sign: compareSign as "<" | ">" | ">=" | "<=" | "=",

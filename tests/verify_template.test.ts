@@ -1,7 +1,7 @@
 // FILEPATH: /c:/Users/simonettili/Documents/Github/discord-dicelette/src/utils/verify_template.test.ts
 import { StatisticalTemplate } from "../src/interface";
-import { calculate } from "../src/utils/index";
-import { evalCombinaison, generateRandomStat,getFormula,testCombinaison, verifyTemplateValue } from "../src/utils/verify_template";
+import { calculate, cleanedDice, formatRollCalculation } from "../src/utils/index";
+import { evalCombinaison, generateRandomStat,getFormula,testCombinaison, testDamageRoll, testDiceType,verifyTemplateValue } from "../src/utils/verify_template";
 
 describe("verify_template", () => {
 	describe("evalCombinaison", () => {
@@ -74,7 +74,7 @@ describe("verify_template", () => {
 		it("should verify the template correctly", () => {
 			const template = {
 				statistics: { stat1: { max: 10, min: 1 } },
-				diceType: "1d20{{+ceil(($-10)/2)}}>20",
+				diceType: "1d20+{{ceil(($-10)/2)}}>20",
 				damage: {
 					"piercing": "1d6+2",
 				}
@@ -115,7 +115,7 @@ describe("verify_template", () => {
 		it("validate formula for dice", () => {
 			const template: StatisticalTemplate = {
 				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
-				diceType: "d6{{+$}}>20",
+				diceType: "d6+{{$}}>20",
 			};
 			expect(() => testCombinaison(template)).toThrow();
 		});
@@ -128,7 +128,7 @@ describe("verify_template", () => {
 		});
 		it("simulate dice", () => {
 			const userStat = 10;
-			const diceType = "1d20{{+$}}>20";
+			const diceType = "1d20+{{$}}>20";
 			const res = {
 				calculation: "+10",
 				comparator: ">20"
@@ -152,14 +152,45 @@ describe("verify_template", () => {
 			};
 			expect(calculate(userStat, diceType)).toEqual(res);
 		});
+		it("simulate dice based on statistic", () => {
+			const userStat = 10;
+			const diceType = "1d{{$}}";
+			const res = {
+				calculation: "10",
+				comparator: ""
+			};
+			expect(calculate(userStat, diceType)).toEqual(res);
+		});
 
+		it("create combinaison dice formula for skill dice with statistic", () => {
+			const testTemplate: StatisticalTemplate = {
+				statistics: { stat1: { max: 10, min: 1 } },
+				diceType: "1d20",
+				damage: {
+					"piercing": "1d6 + stat1>20",
+				}
+			};
+			const expectedFormula = testDiceType("1d20 + stat1", testTemplate);
+			expect(expectedFormula).toEqual(expectedFormula);
+		});
+		it("Test a roll with a combinaison on the dice", () => {
+			const template: StatisticalTemplate = {
+				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				diceType: "1d20",
+				damage: {
+					"piercing": "1dstat1>20",
+				}
+			};
+			expect(() => testDamageRoll(template)).not.toThrow();
+		});
+	});
+	describe("roll string creation", () => {
 		it("creating roll dice with formula", () => {
-			const dice = "1d20{{+$}}>20";
+			const dice = "1d20+{{$}}>20";
 			const userStat = 10;
 			const calculation = calculate(userStat, dice);
-			const cleanedDice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
-				.replace(/[><=]=?(.*)/gmi, "");
-			const formula = `${cleanedDice}${calculation.calculation}${calculation.comparator} coucou`;
+			const clean = cleanedDice(dice);
+			const formula = `${clean}${calculation.calculation}${calculation.comparator} coucou`;
 			const expectedFormula = "1d20+10>20 coucou";
 			expect(formula).toEqual(expectedFormula);
 		});
@@ -167,23 +198,39 @@ describe("verify_template", () => {
 			const dice = "1d20+5>$*2";
 			const userStat = 10;
 			const calculation = calculate(userStat, dice);
-			const cleanedDice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
-				.replace(/[><=]=?(.*)/gmi, "");
-			const formula = `${cleanedDice}${calculation.calculation ?? ""}${calculation.comparator ?? ""} coucou`;
+			const clean = cleanedDice(dice);
+			const formula = `${clean}${calculation.calculation ?? ""}${calculation.comparator ?? ""} coucou`;
 			const expectedFormula = "1d20+5>20 coucou";
 			expect(formula).toEqual(expectedFormula);
 		});
 		it("creating roll dice with complicated formula", () => {
-			const dice = "1d20{{ceil((10-$)/2)}}>20";
+			const dice = "1d20+{{ceil((10-$)/2)}}>20";
 			const userStat = 5;
 			const calculation = calculate(userStat, dice);
-			const cleanedDice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
-				.replace(/[><=]=?(.*)/gmi, "");
-			const formula = `${cleanedDice}${calculation.calculation}${calculation.comparator} coucou`;
+			const clean = cleanedDice(dice);
+			const formula = `${clean}${calculation.calculation}${calculation.comparator} coucou`;
 			const expectedFormula = "1d20+3>20 coucou";
 			expect(formula).toEqual(expectedFormula);
 		});
+		it("creating roll dice with negative formula", () => {
+			const dice = "1d20+{{ceil(($-10)/2)}}>20";
+			const userStat = 5;
+			const calculation = calculate(userStat, dice);
+			const formula = formatRollCalculation(dice, calculation.comparator, "coucou", calculation.calculation);
+			const expectedFormula = "1d20-2>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating roll dice with complicated formula", () => {
+			const dice = "1d{{$}}>20";
+			const userStat = 5;
+			const calculation = calculate(userStat, dice);
+			const clean = cleanedDice(dice);
+			const formula = `${clean}${calculation.calculation}${calculation.comparator} coucou`;
+			const expectedFormula = "1d5>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
 	});
+
 
 	
 });

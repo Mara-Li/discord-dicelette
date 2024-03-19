@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
 import { StatisticalTemplate, User } from "../interface";
 import { lError, ln } from "../localizations";
 import { repostInThread, title } from ".";
-import { getStatistiqueFields, parseEmbedFields } from "./parse";
-import { evalCombinaison } from "./verify_template";
+import { getStatistiqueFields, getUserByEmbed, parseEmbedFields } from "./parse";
+import { evalCombinaison, evalStatsDice } from "./verify_template";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
@@ -36,6 +37,25 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	await interaction.reply({ embeds: [embed], components: [allButtons] });	
 }
 
+function editUserButtons(ul: TFunction<"translation", undefined>) {
+	const editUser = new ButtonBuilder()
+		.setCustomId("edit_stats")
+		.setLabel(ul("modals.edit.stats"))
+		.setStyle(ButtonStyle.Primary);
+	const editDice = new ButtonBuilder()
+		.setCustomId("edit_dice")
+		.setLabel(ul("modals.edit.dice"))
+		.setStyle(ButtonStyle.Primary);
+	const addDice = new ButtonBuilder()
+		.setCustomId("add_dice")
+		.setLabel(ul("modals.add.dice"))
+		.setStyle(ButtonStyle.Primary);
+	const editTemplate = new ButtonBuilder()
+		.setCustomId("edit_template")
+		.setLabel(ul("modals.edit.template"))
+		.setStyle(ButtonStyle.Primary);
+	return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice, editTemplate]);				
+}
 
 function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 	const continueButton = new ButtonBuilder()
@@ -106,7 +126,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				for (const stat of Object.keys(combinaison)) {
 					embed.addFields({
 						name: title(`✏️ ${title(stat)}`) ?? "",
-						value: combinaison[stat].toString(),
+						value: ` ${combinaisonFields[stat]} = ${combinaison[stat].toString()}`,
 						inline: true,
 					});
 				}
@@ -187,7 +207,17 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	embed.addFields({
 		name: "_ _",
 		value: "_ _",
-		inline: false
+		inline: true
+	},
+	{
+		name: `**${ul("register.embed.title")}**`,
+		value: "_ _",
+		inline: true
+	},
+	{
+		name: "_ _",
+		value: "_ _",
+		inline: true
 	});
 	if (template.diceType)
 		embed.addFields({
@@ -218,7 +248,8 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 	const ul = ln(interaction.locale as Locale);
 	const name = interaction.fields.getTextInputValue("damageName");
-	const value = interaction.fields.getTextInputValue("damageValue");
+	let value = interaction.fields.getTextInputValue("damageValue");
+	
 	const oldEmbeds = interaction.message?.embeds[0];
 	if (!oldEmbeds) throw new Error("[error.noEmbed]");
 	const embed = new EmbedBuilder()
@@ -228,6 +259,16 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 	if (!oldEmbeds.fields) throw new Error("[error.noEmbed]");
 	for (const field of oldEmbeds.fields) {
 		embed.addFields(field);
+	}
+	const user = getUserByEmbed(oldEmbeds, ul);
+	if (!user) throw new Error("[error.noUser]"); //mean that there is no embed
+	try {
+		value = evalStatsDice(value, user.stats);
+	}
+	catch (error) {
+		const errorMsg = lError(error as Error, interaction);
+		await interaction.reply({ content: errorMsg, ephemeral: true });
+		return;
 	}
 	//add damage fields
 	embed.addFields({

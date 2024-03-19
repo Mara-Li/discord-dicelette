@@ -2,7 +2,7 @@ import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionRe
 
 import { cmdLn, lError } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
-import { calculate, rollWithInteraction, title } from "../utils";
+import { calculate, formatRollCalculation, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 import { dmgRoll } from "./dbAtq";
 
@@ -103,21 +103,27 @@ export const rollForUser = {
 				await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
 				return;
 			}
+			if (!userStatistique.stats) {
+				await interaction.reply({ content: t("error.noStats"), ephemeral: true });
+				return;
+			}
 			//create the string for roll
 			const statistique = options.getString(t("common.statistic"), true);
 			//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
 			let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 			const override = options.getString(t("dbRoll.options.override.name"));
 			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
-			const userStat = userStatistique.stats[statistique];
+			const userStat = userStatistique.stats?.[statistique];
 			const template = userStatistique.template;
-			let dice = template.diceType;
-			const {calculation, comparator} = calculate(userStat, template.diceType, override, modificator);
-			dice = dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
-				.replace(/[><=]=?(.*)/gmi, "");
+			const dice = template.diceType;
+			if (!dice) {
+				await interaction.reply({ content: t("error.noDice"), ephemeral: true });
+				return;
+			}
+			const {calculation, comparator} = calculate(userStat, dice, override, modificator);
 			const charNameComments = charName ? ` • **@${title(charName)}**` : "";
 			comments += `__[${title(statistique)}]__${charNameComments}`;
-			const roll = `${dice}${calculation}${comparator} ${comments}`;
+			const roll = formatRollCalculation(dice, comparator, comments, calculation);
 			await rollWithInteraction(interaction, roll, interaction.channel, template.critical);
 		}
 		catch (error) {

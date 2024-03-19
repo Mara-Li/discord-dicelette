@@ -101,7 +101,7 @@ export interface Critical {
  */
 export interface User {
 	userName?: string; //by default, will be the id of the user, if changed to a string, it will be used
-	stats: {
+	stats?: {
 		[name: string] : number;
 	};
 	/**

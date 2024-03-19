@@ -3,7 +3,7 @@ import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionRe
 
 import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
-import { rollWithInteraction, title } from "../utils";
+import { generateStatsDice, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 
 const t = i18next.getFixedT("en");
@@ -113,11 +113,12 @@ export const dmgRoll = {
 			const charNameComments = charName ? ` • **@${title(charName)}**` : "";
 			comments += `__[${title(atq)}]__${charNameComments}`;
 			//search dice
-			const dice = userStatistique.damage?.[atq.toLowerCase()];
+			let dice = userStatistique.damage?.[atq.toLowerCase()];
 			if (!dice) {
 				await interaction.reply({ content: ul("error.noDamage", {atq: title(atq), charName: charName ?? ""}), ephemeral: true });
 				return;
 			}
+			dice = generateStatsDice(dice, userStatistique.stats);
 			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 			const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
 			const roll = `${dice}${modificatorString} ${comments}`;

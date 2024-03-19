@@ -112,7 +112,40 @@ export function calculate(userStat: number, diceType?: string, override?: string
 		} catch (error) {
 			throw `[ulError.invalidFormula] ${calculation}`;
 		}
-		calculation = calculation?.startsWith("-") ? calculation : `+${calculation}`;
 	} else calculation = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
 	return {calculation, comparator};
+}
+
+export function generateStatsDice(originalDice: string, stats?: {[name: string]: number}) {
+	let dice = originalDice;
+	if (stats && Object.keys(stats).length > 0) {
+		//damage field support adding statistic, like : 1d6 + strength
+		//check if the value contains a statistic & calculate if it's okay
+		//the dice will be converted before roll 
+		const allStats = Object.keys(stats);
+		for (const stat of allStats) {
+			const regex = new RegExp(escapeRegex(removeAccents(stat)), "gi");
+			if (dice.match(regex)) {
+				const statValue = stats[stat];
+				dice = dice.replace(regex, statValue.toString());
+			}
+		}
+	}
+	return dice;
+	
+}
+
+export function escapeRegex(string: string) {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function cleanedDice(dice?: string) {
+	return  dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
+		.replace(/[><=]=?(.*)/gmi, "");
+}
+
+export function formatRollCalculation(dice: string, comparator: string, comments: string, calculation?: string) {
+	const clean = cleanedDice(dice);
+	const diceCalculation = calculation ? `${clean}${calculation}`.replace("+-", "-") : clean;
+	return `${diceCalculation}${comparator} ${comments}`;
 }

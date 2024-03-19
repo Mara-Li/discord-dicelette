@@ -33,29 +33,21 @@
     }
   },
   "edit": {
-    "description": "Modifier la fiche d'un joueur",
-    "name": "edit",
     "options": {
       "field": {
-        "description": "Champ à éditer (avec l'émoji compris)",
-        "name": "champs"
       },
-      "user": "Mentionner l'utilisateur à modifier",
       "value": {
-        "description": "Nouvelle valeur du champ sélectionné",
-        "name": "valeur"
       }
     }
   },
   "error": {
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{e.message}}\n```",
-    "invalid": "Modèle invalide : ",
-    "invalidDice": "Dé invalide",
-    "invalidFormula": "Formule invalide",
     "mustBeGreater": "La valeur {{value}} doit être plus grande que {{min}}",
     "mustBeLower": "La valeur {{value}} doit être plus petite que {{max}}",
     "noDamage": "{{atq}} n'est pas enregistré dans {{charName}}.",
+    "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
+    "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
     "noTemplate": "Aucun modèle ou channel configuré",
     "noThread": "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
     "noValidDice": "Erreur : Dé invalide {{dice}}",
@@ -111,6 +103,9 @@
     "set": "Logs configurés dans le channel {{channel}}"
   },
   "modals": {
+    "add": {
+      "dice": "Ajouter un dé"
+    },
     "added": "Statistiques ajoutées",
     "alreadySet": "Toutes les statistiques sont déjà définies",
     "cancel": "Annuler",
@@ -119,6 +114,11 @@
       "name": "Nom du personnage"
     },
     "continue": "Continuer",
+    "edit": {
+      "dice": "Modifier les dés enregistrés",
+      "stats": "Modifier les statistiques",
+      "template": "Modifier la template"
+    },
     "embedTitle": "Utilisateur enregistré",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
