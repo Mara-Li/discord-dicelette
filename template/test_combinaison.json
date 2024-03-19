@@ -14,11 +14,6 @@
       "combinaison": "force+endurance"
     }
   },
-  "diceType": "1d20",
-  "comparator": {
-    "sign": ">=",
-    "value": 20,
-    "formula": "ceil(($-10)/2)"
-  },
+  "diceType": "1d20>$",
   "total": 88
 }
