@@ -106,7 +106,7 @@ Pour ma propre santé mentale, j'ai choisi d'utiliser directement un fichier `JS
 La commande `/generer` permet de générer un fichier `JSON` personnalisé à partir des différentes options. Vous pouvez donc directement demander un fichier contenant :
 - Les différents noms de statistiques (séparée par une virgule ou un espace)
 - Le type de dé (qui devra suivre les mêmes règles que pour `/roll`), vous pouvez :
-	- Utiliser une formule pour les statistiques, par exemple `1d20{{ceil((10-$)/2)}}`. La formule doit obligatoirement être mise entre `{{` et `}}`. 
+	- Utiliser une formule pour les statistiques, par exemple `1d20+{{ceil((10-$)/2)}}`. La formule doit obligatoirement être mise entre `{{` et `}}`. De plus, si vous souhaitez ajouter/diminuer par la formule, vous devez mettre le signe `+` ou `-` devant la formule. Par exemple, `1d20+{{ceil((10-$)/2)}}` ou `1d20-{{ceil((10-$)/2)}}`. Le signe sera automatiquement corrigé si la formule est négative ou positive (`+-` deviendra `-` et `--` deviendra `+`).
 	- Comparer avec un nombre : `1d20<=20`
 	- Comparer avec la statistique tirées : `1d20<=$`
 	- Comparer avec une formule liée à la statistique utilisée : `1d20<=(ceil(($-10)/2))`. Contrairement au formule liée au dé, la formule ne **NE DOIT PAS** être mise entre `{{` et `}}`.

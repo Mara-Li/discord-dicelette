@@ -146,6 +146,9 @@ export function cleanedDice(dice?: string) {
 
 export function formatRollCalculation(dice: string, comparator: string, comments: string, calculation?: string) {
 	const clean = cleanedDice(dice);
-	const diceCalculation = calculation ? `${clean}${calculation}`.replace("+-", "-") : clean;
+	const diceCalculation = calculation ? `${clean}${calculation}`
+		.replace("+-", "-")
+		.replace("--", "+")
+		.replace("++", "+") : clean;
 	return `${diceCalculation}${comparator} ${comments}`;
 }
