@@ -114,7 +114,7 @@ La commande `/generer` permet de générer un fichier `JSON` personnalisé à pa
 - Si l'utilisation d'un nom de personnage est obligatoire pour enregistrer un joueur.
 - Une valeur de succès critique (dé naturel)
 - Une valeur d'échec critique (dé naturel)
-- Les noms pour les dés enregistrés pour la commande `/dbd` (qui permet de faire des dés de dégâts/compétences). Les dés sont sauvegardés dans un objet, avec le type de dégât comme clé et le dé comme valeur. N'importe quel type de dés (avec ou sans modificateur mais aussi un comparateur) peut être utilisé.
+- Les noms pour les dés enregistrés pour la commande `/dbd` (qui permet de faire des dés de dégâts/compétences). Les dés sont sauvegardés dans un objet, avec le type de dégât comme clé et le dé comme valeur. N'importe quel type de dés (avec ou sans modificateur mais aussi un comparateur) peut être utilisé. De plus, vous pouvez enregistrer des dés "combinaison de statistique" comme `1d20+{{ceil((10-force)/2)}}`. 
 
 Le fichier généré doit être téléchargé et éditer. Vous pouvez l'éditer en utilisation n'importe quel éditeur de texte (et même en ligne) pour modifier et ajouter toutes les valeurs.
 
@@ -159,7 +159,7 @@ Exemple de modèle JSON:
 	}
   },
   "total": 100,
-  "diceType": "1d20{{ceil((10-$)/2)}}<=20",
+  "diceType": "1d20+{{ceil((10-$)/2)}}<=20",
   "damage": {
 	"perçant": "1d6+2",
 	"tranchant": "1d8+1",
