@@ -98,7 +98,6 @@ export function timestamp() {
 
 export function calculate(userStat: number, diceType?: string, override?: string|null, modificator: number = 0) {
 	const formula = getFormula(diceType);
-	console.warn(JSON.stringify({formula, userStat, override, modificator}));
 	let comparator: string = "";
 	if (!override && formula?.sign && formula?.comparator) {
 		comparator += formula.sign ?? "";
@@ -114,7 +113,6 @@ export function calculate(userStat: number, diceType?: string, override?: string
 			throw `[ulError.invalidFormula] ${calculation}`;
 		}
 	} else calculation = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
-	console.warn(JSON.stringify({calculation, comparator}));
 	return {calculation, comparator};
 }
 
