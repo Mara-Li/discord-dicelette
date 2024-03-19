@@ -5,7 +5,7 @@ import removeAccents from "remove-accents";
 
 import { roll } from "../dice";
 import { Statistic, StatisticalTemplate } from "../interface";
-import { escapeRegex } from ".";
+import { escapeRegex, replaceFormulaInDice } from ".";
 
 export function evalStatsDice(testDice: string, stats?: {[name: string]: number}) {
 	let dice = testDice;
@@ -18,16 +18,16 @@ export function evalStatsDice(testDice: string, stats?: {[name: string]: number}
 				dice = testDice.replace(regex, statValue.toString());
 			}
 		}
-	}
+	}	
 	try {
-		roll(dice);
+		roll(replaceFormulaInDice(dice));
 		return testDice;
 	} catch (error) {
-		throw new Error(`[error.invalidDice, common.space]: ${testDice}`);
+		throw new Error(`[error.invalidDice, common.space]: ${testDice}\n${(error as Error).message}`);
 	}
 }
 
-export function testDiceType(value: string, template: StatisticalTemplate) {
+export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	if (!template.statistics) return value;
 	const allStats = Object.keys(template.statistics);
 	let newDice = value;
@@ -40,7 +40,7 @@ export function testDiceType(value: string, template: StatisticalTemplate) {
 			newDice = value.replace(regex, randomStatValue.toString());
 		}
 	}
-	return newDice;
+	return replaceFormulaInDice(newDice);
 }
 
 export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: number}) {
@@ -91,7 +91,6 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	}
 	if (template.diceType) {
 		try {
-			testDiceType(template.diceType, statistiqueTemplate);
 			statistiqueTemplate.diceType = template.diceType;
 			testFormula(statistiqueTemplate);
 		} catch (e) {
@@ -129,7 +128,7 @@ export function testDamageRoll(template: StatisticalTemplate) {
 	if (Object.keys(template.damage).length > 25) throw new Error("[error.tooManyDice]");
 	for (const [name, dice] of Object.entries(template.damage)) {
 		if (!dice) continue;
-		const randomDiceParsed = testDiceType(dice, template);
+		const randomDiceParsed = diceRandomParse(dice, template);
 		try {
 			roll(randomDiceParsed);
 		} catch (error) {

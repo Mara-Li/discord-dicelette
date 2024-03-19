@@ -1,7 +1,7 @@
 // FILEPATH: /c:/Users/simonettili/Documents/Github/discord-dicelette/src/utils/verify_template.test.ts
 import { StatisticalTemplate } from "../src/interface";
 import { calculate, cleanedDice, formatRollCalculation } from "../src/utils/index";
-import { evalCombinaison, generateRandomStat,getFormula,testCombinaison, testDamageRoll, testDiceType,verifyTemplateValue } from "../src/utils/verify_template";
+import { diceRandomParse,evalCombinaison, generateRandomStat,getFormula,testCombinaison, testDamageRoll, verifyTemplateValue } from "../src/utils/verify_template";
 
 describe("verify_template", () => {
 	describe("evalCombinaison", () => {
@@ -103,7 +103,7 @@ describe("verify_template", () => {
 		});
 	});
 
-	describe("testCombinaison", () => {
+	describe("combinaison", () => {
 		// Add more tests for different scenarios
 		it("should throw an error because they are no stat2", () => {
 			const template: StatisticalTemplate = {
@@ -130,7 +130,7 @@ describe("verify_template", () => {
 			const userStat = 10;
 			const diceType = "1d20+{{$}}>20";
 			const res = {
-				calculation: "+10",
+				calculation: "10",
 				comparator: ">20"
 			};
 			expect(calculate(userStat, diceType)).toEqual(res);
@@ -152,14 +152,12 @@ describe("verify_template", () => {
 			};
 			expect(calculate(userStat, diceType)).toEqual(res);
 		});
-		it("simulate dice based on statistic", () => {
-			const userStat = 10;
-			const diceType = "1d{{$}}";
+		it("simulate dice with statistic face", () => {
 			const res = {
 				calculation: "10",
 				comparator: ""
 			};
-			expect(calculate(userStat, diceType)).toEqual(res);
+			expect(calculate(10, "1d{{$}}")).toEqual(res);
 		});
 
 		it("create combinaison dice formula for skill dice with statistic", () => {
@@ -170,7 +168,7 @@ describe("verify_template", () => {
 					"piercing": "1d6 + stat1>20",
 				}
 			};
-			const expectedFormula = testDiceType("1d20 + stat1", testTemplate);
+			const expectedFormula = diceRandomParse("1d20 + stat1", testTemplate);
 			expect(expectedFormula).toEqual(expectedFormula);
 		});
 		it("Test a roll with a combinaison on the dice", () => {
@@ -184,7 +182,7 @@ describe("verify_template", () => {
 			expect(() => testDamageRoll(template)).not.toThrow();
 		});
 	});
-	describe("roll string creation", () => {
+	describe("roll_string_creation", () => {
 		it("creating roll dice with formula", () => {
 			const dice = "1d20+{{$}}>20";
 			const userStat = 10;

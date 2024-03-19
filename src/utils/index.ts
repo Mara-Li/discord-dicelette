@@ -98,8 +98,9 @@ export function timestamp() {
 
 export function calculate(userStat: number, diceType?: string, override?: string|null, modificator: number = 0) {
 	const formula = getFormula(diceType);
+	console.warn(JSON.stringify({formula, userStat, override, modificator}));
 	let comparator: string = "";
-	if (!override && formula) {
+	if (!override && formula?.sign && formula?.comparator) {
 		comparator += formula.sign ?? "";
 		const value = formula.comparator?.replace("$", userStat.toString());
 		comparator += value ? evaluate(value.toString()) : userStat.toString();
@@ -113,7 +114,23 @@ export function calculate(userStat: number, diceType?: string, override?: string
 			throw `[ulError.invalidFormula] ${calculation}`;
 		}
 	} else calculation = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
+	console.warn(JSON.stringify({calculation, comparator}));
 	return {calculation, comparator};
+}
+
+export function replaceFormulaInDice(dice: string) {
+	const formula = /(?<formula>\{{2}(.+?)\}{2})/gmi;
+	const formulaMatch = formula.exec(dice);
+	if (formulaMatch?.groups?.formula) {
+		const formula = formulaMatch.groups.formula.replaceAll("{{", "").replaceAll("}}", "");
+		try {
+			const result = evaluate(formula);
+			return dice.replace(formulaMatch.groups.formula, result.toString());
+		} catch (error) {
+			throw new Error(`[error.invalidFormula, common.space]: ${formulaMatch.groups.formula}`);
+		}
+	}
+	return dice;
 }
 
 export function generateStatsDice(originalDice: string, stats?: {[name: string]: number}) {
@@ -131,7 +148,7 @@ export function generateStatsDice(originalDice: string, stats?: {[name: string]:
 			}
 		}
 	}
-	return dice;
+	return replaceFormulaInDice(dice);
 	
 }
 
