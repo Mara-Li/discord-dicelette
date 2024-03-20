@@ -170,7 +170,6 @@ export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Mes
 		else if (embed.title === ul("modals.diceTitle") && which === "damage") return new EmbedBuilder(embedJSON);
 		else if (embed.title === ul("modals.template.title") && which === "template") return new EmbedBuilder(embedJSON);
 	}
-	throw new Error("[error.noEmbed]");
 }
 
 export function testCombinaison(template: StatisticalTemplate) {
