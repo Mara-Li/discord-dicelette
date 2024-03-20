@@ -98,7 +98,7 @@ export function readDB(guildID: string) {
 	return {db, parsedDatabase};
 }
 
-export async function registerUser(userID: string, interaction: BaseInteraction,msgId: string, thread: ThreadChannel, charName?: string, damage?: string[]) {
+export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: ThreadChannel, charName?: string, damage?: string[]) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
 	if (charName) charName = removeAccents(charName).toLowerCase();
