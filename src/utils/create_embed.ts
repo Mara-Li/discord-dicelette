@@ -99,7 +99,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		//add old fields
 		for (const field of oldEmbeds.fields) {
 			embed.addFields(field);
-		}	
+		}
 		for (const [stat, value] of Object.entries(stats)) {
 			embed.addFields({
 				name: title(`✏️ ${title(stat)}`) ?? "",
@@ -107,6 +107,8 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				inline: true,
 			});
 		}
+		
+		
 		const allTemplateStat = template.statistics ? Object.keys(template.statistics).filter(stat => !Object.keys(combinaisonFields).includes(stat)) : [];
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
