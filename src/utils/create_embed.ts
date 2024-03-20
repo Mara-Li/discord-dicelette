@@ -123,8 +123,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		if (field.name.startsWith("🔪")) {
 			if (!diceEmbed) {
 				diceEmbed = new EmbedBuilder()
-					.setTitle(ul("modals.diceTitle"))
-					.setThumbnail(oldEmbeds.thumbnail?.url || "");
+					.setTitle(ul("modals.diceTitle"));
 			}
 			diceEmbed.addFields({
 				name: title(field.name.replaceAll("🔪", "").trim()),
@@ -135,8 +134,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		} else if (field.name.startsWith("✏️")) {
 			if (!statsEmbed) {
 				statsEmbed = new EmbedBuilder()
-					.setTitle(ul("modals.statsTitle"))
-					.setThumbnail(oldEmbeds.thumbnail?.url || "");
+					.setTitle(ul("modals.statsTitle"));
 			}
 			statsEmbed.addFields({
 				name: title(field.name.replace("✏️", "").trim()),
@@ -165,8 +163,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				templateDamage[name] = dice;
 				if (!diceEmbed) {
 					diceEmbed = new EmbedBuilder()
-						.setTitle(ul("modals.diceTitle"))
-						.setThumbnail(oldEmbeds.thumbnail?.url || "");
+						.setTitle(ul("modals.diceTitle"));
 				}
 				diceEmbed.addFields({
 					name: `${name}`,
@@ -229,13 +226,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	let value = interaction.fields.getTextInputValue("damageValue");
 	if (!interaction.message) return;
 	const oldDiceEmbeds = getEmbeds(ul, interaction.message ?? undefined, first ? "user" : "damage")?.toJSON();
-	const userEmbed = ensureEmbed(interaction.message ?? undefined);
-	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder()
-		.setTitle(ul("modals.diceTitle"))
-		.setThumbnail(oldDiceEmbeds.thumbnail?.url || "") : 
-		new EmbedBuilder()
-			.setTitle(ul("modals.diceTitle"))
-			.setThumbnail(userEmbed.thumbnail?.url || "");
+	const diceEmbed = new EmbedBuilder().setTitle(ul("modals.diceTitle"));
 	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
 			diceEmbed.addFields(field);

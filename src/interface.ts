@@ -7,6 +7,12 @@ export interface Resultat {
 	modifier?: Modifier;
 }
 
+export const enum THUMBNAIL {
+	DICE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/dice.png?raw=true",
+	TEMPLATE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/template.png?raw=true",
+	STATS = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/player.png?raw=true"
+}
+
 export interface Modifier {
 	sign?: Sign;
 	value: number;
