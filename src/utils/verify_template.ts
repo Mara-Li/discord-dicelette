@@ -44,7 +44,7 @@ export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	return replaceFormulaInDice(newDice);
 }
 
-export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: number}) {
+export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: string | number}) {
 	const newStats: {[name: string]: number} = {};
 	for (const [stat, combin] of Object.entries(combinaison)) {
 		//replace the stats in formula

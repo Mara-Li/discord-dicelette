@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
-import { TFunction } from "i18next";
+import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
 
 import { StatisticalTemplate, User } from "../interface";
 import { lError, ln } from "../localizations";
 import { repostInThread, title } from ".";
+import { continueCancelButtons, editUserButtons,registerDmgButton } from "./buttons";
 import { getStatistiqueFields, getUserByEmbed, parseEmbedFields } from "./parse";
 import { ensureOldEmbeds, evalCombinaison, evalStatsDice } from "./verify_template";
 
@@ -37,54 +37,6 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	await interaction.reply({ embeds: [embed], components: [allButtons] });	
 }
 
-export function editUserButtons(ul: TFunction<"translation", undefined>) {
-	const editUser = new ButtonBuilder()
-		.setCustomId("edit_stats")
-		.setLabel(ul("modals.edit.stats"))
-		.setStyle(ButtonStyle.Primary);
-	const editDice = new ButtonBuilder()
-		.setCustomId("edit_dice")
-		.setLabel(ul("modals.edit.dice"))
-		.setStyle(ButtonStyle.Primary);
-	const addDice = new ButtonBuilder()
-		.setCustomId("add_dice")
-		.setLabel(ul("modals.add.dice"))
-		.setStyle(ButtonStyle.Primary);
-	const editTemplate = new ButtonBuilder()
-		.setCustomId("edit_template")
-		.setLabel(ul("modals.edit.template"))
-		.setStyle(ButtonStyle.Primary);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice, editTemplate]);				
-}
-
-function continueCancelButtons(ul: TFunction<"translation", undefined>) {
-	const continueButton = new ButtonBuilder()
-		.setCustomId("continue")
-		.setLabel(ul("modals.continue"))
-		.setStyle(ButtonStyle.Success);
-	const cancelButton = new ButtonBuilder()
-		.setCustomId("cancel")
-		.setLabel(ul("modals.cancel"))
-		.setStyle(ButtonStyle.Danger);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton]);
-}
-
-function registerDmgButton(ul: TFunction<"translation", undefined>) {
-	const validateButton = new ButtonBuilder()
-		.setCustomId("validate")
-		.setLabel(ul("common.validate"))
-		.setStyle(ButtonStyle.Success);
-	const cancelButton = new ButtonBuilder()
-		.setCustomId("cancel")
-		.setLabel(ul("modals.cancel"))
-		.setStyle(ButtonStyle.Danger);
-	const registerDmgButton = new ButtonBuilder()
-		.setCustomId("add_dice_first")
-		.setLabel(ul("modals.register"))
-		.setStyle(ButtonStyle.Primary);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
-}
-
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page=2) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
@@ -107,9 +59,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				inline: true,
 			});
 		}
-		
-		
-		const allTemplateStat = template.statistics ? Object.keys(template.statistics).filter(stat => !Object.keys(combinaisonFields).includes(stat)) : [];
+		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison) : [];
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;
@@ -117,16 +67,19 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		for (const field of fields) {
 			parsedFields[field.name.toLowerCase().replace("✏️", "").trim()] = field.value.toLowerCase();
 		}
-		const embedStats = template.statistics ? Object.keys(parsedFields).filter(stat => allTemplateStat.includes(stat.trim())) : [];
-		let combinaison:{[name: string]: number} = {};
-		if (embedStats.length === allTemplateStat.length) {
+		
+		const embedStats = Object.fromEntries(Object.entries(parsedFields).filter(
+			([key, _]) => statsWithoutCombinaison.includes(key)
+		));
+		if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
+			let combinaison:{[name: string]: number} = {};
 			try {
-				combinaison = evalCombinaison(combinaisonFields, stats);
+				combinaison = evalCombinaison(combinaisonFields, embedStats);
 				//add combinaison to the embed
 				for (const stat of Object.keys(combinaison)) {
 					embed.addFields({
 						name: title(`✏️ ${title(stat)}`) ?? "",
-						value: ` ${combinaisonFields[stat]} = ${combinaison[stat].toString()}`,
+						value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
 						inline: true,
 					});
 				}
@@ -141,6 +94,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		}
 		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
 		await interaction.reply({ content: ul("modals.added"), ephemeral: true });
+		return;
 	} catch (error) {
 		const errorMsg = lError(error as Error, interaction);
 		await interaction.reply({ content: errorMsg, ephemeral: true });

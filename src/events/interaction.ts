@@ -1,4 +1,5 @@
 import { AutocompleteInteraction, BaseInteraction, Client, TextChannel } from "discord.js";
+import removeAccents from "remove-accents";
 
 import { commandsList } from "../commands/base";
 import { autCompleteCmd } from "../commands/dbroll";
@@ -50,7 +51,7 @@ export default (client: Client): void => {
 				if (!embed) return;
 				if (!template.statistics) return;
 				const allTemplateStat = Object.keys(template.statistics);
-				const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(stat));
+				const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(removeAccents(stat).replace("✏️", "").toLowerCase().trim())).map(stat => removeAccents(stat).replace("✏️", "").toLowerCase().trim());
 				if (statsAlreadySet.length === allTemplateStat.length) {
 					await interaction.reply({ content: ul("modals.alreadySet"), ephemeral: true });
 					return;
@@ -105,7 +106,7 @@ export default (client: Client): void => {
 				const translationError = lError(error as Error, interaction);
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}
-		} else if (interaction.isButton() && interaction.customId.includes("cancel")) {
+		} else if (interaction.isButton() && interaction.customId === "cancel") {
 			await interaction.message.edit({ components: [] });
 		} else if (interaction.isAutocomplete()) {
 			const interac = interaction as AutocompleteInteraction;

@@ -9,7 +9,7 @@ import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
 import {User} from "../interface";
 import { ln } from "../localizations";
-import { editUserButtons } from "./create_embed";
+import { editUserButtons } from "./buttons";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
 import { getFormula } from "./verify_template";

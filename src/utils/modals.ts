@@ -2,6 +2,7 @@ import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBui
 
 import { StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
+import { registerDmgButton } from "./buttons";
 
 export async function showFirstPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	let nbOfPages = 1;
@@ -44,15 +45,16 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
 		.setTitle(ul("modals.steps", {page, max: nbOfPages + 1 }));
-	let statToDisplay = Object.keys(template.statistics);
+	let statToDisplay = statsWithoutCombinaison;
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
 		if (statToDisplay.length === 0) {
+			//remove button
+			const button = registerDmgButton(ul);
 			await interaction.reply({ content: ul("modals.alreadySet"), ephemeral: true });
-			return;
+			await interaction.message.edit({ components: [button] });
 		}
 	}
-	//take 5 stats
 	const statsToDisplay = statToDisplay.slice(0, 4);
 	for (const stat of statsToDisplay) {
 		const value = template.statistics[stat];
