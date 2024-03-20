@@ -5,9 +5,9 @@ import { commandsList } from "../commands/base";
 import { autCompleteCmd } from "../commands/dbroll";
 import { lError, ln } from "../localizations";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
+import { parseEmbed } from "../utils/embeds/parse";
 import { createEmbedFirstPage, embedStatistiques, registerDamageDice, validateUser } from "../utils/embeds/register";
 import { showDamageDiceModals, showFirstPageModal, showStatistiqueModal } from "../utils/modals/register";
-import { parseEmbed } from "../utils/embeds/parse";
 import { ensureEmbed } from "../utils/verify_template";
 
 export default (client: Client): void => {
