@@ -5,8 +5,8 @@ import { StatisticalTemplate, User } from "../interface";
 import { lError, ln } from "../localizations";
 import { repostInThread, title } from ".";
 import { continueCancelButtons, editUserButtons,registerDmgButton } from "./buttons";
-import { getStatistiqueFields, getUserByEmbed, parseEmbedFields } from "./parse";
-import { ensureEmbed, evalCombinaison, evalStatsDice, getEmbeds } from "./verify_template";
+import { getEmbeds, getStatistiqueFields, getUserByEmbed, parseEmbedFields } from "./parse";
+import { ensureEmbed, evalCombinaison, evalStatsDice } from "./verify_template";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
@@ -227,7 +227,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	const ul = ln(interaction.locale as Locale);
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
-	
+	if (!interaction.message) return;
 	const oldDiceEmbeds = getEmbeds(ul, interaction.message ?? undefined, first ? "user" : "damage")?.toJSON();
 	const userEmbed = ensureEmbed(interaction.message ?? undefined);
 	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder()
@@ -240,7 +240,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		for (const field of oldDiceEmbeds.fields) {
 			diceEmbed.addFields(field);
 		}
-	const user = getUserByEmbed(ensureEmbed(interaction.message ?? undefined), ul);
+	const user = getUserByEmbed(interaction.message, ul);
 	if (!user) throw new Error("[error.noUser]"); //mean that there is no embed
 	try {
 		value = evalStatsDice(value, user.stats);

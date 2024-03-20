@@ -74,9 +74,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId);
-		const embed = message.embeds[0];
-		if (!embed) return;
-		return getUserByEmbed(embed, ul);
+		return getUserByEmbed(message, ul);
 	} catch (error) {
 		const index = userData.findIndex(char => char.messageId === userMessageId);
 		userData.splice(index, 1);

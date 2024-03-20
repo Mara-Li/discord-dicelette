@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ButtonInteraction, Embed, Locale, ModalSubmitInteraction } from "discord.js";
+import { ButtonInteraction, Embed, EmbedBuilder, Locale, Message, ModalSubmitInteraction } from "discord.js";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
@@ -53,37 +53,64 @@ export function parseEmbedFields(embed: Embed) {
 	return parsedFields;
 }
 
-export function getUserByEmbed(embed: Embed, ul: TFunction<"translation", undefined>) {
-	const fields = embed.fields;
-	if (!fields) return;
+/**
+ * Get the embeds from the message
+ * @param message {Message}
+ * @param which {0|1|2|3}
+ * - 0 : userData
+ * - 1 : statistics
+ * - 2 : damage
+ * - 3 : template
+ * @returns 
+ */
+export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Message, which?: "user" | "stats" | "damage" | "template") {
+	const allEmbeds = message?.embeds;
+	if (!allEmbeds) throw new Error("[error.noEmbed]");
+	for (const embed of allEmbeds) {
+		const embedJSON = embed.toJSON();
+		if (embed.title === ul("modals.embedTitle") && which === "user") return new EmbedBuilder(embedJSON);
+		else if (embed.title === ul("modals.statsTitle") && which === "stats") return new EmbedBuilder(embedJSON);
+		else if (embed.title === ul("modals.diceTitle") && which === "damage") return new EmbedBuilder(embedJSON);
+		else if (embed.title === ul("modals.template.title") && which === "template") return new EmbedBuilder(embedJSON);
+	}
+}
+
+
+
+export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>) {
 	const user: Partial<User> = {};
-	const parsedFields = parseEmbedFields(embed);
+	const userEmbed = getEmbeds(ul, message, "user");
+	if (!userEmbed) return;
+	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Embed);
 	if (parsedFields[ul("common.charName")] !== ul("common.noSet")) {
 		user.userName = parsedFields[ul("common.charName")];
 	}
-	const templateStat = embed.fields.filter(field => field.name.startsWith("✏️"));
+	const templateStat = getEmbeds(ul, message, "stats")?.toJSON()?.fields;
 	let stats: {[name: string]: number} | undefined = undefined;
-	if (templateStat.length > 0) {
+	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
 			stats[stat.name.replace("✏️", "").toLowerCase().trim()] = parseInt(stat.value, 10);
 		}
 	}
 	user.stats = stats;
-	const damageFields = embed.fields.filter(field => field.name.startsWith("🔪"));
+	const damageFields = getEmbeds(ul, message, "damage")?.toJSON()?.fields;
 	let templateDamage: {[name: string]: string} | undefined = undefined;
-	if (damageFields.length > 0) {
+	if (damageFields) {
 		templateDamage = {};
 		for (const damage of damageFields) {
 			templateDamage[damage.name.replace("🔪", "").trim().toLowerCase()] = damage.value;
 		}
 	}
+	const templateEmbed = getEmbeds(ul, message, "template");
+	if (!templateEmbed) return;
+	const templateFields = parseEmbedFields(templateEmbed.toJSON() as Embed);
 	user.damage = templateDamage;
 	user.template = {
-		diceType: parsedFields?.[ul("common.dice")] || undefined,
+		diceType: templateFields?.[ul("common.dice")] || undefined,
 		critical: {
-			success: parsedFields?.[ul("roll.critical.success")] ? parseInt(parsedFields[ul("roll.critical.success")], 10) : undefined,
-			failure: parsedFields?.[ul("roll.critical.failure")] ? parseInt(parsedFields[ul("roll.critical.failure")], 10) : undefined,
+			success: templateFields?.[ul("roll.critical.success")] ? parseInt(parsedFields[ul("roll.critical.success")], 10) : undefined,
+			failure: templateFields?.[ul("roll.critical.failure")] ? parseInt(parsedFields[ul("roll.critical.failure")], 10) : undefined,
 		}
 	};
 	return user as User;
