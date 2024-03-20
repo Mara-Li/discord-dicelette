@@ -161,7 +161,7 @@ export const registerTemplate = {
 			//add register button
 			const button = new ButtonBuilder()
 				.setCustomId("register")
-				.setLabel(t("register.button"))
+				.setLabel(ul("register.button"))
 				.setStyle(ButtonStyle.Primary);
 			const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);	
 			const embedTemplate = new EmbedBuilder()
