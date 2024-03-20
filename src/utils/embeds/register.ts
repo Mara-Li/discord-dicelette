@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
 
-import { StatisticalTemplate, User } from "../interface";
-import { lError, ln } from "../localizations";
-import { repostInThread, title } from ".";
-import { continueCancelButtons, editUserButtons,registerDmgButton } from "./buttons";
-import { getEmbeds, getStatistiqueFields, getUserByEmbed, parseEmbedFields } from "./parse";
-import { ensureEmbed, evalCombinaison, evalStatsDice } from "./verify_template";
+import { StatisticalTemplate, User } from "../../interface";
+import { lError, ln } from "../../localizations";
+import { repostInThread, title } from "..";
+import { continueCancelButtons, editUserButtons,registerDmgButton } from "../buttons";
+import { getUserByEmbed } from "../db";
+import { getStatistiqueFields } from "../modals/parse";
+import { ensureEmbed, evalCombinaison, evalStatsDice } from "../verify_template";
+import { getEmbeds, parseEmbedFields } from "./parse";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);

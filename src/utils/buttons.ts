@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { TFunction } from "i18next";
 
-export function editUserButtons(ul: TFunction<"translation", undefined>) {
+export function editUserButtons(ul: TFunction<"translation", undefined>, stats?: boolean, dice?: boolean, template?: boolean) {
 	const editUser = new ButtonBuilder()
 		.setCustomId("edit_stats")
 		.setLabel(ul("modals.edit.stats"))
@@ -18,7 +18,13 @@ export function editUserButtons(ul: TFunction<"translation", undefined>) {
 		.setCustomId("edit_template")
 		.setLabel(ul("modals.edit.template"))
 		.setStyle(ButtonStyle.Primary);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice, editTemplate]);				
+	if (stats && dice && template)	
+		return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice, editTemplate]);
+	const components = [addDice];
+	if (stats) components.push(editUser);
+	if (dice) components.push(editDice);
+	if (template) components.push(editTemplate);
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(components);
 }
 
 export function continueCancelButtons(ul: TFunction<"translation", undefined>) {

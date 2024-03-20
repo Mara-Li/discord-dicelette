@@ -122,6 +122,7 @@
       "stats": "Edit statistics",
       "template": "Edit the template"
     },
+    "editStats": "Please respect the syntax provided in the field",
     "embedTitle": "Registered user",
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{max}}",

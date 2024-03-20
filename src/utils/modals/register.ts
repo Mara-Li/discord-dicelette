@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 
-import { StatisticalTemplate } from "../interface";
-import { ln } from "../localizations";
-import { registerDmgButton } from "./buttons";
+import { StatisticalTemplate } from "../../interface";
+import { ln } from "../../localizations";
+import { registerDmgButton } from "../buttons";
 
 export async function showFirstPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	let nbOfPages = 1;
