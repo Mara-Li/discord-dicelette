@@ -113,7 +113,7 @@ export function calculate(userStat: number, diceType?: string, override?: string
 			calculation = calculation.replace("{{", "").replace("}}", "").replace("$", userStat.toString());
 			calculation = evaluate(`${calculation} + ${modificator}`).toString();
 		} catch (error) {
-			throw `[ulError.invalidFormula] ${calculation}`;
+			throw `[error.invalidFormula] ${calculation}`;
 		}
 	} else calculation = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
 	return {calculation, comparator};

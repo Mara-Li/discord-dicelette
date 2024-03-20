@@ -216,12 +216,11 @@ export function testFormula(template: StatisticalTemplate) {
 			throw new Error(`[error.invalidDice] ${template.diceType}`);
 		}
 	}
-	
 	const formule = formula.formula?.replace("$", randomStatValue.toString());
 	const compareFormule = formula.comparator?.replaceAll("$", randomStatValue.toString());
+	let newDice = template.diceType;
 	try {
-		let newDice = template.diceType;
-		if (formule && formula.formula){
+		if (formule && formula.formula) {
 			const value = evaluate(formule);
 			const regexOriginalFormula = new RegExp(`\\{\\{${escapeRegex(formula.formula)}\\}\\}`, "gmi");
 			const valueString = value > 0 ? `+${value}` : value.toString();
@@ -231,10 +230,11 @@ export function testFormula(template: StatisticalTemplate) {
 			const value = evaluate(compareFormule);
 			newDice = newDice.replace(formula.comparator, value.toString());
 		}
+		newDice = newDice.replaceAll("++", "+").replaceAll("+-", "-").replaceAll("--", "-").replaceAll("++", "+");
 		roll(newDice);
 		return true;
 	} catch (error) {
-		throw new Error(`[error.invalidFormula] ${JSON.stringify(formula)}`);
+		throw new Error(`[error.invalidFormula, error.generatedDice] ${newDice}\n${JSON.stringify(formula)}`);
 	}
 	
 }
