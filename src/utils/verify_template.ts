@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Message } from "discord.js";
 import { evaluate } from "mathjs";
 import {Random } from "random-js";
 import removeAccents from "remove-accents";
@@ -135,6 +136,13 @@ export function testDamageRoll(template: StatisticalTemplate) {
 			throw new Error(`[error.invalidDice, common.space] ${name}`);
 		}
 	}
+}
+
+export function ensureOldEmbeds(message?: Message) {
+	const oldEmbeds = message?.embeds[0];
+	if (!oldEmbeds || !oldEmbeds?.fields) throw new Error("[error.noEmbed]");
+	return oldEmbeds;
+
 }
 
 export function testCombinaison(template: StatisticalTemplate) {

@@ -6,7 +6,7 @@ import { StatisticalTemplate, User } from "../interface";
 import { lError, ln } from "../localizations";
 import { repostInThread, title } from ".";
 import { getStatistiqueFields, getUserByEmbed, parseEmbedFields } from "./parse";
-import { evalCombinaison, evalStatsDice } from "./verify_template";
+import { ensureOldEmbeds, evalCombinaison, evalStatsDice } from "./verify_template";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
@@ -88,8 +88,7 @@ function registerDmgButton(ul: TFunction<"translation", undefined>) {
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page=2) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
-	const oldEmbeds = interaction.message?.embeds[0];
-	if (!oldEmbeds) throw new Error("[error.noEmbed]");
+	const oldEmbeds = ensureOldEmbeds(interaction.message);
 	try {
 		const {combinaisonFields, stats} = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
@@ -98,7 +97,6 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			.setThumbnail(oldEmbeds.thumbnail?.url || "")
 			.setFooter({ text: ul("common.page", {nb: page}) });
 		//add old fields
-		if (!oldEmbeds.fields) throw new Error("[error.noEmbed]");
 		for (const field of oldEmbeds.fields) {
 			embed.addFields(field);
 		}	
@@ -149,8 +147,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 
 export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
-	const oldEmbeds = interaction.message.embeds[0];
-	if (!oldEmbeds) throw new Error("[error.noEmbed]");
+	const oldEmbeds = ensureOldEmbeds(interaction.message);
 	let userID = oldEmbeds.fields.find(field => field.name === ul("common.user"))?.value;
 	let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul("common.charName"))?.value;
 	if (charName && charName === ul("common.noSet"))
@@ -160,8 +157,6 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		return;
 	}
 	userID = userID.replace("<@", "").replace(">", "");
-	const fields = oldEmbeds.fields;
-	if (!fields) return;
 	const parsedFields = parseEmbedFields(oldEmbeds);
 	const embed = new EmbedBuilder()
 		.setTitle(ul("modals.embedTitle"))
@@ -250,13 +245,11 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
 	
-	const oldEmbeds = interaction.message?.embeds[0];
-	if (!oldEmbeds) throw new Error("[error.noEmbed]");
+	const oldEmbeds = ensureOldEmbeds(interaction.message ?? undefined);
 	const embed = new EmbedBuilder()
 		.setTitle(ul("modals.embedTitle"))
 		.setThumbnail(oldEmbeds.thumbnail?.url || "");
 	//add old fields
-	if (!oldEmbeds.fields) throw new Error("[error.noEmbed]");
 	for (const field of oldEmbeds.fields) {
 		embed.addFields(field);
 	}
