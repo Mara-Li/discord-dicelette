@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Message } from "discord.js";
+import { EmbedBuilder, Message } from "discord.js";
+import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import {Random } from "random-js";
 import removeAccents from "remove-accents";
@@ -138,11 +139,38 @@ export function testDamageRoll(template: StatisticalTemplate) {
 	}
 }
 
-export function ensureOldEmbeds(message?: Message) {
+/**
+ * Ensure the embeds are present
+ * @param message {Message}
+ * @returns 
+ */
+export function ensureEmbed(message?: Message) {
 	const oldEmbeds = message?.embeds[0];
 	if (!oldEmbeds || !oldEmbeds?.fields) throw new Error("[error.noEmbed]");
 	return oldEmbeds;
+}
 
+/**
+ * Get the embeds from the message
+ * @param message {Message}
+ * @param which {0|1|2|3}
+ * - 0 : userData
+ * - 1 : statistics
+ * - 2 : damage
+ * - 3 : template
+ * @returns 
+ */
+export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Message, which?: "user" | "stats" | "damage" | "template") {
+	const allEmbeds = message?.embeds;
+	if (!allEmbeds) throw new Error("[error.noEmbed]");
+	for (const embed of allEmbeds) {
+		const embedJSON = embed.toJSON();
+		if (embed.title === ul("modals.embedTitle") && which === "user") return new EmbedBuilder(embedJSON);
+		else if (embed.title === ul("modals.statsTitle") && which === "stats") return new EmbedBuilder(embedJSON);
+		else if (embed.title === ul("modals.diceTitle") && which === "damage") return new EmbedBuilder(embedJSON);
+		else if (embed.title === ul("modals.template.title") && which === "template") return new EmbedBuilder(embedJSON);
+	}
+	throw new Error("[error.noEmbed]");
 }
 
 export function testCombinaison(template: StatisticalTemplate) {

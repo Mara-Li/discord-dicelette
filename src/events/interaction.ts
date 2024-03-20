@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, BaseInteraction, Client, TextChannel } from "discord.js";
+import { AutocompleteInteraction, BaseInteraction, Client, PermissionsBitField, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
 
 import { commandsList } from "../commands/base";
@@ -8,10 +8,12 @@ import { createEmbedFirstPage, embedStatistiques, registerDamageDice, validateUs
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
 import { showDamageDiceModals, showFirstPageModal, showStatistiqueModal } from "../utils/modals";
 import { parseEmbed } from "../utils/parse";
+import { ensureEmbed } from "../utils/verify_template";
 
 export default (client: Client): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
 		const ul = ln(interaction.locale);
+		const interactionUser = interaction.user;
 		if (interaction.isCommand()) {
 			const command = commandsList.find(
 				(cmd) => cmd.data.name === interaction.commandName
@@ -64,7 +66,11 @@ export default (client: Client): void => {
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}
 		} else if (interaction.isButton() && interaction.customId.includes("add_dice")) {
-			showDamageDiceModals(interaction, interaction.customId.includes("first"));
+			const embed = ensureEmbed(interaction.message);
+			const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
+			const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+			if (user || isModerator)
+				showDamageDiceModals(interaction, interaction.customId.includes("first"));
 		} else if (interaction.isButton() && interaction.customId === "validate") {
 			try {
 				const template = await getTemplateWithDB(interaction);
@@ -84,8 +90,12 @@ export default (client: Client): void => {
 				await interaction.reply({ content: ul("error.noTemplate")});
 				return;
 			}
+			const embed = ensureEmbed(interaction.message ?? undefined);
+			const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
+			const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 			try {
-				await registerDamageDice(interaction, interaction.customId.includes("first"));
+				if (user || isModerator)
+					await registerDamageDice(interaction, interaction.customId.includes("first"));
 			} catch (error) {
 				console.error(error);
 				const translationError = lError(error as Error, interaction);
