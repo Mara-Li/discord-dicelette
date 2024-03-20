@@ -1,4 +1,5 @@
 import { BaseInteraction, CommandInteraction, EmbedBuilder, ForumChannel, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
@@ -8,6 +9,7 @@ import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
 import {User} from "../interface";
 import { ln } from "../localizations";
+import { editUserButtons } from "./create_embed";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
 import { getFormula } from "./verify_template";
@@ -74,7 +76,7 @@ export function title(str?: string) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export async function repostInThread(embed: EmbedBuilder, interaction: BaseInteraction, userTemplate: User, userId: string) {
+export async function repostInThread(embed: EmbedBuilder, interaction: BaseInteraction, userTemplate: User, userId: string, ul: TFunction<"translation", undefined>) {
 	const channel = interaction.channel;
 	if (!channel ||!(channel instanceof TextChannel)) return;
 	let thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as ThreadChannel | undefined;
@@ -86,7 +88,8 @@ export async function repostInThread(embed: EmbedBuilder, interaction: BaseInter
 	}
 	userTemplate.userName = userTemplate.userName ? removeAccents(userTemplate.userName).toLowerCase() : undefined;
 	const msg = await thread.send({ 
-		embeds: [embed] },);
+		embeds: [embed],
+		components: [editUserButtons(ul)]},);
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
 	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
 }

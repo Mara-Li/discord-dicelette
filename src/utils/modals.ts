@@ -76,10 +76,11 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	await interaction.showModal(modal);
 }
 
-export async function showDamageDiceModals(interaction: ButtonInteraction) {
+export async function showDamageDiceModals(interaction: ButtonInteraction, first?: boolean) {
 	const ul = ln(interaction.locale as Locale);
+	const id = first ? "damageDice_first" : "damageDice";
 	const modal = new ModalBuilder()
-		.setCustomId("damageDice")
+		.setCustomId(id)
 		.setTitle(ul("register.embed.damage"));
 	const damageDice = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()

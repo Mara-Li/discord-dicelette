@@ -37,7 +37,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	await interaction.reply({ embeds: [embed], components: [allButtons] });	
 }
 
-function editUserButtons(ul: TFunction<"translation", undefined>) {
+export function editUserButtons(ul: TFunction<"translation", undefined>) {
 	const editUser = new ButtonBuilder()
 		.setCustomId("edit_stats")
 		.setLabel(ul("modals.edit.stats"))
@@ -79,7 +79,7 @@ function registerDmgButton(ul: TFunction<"translation", undefined>) {
 		.setLabel(ul("modals.cancel"))
 		.setStyle(ButtonStyle.Danger);
 	const registerDmgButton = new ButtonBuilder()
-		.setCustomId("registerDmg")
+		.setCustomId("add_dice_first")
 		.setLabel(ul("modals.register"))
 		.setStyle(ButtonStyle.Primary);
 	return new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
@@ -235,12 +235,12 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		});	
 	}
 	await interaction?.message?.delete();
-	await repostInThread(embed, interaction, userStatistique, userID);
+	await repostInThread(embed, interaction, userStatistique, userID, ul);
 	await interaction.reply({ content: ul("modals.finished"), ephemeral: true });
 	return;
 }
 
-export async function registerDamageDice(interaction: ModalSubmitInteraction) {
+export async function registerDamageDice(interaction: ModalSubmitInteraction, first?: boolean) {
 	const ul = ln(interaction.locale as Locale);
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
@@ -269,9 +269,8 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction) {
 		value,
 		inline: true,
 	});
-
-	
-	await interaction?.message?.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
+	const components = first ? registerDmgButton(ul) : editUserButtons(ul);
+	await interaction?.message?.edit({ embeds: [embed], components: [components] });
 	await interaction.reply({ content: ul("modals.added"), ephemeral: true });
 	return;
 }

@@ -62,8 +62,8 @@ export default (client: Client): void => {
 				const translationError = lError(error as Error, interaction);
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}
-		} else if (interaction.isButton() && interaction.customId === "registerDmg") {
-			await showDamageDiceModals(interaction);
+		} else if (interaction.isButton() && interaction.customId.includes("add_dice")) {
+			showDamageDiceModals(interaction, interaction.customId.includes("first"));
 		} else if (interaction.isButton() && interaction.customId === "validate") {
 			try {
 				const template = await getTemplateWithDB(interaction);
@@ -77,14 +77,14 @@ export default (client: Client): void => {
 				const translationError = lError(error as Error, interaction);
 				await interaction.reply({ content: translationError, ephemeral: true });
 			}
-		} else if (interaction.isModalSubmit() && interaction.customId === "damageDice") {
+		} else if (interaction.isModalSubmit() && interaction.customId.includes("damageDice")) {
 			const template = await getTemplateWithDB(interaction);
 			if (!template) {
 				await interaction.reply({ content: ul("error.noTemplate")});
 				return;
 			}
 			try {
-				await registerDamageDice(interaction);
+				await registerDamageDice(interaction, interaction.customId.includes("first"));
 			} catch (error) {
 				console.error(error);
 				const translationError = lError(error as Error, interaction);
