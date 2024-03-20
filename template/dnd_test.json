@@ -1,0 +1,20 @@
+{
+  "charName": true,
+  "statistics": {
+    "Force": {
+      "min": 1
+    },
+    "agilite": {
+      "min": 1
+    },
+    "endurance": {
+      "min": 1
+    }
+  },
+  "diceType": "1d20+{{$}}>20",
+  "critical": {
+    "failure": 1,
+    "success": 20
+  },
+  "total": 88
+}

@@ -105,14 +105,16 @@ Pour ma propre santé mentale, j'ai choisi d'utiliser directement un fichier `JS
 
 La commande `/generer` permet de générer un fichier `JSON` personnalisé à partir des différentes options. Vous pouvez donc directement demander un fichier contenant :
 - Les différents noms de statistiques (séparée par une virgule ou un espace)
-- Le type de dé (qui devra suivre les mêmes règles que pour `/roll`)
-- La façon dont le dé sera comparé avec le résultat (vous pouvez laisser vide pour comparer avec la valeur de la statistique directement)
+- Le type de dé (qui devra suivre les mêmes règles que pour `/roll`), vous pouvez :
+	- Utiliser une formule pour les statistiques, par exemple `1d20+{{ceil((10-$)/2)}}`. La formule doit obligatoirement être mise entre `{{` et `}}`. De plus, si vous souhaitez ajouter/diminuer par la formule, vous devez mettre le signe `+` ou `-` devant la formule. Par exemple, `1d20+{{ceil((10-$)/2)}}` ou `1d20-{{ceil((10-$)/2)}}`. Le signe sera automatiquement corrigé si la formule est négative ou positive (`+-` deviendra `-` et `--` deviendra `+`).
+	- Comparer avec un nombre : `1d20<=20`
+	- Comparer avec la statistique tirées : `1d20<=$`
+	- Comparer avec une formule liée à la statistique utilisée : `1d20<=(ceil(($-10)/2))`. Contrairement au formule liée au dé, la formule ne **NE DOIT PAS** être mise entre `{{` et `}}`.
 - Un nombre (optionnel) pour le total de point de statistique
 - Si l'utilisation d'un nom de personnage est obligatoire pour enregistrer un joueur.
 - Une valeur de succès critique (dé naturel)
 - Une valeur d'échec critique (dé naturel)
-- Une formule pour modifier la valeur lorsque la statistique est ajouté au résultat du dé. Vous devez utiliser `$` pour symboliser la statistique. Par exemple, `+$` pour ajouter la statistique au résultat du dé. La formule accepte des opérations mathématiques comme `floor(($-10)/2)`. L'évaluation se fait avec la librairie [`mathjs`](https://mathjs.org/).
-- Les noms pour les dés enregistrés pour la commande `/dbd` (qui permet de faire des dés de dégâts/compétences). Les dés sont sauvegardés dans un objet, avec le type de dégât comme clé et le dé comme valeur. N'importe quel type de dés (avec ou sans modificateur mais aussi un comparateur) peut être utilisé.
+- Les noms pour les dés enregistrés pour la commande `/dbd` (qui permet de faire des dés de dégâts/compétences). Les dés sont sauvegardés dans un objet, avec le type de dégât comme clé et le dé comme valeur. N'importe quel type de dés (avec ou sans modificateur mais aussi un comparateur) peut être utilisé. De plus, vous pouvez enregistrer des dés "combinaison de statistique" comme `1d20+{{ceil((10-force)/2)}}`. 
 
 Le fichier généré doit être téléchargé et éditer. Vous pouvez l'éditer en utilisation n'importe quel éditeur de texte (et même en ligne) pour modifier et ajouter toutes les valeurs.
 
@@ -125,13 +127,6 @@ Voici les références des différents champs :
     - `combination` : Permet de calculer la statistique sur la base d'une formule impliquant d'autres statistiques. La statistique calculée sera exclue du total.
 - `total` : Valeur totale facultative qui peut être définie pour calculer la valeur totale d'un futur membre enregistré. Si la somme des valeurs dépasse le total, une erreur sera générée et l'utilisateur en sera informé.
 - `diceType` : Champ obligatoire spécifiant le type de dé à utiliser pour la statistique.
-- `comparator` : Objet définissant comment comparer le résultat du dé avec la statistique.
-  - `sign` : Signe à utiliser pour la comparaison (`"<"`, `">"`, `">="`, `"<="`, `"="`, `"!="`).
-  - `valeur` : Valeur à comparer avec le résultat. Laisser vide pour comparer avec la valeur de la statistique.
-  - `criticalSuccess` : Valeur de succès critique pour les jets de dés ( dé naturel).
-  - `criticalFailure` : Valeur critique d'échec pour les jets de dés (dés naturels).
-  - `formula` : Formule pour modifier la valeur ajoutée au résultat du dé. Utilisez `$` pour symboliser la statistique. Exemple : `+$` ajoutera la valeur de la statistique au résultat du dé. Supporte les opérations mathématiques comme `floor(($-10)/2)`.
-- `damage` : Objet contenant le nom du dés ainsi que sa valeur, tel que `"piercing": "1d6+2"`. Vous pouvez également ajouter un comparateur pour le dégât, tel que `"poison": "1d4+1>2"`.
 
 Exemple de modèle JSON:
 ```json
@@ -164,14 +159,7 @@ Exemple de modèle JSON:
 	}
   },
   "total": 100,
-  "diceType": "1d20",
-  "comparator": {
-	"sign": "<=",
-	"value": "20",
-	"criticalSuccess": 20,
-	"criticalFailure": 1,
-	"formula": "ceil(($-10)/2)"
-  },
+  "diceType": "1d20+{{ceil((10-$)/2)}}<=20",
   "damage": {
 	"perçant": "1d6+2",
 	"tranchant": "1d8+1",
@@ -251,19 +239,20 @@ Mais, pour les message "direct" (c'est-à-dire les messages qui ne sont pas des 
 
 ### Ajouter une langue
 
-Pour ajouter une langue, vous devez copier et traduire le fichier [`en.ts`](./src/localizations/locales/en.ts).
+Pour ajouter une langue, vous devez copier et traduire le fichier [`en.json`](./src/localizations/locales/en.json).
 
 > [!IMPORTANT]
 > Le nom doit suivre le format des [locales discord.js](https://github.com/discordjs/discord-api-types/blob/main/rest/common.ts#L300).
 > Par exemple, `ChineseCN` pour le Chinois (China) et `ChineseTW` pour le Chinois (Taiwan).
 
-Après cela, vous devez ajouter la langue dans le fichier [`index.ts`](./src/localizations/index.ts), tel que :
+Après cela, vous devez ajouter la langue dans le fichier [`i18next.ts`](./src/localizations/i18next.ts), tel que :
 ```ts
-import NouvelleTraduction from "./locales/nouvelleTraduction.ts";
+import NouvelleTraduction from "./locales/nouvelleTraduction.json";
 
-export const TRANSLATIONS = {
+export const resources = {
 	// ...
-	NouvelleTraduction,
-	// ...
-}
+	discordLocale: { //ie fr, en-US, etc...
+			translation: NouvelleTraduction,
+		},
+};
 ```

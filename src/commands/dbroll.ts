@@ -1,32 +1,33 @@
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
-import { evaluate } from "mathjs";
+import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 
-import { cmdLn, lError, ln } from "../localizations";
-import en from "../localizations/locales/en";
-import { rollWithInteraction, title } from "../utils";
+import { cmdLn, lError } from "../localizations";
+import { default as i18next } from "../localizations/i18next";
+import { calculate, formatRollCalculation, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 import { dmgRoll } from "./dbAtq";
 
+const t = i18next.getFixedT("en");
+
 export const rollForUser = {
 	data: new SlashCommandBuilder()
-		.setName(en.dbRoll.name)
+		.setName(t("dbRoll.name"))
 		.setNameLocalizations(cmdLn("dbRoll.name"))
-		.setDescription(en.dbRoll.description)
+		.setDescription(t("dbRoll.description"))
 		.setDescriptionLocalizations(cmdLn("dbRoll.description"))
 		.setDefaultMemberPermissions(0)
 		.addStringOption(option =>
 			option
-				.setName(en.common.statistic)
+				.setName(t("common.statistic"))
 				.setNameLocalizations(cmdLn("common.statistic"))
-				.setDescription(en.dbRoll.options.statistic)
+				.setDescription(t("dbRoll.options.statistic"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.statistic"))
 				.setRequired(true)
 				.setAutocomplete(true)				
 		)
 		.addStringOption(option =>
 			option
-				.setName(en.common.character)
-				.setDescription(en.dbRoll.options.character)
+				.setName(t("common.character"))
+				.setDescription(t("dbRoll.options.character"))
 				.setNameLocalizations(cmdLn("common.character"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.character"))
 				.setRequired(false)
@@ -34,24 +35,24 @@ export const rollForUser = {
 		)
 		.addStringOption(option =>
 			option
-				.setName(en.dbRoll.options.comments.name)
-				.setDescription(en.dbRoll.options.comments.description)
+				.setName(t("dbRoll.options.comments.name"))
+				.setDescription(t("dbRoll.options.comments.description"))
 				.setNameLocalizations(cmdLn("dbRoll.options.comments.name"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.comments.description"))
 				.setRequired(false)
 		)
 		.addStringOption(option =>
 			option
-				.setName(en.dbRoll.options.override.name)
-				.setDescription(en.dbRoll.options.override.description)
+				.setName(t("dbRoll.options.override.name"))
+				.setDescription(t("dbRoll.options.override.description"))
 				.setNameLocalizations(cmdLn("dbRoll.options.override.name"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.override.description"))
 				.setRequired(false)
 		)
 		.addNumberOption(option =>
 			option
-				.setName(en.dbRoll.options.modificator.name)
-				.setDescription(en.dbRoll.options.modificator.description)
+				.setName(t("dbRoll.options.modificator.name"))
+				.setDescription(t("dbRoll.options.modificator.description"))
 				.setNameLocalizations(cmdLn("dbRoll.options.modificator.name"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.modificator.description"))
 				.setRequired(false)
@@ -62,9 +63,9 @@ export const rollForUser = {
 		const guildData = getGuildData(interaction);
 		if (!guildData) return;
 		let choices: string[] = [];
-		if (focused.name === en.common.statistic) {
+		if (focused.name === t("common.statistic")) {
 			choices = guildData.templateID.statsName;
-		} else if (focused.name === en.common.character) {
+		} else if (focused.name === t("common.character")) {
 			//get user characters 
 			const userData = getUserData(guildData, interaction.user.id);
 			if (!userData) return;
@@ -84,17 +85,14 @@ export const rollForUser = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const guildData = getGuildData(interaction);
 		if (!guildData) return;
-		const common = en.common;
-		const lOpt = en.dbRoll.options;
-		const ulError = ln(interaction.locale as Locale).error;
-		let charName = options.getString(common.character) ?? undefined;
+		let charName = options.getString(t("common.character")) ?? undefined;
 		try {
 			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
 			if (!userStatistique && !charName){
 			//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
-					await interaction.reply({ content: ulError.notRegistered, ephemeral: true });
+					await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
@@ -102,41 +100,31 @@ export const rollForUser = {
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
-				await interaction.reply({ content: ulError.notRegistered, ephemeral: true });
+				await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
+				return;
+			}
+			if (!userStatistique.stats) {
+				await interaction.reply({ content: t("error.noStats"), ephemeral: true });
 				return;
 			}
 			//create the string for roll
-			const statistique = options.getString(common.statistic, true);
+			const statistique = options.getString(t("common.statistic"), true);
 			//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
-			let comments = options.getString(lOpt.comments.name) ?? "";
-			const override = options.getString(lOpt.override.name);
-			const modificator = options.getNumber(lOpt.modificator.name) ?? 0;
-			const userStat = userStatistique.stats[statistique];
+			let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
+			const override = options.getString(t("dbRoll.options.override.name"));
+			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
+			const userStat = userStatistique.stats?.[statistique];
 			const template = userStatistique.template;
-			let formula = template.comparator?.formula;
 			const dice = template.diceType;
-			let comparator: string = "";
-			if (!override && template.comparator) {
-				comparator += template.comparator.sign;
-				comparator += template.comparator.value ? template.comparator.value.toString() : userStat.toString();
-			} else if (override) comparator = override;
-			const critical: {failure?: number, success?: number} = {
-				failure: template.comparator?.criticalFailure,
-				success: template.comparator?.criticalSuccess
-			};
-			if (formula) {
-				try {
-					formula = evaluate(`${formula.replace("$", userStat.toString())}+ ${modificator}`).toString();
-				} catch (error) {
-					await interaction.reply({ content: ulError.invalidFormula, ephemeral: true });
-					return;
-				}
-				formula = formula?.startsWith("-") ? formula : `+${formula}`;
-			} else formula = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
-			const charNameComments = charName ? `• **@${charName}**` : "";
+			if (!dice) {
+				await interaction.reply({ content: t("error.noDice"), ephemeral: true });
+				return;
+			}
+			const {calculation, comparator} = calculate(userStat, dice, override, modificator);
+			const charNameComments = charName ? ` • **@${title(charName)}**` : "";
 			comments += `__[${title(statistique)}]__${charNameComments}`;
-			const roll = `${dice}${formula}${comparator} ${comments}`;
-			await rollWithInteraction(interaction, roll, interaction.channel, critical);
+			const roll = formatRollCalculation(dice, comparator, comments, calculation);
+			await rollWithInteraction(interaction, roll, interaction.channel, template.critical);
 		}
 		catch (error) {
 			const msgError = lError(error as Error, interaction);

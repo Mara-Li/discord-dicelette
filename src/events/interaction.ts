@@ -20,20 +20,19 @@ export default (client: Client): void => {
 				await command.execute(interaction);
 			} catch (error) {
 				console.log(error);
-				await interaction.reply({ content: ul.error.generic(error as Error), ephemeral: true });
+				await interaction.reply({ content: ul("error.generic", {error: error as Error}), ephemeral: true });
 			}
-		}
-		if (interaction.isButton() && interaction.customId === "register") {
+		} else if (interaction.isButton() && interaction.customId === "register") {
 			const template = await getTemplate(interaction);
 			if (!template) {
-				await interaction.reply({ content: ul.error.noTemplate});
+				await interaction.reply({ content: ul("error.noTemplate")});
 				return;
 			}
 			try {
 				await showFirstPageModal(interaction, template);
 			} catch (error) {
 				console.error(error);
-				await interaction.reply({ content: ul.error.generic(error as Error), ephemeral: true });
+				await interaction.reply({ content: ul("error.generic", {error: error as Error}), ephemeral: true });
 			}
 		} else if (interaction.isModalSubmit() && interaction.customId=="firstPage") {
 			if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
@@ -44,7 +43,7 @@ export default (client: Client): void => {
 			try {
 				const template = await getTemplateWithDB(interaction);
 				if (!template) {
-					await interaction.reply({ content: ul.error.noTemplate});
+					await interaction.reply({ content: ul("error.noTemplate")});
 					return;
 				}
 				const embed = parseEmbed(interaction);
@@ -53,7 +52,7 @@ export default (client: Client): void => {
 				const allTemplateStat = Object.keys(template.statistics);
 				const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(stat));
 				if (statsAlreadySet.length === allTemplateStat.length) {
-					await interaction.reply({ content: ul.modals.alreadySet, ephemeral: true });
+					await interaction.reply({ content: ul("modals.alreadySet"), ephemeral: true });
 					return;
 				}
 				const page = isNaN(parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : parseInt(interaction.customId.replace("page", ""), 10)+1;
@@ -69,7 +68,7 @@ export default (client: Client): void => {
 			try {
 				const template = await getTemplateWithDB(interaction);
 				if (!template) {
-					await interaction.reply({ content: ul.error.noTemplate});
+					await interaction.reply({ content: ul("error.noTemplate")});
 					return;
 				}
 				await validateUser(interaction, template);
@@ -81,7 +80,7 @@ export default (client: Client): void => {
 		} else if (interaction.isModalSubmit() && interaction.customId === "damageDice") {
 			const template = await getTemplateWithDB(interaction);
 			if (!template) {
-				await interaction.reply({ content: ul.error.noTemplate});
+				await interaction.reply({ content: ul("error.noTemplate")});
 				return;
 			}
 			try {
@@ -97,7 +96,7 @@ export default (client: Client): void => {
 				if (isNaN(pageNumber)) return;
 				const template = await getTemplateWithDB(interaction);
 				if (!template) {
-					await interaction.reply({ content: ul.error.noTemplate});
+					await interaction.reply({ content: ul("error.noTemplate")});
 					return;
 				}
 				await embedStatistiques(interaction, template, pageNumber);

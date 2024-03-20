@@ -1,6 +1,7 @@
 // FILEPATH: /c:/Users/simonettili/Documents/Github/discord-dicelette/src/utils/verify_template.test.ts
 import { StatisticalTemplate } from "../src/interface";
-import { evalCombinaison, generateRandomStat,testCombinaison, testFormula, verifyTemplateValue } from "../src/utils/verify_template";
+import { calculate, cleanedDice, formatRollCalculation } from "../src/utils/index";
+import { diceRandomParse,evalCombinaison, generateRandomStat,getFormula,testCombinaison, testDamageRoll, verifyTemplateValue } from "../src/utils/verify_template";
 
 describe("verify_template", () => {
 	describe("evalCombinaison", () => {
@@ -73,8 +74,7 @@ describe("verify_template", () => {
 		it("should verify the template correctly", () => {
 			const template = {
 				statistics: { stat1: { max: 10, min: 1 } },
-				diceType: "d6",
-				comparator: { sign: ">", value: 5, formula: "$ * 2" },
+				diceType: "1d20+{{ceil(($-10)/2)}}>20",
 				damage: {
 					"piercing": "1d6+2",
 				}
@@ -98,33 +98,137 @@ describe("verify_template", () => {
 			const template = {
 				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
 				diceType: "invalid",
-				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
 			};
 			expect(() => verifyTemplateValue(template)).toThrow();
 		});
 	});
 
-	describe("testCombinaison", () => {
+	describe("combinaison", () => {
 		// Add more tests for different scenarios
 		it("should throw an error because they are no stat2", () => {
 			const template: StatisticalTemplate = {
 				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
 				diceType: "d6",
-				comparator: { sign: ">", value: 5, formula: "stat1 * 2" },
 			};
 			expect(() => testCombinaison(template)).toThrow();
 		});
-	});
-
-	describe("testFormula", () => {
-		// Add more tests for different scenarios
-		it("should test the formula correctly", () => {
+		it("validate formula for dice", () => {
 			const template: StatisticalTemplate = {
-				statistics: { stat1: { max: 10, min: 1 } },
-				diceType: "d6",
-				comparator: { sign: ">", value: 5, formula: "$ * 2" },
+				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				diceType: "d6+{{$}}>20",
 			};
-			expect(() => testFormula(template)).not.toThrow();
+			expect(() => testCombinaison(template)).toThrow();
+		});
+		it("validate formula for dice", () => {
+			const template: StatisticalTemplate = {
+				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				diceType: "d6+5>{{$}}",
+			};
+			expect(() => testCombinaison(template)).toThrow();
+		});
+		it("simulate dice", () => {
+			const userStat = 10;
+			const diceType = "1d20+{{$}}>20";
+			const res = {
+				calculation: "10",
+				comparator: ">20"
+			};
+			expect(calculate(userStat, diceType)).toEqual(res);
+		});
+		it("simulate formula", () => {
+			const res = {
+				formula: undefined,
+				sign: ">",
+				comparator: "$"
+			};
+			expect(getFormula("1d20+5>$")).toEqual(res);
+		});
+		it("simulate dice with comparator statistiques", () => {
+			const userStat = 10;
+			const diceType = "1d20+5>$";
+			const res = {
+				calculation: "",
+				comparator: ">10"
+			};
+			expect(calculate(userStat, diceType)).toEqual(res);
+		});
+		it("simulate dice with statistic face", () => {
+			const res = {
+				calculation: "10",
+				comparator: ""
+			};
+			expect(calculate(10, "1d{{$}}")).toEqual(res);
+		});
+
+		it("create combinaison dice formula for skill dice with statistic", () => {
+			const testTemplate: StatisticalTemplate = {
+				statistics: { stat1: { max: 10, min: 1 } },
+				diceType: "1d20",
+				damage: {
+					"piercing": "1d6 + stat1>20",
+				}
+			};
+			const expectedFormula = diceRandomParse("1d20 + stat1", testTemplate);
+			expect(expectedFormula).toEqual(expectedFormula);
+		});
+		it("Test a roll with a combinaison on the dice", () => {
+			const template: StatisticalTemplate = {
+				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				diceType: "1d20",
+				damage: {
+					"piercing": "1dstat1>20",
+				}
+			};
+			expect(() => testDamageRoll(template)).not.toThrow();
 		});
 	});
+	describe("roll_string_creation", () => {
+		it("creating roll dice with formula", () => {
+			const dice = "1d20+{{$}}>20";
+			const userStat = 10;
+			const calculation = calculate(userStat, dice);
+			const clean = cleanedDice(dice);
+			const formula = `${clean}${calculation.calculation}${calculation.comparator} coucou`;
+			const expectedFormula = "1d20+10>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating roll dice with success formula", () => {
+			const dice = "1d20+5>$*2";
+			const userStat = 10;
+			const calculation = calculate(userStat, dice);
+			const clean = cleanedDice(dice);
+			const formula = `${clean}${calculation.calculation ?? ""}${calculation.comparator ?? ""} coucou`;
+			const expectedFormula = "1d20+5>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating roll dice with complicated formula", () => {
+			const dice = "1d20+{{ceil((10-$)/2)}}>20";
+			const userStat = 5;
+			const calculation = calculate(userStat, dice);
+			const clean = cleanedDice(dice);
+			const formula = `${clean}${calculation.calculation}${calculation.comparator} coucou`;
+			const expectedFormula = "1d20+3>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating roll dice with negative formula", () => {
+			const dice = "1d20+{{ceil(($-10)/2)}}>20";
+			const userStat = 5;
+			const calculation = calculate(userStat, dice);
+			const formula = formatRollCalculation(dice, calculation.comparator, "coucou", calculation.calculation);
+			const expectedFormula = "1d20-2>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating roll dice with complicated formula", () => {
+			const dice = "1d{{$}}>20";
+			const userStat = 5;
+			const calculation = calculate(userStat, dice);
+			const clean = cleanedDice(dice);
+			const formula = `${clean}${calculation.calculation}${calculation.comparator} coucou`;
+			const expectedFormula = "1d5>20 coucou";
+			expect(formula).toEqual(expectedFormula);
+		});
+	});
+
+
+	
 });

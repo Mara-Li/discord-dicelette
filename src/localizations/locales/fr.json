@@ -1,0 +1,198 @@
+{
+  "common": {
+    "channel": "channel",
+    "charName": "Nom du personnage",
+    "character": "personnage",
+    "dice": "Dé",
+    "noSet": "/",
+    "page": "Page {{nb}}",
+    "space": " ",
+    "statistic": "statistique",
+    "total": "Total",
+    "user": "Joueur",
+    "validate": "Valider"
+  },
+  "dbRoll": {
+    "description": "Lance un dé avec une statistique enregistrée",
+    "name": "dbroll",
+    "options": {
+      "character": "Le personnage où prendre la valeur.",
+      "comments": {
+        "description": "Description de l'action",
+        "name": "commentaires"
+      },
+      "modificator": {
+        "description": "Bonus/malus ajouté au lancer",
+        "name": "modificateur"
+      },
+      "override": {
+        "description": "Remplacer le seuil de réussite",
+        "name": "remplacer"
+      },
+      "statistic": "La statistique à utiliser"
+    }
+  },
+  "edit": {
+    "options": {
+      "field": {
+      },
+      "value": {
+      }
+    }
+  },
+  "error": {
+    "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
+    "generic": "Une erreur est survenue :\n```\n{{e.message}}\n```",
+    "mustBeGreater": "La valeur {{value}} doit être plus grande que {{min}}",
+    "mustBeLower": "La valeur {{value}} doit être plus petite que {{max}}",
+    "noDamage": "{{atq}} n'est pas enregistré dans {{charName}}.",
+    "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
+    "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
+    "noTemplate": "Aucun modèle ou channel configuré",
+    "noThread": "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
+    "noValidDice": "Erreur : Dé invalide {{dice}}",
+    "noValidDiceError": "Erreur : Dé invalide {{dice}}\n```{{error}}```",
+    "notRegistered": "Vous n'êtes pas enregistré",
+    "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
+    "totalExceededBy": "Le total de {{value}} est dépassé de {{max}}",
+    "user": "Utilisateur introuvable"
+  },
+  "generate": {
+    "help": "- Le type de dé doit être un type valide (il sera testé quand vous enregistrerez le modèle).\n- La valeur doit être un nombre, et peut être optionnel. Si vous l'enlevez, le dé sera comparé à la statistique plutôt qu'une valeur.\n- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.\n- La formule permet d'éditer la valeur combinée au dé. Utiliser `$` pour symboliser la valeur (ie: `+$`, `-$`, `($-10)/2`...).\n- Une statistique peut être une combinaison d'autre statistique, comme `force+endurance`. Si la valeur de `combinaison` est définie, alors que les paramètres `min` et `max` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.\n- Vous pouvez aussi enregistrer des dés de compétences, qui seront ensuite utilisés pour la commande `/dbd` depuis la base de données. De plus, les utilisateurs pourront enregistrer leur propre dés de compétences.\n\nNoter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.\n\nIl est possible d'enregistrer uniquement des dés de compétences voire rien du tout, si vous souhaitez utiliser uniquement les commandes pour les dés de compétences.",
+    "name": "générer",
+    "options": {
+      "character": {
+        "description": "Rendre le nom du personnage obligatoire pour l'enregistrement",
+        "name": "personnage"
+      },
+      "critical_fail": {
+        "description": "Définir un échec critique (dé naturel)",
+        "name": "échec_critique"
+      },
+      "critical_success": {
+        "description": "Définir un succès critique (dé naturel)",
+        "name": "succès_critique"
+      },
+      "damage": {
+        "description": "Enregistrer un dé de compétence - Séparer le nom des compétences par un espace ou une virgule",
+        "name": "competence"
+      },
+      "dice": {
+        "description": "Le type de dé à lancer",
+        "name": "dé"
+      },
+      "stats": {
+        "description": "Le nom de la statistique, séparez-les par un espace ou une virgule",
+        "name": "nom"
+      },
+      "total": {
+        "description": "Le total des points de statistiques (sera calculé quand l'utilisateur sera enregistré)",
+        "name": "total"
+      }
+    }
+  },
+  "help": {
+    "description": "Affiche l'aide",
+    "message": ":game_die: **Dice Roller** :game_die:\n-> Retrouvez le *bot* sur [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.fr.md>)\n\n## Usage\n- </roll:{{rollId}}> : Lance un dé\n- </scene:{{sceneId}}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.\n\nVous pouvez aussi créer une \"bulle temporelle\" avec les paramètres `/scene tempo:True`. Par défaut, le nom du thread sera la date du jour.\n\nVous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :\n- __Un dé direct__ : `dés`, comme `d6` ou `2d6`\n- __Un dé indirect__ : `mon message [dés]`, comme `*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*`.\n- __Un dé semi-direct__ : `1d100 mon message`, comme `1d100 Phibi saute sur Wumpus et lui inflige des dégâts`.\n\n## Notation des dés\n[Voir la documentation pour la notation des dés (en anglais)](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nLe bot supporte aussi :\n- [Les groupes de dés](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Les modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Les commentaires](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Les mathématiques](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- Ainsi que les \"bulk rolls\" (lancer plusieurs dés en même temps) avec la notation suivante : `[nombre de dés]#[dés]`, comme par exemple `2#d6` pour lancer 2 dés à 6 faces",
+    "name": "aide"
+  },
+  "logs": {
+    "description": "Choisir un channel où envoyer les logs d'erreurs",
+    "name": "logs",
+    "options": "Le channel où envoyer les logs",
+    "set": "Logs configurés dans le channel {{channel}}"
+  },
+  "modals": {
+    "add": {
+      "dice": "Ajouter un dé"
+    },
+    "added": "Statistiques ajoutées",
+    "alreadySet": "Toutes les statistiques sont déjà définies",
+    "cancel": "Annuler",
+    "charName": {
+      "description": "Entrez le nom de votre personnage",
+      "name": "Nom du personnage"
+    },
+    "continue": "Continuer",
+    "edit": {
+      "dice": "Modifier les dés enregistrés",
+      "stats": "Modifier les statistiques",
+      "template": "Modifier la template"
+    },
+    "embedTitle": "Utilisateur enregistré",
+    "enterValue": {
+      "maxOnly": "Entrez une valeur plus petite que {{max}}",
+      "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",
+      "minOnly": "Entrez une valeur plus grande que {{min}}"
+    },
+    "finished": "Statistiques terminées",
+    "firstPage": "Enregistrement de l'utilisateur - Page 1/{{page}}",
+    "register": "Enregistrer un dé de compétence",
+    "registering": "Enregistrement de l'utilisateur",
+    "steps": "Enregistrement de l'utilisateur - Page {{page}}/{{max}}",
+    "user": {
+      "description": "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)",
+      "name": "utilisateur"
+    }
+  },
+  "rAtq": {
+    "atq_name": {
+      "description": "Le nom de la compétence",
+      "name": "nom"
+    },
+    "description": "Lancer un dé enrégistré pour une compétence/attaque",
+    "name": "dbd"
+  },
+  "register": {
+    "button": "Enregistrer un personnage",
+    "description": "Enregistre un nouveau modèle pour la commande dbroll",
+    "embed": {
+      "comparator": "Comparateur :",
+      "damage": "Dés de dégâts",
+      "description": "Clickez sur le bouton pour enregistrer un personnage",
+      "dice": "Dé",
+      "noValue": "Aucune valeur",
+      "registered": "Modèle enregistré !",
+      "title": "Modèle"
+    },
+    "name": "enregistrer",
+    "options": {
+      "channel": "Le channel où le modèle et les utilisateurs seront enregistrés",
+      "template": {
+        "description": "Le modèle à enregistrer",
+        "name": "template"
+      }
+    }
+  },
+  "roll": {
+    "critical": {
+      "failure": "Échec critique",
+      "success": "Succès critique"
+    },
+    "description": "Lancer un dé",
+    "failure": "Échec",
+    "name": "roll",
+    "option": {
+      "description": "Dé à lancer",
+      "name": "dé"
+    },
+    "reason": "Nouveau thread de lancer",
+    "success": "Succès"
+  },
+  "scene": {
+    "description": "Crée un nouveau thread pour les dés",
+    "interaction": "Nouveau thread de scène créé : {{scene}}",
+    "name": "scene",
+    "noScene": "Aucune scène spécifiée",
+    "option": {
+      "description": "Le nom de la scène",
+      "name": "scene"
+    },
+    "reason": "Nouvelle scène",
+    "time": {
+      "description": "Bulle temporelle : replace le dé par une horloge. Par défaut, utilise la date comme nom de thread",
+      "name": "tempo"
+    },
+    "underscore": "__Nouvelle scène__ :"
+  }
+}

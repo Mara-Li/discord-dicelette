@@ -13,16 +13,11 @@ import moment from "moment";
 import dedent from "ts-dedent";
 
 import { cmdLn, ln } from "../localizations";
-import en from "../localizations/locales/en";
-import fr from "../localizations/locales/fr";
+import { default as i18next } from "../localizations/i18next";
 import { rollWithInteraction , setTagsForRoll } from "../utils";
 import { commands } from "./register";
 
-
-const TRANSLATION = {
-	fr,
-	en
-};
+const t = i18next.getFixedT("en");
 
 export function deleteAfter(message: InteractionResponse | Message, time: number): void {
 	setTimeout(() => {
@@ -32,30 +27,30 @@ export function deleteAfter(message: InteractionResponse | Message, time: number
 
 export const diceRoll = {
 	data: new SlashCommandBuilder()
-		.setName(en.roll.name)
+		.setName(t("roll.name"))
 		.setNameLocalizations(cmdLn("roll.name"))
-		.setDescription(en.roll.description)
+		.setDescription(t("roll.description"))
 		.setDescriptionLocalizations(cmdLn("roll.description"))
 		.addStringOption(option =>
 			option
-				.setName(en.roll.option.name)
+				.setName(t("roll.option.name"))
 				.setNameLocalizations(cmdLn("roll.option.name"))
-				.setDescription(en.roll.option.description)
+				.setDescription(t("roll.option.description"))
 				.setDescriptionLocalizations(cmdLn("roll.option.description"))
 				.setRequired(true)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
 		const channel = interaction.channel;
-		const userLang = TRANSLATION[interaction.locale as keyof typeof TRANSLATION] || TRANSLATION.en;
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const dice = option.getString(en.roll.option.name, true);
+		const ul = ln(interaction.locale as Locale);
+		const dice = option.getString(t("roll.option.name"), true);
 		try {
 			await rollWithInteraction(interaction, dice, channel);
 		} catch (error) {
 			console.error("no valid dice :", dice, error);
-			await interaction.reply({ content: userLang.roll.noValidDice((error as Error).message, dice), ephemeral: true });
+			await interaction.reply({ content: ul("error.noValidDiceError", {error: (error as Error).message, dice}), ephemeral: true });
 			return;
 		}
 	},
@@ -63,23 +58,23 @@ export const diceRoll = {
 
 export const newScene = {
 	data : new SlashCommandBuilder()
-		.setName(en.scene.name)
-		.setDescription(en.scene.description)
+		.setName(t("scene.name"))
+		.setDescription(t("scene.description"))
 		.setDescriptionLocalizations(cmdLn("scene.description"))
 		.setNameLocalizations(cmdLn("scene.name"))
 		.addStringOption(option =>
 			option
-				.setName(en.scene.option.name)
+				.setName(t("scene.option.name"))
 				.setNameLocalizations(cmdLn("scene.option.name"))
-				.setDescription(en.scene.option.description)
+				.setDescription(t("scene.option.description"))
 				.setDescriptionLocalizations(cmdLn("scene.option.description"))
 				.setRequired(false)
 		)
 		.addBooleanOption(option =>
 			option
-				.setName(en.scene.time.name)
+				.setName(t("scene.time.name"))
 				.setNameLocalizations(cmdLn("scene.time.name"))
-				.setDescription(en.scene.time.description)
+				.setDescription(t("scene.time.description"))
 				.setDescriptionLocalizations(cmdLn("scene.time.description"))
 				.setRequired(false)
 		),
@@ -90,11 +85,11 @@ export const newScene = {
 		if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
 
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const userLang = ln(interaction.locale as Locale);
-		const scene = option.getString(en.scene.option.name);
-		const bubble = option.getBoolean(en.scene.time.name);
+		const scene = option.getString(t("scene.option.name"));
+		const bubble = option.getBoolean(t("scene.time.name"));
+		const ul = ln(interaction.locale as Locale);
 		if (!scene && !bubble) {
-			await interaction.reply({ content: userLang.scene.noScene, ephemeral: true });
+			await interaction.reply({ content: ul("scene.noScene"), ephemeral: true });
 			return;
 		}
 		//archive old threads
@@ -113,19 +108,19 @@ export const newScene = {
 
 			const newThread = channel instanceof TextChannel ? await channel.threads.create({
 				name: threadName,
-				reason: userLang.scene.reason,
+				reason: ul("scene.reason"),
 			}) : await (channel.parent as ForumChannel).threads.create({
 				name: threadName,
-				message: {content: userLang.scene.reason},
+				message: {content: ul("scene.reason")},
 				appliedTags: [(await setTagsForRoll(channel.parent as ForumChannel)).id as string]
 			});
 
 			const threadMention = channelMention(newThread.id);
-			const reply = await interaction.reply({ content: userLang.scene.interaction(threadMention) });
+			const reply = await interaction.reply({ content: ul("scene.interaction", {scene: threadMention}) });
 			deleteAfter(reply, 180000);
 			const rollID = allCommands.findKey(command => command.name === "roll");
 			const msgToEdit = await newThread.send("_ _");
-			const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${userLang.scene.underscore} ${scene}\n*roll: </roll:${rollID}>*`;
+			const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${ul("scene.underscore")} ${scene}\n*roll: </roll:${rollID}>*`;
 			await msgToEdit.edit(msg);
 		}
 		return;
@@ -134,22 +129,21 @@ export const newScene = {
 
 export const help = {
 	data: new SlashCommandBuilder()
-		.setName(en.help.name)
+		.setName(t("help.name"))
 		.setNameLocalizations(cmdLn("help.name"))
-		.setDescription(en.help.description)
+		.setDescription(t("help.description"))
 		.setDescriptionLocalizations(cmdLn("help.description")),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		const commandsID = await interaction.guild?.commands.fetch();
 		if (!commandsID) return;
 		const rollID = commandsID.findKey(command => command.name === "roll");
 		const sceneID = commandsID.findKey(command => command.name === "scene");
-
-		const message = ln(interaction.locale as Locale).help.message(rollID as string, sceneID as string);
+		const ul = ln(interaction.locale as Locale);
+		const message = ul("help.message", {rollId: rollID, sceneId: sceneID});
 		const reply = await interaction.reply({ content: dedent(message)});
 		deleteAfter(reply, 60000);
 		return;
 	}
-
 };
 //@ts-ignore
 export const commandsList = [diceRoll, newScene, help].concat(commands);

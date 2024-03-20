@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-escape */
 import { DiceRoller } from "@dice-roller/rpg-dice-roller";
+import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import dedent from "ts-dedent";
 
@@ -21,7 +22,7 @@ export function roll(dice: string): Resultat | undefined{
 		const compareSign = compareRegex[0].match(SIGN_REGEX)?.[0];
 		if (sign) {
 			const toCalc = calc.replace(SIGN_REGEX, "").replace(/\s/g, "");
-			const total = eval(toCalc);
+			const total = evaluate(toCalc);
 			dice = dice.replace(/[><=]=?(\S+)/, `${compareSign}${total}`);
 			compare = {
 				sign: compareSign as "<" | ">" | ">=" | "<=" | "=",
@@ -79,8 +80,7 @@ function calculator(sign: Sign, value: number, total: number): number {
 	return evaluate(`${total} ${sign} ${value}`);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseResult(output: Resultat, lng: any, critical?: {failure?: number, success?: number}) {
+export function parseResult(output: Resultat, ul: TFunction<"translation", undefined>, critical?: {failure?: number, success?: number}) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
 	let msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
@@ -103,12 +103,12 @@ export function parseResult(output: Resultat, lng: any, critical?: {failure?: nu
 				total = calculator(sign as Sign, value, total);
 
 			}
-			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${lng.roll.success}**` : `**${lng.roll.failure}**`;
+			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${ul("roll.success")}**` : `**${ul("roll.failure")}**`;
 			if (critical) {
 				if (critical.failure && total === critical.failure) {
-					succ = `**${lng.roll.critical.failure}**`;
+					succ = `**${ul("roll.critical.failure")}**`;
 				} else if (critical.success && total === critical.success) {
-					succ = `**${lng.roll.critical.success}**`;
+					succ = `**${ul("roll.critical.success")}**`;
 				}
 			}
 			const totSucc = output.compare ? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\`` : `= \`${total}\``;

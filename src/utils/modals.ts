@@ -13,12 +13,12 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 	const ul = ln(interaction.locale as Locale);
 	const modal = new ModalBuilder()
 		.setCustomId("firstPage")
-		.setTitle(ul.modals.firstPage(nbOfPages));
+		.setTitle(ul("modals.firstPage", {page: nbOfPages + 1}));
 	const charNameInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("charName")
-			.setLabel(ul.modals.charName.name)
-			.setPlaceholder(ul.modals.charName.description)
+			.setLabel(ul("modals.charName.name"))
+			.setPlaceholder(ul("modals.charName.description"))
 			.setRequired(template.charName || false)
 			.setValue("")
 			.setStyle(TextInputStyle.Short),
@@ -26,8 +26,8 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 	const userIdInputs = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("userID")
-			.setLabel(ul.modals.user.name)
-			.setPlaceholder(ul.modals.user.description)
+			.setLabel(ul("modals.user.name"))
+			.setPlaceholder(ul("modals.user.description"))
 			.setRequired(true)
 			.setValue(interaction.user.username ?? interaction.user.id)
 			.setStyle(TextInputStyle.Short),
@@ -43,12 +43,12 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	const nbOfPages = Math.ceil(statsWithoutCombinaison.length / 5) >= 1 ? Math.ceil(statsWithoutCombinaison.length / 5) : page;
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
-		.setTitle(ul.modals.steps(page, nbOfPages +1 ));
+		.setTitle(ul("modals.steps", {page, max: nbOfPages + 1 }));
 	let statToDisplay = Object.keys(template.statistics);
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
 		if (statToDisplay.length === 0) {
-			await interaction.reply({ content: ul.modals.alreadySet, ephemeral: true });
+			await interaction.reply({ content: ul("modals.alreadySet"), ephemeral: true });
 			return;
 		}
 	}
@@ -57,11 +57,16 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	for (const stat of statsToDisplay) {
 		const value = template.statistics[stat];
 		if (value.combinaison) continue;
+		let msg = "";
+		if (value.min && value.max) 
+			msg = ul("modals.enterValue.minAndMax", {min: value.min, max: value.max});
+		else if (value.min) msg = ul("modals.enterValue.minOnly", {min: value.min});
+		else if (value.max) msg = ul("modals.enterValue.maxOnly", {max: value.max});
 		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()
 				.setCustomId(stat)
 				.setLabel(stat)
-				.setPlaceholder(ul.modals.enterValue(value.min, value.max))
+				.setPlaceholder(msg)
 				.setRequired(true)
 				.setValue("")
 				.setStyle(TextInputStyle.Short),
@@ -75,12 +80,12 @@ export async function showDamageDiceModals(interaction: ButtonInteraction) {
 	const ul = ln(interaction.locale as Locale);
 	const modal = new ModalBuilder()
 		.setCustomId("damageDice")
-		.setTitle(ul.register.embed.damage);
+		.setTitle(ul("register.embed.damage"));
 	const damageDice = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("damageName")
 			.setLabel("Name")
-			.setPlaceholder(ul.modals.enterValue(1, 100))
+			.setPlaceholder(ul("modals.enterValue.minAndMax", {min: 1, max: 100}))
 			.setRequired(true)
 			.setValue("")
 			.setStyle(TextInputStyle.Short),	
