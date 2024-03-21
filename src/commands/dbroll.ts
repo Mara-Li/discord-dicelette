@@ -1,6 +1,6 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 
-import { cmdLn, lError } from "../localizations";
+import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { calculate, formatRollCalculation, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
@@ -77,22 +77,23 @@ export const rollForUser = {
 		}
 		if (choices.length === 0) return;
 		await interaction.respond(
-			choices.map(result => ({ name: result, value: result}))
+			choices.map(result => ({ name: title(result as string), value: result}))
 		);
 	},
 	async execute(interaction: CommandInteraction) {
 		if (!interaction.guild || !interaction.channel) return;
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const guildData = getGuildData(interaction);
+		const ul = ln(interaction.locale);
 		if (!guildData) return;
-		let charName = options.getString(t("common.character")) ?? undefined;
+		let charName = options.getString(t("common.character"))?.toLowerCase() ?? undefined;
 		try {
 			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
 			if (!userStatistique && !charName){
 			//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
-					await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
+					await interaction.reply({ content: ul("error.notRegistered"), ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
@@ -100,15 +101,15 @@ export const rollForUser = {
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
-				await interaction.reply({ content: t("error.notRegistered"), ephemeral: true });
+				await interaction.reply({ content: ul("error.notRegistered"), ephemeral: true });
 				return;
 			}
 			if (!userStatistique.stats) {
-				await interaction.reply({ content: t("error.noStats"), ephemeral: true });
+				await interaction.reply({ content: ul("error.noStats"), ephemeral: true });
 				return;
 			}
 			//create the string for roll
-			const statistique = options.getString(t("common.statistic"), true);
+			const statistique = options.getString(t("common.statistic"), true).toLowerCase();
 			//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
 			let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 			const override = options.getString(t("dbRoll.options.override.name"));
@@ -117,7 +118,7 @@ export const rollForUser = {
 			const template = userStatistique.template;
 			const dice = template.diceType;
 			if (!dice) {
-				await interaction.reply({ content: t("error.noDice"), ephemeral: true });
+				await interaction.reply({ content: ul("error.noDice"), ephemeral: true });
 				return;
 			}
 			const {calculation, comparator} = calculate(userStat, dice, override, modificator);

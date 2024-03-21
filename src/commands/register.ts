@@ -185,7 +185,7 @@ export const registerTemplate = {
 					if (max) msg += `- Max${ul("common.space")}: \`${max}\`\n`;
 					if (msg.length === 0) msg = ul("register.embed.noValue");
 					embedTemplate.addFields({
-						name: title(stat) ?? "",
+						name: title(stat),
 						value: msg,
 						inline: true,
 					});

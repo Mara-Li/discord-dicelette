@@ -34,13 +34,17 @@
   },
   "edit": {
     "options": {
-      "field": {},
-      "value": {}
+      "field": {
+      },
+      "value": {
+      }
     }
   },
   "error": {
-    "emptyDamage": "",
+    "emptyDamage": "You have no ability dice saved.",
+    "generatedDice": "",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
+    "invalidFormula": "Invalid formula: ",
     "mustBeGreater": "The {{value}} value must be greater than {{min}}",
     "mustBeLower": "The {{value}} value must be smaller than {{max}}",
     "noDamage": "{{atq}} is not saved in {{charName}}.",
@@ -53,8 +57,7 @@
     "notRegistered": "You are not registered",
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{value}} is exceeded by {{max}}",
-    "user": "User not found",
-    "invalidFormula": "Invalid formula: "
+    "user": "User not found"
   },
   "generate": {
     "help": "- The die type must be a valid type (it will be tested when you save the model).\n- The value must be a number, and may be optional. If you remove it, the die will be compared to the statistic rather than a value.\n- Total must be a number, and may be optional. If you remove it, the total will be calculated automatically when the user is registered.\n- The formula is used to edit the combined value of the die. Use `$` to symbolize the value (ie: `+$`, `-$`, `($-10)/2`...).\n- A stat can be a combination of other stats, such as `strength+endurance`. If the `combination` value is set, then the `min` and `max` parameters will be disabled. In addition, users won't have to enter the value manually. Finally, this value will be excluded from the calculation of the point total allocated.\n- You can also register skill dice, which will then be used for the `/dbd` command from the database. In addition, users can register their own skill dice.\n\nPlease note that the file shown here is only an example, and must be customized before being saved.\n\nIt is possible to save only skill dice, or nothing at all, if you wish to use only the skill dice commands.",
@@ -103,7 +106,7 @@
   },
   "modals": {
     "add": {
-      "dice": ""
+      "dice": "Add a die"
     },
     "added": "Statistics added",
     "alreadySet": "All statistics already set",
@@ -113,11 +116,13 @@
       "name": "Character name"
     },
     "continue": "Continue",
+    "diceTitle": "",
     "edit": {
-      "dice": "",
-      "stats": "",
-      "template": ""
+      "dice": "Edit saved dice",
+      "stats": "Edit statistics",
+      "template": "Edit the template"
     },
+    "editStats": "Please respect the syntax provided in the field",
     "embedTitle": "Registered user",
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{max}}",
@@ -128,7 +133,11 @@
     "firstPage": "User registration - Page 1/{{page}}",
     "register": "Register a skill die",
     "registering": "User registration",
+    "statsTitle": "",
     "steps": "User registration - Page {{page}}/{{max}}",
+    "template": {
+      "title": ""
+    },
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
       "name": "user"

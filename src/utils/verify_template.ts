@@ -44,7 +44,7 @@ export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	return replaceFormulaInDice(newDice);
 }
 
-export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: number}) {
+export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: string | number}) {
 	const newStats: {[name: string]: number} = {};
 	for (const [stat, combin] of Object.entries(combinaison)) {
 		//replace the stats in formula
@@ -138,12 +138,18 @@ export function testDamageRoll(template: StatisticalTemplate) {
 	}
 }
 
-export function ensureOldEmbeds(message?: Message) {
+/**
+ * Ensure the embeds are present
+ * @param message {Message}
+ * @returns 
+ */
+export function ensureEmbed(message?: Message) {
 	const oldEmbeds = message?.embeds[0];
 	if (!oldEmbeds || !oldEmbeds?.fields) throw new Error("[error.noEmbed]");
 	return oldEmbeds;
-
 }
+
+
 
 export function testCombinaison(template: StatisticalTemplate) {
 	if (!template.statistics) return;

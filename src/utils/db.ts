@@ -1,10 +1,11 @@
-import { BaseInteraction, ButtonInteraction, Guild, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
+import { BaseInteraction, ButtonInteraction, Embed, Guild, Message, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
+import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
-import { GuildData, StatisticalTemplate } from "../interface";
+import { GuildData, StatisticalTemplate, User } from "../interface";
 import { ln } from "../localizations";
-import { getUserByEmbed } from "./parse";
+import { getEmbeds, parseEmbedFields } from "./embeds/parse";
 import { verifyTemplateValue } from "./verify_template";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
@@ -74,9 +75,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId);
-		const embed = message.embeds[0];
-		if (!embed) return;
-		return getUserByEmbed(embed, ul);
+		return getUserByEmbed(message, ul);
 	} catch (error) {
 		const index = userData.findIndex(char => char.messageId === userMessageId);
 		userData.splice(index, 1);
@@ -137,4 +136,44 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 	const json = JSON.parse(data);
 	json[interaction.guild.id] = guildData;
 	fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
+}
+
+export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>) {
+	const user: Partial<User> = {};
+	const userEmbed = getEmbeds(ul, message, "user");
+	if (!userEmbed) return;
+	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Embed);
+	if (parsedFields[ul("common.charName")] !== ul("common.noSet")) {
+		user.userName = parsedFields[ul("common.charName")];
+	}
+	const templateStat = getEmbeds(ul, message, "stats")?.toJSON()?.fields;
+	let stats: {[name: string]: number} | undefined = undefined;
+	if (templateStat) {
+		stats = {};
+		for (const stat of templateStat) {
+			stats[stat.name.replace("✏️", "").toLowerCase().trim()] = parseInt(stat.value, 10);
+		}
+	}
+	user.stats = stats;
+	const damageFields = getEmbeds(ul, message, "damage")?.toJSON()?.fields;
+	let templateDamage: {[name: string]: string} | undefined = undefined;
+	if (damageFields) {
+		templateDamage = {};
+		for (const damage of damageFields) {
+			templateDamage[damage.name.replace("🔪", "").trim().toLowerCase()] = damage.value;
+		}
+	}
+	const templateEmbed = getEmbeds(ul, message, "template");
+	if (!templateEmbed) return;
+	const templateFields = parseEmbedFields(templateEmbed.toJSON() as Embed);
+	user.damage = templateDamage;
+	user.template = {
+		diceType: templateFields?.[ul("common.dice")] || undefined,
+		critical: {
+			success: templateFields?.[ul("roll.critical.success")] ? parseInt(parsedFields[ul("roll.critical.success")], 10) : undefined,
+			failure: templateFields?.[ul("roll.critical.failure")] ? parseInt(parsedFields[ul("roll.critical.failure")], 10) : undefined,
+		}
+	};
+	return user as User;
+
 }

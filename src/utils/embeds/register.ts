@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
-import { TFunction } from "i18next";
+import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
 
-import { StatisticalTemplate, User } from "../interface";
-import { lError, ln } from "../localizations";
-import { repostInThread, title } from ".";
-import { getStatistiqueFields, getUserByEmbed, parseEmbedFields } from "./parse";
-import { ensureOldEmbeds, evalCombinaison, evalStatsDice } from "./verify_template";
+import { StatisticalTemplate, User } from "../../interface";
+import { lError, ln } from "../../localizations";
+import { repostInThread, title } from "..";
+import { continueCancelButtons, editUserButtons,registerDmgButton } from "../buttons";
+import { getUserByEmbed } from "../db";
+import { getStatistiqueFields } from "../modals/parse";
+import { ensureEmbed, evalCombinaison, evalStatsDice } from "../verify_template";
+import { getEmbeds, parseEmbedFields } from "./parse";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
@@ -37,58 +39,10 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	await interaction.reply({ embeds: [embed], components: [allButtons] });	
 }
 
-export function editUserButtons(ul: TFunction<"translation", undefined>) {
-	const editUser = new ButtonBuilder()
-		.setCustomId("edit_stats")
-		.setLabel(ul("modals.edit.stats"))
-		.setStyle(ButtonStyle.Primary);
-	const editDice = new ButtonBuilder()
-		.setCustomId("edit_dice")
-		.setLabel(ul("modals.edit.dice"))
-		.setStyle(ButtonStyle.Primary);
-	const addDice = new ButtonBuilder()
-		.setCustomId("add_dice")
-		.setLabel(ul("modals.add.dice"))
-		.setStyle(ButtonStyle.Primary);
-	const editTemplate = new ButtonBuilder()
-		.setCustomId("edit_template")
-		.setLabel(ul("modals.edit.template"))
-		.setStyle(ButtonStyle.Primary);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice, editTemplate]);				
-}
-
-function continueCancelButtons(ul: TFunction<"translation", undefined>) {
-	const continueButton = new ButtonBuilder()
-		.setCustomId("continue")
-		.setLabel(ul("modals.continue"))
-		.setStyle(ButtonStyle.Success);
-	const cancelButton = new ButtonBuilder()
-		.setCustomId("cancel")
-		.setLabel(ul("modals.cancel"))
-		.setStyle(ButtonStyle.Danger);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton]);
-}
-
-function registerDmgButton(ul: TFunction<"translation", undefined>) {
-	const validateButton = new ButtonBuilder()
-		.setCustomId("validate")
-		.setLabel(ul("common.validate"))
-		.setStyle(ButtonStyle.Success);
-	const cancelButton = new ButtonBuilder()
-		.setCustomId("cancel")
-		.setLabel(ul("modals.cancel"))
-		.setStyle(ButtonStyle.Danger);
-	const registerDmgButton = new ButtonBuilder()
-		.setCustomId("add_dice_first")
-		.setLabel(ul("modals.register"))
-		.setStyle(ButtonStyle.Primary);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
-}
-
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page=2) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
-	const oldEmbeds = ensureOldEmbeds(interaction.message);
+	const oldEmbeds = ensureEmbed(interaction.message);
 	try {
 		const {combinaisonFields, stats} = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
@@ -102,14 +56,12 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		}
 		for (const [stat, value] of Object.entries(stats)) {
 			embed.addFields({
-				name: title(`✏️ ${title(stat)}`) ?? "",
+				name: title(`✏️ ${title(stat)}`),
 				value: value.toString(),
 				inline: true,
 			});
 		}
-		
-		
-		const allTemplateStat = template.statistics ? Object.keys(template.statistics).filter(stat => !Object.keys(combinaisonFields).includes(stat)) : [];
+		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison) : [];
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;
@@ -117,16 +69,19 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		for (const field of fields) {
 			parsedFields[field.name.toLowerCase().replace("✏️", "").trim()] = field.value.toLowerCase();
 		}
-		const embedStats = template.statistics ? Object.keys(parsedFields).filter(stat => allTemplateStat.includes(stat.trim())) : [];
-		let combinaison:{[name: string]: number} = {};
-		if (embedStats.length === allTemplateStat.length) {
+		
+		const embedStats = Object.fromEntries(Object.entries(parsedFields).filter(
+			([key, _]) => statsWithoutCombinaison.includes(key)
+		));
+		if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
+			let combinaison:{[name: string]: number} = {};
 			try {
-				combinaison = evalCombinaison(combinaisonFields, stats);
+				combinaison = evalCombinaison(combinaisonFields, embedStats);
 				//add combinaison to the embed
 				for (const stat of Object.keys(combinaison)) {
 					embed.addFields({
-						name: title(`✏️ ${title(stat)}`) ?? "",
-						value: ` ${combinaisonFields[stat]} = ${combinaison[stat].toString()}`,
+						name: title(`✏️ ${title(stat)}`),
+						value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
 						inline: true,
 					});
 				}
@@ -141,6 +96,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		}
 		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
 		await interaction.reply({ content: ul("modals.added"), ephemeral: true });
+		return;
 	} catch (error) {
 		const errorMsg = lError(error as Error, interaction);
 		await interaction.reply({ content: errorMsg, ephemeral: true });
@@ -149,7 +105,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 
 export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
-	const oldEmbeds = ensureOldEmbeds(interaction.message);
+	const oldEmbeds = ensureEmbed(interaction.message);
 	let userID = oldEmbeds.fields.find(field => field.name === ul("common.user"))?.value;
 	let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul("common.charName"))?.value;
 	if (charName && charName === ul("common.noSet"))
@@ -160,12 +116,35 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	}
 	userID = userID.replace("<@", "").replace(">", "");
 	const parsedFields = parseEmbedFields(oldEmbeds);
-	const embed = new EmbedBuilder()
+	const userDataEmbed = new EmbedBuilder()
 		.setTitle(ul("modals.embedTitle"))
 		.setThumbnail(oldEmbeds.thumbnail?.url || "");
-	//add old fields
+	let diceEmbed: EmbedBuilder | undefined = undefined;
+	let statsEmbed: EmbedBuilder | undefined = undefined;
 	for (const field of oldEmbeds.fields) {
-		embed.addFields(field);
+		if (field.name.startsWith("🔪")) {
+			if (!diceEmbed) {
+				diceEmbed = new EmbedBuilder()
+					.setTitle(ul("modals.diceTitle"));
+			}
+			diceEmbed.addFields({
+				name: title(field.name.replaceAll("🔪", "").trim()),
+				value: field.value,
+				inline: true,
+			
+			});
+		} else if (field.name.startsWith("✏️")) {
+			if (!statsEmbed) {
+				statsEmbed = new EmbedBuilder()
+					.setTitle(ul("modals.statsTitle"));
+			}
+			statsEmbed.addFields({
+				name: title(field.name.replace("✏️", "").trim()),
+				value: field.value,
+				inline: true,
+			
+			});
+		} else userDataEmbed.addFields(field);
 	}
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: {[name: string]: number} = {};
@@ -174,16 +153,22 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	}
 	const damageFields = oldEmbeds.fields.filter(field => field.name.startsWith("🔪"));
 	let templateDamage: {[name: string]: string} | undefined = undefined;
+	
 	if (damageFields.length > 0) {
 		templateDamage = {};
+		
 		for (const damage of damageFields) {
 			templateDamage[damage.name.replace("🔪", "").trim()] = damage.value;
 		}
 		if (template.damage)
 			for (const [name, dice] of Object.entries(template.damage)) {
 				templateDamage[name] = dice;
-				embed.addFields({
-					name: `🔪 ${name}`,
+				if (!diceEmbed) {
+					diceEmbed = new EmbedBuilder()
+						.setTitle(ul("modals.diceTitle"));
+				}
+				diceEmbed.addFields({
+					name: `${name}`,
 					value: dice,
 					inline: true,
 				});
@@ -201,43 +186,38 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		},	
 		damage: templateDamage,
 	};
-	embed.addFields({
-		name: "_ _",
-		value: "_ _",
-		inline: true
-	},
-	{
-		name: `**${ul("register.embed.title")}**`,
-		value: "_ _",
-		inline: true
-	},
-	{
-		name: "_ _",
-		value: "_ _",
-		inline: true
-	});
-	if (template.diceType)
-		embed.addFields({
-			name: ul("common.dice"),
-			value: template.diceType,
-			inline: true,
-		});
-	if (template.critical?.success){
-		embed.addFields({
-			name: ul("roll.critical.success"),
-			value: template.critical.success.toString(),
-			inline: true,
-		});	
-	}
-	if (template.critical?.failure){
-		embed.addFields({
-			name: ul("roll.critical.failure"),
-			value: template.critical.failure.toString(),
-			inline: true,
-		});	
+	let templateEmbed: EmbedBuilder | undefined = undefined;
+	if (template.diceType || template.critical) {
+		templateEmbed = new EmbedBuilder()
+			.setTitle(ul("modals.template.title"))
+			.setColor("Aqua");
+		if (template.diceType)
+			templateEmbed.addFields({
+				name: ul("common.dice"),
+				value: template.diceType,
+				inline: true,
+			});
+		if (template.critical?.success){
+			templateEmbed.addFields({
+				name: ul("roll.critical.success"),
+				value: template.critical.success.toString(),
+				inline: true,
+			});	
+		}
+		if (template.critical?.failure){
+			templateEmbed.addFields({
+				name: ul("roll.critical.failure"),
+				value: template.critical.failure.toString(),
+				inline: true,
+			});	
+		}
 	}
 	await interaction?.message?.delete();
-	await repostInThread(embed, interaction, userStatistique, userID, ul);
+	const allEmbeds = [userDataEmbed];
+	if (statsEmbed) allEmbeds.push(statsEmbed);
+	if (diceEmbed) allEmbeds.push(diceEmbed);
+	if (templateEmbed) allEmbeds.push(templateEmbed);
+	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul);
 	await interaction.reply({ content: ul("modals.finished"), ephemeral: true });
 	return;
 }
@@ -246,16 +226,14 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	const ul = ln(interaction.locale as Locale);
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
-	
-	const oldEmbeds = ensureOldEmbeds(interaction.message ?? undefined);
-	const embed = new EmbedBuilder()
-		.setTitle(ul("modals.embedTitle"))
-		.setThumbnail(oldEmbeds.thumbnail?.url || "");
-	//add old fields
-	for (const field of oldEmbeds.fields) {
-		embed.addFields(field);
-	}
-	const user = getUserByEmbed(oldEmbeds, ul);
+	if (!interaction.message) return;
+	const oldDiceEmbeds = getEmbeds(ul, interaction.message ?? undefined, first ? "user" : "damage")?.toJSON();
+	const diceEmbed = new EmbedBuilder().setTitle(ul("modals.diceTitle"));
+	if (oldDiceEmbeds?.fields)
+		for (const field of oldDiceEmbeds.fields) {
+			diceEmbed.addFields(field);
+		}
+	const user = getUserByEmbed(interaction.message, ul);
 	if (!user) throw new Error("[error.noUser]"); //mean that there is no embed
 	try {
 		value = evalStatsDice(value, user.stats);
@@ -266,13 +244,27 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		return;
 	}
 	//add damage fields
-	embed.addFields({
-		name: `🔪 ${name}`,
+	diceEmbed.addFields({
+		name: `${name}`,
 		value,
 		inline: true,
 	});
-	const components = first ? registerDmgButton(ul) : editUserButtons(ul);
-	await interaction?.message?.edit({ embeds: [embed], components: [components] });
+	if (!first) {
+		const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
+		if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed
+		const statsEmbed = getEmbeds(ul, interaction.message ?? undefined, "stats");
+		const templateEmbed = getEmbeds(ul, interaction.message ?? undefined, "template");
+		const allEmbeds = [userEmbed];
+		if (statsEmbed) allEmbeds.push(statsEmbed);
+		if (diceEmbed) allEmbeds.push(diceEmbed);
+		if (templateEmbed) allEmbeds.push(templateEmbed);
+		const components = editUserButtons(ul);
+		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
+		await interaction.reply({ content: ul("modals.added"), ephemeral: true });
+		return;
+	}
+	const components = registerDmgButton(ul);
+	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
 	await interaction.reply({ content: ul("modals.added"), ephemeral: true });
 	return;
 }
