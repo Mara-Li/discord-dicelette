@@ -8,8 +8,6 @@ import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { title } from "../utils";
 import { verifyTemplateValue } from "../utils/verify_template";
-import { dmgRoll } from "./dbAtq";
-import { rollForUser } from "./dbroll";
 
 const t = i18next.getFixedT("en");
 
@@ -291,4 +289,3 @@ export const logs = {
 	}
 };
 
-export const commands = [generateTemplate, registerTemplate, rollForUser, logs, dmgRoll];

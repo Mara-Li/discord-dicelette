@@ -1,8 +1,7 @@
 import { AutocompleteInteraction, BaseInteraction, Client, PermissionsBitField, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
 
-import { commandsList } from "../commands/base";
-import { autCompleteCmd } from "../commands/dbroll";
+import { autCompleteCmd,commandsList } from "../commands";
 import { lError, ln } from "../localizations";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
 import { editStats } from "../utils/embeds/edit";

@@ -4,7 +4,6 @@ import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { calculate, formatRollCalculation, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
-import { dmgRoll } from "./dbAtq";
 
 const t = i18next.getFixedT("en");
 
@@ -134,4 +133,3 @@ export const rollForUser = {
 	}
 };
 
-export const autCompleteCmd = [rollForUser, dmgRoll];
