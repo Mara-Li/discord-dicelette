@@ -1,7 +1,7 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 
 import { ln } from "../localizations";
-import { title } from "../utils";
+import { filterChoices, title } from "../utils";
 import { getGuildData, getUserData } from "../utils/db";
 
 export const displayUser = {
@@ -27,26 +27,18 @@ export const displayUser = {
 		const guildData = getGuildData(interaction);
 		if (!guildData) return;
 		let choices: string[] = [];
-		if (fixed.name === "charName") {
-			const user = getUserData(guildData, options.getUser("user")?.id || interaction.user.id);
-			if (user) {
-				//get all character names
-				const allCharacterName: string[] = user
-					.filter((data) => data.charName !== undefined)
-					.map((data) => data.charName!);
-				choices = allCharacterName;
-			} else {
-				//get ALL characters from the guild
-				const allCharactersFromGuild = Object.values(guildData.user)
-					.map((data) => data.map((char) => char.charName ?? ""))
-					.flat()
-					.filter((data) => data.length > 0);
-				choices = allCharactersFromGuild;
-			}
+		if (fixed.name === "chara_name") {
+			//get ALL characters from the guild
+			const allCharactersFromGuild = Object.values(guildData.user)
+				.map((data) => data.map((char) => char.charName ?? ""))
+				.flat()
+				.filter((data) => data.length > 0);
+			choices = allCharactersFromGuild;
 		}
 		if (choices.length === 0) return;
+		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			choices.map(result => ({ name: title(result) ?? result, value: result}))
+			filter.map(result => ({ name: title(result) ?? result, value: result}))
 		);
 	}, 
 	async execute(interaction: CommandInteraction) {
@@ -58,7 +50,7 @@ export const displayUser = {
 			return;
 		}
 		const user = options.getUser("user");
-		const charName = options.getString("charName")?.toLowerCase();
+		const charName = options.getString("chara_name")?.toLowerCase();
 		let charData: { [key: string]: {
 			charName?: string;
 			messageId: string;
