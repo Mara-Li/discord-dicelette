@@ -214,7 +214,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	}
 	await interaction?.message?.delete();
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
-	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul);
+	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: userDataEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false});
 	await interaction.reply({ content: ul("modals.finished"), ephemeral: true });
 	return;
 }
@@ -230,7 +230,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		for (const field of oldDiceEmbeds.fields) {
 			diceEmbed.addFields(field);
 		}
-	const user = getUserByEmbed(interaction.message, ul);
+	const user = getUserByEmbed(interaction.message, ul, first);
 	if (!user) throw new Error("[error.noUser]"); //mean that there is no embed
 	try {
 		value = evalStatsDice(value, user.stats);
@@ -255,7 +255,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		if (statsEmbed) allEmbeds.push(statsEmbed);
 		if (diceEmbed) allEmbeds.push(diceEmbed);
 		if (templateEmbed) allEmbeds.push(templateEmbed);
-		const components = editUserButtons(ul);
+		const components = editUserButtons(ul, statsEmbed ? true: false, diceEmbed ? true : false, templateEmbed ? true : false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await interaction.reply({ content: ul("modals.added"), ephemeral: true });
 		return;

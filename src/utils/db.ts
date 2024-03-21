@@ -6,7 +6,7 @@ import removeAccents from "remove-accents";
 import { GuildData, StatisticalTemplate, User } from "../interface";
 import { ln } from "../localizations";
 import { getEmbeds, parseEmbedFields } from "./embeds/parse";
-import { verifyTemplateValue } from "./verify_template";
+import { ensureEmbed, verifyTemplateValue } from "./verify_template";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
 	const template = interaction.message?.attachments.first();
@@ -138,15 +138,15 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 	fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
 }
 
-export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>) {
+export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>, first: boolean = false) {
 	const user: Partial<User> = {};
-	const userEmbed = getEmbeds(ul, message, "user");
+	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
 	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Embed);
 	if (parsedFields[ul("common.charName")] !== ul("common.noSet")) {
 		user.userName = parsedFields[ul("common.charName")];
 	}
-	const templateStat = getEmbeds(ul, message, "stats")?.toJSON()?.fields;
+	const templateStat = first ? userEmbed.toJSON().fields : getEmbeds(ul, message, "stats")?.toJSON()?.fields;
 	let stats: {[name: string]: number} | undefined = undefined;
 	if (templateStat) {
 		stats = {};
@@ -155,7 +155,7 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 		}
 	}
 	user.stats = stats;
-	const damageFields = getEmbeds(ul, message, "damage")?.toJSON()?.fields;
+	const damageFields = first ? userEmbed.toJSON().fields : getEmbeds(ul, message, "damage")?.toJSON()?.fields;
 	let templateDamage: {[name: string]: string} | undefined = undefined;
 	if (damageFields) {
 		templateDamage = {};
@@ -163,9 +163,8 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 			templateDamage[damage.name.replace("🔪", "").trim().toLowerCase()] = damage.value;
 		}
 	}
-	const templateEmbed = getEmbeds(ul, message, "template");
-	if (!templateEmbed) return;
-	const templateFields = parseEmbedFields(templateEmbed.toJSON() as Embed);
+	const templateEmbed = first ? userEmbed : getEmbeds(ul, message, "template");
+	const templateFields = parseEmbedFields(templateEmbed?.toJSON() as Embed);
 	user.damage = templateDamage;
 	user.template = {
 		diceType: templateFields?.[ul("common.dice")] || undefined,

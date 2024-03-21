@@ -76,7 +76,7 @@ export function title(str?: string) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: User, userId: string, ul: TFunction<"translation", undefined>) {
+export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: User, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}) {
 	const channel = interaction.channel;
 	if (!channel ||!(channel instanceof TextChannel)) return;
 	let thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as ThreadChannel | undefined;
@@ -86,11 +86,10 @@ export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInt
 			autoArchiveDuration: 10080,
 		});
 	}
-
 	userTemplate.userName = userTemplate.userName ? removeAccents(userTemplate.userName).toLowerCase() : undefined;
 	const msg = await thread.send({ 
 		embeds: embed,
-		components: [editUserButtons(ul)]},);
+		components: [editUserButtons(ul, which.stats, which.dice, which.template)]},);
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
 	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
 }
