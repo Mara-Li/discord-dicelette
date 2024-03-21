@@ -51,11 +51,11 @@ export function parseEmbedFields(embed: Embed) {
  */
 export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Message, which?: "user" | "stats" | "damage" | "template") {
 	const allEmbeds = message?.embeds;
-	if (!allEmbeds) throw new Error("[error.noEmbed]");
+	if (!allEmbeds) throw new Error(ul("error.noEmbed"));
 	for (const embed of allEmbeds) {
 		const embedJSON = embed.toJSON();
 		if (embed.title === ul("embed.user") && which === "user") return new EmbedBuilder(embedJSON);
-		else if (embed.title === title(ul("embed.stats")) && which === "stats") return new EmbedBuilder(embedJSON);
+		else if ((embed.title === ul("embed.stats") || title(embed.title ?? undefined) === title(ul("common.statistic"))) && which === "stats") return new EmbedBuilder(embedJSON);
 		else if (embed.title === ul("embed.dice") && which === "damage") return new EmbedBuilder(embedJSON);
 		else if (embed.title === ul("embed.template") && which === "template") return new EmbedBuilder(embedJSON);
 	}

@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, userMention } from "discord.js";
+import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, ThreadChannel, userMention } from "discord.js";
+import removeAccents from "remove-accents";
 
 import { StatisticalTemplate, User } from "../../interface";
 import { lError, ln } from "../../localizations";
-import { repostInThread, title } from "..";
+import { cleanSkillName, cleanStatsName, repostInThread, title } from "..";
 import { continueCancelButtons, editUserButtons,registerDmgButton } from "../buttons";
-import { getUserByEmbed } from "../db";
+import { getUserByEmbed, registerUser } from "../db";
 import { getStatistiqueFields } from "../modals/parse_value";
 import { ensureEmbed, evalCombinaison, evalStatsDice } from "../verify_template";
 import { createEmbedsList, getEmbeds, parseEmbedFields } from "./parse";
@@ -128,7 +129,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 					.setTitle(ul("embed.dice"));
 			}
 			diceEmbed.addFields({
-				name: title(field.name.replaceAll("🔪", "").trim()),
+				name: title(cleanSkillName(field.name)),
 				value: field.value,
 				inline: true,
 			
@@ -139,7 +140,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 					.setTitle(ul("embed.stats"));
 			}
 			statsEmbed.addFields({
-				name: title(field.name.replace("✏️", "").trim()),
+				name: title(cleanStatsName(field.name)),
 				value: field.value,
 				inline: true,
 			
@@ -149,7 +150,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: {[name: string]: number} = {};
 	for (const stat of templateStat) {
-		stats[stat] = parseInt(parsedFields[stat.replace("✏️", "")], 10);
+		stats[stat] = parseInt(parsedFields[cleanStatsName(stat)], 10);
 	}
 	const damageFields = oldEmbeds.fields.filter(field => field.name.startsWith("🔪"));
 	let templateDamage: {[name: string]: string} | undefined = undefined;
@@ -158,7 +159,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		templateDamage = {};
 		
 		for (const damage of damageFields) {
-			templateDamage[damage.name.replace("🔪", "").trim()] = damage.value;
+			templateDamage[cleanSkillName(damage.name)] = damage.value;
 		}
 		if (template.damage)
 			for (const [name, dice] of Object.entries(template.damage)) {
@@ -223,16 +224,19 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	const ul = ln(interaction.locale as Locale);
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
-	if (!interaction.message) return;
+	if (!interaction.message) throw new Error(ul("error.noMessage"));
 	const oldDiceEmbeds = first ? ensureEmbed(interaction.message).toJSON() : getEmbeds(ul, interaction.message ?? undefined, "damage")?.toJSON();
 	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder(oldDiceEmbeds) : new EmbedBuilder()
 		.setTitle(ul("embed.dice"));
-	if (oldDiceEmbeds?.fields && !first)
+	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
-			diceEmbed.addFields(field);
+			//add fields only if not already in the diceEmbed
+			if (diceEmbed.toJSON().fields?.findIndex(f => cleanSkillName(f.name) === cleanSkillName(field.name)) === -1){
+				diceEmbed.addFields(field);
+			}
 		}
 	const user = getUserByEmbed(interaction.message, ul, first);
-	if (!user) throw new Error("[error.noUser]"); //mean that there is no embed
+	if (!user) throw new Error(ul("error.user")); //mean that there is no embed
 	try {
 		value = evalStatsDice(value, user.stats);
 	}
@@ -241,12 +245,12 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		await interaction.reply({ content: errorMsg, ephemeral: true });
 		return;
 	}
-	//add damage fields
-	diceEmbed.addFields({
-		name: `${name}`,
-		value,
-		inline: true,
-	});
+	if (diceEmbed.toJSON().fields?.findIndex(f => cleanSkillName(f.name) === cleanSkillName(name)) === -1 || !diceEmbed.toJSON().fields){
+		diceEmbed.addFields({
+			name: first ? `🔪${title(removeAccents(name))}` : title(removeAccents(name)),
+			value,
+			inline: true,
+		});}
 	if (!first) {
 		const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
 		if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed
@@ -257,6 +261,16 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		allEmbeds.push(diceEmbed);
 		if (templateEmbed) allEmbeds.push(templateEmbed);
 		const components = editUserButtons(ul, statsEmbed ? true: false, true, templateEmbed ? true : false);
+		const userID = userEmbed.toJSON().fields?.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "");
+		if (!userID) throw new Error(ul("error.user"));
+		if (!interaction.channel || !(interaction.channel instanceof ThreadChannel)) throw new Error(ul("error.noThread"));
+		let userName = userEmbed.toJSON().fields?.find(field => field.name === ul("common.charName"))?.value;
+		if (userName === ul("common.noSet")) userName = undefined;
+		const damageName = diceEmbed.toJSON().fields?.reduce((acc, field) => {
+			acc[cleanSkillName(field.name)] = field.value;
+			return acc;
+		}, {} as {[name: string]: string});
+		registerUser(userID, interaction, interaction.message.id, interaction.channel, userName, damageName ? Object.keys(damageName) : undefined, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
 		return;

@@ -44,8 +44,10 @@
   },
   "edit": {
     "options": {
-      "field": {},
-      "value": {}
+      "field": {
+      },
+      "value": {
+      }
     }
   },
   "embed": {
@@ -64,6 +66,8 @@
     "mustBeLower": "La valeur {{value}} doit être plus petite que {{max}}",
     "noDamage": "{{atq}} n'est pas enregistré dans {{charName}}.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
+    "noEmbed": "Aucun embed trouvé",
+    "noMessage": "Aucun message trouvé.",
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
     "noTemplate": "Aucun modèle ou channel configuré",
     "noThread": "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
@@ -122,8 +126,8 @@
   },
   "modals": {
     "added": {
-      "stats": "Statistiques ajoutés",
-      "dice": "Dés ajoutés"
+      "dice": "Dés ajoutés",
+      "stats": "Statistiques ajoutés"
     },
     "alreadySet": "Toutes les statistiques sont déjà définies",
     "charName": {

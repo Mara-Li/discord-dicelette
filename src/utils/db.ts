@@ -97,7 +97,7 @@ export function readDB(guildID: string) {
 	return {db, parsedDatabase};
 }
 
-export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: ThreadChannel, charName?: string, damage?: string[]) {
+export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: ThreadChannel, charName?: string, damage?: string[], deleteMsg: boolean = true) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
 	if (charName) charName = removeAccents(charName).toLowerCase();
@@ -112,12 +112,14 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 		const char = user.find(char => char.charName === charName);
 		if (char){
 			//delete old message
-			try {
-				const oldMessage = await thread.messages.fetch(char.messageId);
-				if (oldMessage) oldMessage.delete();
-			} catch (error) {
-				console.error(error);
-				//skip unknow message
+			if (deleteMsg) 
+			{
+				try {
+					const oldMessage = await thread.messages.fetch(char.messageId);
+					if (oldMessage) oldMessage.delete();
+				} catch (error) {
+					//skip unknow message
+				}
 			}
 			//overwrite the message id
 			char.messageId = msgId;

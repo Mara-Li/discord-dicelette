@@ -77,6 +77,7 @@ export default (client: Client): void => {
 			const embed = ensureEmbed(interaction.message);
 			const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 			const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+			console.log(user, isModerator);
 			if (user || isModerator)
 				showEditorStats(interaction, ul);
 		} else if (interaction.isButton() && interaction.customId === "validate") {
@@ -127,7 +128,13 @@ export default (client: Client): void => {
 		} else if (interaction.isButton() && interaction.customId === "cancel") {
 			await interaction.message.edit({ components: [] });
 		} else if (interaction.isModalSubmit() && interaction.customId === "editStats") {
-			await editStats(interaction, ul);
+			try {
+				await editStats(interaction, ul);
+			} catch (error) {
+				console.error(error);
+				const translationError = lError(error as Error, interaction);
+				await interaction.reply({ content: translationError, ephemeral: true });
+			}
 		} else if (interaction.isAutocomplete()) {
 			const interac = interaction as AutocompleteInteraction;
 			const command = autCompleteCmd.find(

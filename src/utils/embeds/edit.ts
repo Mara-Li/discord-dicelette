@@ -25,7 +25,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	}, {} as {[name: string]: string});
 	//verify value from template
 	const newEmbedStats = new EmbedBuilder()
-		.setTitle(title(ul("common.statistic")))
+		.setTitle(title(ul("embed.stats")))
 		.setColor("#0099ff");
 	for (const [name, value] of Object.entries(stats)) {
 		const stat = templateStats.statistics?.[name];

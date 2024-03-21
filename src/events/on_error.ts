@@ -5,6 +5,7 @@ dotenv.config({ path: ".env" });
 
 export const botError = (client	: Client): void => {
 	client.on("error", async (error) => {
+		console.error("hello");
 		console.error(error);	//prevent the crash of the entire application
 		//send a message to the owner of the bot
 		if (!process.env.OWNER_ID) return;

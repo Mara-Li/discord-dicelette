@@ -7,7 +7,7 @@ import { getEmbeds, parseEmbedFields } from "../embeds/parse";
 
 export async function showEditorStats(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
 	const statistics = getEmbeds(ul, interaction.message, "stats");
-	if (!statistics) return;
+	if (!statistics) throw new Error(ul("error.statNotFound"));
 	const stats = parseEmbedFields(statistics.toJSON() as Embed);
 	const registeredStats = getGuildData(interaction)?.templateID.statsName;
 	const userStats = Object.keys(stats).map(stat => stat.toLowerCase());

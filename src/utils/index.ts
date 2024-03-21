@@ -94,6 +94,14 @@ export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInt
 	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
 }
 
+export function cleanSkillName(dice: string) {
+	return removeAccents(dice).toLowerCase().replaceAll("🔪", "").trim();
+}
+
+export function cleanStatsName(dice: string) {
+	return removeAccents(dice).toLowerCase().replaceAll("✏️", "").trim();
+}
+
 
 export function timestamp() {
 	return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
