@@ -45,6 +45,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		.setCustomId(`page${page}`)
 		.setTitle(ul("modals.steps", {page, max: nbOfPages + 1 }));
 	let statToDisplay = Object.keys(template.statistics);
+	
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
 		if (statToDisplay.length === 0) {
