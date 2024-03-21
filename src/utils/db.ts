@@ -51,7 +51,10 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 	const ul = ln(interaction.locale);
 	const userData = getUserData(guildData, userId);
 	if (!userData) return;
-	const user = userData.find(char => char.charName === charName);
+	const user = userData.find(char => {
+		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName.toLowerCase());
+		return char.charName === charName;
+	});
 	if (!user) return;
 	const mainChannel = guildData.templateID.channelId;
 	const userMessageId = user.messageId;
@@ -100,7 +103,7 @@ export function readDB(guildID: string) {
 export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: ThreadChannel, charName?: string, damage?: string[], deleteMsg: boolean = true) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
-	if (charName) charName = removeAccents(charName).toLowerCase();
+	if (charName) charName = charName.toLowerCase();
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
 	if (damage && guildData.templateID.damageName && guildData.templateID.damageName.length > 0) {

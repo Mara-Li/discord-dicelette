@@ -1,8 +1,9 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
+import removeAccents from "remove-accents";
 
 import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
-import { calculate, formatRollCalculation, rollWithInteraction, title } from "../utils";
+import { calculate, filterChoices, formatRollCalculation, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 
 const t = i18next.getFixedT("en");
@@ -75,8 +76,9 @@ export const rollForUser = {
 			choices = allCharactersFromUser;
 		}
 		if (choices.length === 0) return;
+		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			choices.map(result => ({ name: title(result as string), value: result}))
+			filter.map(result => ({ name: title(result), value: result}))
 		);
 	},
 	async execute(interaction: CommandInteraction) {
@@ -85,7 +87,9 @@ export const rollForUser = {
 		const guildData = getGuildData(interaction);
 		const ul = ln(interaction.locale);
 		if (!guildData) return;
-		let charName = options.getString(t("common.character"))?.toLowerCase() ?? undefined;
+		let optionChar = options.getString(t("common.character"));
+		const charName = optionChar ? removeAccents(optionChar.toLowerCase()) : undefined;
+		
 		try {
 			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
 			if (!userStatistique && !charName){
@@ -96,7 +100,7 @@ export const rollForUser = {
 					return;
 				}
 				const firstChar = userData[0];
-				charName = title(firstChar.charName);
+				optionChar = title(firstChar.charName);
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
@@ -113,7 +117,7 @@ export const rollForUser = {
 			let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 			const override = options.getString(t("dbRoll.options.override.name"));
 			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
-			const userStat = userStatistique.stats?.[statistique];
+			const userStat = userStatistique.stats?.[removeAccents(statistique)];
 			const template = userStatistique.template;
 			const dice = template.diceType;
 			if (!dice) {
@@ -121,12 +125,13 @@ export const rollForUser = {
 				return;
 			}
 			const {calculation, comparator} = calculate(userStat, dice, override, modificator);
-			const charNameComments = charName ? ` • **@${title(charName)}**` : "";
+			const charNameComments = optionChar ? ` • **@${title(optionChar)}**` : "";
 			comments += `__[${title(statistique)}]__${charNameComments}`;
 			const roll = formatRollCalculation(dice, comparator, comments, calculation);
 			await rollWithInteraction(interaction, roll, interaction.channel, template.critical);
 		}
 		catch (error) {
+			console.error(error);
 			const msgError = lError(error as Error, interaction);
 			await interaction.reply({ content: msgError, ephemeral: true });
 		}

@@ -16,7 +16,7 @@ export const displayUser = {
 		)
 		.addStringOption(option =>
 			option
-				.setName("charName")
+				.setName("chara_name")
 				.setDescription("The character name to display")
 				.setRequired(false)
 				.setAutocomplete(true)

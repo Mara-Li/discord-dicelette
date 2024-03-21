@@ -30,12 +30,19 @@ export function evalStatsDice(testDice: string, stats?: {[name: string]: number}
 
 export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	if (!template.statistics) return value;
-	const allStats = Object.keys(template.statistics);
+	value = removeAccents(value);
+	const allStats = Object.keys(template.statistics).map(stat => removeAccents(stat).toLowerCase());
 	let newDice = value;
 	for (const stat of allStats) {
-		const regex = new RegExp(escapeRegex(removeAccents(stat)), "gi");
+		const regex = new RegExp(escapeRegex(stat), "gi");
 		if (value.match(regex)) {
-			const {max, min} = template.statistics[stat];
+			let max: undefined | number = undefined;
+			let min: undefined | number = undefined;
+			const stats = template.statistics?.[stat];
+			if (stats) {
+				max = template.statistics[removeAccents(stat).toLowerCase()].max;
+				min = template.statistics[removeAccents(stat).toLowerCase()].min;
+			}
 			const total = template.total || 100;
 			const randomStatValue = generateRandomStat(total, max, min);
 			newDice = value.replace(regex, randomStatValue.toString());
@@ -48,9 +55,9 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 	const newStats: {[name: string]: number} = {};
 	for (const [stat, combin] of Object.entries(combinaison)) {
 		//replace the stats in formula
-		let formula = combin;
+		let formula = removeAccents(combin);
 		for (const [statName, value] of Object.entries(stats)) {
-			const regex = new RegExp(statName, "gi");
+			const regex = new RegExp(removeAccents(statName), "gi");
 			formula = formula.replace(regex, value.toString());
 		}
 		try {
@@ -64,9 +71,9 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 }
 
 export function evalOneCombinaison(combinaison: string, stats: {[name: string]: string | number}) {
-	let formula = combinaison;
+	let formula = removeAccents(combinaison);
 	for (const [statName, value] of Object.entries(stats)) {
-		const regex = new RegExp(statName, "gi");
+		const regex = new RegExp(removeAccents(statName), "gi");
 		formula = formula.replace(regex, value.toString());
 	}
 	try {
@@ -143,6 +150,7 @@ export function testDamageRoll(template: StatisticalTemplate) {
 	for (const [name, dice] of Object.entries(template.damage)) {
 		if (!dice) continue;
 		const randomDiceParsed = diceRandomParse(dice, template);
+		console.log(randomDiceParsed);
 		try {
 			roll(randomDiceParsed);
 		} catch (error) {
@@ -208,7 +216,7 @@ export function getFormula(diceType?: string) {
 		return combinaison;
 	}
 	if (formula?.groups?.formula) {
-		combinaison.formula = formula?.groups?.formula.replaceAll("{{", "").replaceAll("}}", "");
+		combinaison.formula = removeAccents(formula?.groups?.formula.replaceAll("{{", "").replaceAll("}}", "")).toLowerCase();
 	}
 	if (formula?.groups?.comparison) {
 		combinaison.sign = formula?.groups?.sign;

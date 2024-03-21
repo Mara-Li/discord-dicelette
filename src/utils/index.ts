@@ -86,7 +86,7 @@ export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInt
 			autoArchiveDuration: 10080,
 		});
 	}
-	userTemplate.userName = userTemplate.userName ? removeAccents(userTemplate.userName).toLowerCase() : undefined;
+	userTemplate.userName = userTemplate.userName ? userTemplate.userName.toLowerCase() : undefined;
 	const msg = await thread.send({ 
 		embeds: embed,
 		components: [editUserButtons(ul, which.stats, which.dice, which.template)]},);
@@ -182,4 +182,9 @@ export function formatRollCalculation(dice: string, comparator: string, comments
 		.replace("--", "+")
 		.replace("++", "+") : clean;
 	return `${diceCalculation}${comparator} ${comments}`;
+}
+
+export function filterChoices(choices: string[], focused: string) {
+	return choices.filter(choice => removeAccents(choice).toLowerCase().includes(removeAccents(focused).toLowerCase()));
+
 }

@@ -181,6 +181,16 @@ describe("verify_template", () => {
 			};
 			expect(() => testDamageRoll(template)).not.toThrow();
 		});
+		it("Test a roll with a combinaison on the dice and accents", () => {
+			const template: StatisticalTemplate = {
+				statistics: { éducation: { max: 10, min: 1 } },
+				diceType: "1d20",
+				damage: {
+					"piercing": "1déducation>20",
+				}
+			};
+			expect(() => testDamageRoll(template)).not.toThrow();
+		});
 		it("Test formula for simple dice", () => {
 			const template: StatisticalTemplate = {
 				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },

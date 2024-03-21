@@ -1,6 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
-import removeAccents from "remove-accents";
 import dedent from "ts-dedent";
 
 import { Critical, Statistic, StatisticalTemplate } from "../interface";
@@ -82,7 +81,7 @@ export const generateTemplate = {
 			const statistiqueName = name.split(/[, ]+/);
 			statServer = {};
 			for (const stat of statistiqueName ) {
-				statServer[removeAccents(stat)] = {
+				statServer[stat] = {
 					max: 0,
 					min: 0,
 					combinaison: ""
@@ -96,7 +95,7 @@ export const generateTemplate = {
 			const atq = atqName.split(/[, ]+/);
 			atqDice = {};
 			for (const name of atq) {
-				atqDice[removeAccents(name)] = "1d5";
+				atqDice[name] = "1d5";
 			}
 		}
 		let critical : Critical | undefined = {
