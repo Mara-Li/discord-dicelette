@@ -1,14 +1,14 @@
 {
   "button": {
-    "cancel": "",
-    "continue": "",
+    "cancel": "Cancel",
+    "continue": "Continue",
     "dice": "Save a die",
     "edit": {
       "dice": "Edit dice",
       "stats": "Edit statistics",
-      "template": ""
+      "template": "Edit template"
     },
-    "validate": ""
+    "validate": "To validate"
   },
   "common": {
     "channel": "channel",
@@ -52,12 +52,12 @@
   },
   "embed": {
     "add": {
-      "title": ""
+      "title": "User registration"
     },
-    "dice": "",
-    "stats": "",
-    "template": "",
-    "user": ""
+    "dice": "Skill Dice",
+    "stats": "Statistics",
+    "template": "Model",
+    "user": "Registered player"
   },
   "error": {
     "emptyDamage": "You have no ability dice saved.",
@@ -71,8 +71,8 @@
     "noThread": "No thread found - Please re-register user if thread has been deleted",
     "noValidDice": "Error: Invalid Dice {{dice}}",
     "noValidDiceError": "Error: Invalid die {{dice}}",
-    "notRegistered": "",
-    "statNotFound": "",
+    "notRegistered": "You are not registered",
+    "statNotFound": "Statistics not found! \nDid you make a typing error?",
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{value}} is exceeded by {{max}}",
     "user": "User not found"
@@ -141,7 +141,7 @@
     },
     "finished": "Statistics finished",
     "firstPage": "User Registration - Page 1/{{page}}",
-    "statsUpdated": "",
+    "statsUpdated": "Stats changed!",
     "steps": "User Registration - Page {{page}}/{{max}}",
     "template": {
     },
