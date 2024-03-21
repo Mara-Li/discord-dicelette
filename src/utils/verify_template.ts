@@ -150,7 +150,6 @@ export function testDamageRoll(template: StatisticalTemplate) {
 	for (const [name, dice] of Object.entries(template.damage)) {
 		if (!dice) continue;
 		const randomDiceParsed = diceRandomParse(dice, template);
-		console.log(randomDiceParsed);
 		try {
 			roll(randomDiceParsed);
 		} catch (error) {
