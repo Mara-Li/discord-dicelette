@@ -6,9 +6,9 @@ import { lError, ln } from "../../localizations";
 import { repostInThread, title } from "..";
 import { continueCancelButtons, editUserButtons,registerDmgButton } from "../buttons";
 import { getUserByEmbed } from "../db";
-import { getStatistiqueFields } from "../modals/parse";
+import { getStatistiqueFields } from "../modals/parse_value";
 import { ensureEmbed, evalCombinaison, evalStatsDice } from "../verify_template";
-import { getEmbeds, parseEmbedFields } from "./parse";
+import { createEmbedsList, getEmbeds, parseEmbedFields } from "./parse";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
@@ -22,7 +22,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	}
 	const charName = interaction.fields.getTextInputValue("charName");
 	const embed = new EmbedBuilder()
-		.setTitle(ul("modals.registering"))
+		.setTitle(ul("embed.add.title"))
 		.setThumbnail(user.user.displayAvatarURL())
 		.setFooter({ text: ul("common.page", {nb: 1})})
 		.addFields(
@@ -47,7 +47,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		const {combinaisonFields, stats} = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
 		const embed = new EmbedBuilder()
-			.setTitle(ul("modals.embedTitle"))
+			.setTitle(ul("embed.add.title"))
 			.setThumbnail(oldEmbeds.thumbnail?.url || "")
 			.setFooter({ text: ul("common.page", {nb: page}) });
 		//add old fields
@@ -117,7 +117,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	userID = userID.replace("<@", "").replace(">", "");
 	const parsedFields = parseEmbedFields(oldEmbeds);
 	const userDataEmbed = new EmbedBuilder()
-		.setTitle(ul("modals.embedTitle"))
+		.setTitle(ul("embed.user"))
 		.setThumbnail(oldEmbeds.thumbnail?.url || "");
 	let diceEmbed: EmbedBuilder | undefined = undefined;
 	let statsEmbed: EmbedBuilder | undefined = undefined;
@@ -125,7 +125,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		if (field.name.startsWith("🔪")) {
 			if (!diceEmbed) {
 				diceEmbed = new EmbedBuilder()
-					.setTitle(ul("modals.diceTitle"));
+					.setTitle(ul("embed.dice"));
 			}
 			diceEmbed.addFields({
 				name: title(field.name.replaceAll("🔪", "").trim()),
@@ -136,7 +136,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		} else if (field.name.startsWith("✏️")) {
 			if (!statsEmbed) {
 				statsEmbed = new EmbedBuilder()
-					.setTitle(ul("modals.statsTitle"));
+					.setTitle(ul("embed.stats"));
 			}
 			statsEmbed.addFields({
 				name: title(field.name.replace("✏️", "").trim()),
@@ -165,7 +165,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				templateDamage[name] = dice;
 				if (!diceEmbed) {
 					diceEmbed = new EmbedBuilder()
-						.setTitle(ul("modals.diceTitle"));
+						.setTitle(ul("embed.dice"));
 				}
 				diceEmbed.addFields({
 					name: `${name}`,
@@ -189,7 +189,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	let templateEmbed: EmbedBuilder | undefined = undefined;
 	if (template.diceType || template.critical) {
 		templateEmbed = new EmbedBuilder()
-			.setTitle(ul("modals.template.title"))
+			.setTitle(ul("embed.template"))
 			.setColor("Aqua");
 		if (template.diceType)
 			templateEmbed.addFields({
@@ -213,10 +213,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		}
 	}
 	await interaction?.message?.delete();
-	const allEmbeds = [userDataEmbed];
-	if (statsEmbed) allEmbeds.push(statsEmbed);
-	if (diceEmbed) allEmbeds.push(diceEmbed);
-	if (templateEmbed) allEmbeds.push(templateEmbed);
+	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
 	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul);
 	await interaction.reply({ content: ul("modals.finished"), ephemeral: true });
 	return;
@@ -228,7 +225,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	let value = interaction.fields.getTextInputValue("damageValue");
 	if (!interaction.message) return;
 	const oldDiceEmbeds = getEmbeds(ul, interaction.message ?? undefined, first ? "user" : "damage")?.toJSON();
-	const diceEmbed = new EmbedBuilder().setTitle(ul("modals.diceTitle"));
+	const diceEmbed = new EmbedBuilder().setTitle(ul("embed.dice"));
 	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
 			diceEmbed.addFields(field);

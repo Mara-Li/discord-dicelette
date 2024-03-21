@@ -63,6 +63,19 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 	return newStats;
 }
 
+export function evalOneCombinaison(combinaison: string, stats: {[name: string]: string | number}) {
+	let formula = combinaison;
+	for (const [statName, value] of Object.entries(stats)) {
+		const regex = new RegExp(statName, "gi");
+		formula = formula.replace(regex, value.toString());
+	}
+	try {
+		return evaluate(formula);
+	} catch (error) {
+		throw new Error(`[error.invalidFormula, common.space]: ${combinaison}`);
+	}
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function verifyTemplateValue(template: any): StatisticalTemplate {
 	const statistiqueTemplate: StatisticalTemplate = {

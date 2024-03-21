@@ -4,19 +4,19 @@ import { TFunction } from "i18next";
 export function editUserButtons(ul: TFunction<"translation", undefined>, stats?: boolean, dice?: boolean, template?: boolean) {
 	const editUser = new ButtonBuilder()
 		.setCustomId("edit_stats")
-		.setLabel(ul("modals.edit.stats"))
+		.setLabel(ul("button.edit.stats"))
 		.setStyle(ButtonStyle.Primary);
 	const editDice = new ButtonBuilder()
 		.setCustomId("edit_dice")
-		.setLabel(ul("modals.edit.dice"))
+		.setLabel(ul("button.edit.dice"))
 		.setStyle(ButtonStyle.Primary);
 	const addDice = new ButtonBuilder()
 		.setCustomId("add_dice")
-		.setLabel(ul("modals.add.dice"))
+		.setLabel(ul("button.dice"))
 		.setStyle(ButtonStyle.Primary);
 	const editTemplate = new ButtonBuilder()
 		.setCustomId("edit_template")
-		.setLabel(ul("modals.edit.template"))
+		.setLabel(ul("button.edit.template"))
 		.setStyle(ButtonStyle.Primary);
 	if (stats && dice && template)	
 		return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice, editTemplate]);
@@ -30,11 +30,11 @@ export function editUserButtons(ul: TFunction<"translation", undefined>, stats?:
 export function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 	const continueButton = new ButtonBuilder()
 		.setCustomId("continue")
-		.setLabel(ul("modals.continue"))
+		.setLabel(ul("button.continue"))
 		.setStyle(ButtonStyle.Success);
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("cancel")
-		.setLabel(ul("modals.cancel"))
+		.setLabel(ul("button.cancel"))
 		.setStyle(ButtonStyle.Danger);
 	return new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton]);
 }
@@ -42,15 +42,15 @@ export function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 export function registerDmgButton(ul: TFunction<"translation", undefined>) {
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
-		.setLabel(ul("common.validate"))
+		.setLabel(ul("button.validate"))
 		.setStyle(ButtonStyle.Success);
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("cancel")
-		.setLabel(ul("modals.cancel"))
+		.setLabel(ul("button.cancel"))
 		.setStyle(ButtonStyle.Danger);
 	const registerDmgButton = new ButtonBuilder()
 		.setCustomId("add_dice_first")
-		.setLabel(ul("modals.register"))
+		.setLabel(ul("button.dice"))
 		.setStyle(ButtonStyle.Primary);
 	return new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
 }

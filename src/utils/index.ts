@@ -100,6 +100,11 @@ export function timestamp() {
 	return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
 }
 
+export function isArrayEqual(array1: string[]|undefined, array2: string[]|undefined) {
+	if (!array1 || !array2) return false;
+	return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
+}
+
 export function calculate(userStat: number, diceType?: string, override?: string|null, modificator: number = 0) {
 	const formula = getFormula(diceType);
 	let comparator: string = "";

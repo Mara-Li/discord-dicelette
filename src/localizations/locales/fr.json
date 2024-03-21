@@ -1,4 +1,15 @@
 {
+  "button": {
+    "cancel": "Annuler",
+    "continue": "Continuer",
+    "dice": "Enregistrer un dé",
+    "edit": {
+      "dice": "Modifier les dés",
+      "stats": "Modifier statistiques",
+      "template": "Modifier le modèle"
+    },
+    "validate": "Valider"
+  },
   "common": {
     "channel": "channel",
     "charName": "Nom du personnage",
@@ -40,11 +51,18 @@
       }
     }
   },
+  "embed": {
+    "add": {
+      "title": "Enregistrement de l'utilisateur"
+    },
+    "dice": "Dés de compétences",
+    "stats": "Statistiques",
+    "template": "Modèle",
+    "user": "Joueur enregistré"
+  },
   "error": {
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
-    "generatedDice": "\nDé généré par les tests :",
     "generic": "Une erreur est survenue :\n```\n{{e.message}}\n```",
-    "invalidFormula": "Formule invalide :",
     "mustBeGreater": "La valeur {{value}} doit être plus grande que {{min}}",
     "mustBeLower": "La valeur {{value}} doit être plus petite que {{max}}",
     "noDamage": "{{atq}} n'est pas enregistré dans {{charName}}.",
@@ -55,6 +73,7 @@
     "noValidDice": "Erreur : Dé invalide {{dice}}",
     "noValidDiceError": "Erreur : Dé invalide {{dice}}\n```{{error}}```",
     "notRegistered": "Vous n'êtes pas enregistré",
+    "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
     "totalExceededBy": "Le total de {{value}} est dépassé de {{max}}",
     "user": "Utilisateur introuvable"
@@ -105,9 +124,6 @@
     "set": "Logs configurés dans le channel {{channel}}"
   },
   "modals": {
-    "add": {
-      "dice": "Ajouter un dé"
-    },
     "added": "Statistiques ajoutées",
     "alreadySet": "Toutes les statistiques sont déjà définies",
     "cancel": "Annuler",
@@ -115,15 +131,7 @@
       "description": "Entrez le nom de votre personnage",
       "name": "Nom du personnage"
     },
-    "continue": "Continuer",
-    "diceTitle": "Dés de compétences",
-    "edit": {
-      "dice": "Modifier les dés enregistrés",
-      "stats": "Modifier les statistiques",
-      "template": "Modifier la template"
-    },
-    "editStats": "Merci de respecter la syntaxe fournie dans le champ",
-    "embedTitle": "Utilisateur enregistré",
+    "editStats": "⚠ Respecter la syntaxe",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
       "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",
@@ -131,13 +139,8 @@
     },
     "finished": "Statistiques terminées",
     "firstPage": "Enregistrement de l'utilisateur - Page 1/{{page}}",
-    "register": "Enregistrer un dé de compétence",
-    "registering": "Enregistrement de l'utilisateur",
-    "statsTitle": "Statistiques",
+    "statsUpdated": "Statistiques modifiées !",
     "steps": "Enregistrement de l'utilisateur - Page {{page}}/{{max}}",
-    "template": {
-      "title": "Template"
-    },
     "user": {
       "description": "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)",
       "name": "utilisateur"

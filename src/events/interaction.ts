@@ -5,9 +5,11 @@ import { commandsList } from "../commands/base";
 import { autCompleteCmd } from "../commands/dbroll";
 import { lError, ln } from "../localizations";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
+import { editStats } from "../utils/embeds/edit";
 import { parseEmbed } from "../utils/embeds/parse";
-import { createEmbedFirstPage, embedStatistiques, registerDamageDice, validateUser } from "../utils/embeds/register";
-import { showDamageDiceModals, showFirstPageModal, showStatistiqueModal } from "../utils/modals/register";
+import { createEmbedFirstPage, embedStatistiques, registerDamageDice, validateUser } from "../utils/embeds/register_embeds";
+import { showEditorStats } from "../utils/modals/edit_modals";
+import { showDamageDiceModals, showFirstPageModal, showStatistiqueModal } from "../utils/modals/register_modals";
 import { ensureEmbed } from "../utils/verify_template";
 
 export default (client: Client): void => {
@@ -71,6 +73,12 @@ export default (client: Client): void => {
 			const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 			if (user || isModerator)
 				showDamageDiceModals(interaction, interaction.customId.includes("first"));
+		} else if (interaction.isButton() && interaction.customId === "edit_stats") {
+			const embed = ensureEmbed(interaction.message);
+			const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
+			const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+			if (user || isModerator)
+				showEditorStats(interaction, ul);
 		} else if (interaction.isButton() && interaction.customId === "validate") {
 			try {
 				const template = await getTemplateWithDB(interaction);
@@ -118,6 +126,8 @@ export default (client: Client): void => {
 			}
 		} else if (interaction.isButton() && interaction.customId === "cancel") {
 			await interaction.message.edit({ components: [] });
+		} else if (interaction.isModalSubmit() && interaction.customId === "editStats") {
+			await editStats(interaction, ul);
 		} else if (interaction.isAutocomplete()) {
 			const interac = interaction as AutocompleteInteraction;
 			const command = autCompleteCmd.find(

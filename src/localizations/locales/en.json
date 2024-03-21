@@ -1,4 +1,15 @@
 {
+  "button": {
+    "cancel": "",
+    "continue": "",
+    "dice": "Save a die",
+    "edit": {
+      "dice": "Edit dice",
+      "stats": "Edit statistics",
+      "template": ""
+    },
+    "validate": ""
+  },
   "common": {
     "channel": "channel",
     "charName": "character name",
@@ -40,11 +51,18 @@
       }
     }
   },
+  "embed": {
+    "add": {
+      "title": ""
+    },
+    "dice": "",
+    "stats": "",
+    "template": "",
+    "user": ""
+  },
   "error": {
     "emptyDamage": "You have no ability dice saved.",
-    "generatedDice": "",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
-    "invalidFormula": "Invalid formula: ",
     "mustBeGreater": "The {{value}} value must be greater than {{min}}",
     "mustBeLower": "The {{value}} value must be smaller than {{max}}",
     "noDamage": "{{atq}} is not saved in {{charName}}.",
@@ -54,7 +72,8 @@
     "noThread": "No thread found - Please re-register user if thread has been deleted",
     "noValidDice": "Error: Invalid Dice {{dice}}",
     "noValidDiceError": "Error: Invalid die {{dice}}",
-    "notRegistered": "You are not registered",
+    "notRegistered": "",
+    "statNotFound": "",
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{value}} is exceeded by {{max}}",
     "user": "User not found"
@@ -106,7 +125,6 @@
   },
   "modals": {
     "add": {
-      "dice": "Add a die"
     },
     "added": "Statistics added",
     "alreadySet": "All statistics already set",
@@ -115,28 +133,19 @@
       "description": "Enter your character's name",
       "name": "Character name"
     },
-    "continue": "Continue",
-    "diceTitle": "",
     "edit": {
-      "dice": "Edit saved dice",
-      "stats": "Edit statistics",
-      "template": "Edit the template"
     },
-    "editStats": "Please respect the syntax provided in the field",
-    "embedTitle": "Registered user",
+    "editStats": "⚠ Respect the syntax",
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{max}}",
       "minAndMax": "Enter a value between {{min}} and {{max}}",
       "minOnly": "Enter a value greater than {{min}}."
     },
     "finished": "Statistics finished",
-    "firstPage": "User registration - Page 1/{{page}}",
-    "register": "Register a skill die",
-    "registering": "User registration",
-    "statsTitle": "",
-    "steps": "User registration - Page {{page}}/{{max}}",
+    "firstPage": "User Registration - Page 1/{{page}}",
+    "statsUpdated": "",
+    "steps": "User Registration - Page {{page}}/{{max}}",
     "template": {
-      "title": ""
     },
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
