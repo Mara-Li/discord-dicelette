@@ -44,10 +44,8 @@
   },
   "edit": {
     "options": {
-      "field": {
-      },
-      "value": {
-      }
+      "field": {},
+      "value": {}
     }
   },
   "embed": {
@@ -123,7 +121,10 @@
     "set": "Logs configurés dans le channel {{channel}}"
   },
   "modals": {
-    "added": "Statistiques ajoutées",
+    "added": {
+      "stats": "Statistiques ajoutés",
+      "dice": "Dés ajoutés"
+    },
     "alreadySet": "Toutes les statistiques sont déjà définies",
     "charName": {
       "description": "Entrez le nom de votre personnage",

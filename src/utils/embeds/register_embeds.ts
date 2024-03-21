@@ -91,11 +91,11 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				return;
 			}
 			await interaction.message.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
-			await interaction.reply({ content: ul("modals.added"), ephemeral: true });
+			await interaction.reply({ content: ul("modals.added.stats"), ephemeral: true });
 			return;	
 		}
 		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
-		await interaction.reply({ content: ul("modals.added"), ephemeral: true });
+		await interaction.reply({ content: ul("modals.added.stats"), ephemeral: true });
 		return;
 	} catch (error) {
 		const errorMsg = lError(error as Error, interaction);
@@ -224,9 +224,10 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
 	if (!interaction.message) return;
-	const oldDiceEmbeds = getEmbeds(ul, interaction.message ?? undefined, first ? "user" : "damage")?.toJSON();
-	const diceEmbed = new EmbedBuilder().setTitle(ul("embed.dice"));
-	if (oldDiceEmbeds?.fields)
+	const oldDiceEmbeds = first ? ensureEmbed(interaction.message).toJSON() : getEmbeds(ul, interaction.message ?? undefined, "damage")?.toJSON();
+	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder(oldDiceEmbeds) : new EmbedBuilder()
+		.setTitle(ul("embed.dice"));
+	if (oldDiceEmbeds?.fields && !first)
 		for (const field of oldDiceEmbeds.fields) {
 			diceEmbed.addFields(field);
 		}
@@ -253,15 +254,15 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		const templateEmbed = getEmbeds(ul, interaction.message ?? undefined, "template");
 		const allEmbeds = [userEmbed];
 		if (statsEmbed) allEmbeds.push(statsEmbed);
-		if (diceEmbed) allEmbeds.push(diceEmbed);
+		allEmbeds.push(diceEmbed);
 		if (templateEmbed) allEmbeds.push(templateEmbed);
-		const components = editUserButtons(ul, statsEmbed ? true: false, diceEmbed ? true : false, templateEmbed ? true : false);
+		const components = editUserButtons(ul, statsEmbed ? true: false, true, templateEmbed ? true : false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
-		await interaction.reply({ content: ul("modals.added"), ephemeral: true });
+		await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
 		return;
 	}
 	const components = registerDmgButton(ul);
 	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
-	await interaction.reply({ content: ul("modals.added"), ephemeral: true });
+	await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
 	return;
 }

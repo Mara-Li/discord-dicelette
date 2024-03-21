@@ -123,15 +123,14 @@
     "set": "Logs configured in channel {{channel}}"
   },
   "modals": {
-    "add": {
+    "added": {
+      "dice": "",
+      "stats": "Added statistiques"
     },
-    "added": "Statistics added",
     "alreadySet": "All statistics already set",
     "charName": {
       "description": "Enter your character's name",
       "name": "Character name"
-    },
-    "edit": {
     },
     "editStats": "⚠ Respect the syntax",
     "enterValue": {
