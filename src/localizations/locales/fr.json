@@ -78,7 +78,8 @@
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
     "totalExceededBy": "Le total de {{value}} est dépassé de {{max}}",
-    "user": "Utilisateur introuvable"
+    "user": "Utilisateur introuvable",
+    "userNotRegistered": "{{user}} n'est pas enregistré."
   },
   "generate": {
     "help": "- Le type de dé doit être un type valide (il sera testé quand vous enregistrerez le modèle).\n- La valeur doit être un nombre, et peut être optionnel. Si vous l'enlevez, le dé sera comparé à la statistique plutôt qu'une valeur.\n- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.\n- La formule permet d'éditer la valeur combinée au dé. Utiliser `$` pour symboliser la valeur (ie: `+$`, `-$`, `($-10)/2`...).\n- Une statistique peut être une combinaison d'autre statistique, comme `force+endurance`. Si la valeur de `combinaison` est définie, alors que les paramètres `min` et `max` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.\n- Vous pouvez aussi enregistrer des dés de compétences, qui seront ensuite utilisés pour la commande `/dbd` depuis la base de données. De plus, les utilisateurs pourront enregistrer leur propre dés de compétences.\n\nNoter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.\n\nIl est possible d'enregistrer uniquement des dés de compétences voire rien du tout, si vous souhaitez utiliser uniquement les commandes pour les dés de compétences.",
