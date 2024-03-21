@@ -20,8 +20,7 @@
     "space": " ",
     "statistic": "statistique",
     "total": "Total",
-    "user": "Player",
-    "validate": "Validate"
+    "user": "Player"
   },
   "dbRoll": {
     "description": "Roll a die with a recorded statistic",
@@ -128,7 +127,6 @@
     },
     "added": "Statistics added",
     "alreadySet": "All statistics already set",
-    "cancel": "Cancel",
     "charName": {
       "description": "Enter your character's name",
       "name": "Character name"

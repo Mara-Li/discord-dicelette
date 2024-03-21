@@ -20,8 +20,7 @@
     "space": " ",
     "statistic": "statistique",
     "total": "Total",
-    "user": "Joueur",
-    "validate": "Valider"
+    "user": "Joueur"
   },
   "dbRoll": {
     "description": "Lance un dé avec une statistique enregistrée",
@@ -126,7 +125,6 @@
   "modals": {
     "added": "Statistiques ajoutées",
     "alreadySet": "Toutes les statistiques sont déjà définies",
-    "cancel": "Annuler",
     "charName": {
       "description": "Entrez le nom de votre personnage",
       "name": "Nom du personnage"
