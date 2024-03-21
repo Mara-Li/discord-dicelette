@@ -75,6 +75,7 @@
     "noValidDiceError": "Error: Invalid die {{dice}}",
     "notRegistered": "You are not registered",
     "statNotFound": "Statistics not found! \nDid you make a typing error?",
+    "tooMuchDice": "",
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{value}} is exceeded by {{max}}",
     "user": "User not found"

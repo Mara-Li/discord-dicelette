@@ -5,7 +5,7 @@ import removeAccents from "remove-accents";
 import { StatisticalTemplate, User } from "../../interface";
 import { lError, ln } from "../../localizations";
 import { cleanSkillName, cleanStatsName, repostInThread, title } from "..";
-import { continueCancelButtons, editUserButtons,registerDmgButton } from "../buttons";
+import { continueCancelButtons, editUserButtons,registerDmgButton, validateCancelButton } from "../buttons";
 import { getUserByEmbed, registerUser } from "../db";
 import { getStatistiqueFields } from "../modals/parse_value";
 import { ensureEmbed, evalCombinaison, evalStatsDice } from "../verify_template";
@@ -251,6 +251,10 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 			value,
 			inline: true,
 		});}
+	const damageName = diceEmbed.toJSON().fields?.reduce((acc, field) => {
+		acc[cleanSkillName(field.name)] = field.value;
+		return acc;
+	}, {} as {[name: string]: string});
 	if (!first) {
 		const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
 		if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed
@@ -266,13 +270,22 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		if (!interaction.channel || !(interaction.channel instanceof ThreadChannel)) throw new Error(ul("error.noThread"));
 		let userName = userEmbed.toJSON().fields?.find(field => field.name === ul("common.charName"))?.value;
 		if (userName === ul("common.noSet")) userName = undefined;
-		const damageName = diceEmbed.toJSON().fields?.reduce((acc, field) => {
-			acc[cleanSkillName(field.name)] = field.value;
-			return acc;
-		}, {} as {[name: string]: string});
+
+		if (damageName && Object.keys(damageName).length > 25) {
+			await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
+			const components = editUserButtons(ul, statsEmbed ? true: false, false, templateEmbed ? true : false);
+			await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
+			return;
+		}
 		registerUser(userID, interaction, interaction.message.id, interaction.channel, userName, damageName ? Object.keys(damageName) : undefined, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
+		return;
+	}
+	if (damageName && Object.keys(damageName).length > 25) {
+		await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
+		const components = validateCancelButton(ul);
+		await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
 		return;
 	}
 	const components = registerDmgButton(ul);

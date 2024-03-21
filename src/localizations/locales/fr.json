@@ -75,6 +75,7 @@
     "noValidDiceError": "Erreur : Dé invalide {{dice}}\n```{{error}}```",
     "notRegistered": "Vous n'êtes pas enregistré",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
+    "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
     "totalExceededBy": "Le total de {{value}} est dépassé de {{max}}",
     "user": "Utilisateur introuvable"

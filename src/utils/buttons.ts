@@ -39,6 +39,18 @@ export function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 	return new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton]);
 }
 
+export function validateCancelButton(ul: TFunction<"translation", undefined>) {
+	const validateButton = new ButtonBuilder()
+		.setCustomId("validate")
+		.setLabel(ul("button.validate"))
+		.setStyle(ButtonStyle.Success);
+	const cancelButton = new ButtonBuilder()
+		.setCustomId("cancel")
+		.setLabel(ul("button.cancel"))
+		.setStyle(ButtonStyle.Danger);
+	return new ActionRowBuilder<ButtonBuilder>().addComponents([validateButton, cancelButton]);
+}
+
 export function registerDmgButton(ul: TFunction<"translation", undefined>) {
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
