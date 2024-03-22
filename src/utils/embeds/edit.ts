@@ -1,4 +1,4 @@
-import { APIEmbedField, Embed, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
+import { APIEmbedField, ButtonBuilder, Embed, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
@@ -91,6 +91,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		const toAdd = removeEmbedsFromList(list, "stats", ul);
 		const components = editUserButtons(ul, false, exists.damage, exists.template);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
+		await interaction.reply({ content: ul("modals.removed.stats"), ephemeral: true });
 	}
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
@@ -137,6 +138,20 @@ export async function editTemplate(interaction: ModalSubmitInteraction, ul: TFun
 			value,
 			inline: true
 		});
+	}
+	const fieldsExists = newEmbedTemplate.toJSON()?.fields;
+	if (!fieldsExists || fieldsExists.length === 0) {
+		//template was removed
+		const embedsList = getEmbedsList(ul, {which: "template", embed: newEmbedTemplate}, interaction.message);
+		const toAdd = removeEmbedsFromList(embedsList.list, "template", ul);
+		const components = editUserButtons(ul, embedsList.exists.stats, embedsList.exists.damage, false);
+		const inputForNewStats = new ButtonBuilder()
+			.setCustomId("add_template")
+			.setLabel(ul("button.add.template"));
+		components.addComponents(inputForNewStats);	
+		await interaction.message.edit({ embeds: toAdd, components: [components] });
+		await interaction.reply({ content: ul("modals.removed.template"), ephemeral: true });
+		return;
 	}
 	const embedsList = getEmbedsList(ul, {which: "template", embed: newEmbedTemplate}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
@@ -216,9 +231,8 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 		const embedsList = getEmbedsList(ul, {which: "damage", embed: newEmbedDice}, interaction.message);
 		const toAdd = removeEmbedsFromList(embedsList.list, "damage", ul);
 		const components = editUserButtons(ul, embedsList.exists.stats, false, embedsList.exists.template);
-		
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
-		await interaction.reply({ content: ul("modals.dice.removed"), ephemeral: true });
+		await interaction.reply({ content: ul("modals.removed.dice"), ephemeral: true });
 		return;
 	} 
 	const embedsList = getEmbedsList(ul, {which: "damage", embed: newEmbedDice}, interaction.message);

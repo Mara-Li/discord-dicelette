@@ -1,5 +1,9 @@
 {
   "button": {
+    "add": {
+      "stats": "Ajouter des statistiques",
+      "template": "Ajouter un modèle"
+    },
     "cancel": "Annuler",
     "continue": "Continuer",
     "dice": "Enregistrer un dé",
@@ -145,7 +149,6 @@
       "name": "Nom du personnage"
     },
     "dice": {
-      "removed": "Les dés ont été supprimés de l'utilisateur"
     },
     "editStats": "⚠ Respecter la syntaxe. Utiliser 0 comme valeur pour supprimer le champ",
     "editTemplate": "Utiliser \"0\" pour supprimer la valeur",
@@ -156,6 +159,11 @@
     },
     "finished": "Statistiques terminées",
     "firstPage": "Enregistrement de l'utilisateur - Page 1/{{page}}",
+    "removed": {
+      "dice": "Les dés ont été supprimés de l'utilisateur",
+      "stats": "Les statistiques ont bien été supprimés",
+      "template": "Le modèle a bien été supprimé"
+    },
     "statsUpdated": "Statistiques modifiées !",
     "steps": "Enregistrement de l'utilisateur - Page {{page}}/{{max}}",
     "templateUpdated": "Modèle mis-à-jour",

@@ -1,5 +1,9 @@
 {
   "button": {
+    "add": {
+      "stats": "",
+      "template": "Add a template"
+    },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -145,7 +149,6 @@
       "name": "Character name"
     },
     "dice": {
-      "removed": "The dice have been removed from the user"
     },
     "editStats": "⚠ Respect the syntax. Use 0 as value to delete field.",
     "editTemplate": "",
@@ -156,6 +159,11 @@
     },
     "finished": "Statistics finished",
     "firstPage": "User Registration - Page 1/{{page}}",
+    "removed": {
+      "dice": "The dice have been removed from the user",
+      "stats": "",
+      "template": ""
+    },
     "statsUpdated": "Stats changed!",
     "steps": "User Registration - Page {{page}}/{{max}}",
     "template": {
