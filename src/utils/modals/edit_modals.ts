@@ -44,39 +44,13 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 	await interaction.showModal(modal);
 }
 
-export async function showEditTemplate(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
-	const template = getEmbeds(ul, interaction.message, "template");
-	
-	const templateFields = template ? parseEmbedFields(template.toJSON() as Embed) : {
-		[ul("roll.critical.failure")] : "1",
-		[ul("roll.critical.success")] : "20",
-		[ul("common.dice")] : "1d20"
-	};
-	const modal = new ModalBuilder()
-		.setCustomId("editTemplate")
-		.setTitle(title(ul("modals.edit.template")));
-
-	for (const [name, value] of Object.entries(templateFields)) {
-		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-			new TextInputBuilder()
-				.setCustomId(name)
-				.setLabel(name)
-				.setRequired(false)
-				.setStyle(TextInputStyle.Short)
-				.setValue(value),
-		);
-		modal.addComponents(input);
-	}
-	await interaction.showModal(modal);
-}
-
 export async function showEditDice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
 	const diceEmbed = getEmbeds(ul, interaction.message, "damage");
 	if (!diceEmbed) throw new Error(ul("error.invalidDice.embeds"));
 	const diceFields = parseEmbedFields(diceEmbed.toJSON() as Embed);
 	let dices = "";
 	for (const [skill, dice] of Object.entries(diceFields)) {
-		dices += `- ${skill}: ${dice}\n`;
+		dices += `- ${skill}${ul("common.space")}: ${dice}\n`;
 	}
 	const modal = new ModalBuilder()
 		.setCustomId("editDice")

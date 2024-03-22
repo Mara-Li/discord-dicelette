@@ -90,7 +90,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 	await interaction.message.edit({ embeds: list });
-	await interaction.reply({ content: ul("modals.edit.stats"), ephemeral: true });
+	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
 }
 
 export async function editDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
@@ -99,7 +99,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	if (!diceEmbeds) return;
 	const values = interaction.fields.getTextInputValue("allDice");
 	const valuesAsDice = values.split("\n- ").map(dice => {
-		const [name, value] = dice.split(": ");
+		const [name, value] = dice.split(/ ?: ?/);
 		return { name: removeAccents(name.replace("- ", "").trim().toLowerCase()), value };
 	});
 	const dices = valuesAsDice.reduce((acc, { name, value }) => {

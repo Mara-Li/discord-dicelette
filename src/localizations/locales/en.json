@@ -69,7 +69,8 @@
   },
   "embeds": {
     "edit": {
-      "dice": ""
+      "dice": "",
+      "stats": "Stats changed!"
     }
   },
   "error": {

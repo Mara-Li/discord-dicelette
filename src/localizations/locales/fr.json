@@ -69,7 +69,8 @@
   },
   "embeds": {
     "edit": {
-      "dice": "Dés modifiés"
+      "dice": "Dés modifiés",
+      "stats": "Statistiques modifiées !"
     }
   },
   "error": {
@@ -153,13 +154,12 @@
       "description": "Entrez le nom de votre personnage",
       "name": "Nom du personnage"
     },
-    "dice": {
-    },
     "edit": {
-      "dice": "⚠ Suivez la syntaxe.",
-      "stats": "Statistiques modifiées !",
-      "template": "Utiliser 0 ou X pour supprimer la valeur."
+      "dice": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
+      "stats": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
+      "template": ""
     },
+    "editTemplate": "",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
       "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",

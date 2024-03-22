@@ -6,10 +6,8 @@ import { StatisticalTemplate } from "../interface";
 import { lError, ln } from "../localizations";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
 import { editDice, editStats } from "../utils/embeds/edit";
-import { validateUser } from "../utils/embeds/register_embeds";
-import {showEditDice, showEditTemplate } from "../utils/modals/edit_modals";
 import { showFirstPageModal } from "../utils/modals/register_modals";
-import { add_dice,continuePage, edit_stats } from "../utils/submit/button";
+import { add_dice,cancel,continuePage, edit_dice, edit_stats, validate_user } from "../utils/submit/button";
 import { damageDice, firstPage, pageNumber } from "../utils/submit/modal";
 
 export default (client: Client): void => {
@@ -83,7 +81,7 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 		await firstPage(interaction);
 	} else if (interaction.customId === "editDice") {
 		await editDice(interaction, ul);
-	}
+	} 
 }
 
 async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User, template: StatisticalTemplate) {
@@ -96,8 +94,7 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 	} else if (interaction.customId === "edit_stats") {
 		await edit_stats(interaction, ul, interactionUser);
 	} else if (interaction.customId === "validate") {
-		await validateUser(interaction, template);
-	} else if (interaction.customId === "cancel") await interaction.message.edit({ components: [] });
-	else if (interaction.customId === "edit_template" || interaction.customId === "add_template") await showEditTemplate(interaction, ul);
-	else if (interaction.customId === "edit_dice") await showEditDice(interaction, ul);
+		await validate_user(interaction, ul, interactionUser, template);
+	} else if (interaction.customId === "cancel") await cancel(interaction, ul, interactionUser);
+	else if (interaction.customId === "edit_dice") await edit_dice(interaction, ul, interactionUser);
 }
