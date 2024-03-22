@@ -21,10 +21,10 @@ export function evalStatsDice(testDice: string, stats?: {[name: string]: number}
 		}
 	}	
 	try {
-		roll(replaceFormulaInDice(dice));
+		if (!roll(replaceFormulaInDice(dice))) throw new Error(`[error.invalidDice.withoutDice, common.space] ${dice}`);
 		return testDice;
 	} catch (error) {
-		throw new Error(`[error.invalidDice, common.space]: ${testDice}\n${(error as Error).message}`);
+		throw new Error(`[error.invalidDice.withoutDice, common.space]: ${testDice}\n${(error as Error).message}`);
 	}
 }
 
@@ -239,7 +239,7 @@ export function testFormula(template: StatisticalTemplate) {
 			roll(template.diceType);
 			return true;
 		} catch(e) {
-			throw new Error(`[error.invalidDice] ${template.diceType}`);
+			throw new Error(`[error.invalidDice.withoutDice] ${template.diceType}`);
 		}
 	}
 	const formule = formula.formula?.replace("$", randomStatValue.toString());

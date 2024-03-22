@@ -49,7 +49,7 @@ export const diceRoll = {
 			await rollWithInteraction(interaction, dice, channel);
 		} catch (error) {
 			console.error("no valid dice :", dice, error);
-			await interaction.reply({ content: ul("error.noValidDiceError", {error: (error as Error).message, dice}), ephemeral: true });
+			await interaction.reply({ content: ul("error.invalidDice.withError", {error: (error as Error).message, dice}), ephemeral: true });
 			return;
 		}
 	},

@@ -42,3 +42,25 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 	modal.addComponents(input);
 	await interaction.showModal(modal);
 }
+
+export async function showEditTemplate(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
+	const template = getEmbeds(ul, interaction.message, "template");
+	if (!template) throw new Error(ul("error.noTemplate"));
+	const templateFields = parseEmbedFields(template.toJSON() as Embed);
+	const modal = new ModalBuilder()
+		.setCustomId("editTemplate")
+		.setTitle(title(ul("common.template")));
+
+	for (const [name, value] of Object.entries(templateFields)) {
+		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+			new TextInputBuilder()
+				.setCustomId(name)
+				.setLabel(name)
+				.setRequired(false)
+				.setStyle(TextInputStyle.Short)
+				.setValue(value),
+		);
+		modal.addComponents(input);
+	}
+	await interaction.showModal(modal);
+}

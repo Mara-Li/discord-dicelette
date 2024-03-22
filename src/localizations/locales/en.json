@@ -19,6 +19,7 @@
     "page": "Page {{nb}}",
     "space": " ",
     "statistic": "statistique",
+    "template": "Model",
     "total": "Total",
     "user": "Player"
   },
@@ -62,20 +63,23 @@
   "error": {
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
+    "invalidDice": {
+      "withDice": "Error: Invalid die {{dice}}",
+      "withError": "Error: Invalid die {{dice}}\n\n```{{error}}```",
+      "withoutDice": "Error: Invalid die"
+    },
     "mustBeGreater": "The {{value}} value must be greater than {{min}}",
     "mustBeLower": "The {{value}} value must be smaller than {{max}}",
     "noDamage": "{{atq}} is not saved in {{charName}}.",
     "noDice": "You cannot issue this command without having a registered die type!",
     "noEmbed": "No embeds found",
-    "noMessage": "",
+    "noMessage": "No messages found.",
     "noStats": "This command cannot be used: no statistics have been recorded.",
     "noTemplate": "No template or channel configured",
     "noThread": "No thread found - Please re-register user if thread has been deleted",
-    "noValidDice": "Error: Invalid Dice {{dice}}",
-    "noValidDiceError": "Error: Invalid die {{dice}}",
     "notRegistered": "You are not registered",
     "statNotFound": "Statistics not found! \nDid you make a typing error?",
-    "tooMuchDice": "",
+    "tooMuchDice": "Too many dice have been saved! \nYou cannot have more than 25 dice saved.",
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{value}} is exceeded by {{max}}",
     "user": "User not found",
@@ -128,7 +132,7 @@
   },
   "modals": {
     "added": {
-      "dice": "",
+      "dice": "Dice added",
       "stats": "Added statistiques"
     },
     "alreadySet": "All statistics already set",
@@ -148,6 +152,7 @@
     "steps": "User Registration - Page {{page}}/{{max}}",
     "template": {
     },
+    "templateUpdated": "Updated model",
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
       "name": "user"

@@ -1,11 +1,12 @@
-import { EmbedBuilder, ModalSubmitInteraction } from "discord.js";
+import { Embed, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
-import { title } from "..";
+import { roll } from "../../dice";
+import { calculate, formatRollCalculation, title } from "..";
 import { getTemplateWithDB } from "../db";
 import { evalOneCombinaison } from "../verify_template";
-import { getEmbeds, getEmbedsList } from "./parse";
+import { getEmbeds, getEmbedsList, parseEmbedFields } from "./parse";
 
 export async function editStats(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
 	if (!interaction.message) return;
@@ -78,6 +79,51 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	const embedsList = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList });
 	await interaction.reply({ content: ul("modals.statsUpdated"), ephemeral: true });
-	
 }
 
+
+
+export async function editTemplate(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
+	if (!interaction.message) return;
+	const templateEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "template");
+	if (!templateEmbeds) return;
+	const templateFields = parseEmbedFields(templateEmbeds.toJSON() as Embed);
+	const newEmbedTemplate = new EmbedBuilder()
+		.setTitle(title(ul("embed.template")))
+		.setColor("#0099ff");
+	
+	for (const [name, oldValue] of Object.entries(templateFields)) {
+		const value = interaction.fields.fields.has(name) ? interaction.fields.fields.get(name)?.value : oldValue;
+		if (!value) continue;
+		if (name === ul("register.embed.dice") && oldValue !== value) {
+			//verify dice with one value from the statistical embeds
+			const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
+			if (!statsEmbeds) {
+				if (!roll(value)) {
+					throw new Error(ul("error.invalidDice.withDice", {dice: value}));
+				}
+				continue;
+			}
+			const stats = parseEmbedFields(statsEmbeds.toJSON() as Embed);
+			//take first value
+			const firstStat = Object.values(stats)[0];
+			let result = parseInt(firstStat, 10);
+			if (isNaN(result)) {
+				result = parseInt(firstStat.split("`").filter(x => x.trim().length > 0)[1].replace("=", "").trim(), 10);
+			}
+			const {calculation, comparator} = calculate(result, value, undefined, 0);
+			const dice = formatRollCalculation(value, comparator, "", calculation);
+			if (!roll(dice)) {
+				throw new Error(ul("error.invalidDice.withDice", {dice}));
+			}
+		}
+		newEmbedTemplate.addFields({
+			name: title(name),
+			value,
+			inline: true
+		});
+	}
+	const embedsList = getEmbedsList(ul, {which: "template", embed: newEmbedTemplate}, interaction.message);
+	await interaction.message.edit({ embeds: embedsList });
+	await interaction.reply({ content: ul("modals.templateUpdated"), ephemeral: true });
+}

@@ -19,6 +19,7 @@
     "page": "Page {{nb}}",
     "space": " ",
     "statistic": "statistique",
+    "template": "Modèle",
     "total": "Total",
     "user": "Joueur"
   },
@@ -44,10 +45,8 @@
   },
   "edit": {
     "options": {
-      "field": {
-      },
-      "value": {
-      }
+      "field": {},
+      "value": {}
     }
   },
   "embed": {
@@ -71,8 +70,11 @@
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
     "noTemplate": "Aucun modèle ou channel configuré",
     "noThread": "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
-    "noValidDice": "Erreur : Dé invalide {{dice}}",
-    "noValidDiceError": "Erreur : Dé invalide {{dice}}\n```{{error}}```",
+    "invalidDice": {
+      "withDice": "Erreur : Dé invalide {{dice}}",
+      "withError": "Erreur : Dé invalide {{dice}}\n```{{error}}```",
+      "withoutDice": "Erreur : Dé invalide"
+    },
     "notRegistered": "Vous n'êtes pas enregistré",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
@@ -146,6 +148,7 @@
     "firstPage": "Enregistrement de l'utilisateur - Page 1/{{page}}",
     "statsUpdated": "Statistiques modifiées !",
     "steps": "Enregistrement de l'utilisateur - Page {{page}}/{{max}}",
+    "templateUpdated": "Modèle mis-à-jour",
     "user": {
       "description": "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)",
       "name": "utilisateur"
@@ -166,7 +169,7 @@
       "comparator": "Comparateur :",
       "damage": "Dés de dégâts",
       "description": "Clickez sur le bouton pour enregistrer un personnage",
-      "dice": "Dé",
+      "dice": "Dé(s)",
       "noValue": "Aucune valeur",
       "registered": "Modèle enregistré !",
       "title": "Modèle"

@@ -24,7 +24,7 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	const rollDice = roll(dice);
 	if (!rollDice) {
 		console.error("no valid dice :", dice);
-		await interaction.reply({ content: ul("error.noValidDice", {dice}), ephemeral: true });
+		await interaction.reply({ content: ul("error.invalidDice.withDice", {dice}), ephemeral: true });
 		return;
 	}
 	const parser = parseResult(rollDice, ul, critical);
