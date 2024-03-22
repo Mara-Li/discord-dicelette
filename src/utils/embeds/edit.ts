@@ -107,23 +107,21 @@ export async function editTemplate(interaction: ModalSubmitInteraction, ul: TFun
 		if (name === ul("register.embed.dice") && oldValue !== value) {
 			//verify dice with one value from the statistical embeds
 			const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
-			if (!statsEmbeds) {
-				if (!roll(value)) {
-					throw new Error(ul("error.invalidDice.withDice", {dice: value}));
+			if (!statsEmbeds || !roll(value)) {
+				throw new Error(ul("error.invalidDice.withDice", {dice: value}));
+			} else {
+				const stats = parseEmbedFields(statsEmbeds.toJSON() as Embed);
+				//take first value
+				const firstStat = Object.values(stats)[0];
+				let result = parseInt(firstStat, 10);
+				if (isNaN(result)) {
+					result = parseInt(firstStat.split("`").filter(x => x.trim().length > 0)[1].replace("=", "").trim(), 10);
 				}
-				continue;
-			}
-			const stats = parseEmbedFields(statsEmbeds.toJSON() as Embed);
-			//take first value
-			const firstStat = Object.values(stats)[0];
-			let result = parseInt(firstStat, 10);
-			if (isNaN(result)) {
-				result = parseInt(firstStat.split("`").filter(x => x.trim().length > 0)[1].replace("=", "").trim(), 10);
-			}
-			const {calculation, comparator} = calculate(result, value, undefined, 0);
-			const dice = formatRollCalculation(value, comparator, "", calculation);
-			if (!roll(dice)) {
-				throw new Error(ul("error.invalidDice.withDice", {dice}));
+				const {calculation, comparator} = calculate(result, value, undefined, 0);
+				const dice = formatRollCalculation(value, comparator, "", calculation);
+				if (!roll(dice)) {
+					throw new Error(ul("error.invalidDice.withDice", {dice}));
+				}
 			}
 		}
 		newEmbedTemplate.addFields({
