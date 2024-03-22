@@ -64,3 +64,26 @@ export async function showEditTemplate(interaction: ButtonInteraction, ul: TFunc
 	}
 	await interaction.showModal(modal);
 }
+
+export async function showEditDice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
+	const diceEmbed = getEmbeds(ul, interaction.message, "damage");
+	if (!diceEmbed) throw new Error(ul("error.invalidDice.embeds"));
+	const diceFields = parseEmbedFields(diceEmbed.toJSON() as Embed);
+	let dices = "";
+	for (const [skill, dice] of Object.keys(diceFields)) {
+		dices += `- ${skill}: ${dice}\n`;
+	}
+	const modal = new ModalBuilder()
+		.setCustomId("editDice")
+		.setTitle(title(ul("common.dice")));
+	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+		new TextInputBuilder()
+			.setCustomId("allDice")
+			.setLabel(ul("modals.editStats"))
+			.setRequired(true)
+			.setStyle(TextInputStyle.Paragraph)
+			.setValue(dices),
+	);
+	modal.addComponents(input);
+	await interaction.showModal(modal);
+}

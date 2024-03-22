@@ -64,6 +64,7 @@
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
     "invalidDice": {
+      "embeds": "",
       "withDice": "Error: Invalid die {{dice}}",
       "withError": "Error: Invalid die {{dice}}\n\n```{{error}}```",
       "withoutDice": "Error: Invalid die"
