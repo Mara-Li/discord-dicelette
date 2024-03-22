@@ -5,7 +5,7 @@ import { autCompleteCmd,commandsList } from "../commands";
 import { StatisticalTemplate } from "../interface";
 import { lError, ln } from "../localizations";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
-import { editStats, editTemplate } from "../utils/embeds/edit";
+import { editDice, editStats, editTemplate } from "../utils/embeds/edit";
 import { validateUser } from "../utils/embeds/register_embeds";
 import {showEditDice, showEditTemplate } from "../utils/modals/edit_modals";
 import { showFirstPageModal } from "../utils/modals/register_modals";
@@ -83,6 +83,8 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 		await firstPage(interaction);
 	} else if (interaction.customId === "editTemplate") {
 		await editTemplate(interaction, ul);
+	} else if (interaction.customId === "editDice") {
+		await editDice(interaction, ul);
 	}
 }
 

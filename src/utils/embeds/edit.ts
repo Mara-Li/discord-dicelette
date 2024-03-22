@@ -1,4 +1,4 @@
-import { APIEmbedField, ButtonBuilder, Embed, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
+import { APIEmbedField, Embed, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
@@ -145,10 +145,6 @@ export async function editTemplate(interaction: ModalSubmitInteraction, ul: TFun
 		const embedsList = getEmbedsList(ul, {which: "template", embed: newEmbedTemplate}, interaction.message);
 		const toAdd = removeEmbedsFromList(embedsList.list, "template", ul);
 		const components = editUserButtons(ul, embedsList.exists.stats, embedsList.exists.damage, false);
-		const inputForNewStats = new ButtonBuilder()
-			.setCustomId("add_template")
-			.setLabel(ul("button.add.template"));
-		components.addComponents(inputForNewStats);	
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.template"), ephemeral: true });
 		return;
