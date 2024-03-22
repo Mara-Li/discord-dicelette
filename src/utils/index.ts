@@ -90,7 +90,7 @@ export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInt
 	userTemplate.userName = userTemplate.userName ? userTemplate.userName.toLowerCase() : undefined;
 	const msg = await thread.send({ 
 		embeds: embed,
-		components: [editUserButtons(ul, which.stats, which.dice, which.template)]},);
+		components: [editUserButtons(ul, which.stats, which.dice)]},);
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
 	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
 }
