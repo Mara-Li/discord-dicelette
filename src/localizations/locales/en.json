@@ -169,6 +169,7 @@
     },
     "finished": "Statistics finished",
     "firstPage": "User Registration - Page 1/{{page}}",
+    "noPermission": "",
     "removed": {
       "dice": "The dice have been removed from the user",
       "stats": "",

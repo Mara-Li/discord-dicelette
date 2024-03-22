@@ -6,8 +6,7 @@ import { StatisticalTemplate } from "../interface";
 import { lError, ln } from "../localizations";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
 import { editDice, editStats } from "../utils/embeds/edit";
-import { showFirstPageModal } from "../utils/modals/register_modals";
-import { add_dice,cancel,continuePage, edit_dice, edit_stats, validate_user } from "../utils/submit/button";
+import { add_dice,cancel,continuePage, edit_dice, edit_stats, register_user, validate_user } from "../utils/submit/button";
 import { damageDice, firstPage, pageNumber } from "../utils/submit/modal";
 
 export default (client: Client): void => {
@@ -86,15 +85,15 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 
 async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User, template: StatisticalTemplate) {
 	if (interaction.customId === "register")
-		await showFirstPageModal(interaction, template);
+		await register_user(interaction, template, interactionUser, ul);
 	else if (interaction.customId=="continue") {
-		await continuePage(interaction, template, ul);
+		await continuePage(interaction, template, ul, interactionUser);
 	} else if (interaction.customId.includes("add_dice")) {
 		await add_dice(interaction, ul, interactionUser);
 	} else if (interaction.customId === "edit_stats") {
 		await edit_stats(interaction, ul, interactionUser);
 	} else if (interaction.customId === "validate") {
-		await validate_user(interaction, ul, interactionUser, template);
+		await validate_user(interaction, interactionUser, template, ul);
 	} else if (interaction.customId === "cancel") await cancel(interaction, ul, interactionUser);
 	else if (interaction.customId === "edit_dice") await edit_dice(interaction, ul, interactionUser);
 }

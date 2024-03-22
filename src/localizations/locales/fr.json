@@ -167,6 +167,7 @@
     },
     "finished": "Statistiques terminées",
     "firstPage": "Enregistrement de l'utilisateur - Page 1/{{page}}",
+    "noPermission": "Vous n'avez pas les autorisations pour faire cela",
     "removed": {
       "dice": "Les dés ont été supprimés de l'utilisateur",
       "stats": "Les statistiques ont bien été supprimés",
