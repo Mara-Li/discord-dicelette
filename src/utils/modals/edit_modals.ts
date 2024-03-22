@@ -46,8 +46,12 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 
 export async function showEditTemplate(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
 	const template = getEmbeds(ul, interaction.message, "template");
-	if (!template) throw new Error(ul("error.noTemplate"));
-	const templateFields = parseEmbedFields(template.toJSON() as Embed);
+	
+	const templateFields = template ? parseEmbedFields(template.toJSON() as Embed) : {
+		[ul("roll.critical.failure")] : "1",
+		[ul("roll.critical.success")] : "20",
+		[ul("common.dice")] : "1d20"
+	};
 	const modal = new ModalBuilder()
 		.setCustomId("editTemplate")
 		.setTitle(title(ul("modals.edit.template")));
@@ -88,3 +92,4 @@ export async function showEditDice(interaction: ButtonInteraction, ul: TFunction
 	modal.addComponents(input);
 	await interaction.showModal(modal);
 }
+

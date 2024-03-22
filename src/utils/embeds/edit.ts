@@ -96,8 +96,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 export async function editTemplate(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
 	if (!interaction.message) return;
 	const templateEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "template");
-	if (!templateEmbeds) return;
-	const templateFields = parseEmbedFields(templateEmbeds.toJSON() as Embed);
+	const templateFields = templateEmbeds ? parseEmbedFields(templateEmbeds.toJSON() as Embed) : {};
 	const newEmbedTemplate = new EmbedBuilder()
 		.setTitle(title(ul("embed.template")))
 		.setColor("#0099ff");

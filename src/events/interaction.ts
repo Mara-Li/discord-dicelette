@@ -100,6 +100,6 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 	} else if (interaction.customId === "validate") {
 		await validateUser(interaction, template);
 	} else if (interaction.customId === "cancel") await interaction.message.edit({ components: [] });
-	else if (interaction.customId === "edit_template") await showEditTemplate(interaction, ul);
+	else if (interaction.customId === "edit_template" || interaction.customId === "add_template") await showEditTemplate(interaction, ul);
 	else if (interaction.customId === "edit_dice") await showEditDice(interaction, ul);
 }
