@@ -67,6 +67,11 @@
     "template": "Model",
     "user": "Registered player"
   },
+  "embeds": {
+    "edit": {
+      "dice": ""
+    }
+  },
   "error": {
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
@@ -152,7 +157,7 @@
     },
     "edit": {
       "dice": "⚠ Respect the syntax. \nUse \"X\", \"0\" or leave blank to delete.",
-      "stats": "⚠ Respect the syntax. Use \"X\" or leave blank to delete.",
+      "stats": "Stats changed!",
       "template": "Use \"0\" or \"X\" to remove the value."
     },
     "editTemplate": "Use \"0\" or \"X\" to remove the value",
@@ -168,7 +173,6 @@
       "stats": "",
       "template": ""
     },
-    "statsUpdated": "Stats changed!",
     "steps": "User Registration - Page {{page}}/{{max}}",
     "template": {
     },

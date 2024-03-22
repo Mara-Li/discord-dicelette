@@ -264,7 +264,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		if (statsEmbed) allEmbeds.push(statsEmbed);
 		allEmbeds.push(diceEmbed);
 		if (templateEmbed) allEmbeds.push(templateEmbed);
-		const components = editUserButtons(ul, statsEmbed ? true: false, true, templateEmbed ? true : false);
+		const components = editUserButtons(ul, statsEmbed ? true: false, true);
 		const userID = userEmbed.toJSON().fields?.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "");
 		if (!userID) throw new Error(ul("error.user"));
 		if (!interaction.channel || !(interaction.channel instanceof ThreadChannel)) throw new Error(ul("error.noThread"));
@@ -273,7 +273,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 
 		if (damageName && Object.keys(damageName).length > 25) {
 			await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
-			const components = editUserButtons(ul, statsEmbed ? true: false, false, templateEmbed ? true : false);
+			const components = editUserButtons(ul, statsEmbed ? true: false, false);
 			await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 			return;
 		}

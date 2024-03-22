@@ -67,6 +67,11 @@
     "template": "Modèle",
     "user": "Joueur enregistré"
   },
+  "embeds": {
+    "edit": {
+      "dice": "Dés modifiés"
+    }
+  },
   "error": {
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{e.message}}\n```",
@@ -151,11 +156,10 @@
     "dice": {
     },
     "edit": {
-      "dice": "⚠ Respecter la syntaxe. Utiliser \"X\", \"0\" ou laissez une valeur vide pour supprimer. ",
-      "stats": "⚠ Respecter la syntaxe. Utiliser \"X\" ou laissez une valeur vide pour supprimer. ",
-      "template": "Utiliser \"0\" ou \"X\" pour supprimer la valeur."
+      "dice": "⚠ Suivez la syntaxe.",
+      "stats": "Statistiques modifiées !",
+      "template": "Utiliser 0 ou X pour supprimer la valeur."
     },
-    "editTemplate": "Utiliser \"0\" ou \"X\" pour supprimer la valeur",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
       "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",
@@ -168,7 +172,6 @@
       "stats": "Les statistiques ont bien été supprimés",
       "template": "Le modèle a bien été supprimé"
     },
-    "statsUpdated": "Statistiques modifiées !",
     "steps": "Enregistrement de l'utilisateur - Page {{page}}/{{max}}",
     "templateUpdated": "Modèle mis-à-jour",
     "user": {

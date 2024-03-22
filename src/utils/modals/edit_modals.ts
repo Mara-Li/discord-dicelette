@@ -75,7 +75,7 @@ export async function showEditDice(interaction: ButtonInteraction, ul: TFunction
 	if (!diceEmbed) throw new Error(ul("error.invalidDice.embeds"));
 	const diceFields = parseEmbedFields(diceEmbed.toJSON() as Embed);
 	let dices = "";
-	for (const [skill, dice] of Object.keys(diceFields)) {
+	for (const [skill, dice] of Object.entries(diceFields)) {
 		dices += `- ${skill}: ${dice}\n`;
 	}
 	const modal = new ModalBuilder()
