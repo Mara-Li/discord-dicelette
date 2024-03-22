@@ -150,8 +150,8 @@
     },
     "dice": {
     },
-    "editStats": "⚠ Respecter la syntaxe. Utiliser 0 comme valeur pour supprimer le champ",
-    "editTemplate": "Utiliser \"0\" pour supprimer la valeur",
+    "editStats": "⚠ Respecter la syntaxe. Utiliser X comme valeur pour supprimer le champ",
+    "editTemplate": "Utiliser \"0\" ou \"X\" pour supprimer la valeur",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
       "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",
