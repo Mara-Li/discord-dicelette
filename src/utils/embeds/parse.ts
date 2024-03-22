@@ -30,6 +30,15 @@ export function getEmbedsList(ul: TFunction<"translation", undefined>, embedToRe
 	return createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
 }
 
+export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "stats" | "damage" | "template", ul: TFunction<"translation", undefined>) {
+	return embeds.filter(embed => {
+		if (which === "user") return embed.toJSON().title !== ul("embed.user");
+		else if (which === "stats") return embed.toJSON().title !== ul("embed.stats");
+		else if (which === "damage") return embed.toJSON().title !== ul("embed.dice");
+		else if (which === "template") return embed.toJSON().title !== ul("embed.template");
+	});
+}
+
 export function parseEmbedFields(embed: Embed) {
 	const fields = embed.fields;
 	const parsedFields: {[name: string]: string} = {};

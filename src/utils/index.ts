@@ -1,4 +1,4 @@
-import { BaseInteraction, CommandInteraction, EmbedBuilder, ForumChannel, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { BaseInteraction, CommandInteraction, Embed, EmbedBuilder, ForumChannel, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
 import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
@@ -11,6 +11,7 @@ import {User} from "../interface";
 import { ln } from "../localizations";
 import { editUserButtons } from "./buttons";
 import { registerUser } from "./db";
+import { parseEmbedFields } from "./embeds/parse";
 import { findForumChannel,findThread } from "./find";
 import { getFormula } from "./verify_template";
 
@@ -187,4 +188,18 @@ export function formatRollCalculation(dice: string, comparator: string, comments
 export function filterChoices(choices: string[], focused: string) {
 	return choices.filter(choice => removeAccents(choice).toLowerCase().includes(removeAccents(focused).toLowerCase()));
 
+}
+
+export function parseStatsString(statsEmbed: EmbedBuilder) {
+	const stats = parseEmbedFields(statsEmbed.toJSON() as Embed);
+	const parsedStats: {[name: string]: number} = {};
+	for (const [name, value] of Object.entries(stats)) {
+		let number = parseInt(value, 10);
+		if (isNaN(number)) {
+			const stat = value.split("`").filter(x => x.trim().length > 0)[1].replace("=", "").trim();
+			number = parseInt(stat, 10);
+		}
+		parsedStats[name] = number;
+	}
+	return parsedStats;
 }

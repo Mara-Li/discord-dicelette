@@ -7,7 +7,7 @@ import { lError, ln } from "../localizations";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
 import { editStats, editTemplate } from "../utils/embeds/edit";
 import { validateUser } from "../utils/embeds/register_embeds";
-import {showEditTemplate } from "../utils/modals/edit_modals";
+import {showEditDice, showEditTemplate } from "../utils/modals/edit_modals";
 import { showFirstPageModal } from "../utils/modals/register_modals";
 import { add_dice,continuePage, edit_stats } from "../utils/submit/button";
 import { damageDice, firstPage, pageNumber } from "../utils/submit/modal";
@@ -78,7 +78,7 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 	} else if (interaction.customId.includes("page")) {
 		await pageNumber(interaction, ul);
 	} else if (interaction.customId === "editStats") {
-		await editStats(interaction, ul);
+		await editStats(interaction, ul, );
 	} else if (interaction.customId=="firstPage") {
 		await firstPage(interaction);
 	} else if (interaction.customId === "editTemplate") {
@@ -99,4 +99,5 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 		await validateUser(interaction, template);
 	} else if (interaction.customId === "cancel") await interaction.message.edit({ components: [] });
 	else if (interaction.customId === "edit_template") await showEditTemplate(interaction, ul);
+	else if (interaction.customId === "edit_dice") await showEditDice(interaction, ul);
 }

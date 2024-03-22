@@ -27,6 +27,8 @@ export function editUserButtons(ul: TFunction<"translation", undefined>, stats?:
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(components);
 }
 
+
+
 export function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 	const continueButton = new ButtonBuilder()
 		.setCustomId("continue")

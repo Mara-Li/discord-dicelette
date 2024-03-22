@@ -3,10 +3,11 @@ import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
 import { roll } from "../../dice";
-import { calculate, formatRollCalculation, title } from "..";
+import { calculate, formatRollCalculation, parseStatsString, title } from "..";
+import { editUserButtons } from "../buttons";
 import { getTemplateWithDB } from "../db";
-import { evalOneCombinaison } from "../verify_template";
-import { getEmbeds, getEmbedsList, parseEmbedFields } from "./parse";
+import { evalOneCombinaison, evalStatsDice } from "../verify_template";
+import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "./parse";
 
 export async function editStats(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
 	if (!interaction.message) return;
@@ -124,4 +125,66 @@ export async function editTemplate(interaction: ModalSubmitInteraction, ul: TFun
 	const embedsList = getEmbedsList(ul, {which: "template", embed: newEmbedTemplate}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList });
 	await interaction.reply({ content: ul("modals.templateUpdated"), ephemeral: true });
+}
+
+export async function editDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
+	if (!interaction.message) return;
+	const diceEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "damage");
+	if (!diceEmbeds) return;
+	const values = interaction.fields.getTextInputValue("allDice");
+	const valuesAsDice = values.split("\n- ").map(dice => {
+		const [name, value] = dice.split(": ");
+		return { name: removeAccents(name.replace("- ", "").trim().toLowerCase()), value };
+	});
+	const dices = valuesAsDice.reduce((acc, { name, value }) => {
+		acc[name] = value;
+		return acc;
+	}, {} as {[name: string]: string});
+	const newEmbedDice = new EmbedBuilder()
+		.setTitle(title(ul("embed.dice")))
+		.setColor(diceEmbeds.toJSON().color ?? "Aqua");
+	for (const [skill, dice] of Object.entries(dices)) {
+		//test if dice is valid
+		const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
+		if (!statsEmbeds) {
+			if (!roll(dice)) {
+				throw new Error(ul("error.invalidDice.withDice", {dice}));
+			}
+			continue;
+		} 
+		const statsValues = parseStatsString(statsEmbeds);
+		const diceEvaluated = evalStatsDice(dice, statsValues);
+		newEmbedDice.addFields({
+			name: title(skill),
+			value: diceEvaluated,
+			inline: true
+		});
+	}
+	const oldDice = diceEmbeds.toJSON().fields;
+	if (oldDice) {
+		for (const field of oldDice) {
+			const name = field.name.toLowerCase();
+			if (!dices[name]) {
+				//register the old value
+				newEmbedDice.addFields({
+					name: title(name),
+					value: field.value,
+					inline: true
+				});
+			}
+		}
+	}
+	if (newEmbedDice.toJSON().fields?.length === 0) {
+		//dice was removed
+		const embedsList = getEmbedsList(ul, {which: "damage", embed: newEmbedDice}, interaction.message);
+		const toAdd = removeEmbedsFromList(embedsList, "damage", ul);
+		const components = editUserButtons(ul, true, false, true);
+		await interaction.message.edit({ embeds: toAdd, components: [components] });
+		await interaction.reply({ content: ul("modals.dice.removed"), ephemeral: true });
+		return;
+	} 
+	const embedsList = getEmbedsList(ul, {which: "damage", embed: newEmbedDice}, interaction.message);
+	await interaction.message.edit({ embeds: embedsList });
+	
+
 }

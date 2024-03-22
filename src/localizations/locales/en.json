@@ -141,6 +141,9 @@
       "description": "Enter your character's name",
       "name": "Character name"
     },
+    "dice": {
+      "removed": ""
+    },
     "editStats": "⚠ Respect the syntax",
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{max}}",

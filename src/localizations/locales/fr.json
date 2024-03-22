@@ -141,6 +141,9 @@
       "description": "Entrez le nom de votre personnage",
       "name": "Nom du personnage"
     },
+    "dice": {
+      "removed": "Les dés ont été supprimés de l'utilisateur"
+    },
     "editStats": "⚠ Respecter la syntaxe",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
