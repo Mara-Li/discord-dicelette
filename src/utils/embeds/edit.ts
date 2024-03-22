@@ -1,4 +1,4 @@
-import { APIEmbedField, Embed, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
+import { Embed, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
@@ -26,9 +26,12 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		return acc;
 	}, {} as {[name: string]: string});
 	//verify value from template
-	const fieldsToAppends: APIEmbedField[] = [];
+	const newEmbedStats = new EmbedBuilder()
+		.setTitle(title(ul("embed.stats")))
+		.setColor("#0099ff");
 	for (const [name, value] of Object.entries(stats)) {
 		const stat = templateStats.statistics?.[name];
+		if (value === "X" || value.trim().length === 0) continue;
 		if (!stat) {
 			throw new Error(ul("error.statNotFound", {value: name}));
 		}
@@ -40,7 +43,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 			if (isNaN(combinaison)) {
 				throw new Error(`[error.invalidFormula] ${value}`);
 			}
-			fieldsToAppends.push({
+			newEmbedStats.addFields({
 				name: title(name),
 				value: `\`${value}\` = ${combinaison}`,
 				inline: true
@@ -52,7 +55,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		} else if (stat.max && num > stat.max) {
 			throw new Error(ul("error.mustBeLower", {value: name, max: stat.max}));
 		} //skip register total because it can be a level up. Total is just for the registering, like creating a new char in a game
-		fieldsToAppends.push({
+		newEmbedStats.addFields({
 			name: title(name),
 			value: num.toString(),
 			inline: true
@@ -63,9 +66,9 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	if (oldStats) {
 		for (const field of oldStats) {
 			const name = field.name.toLowerCase();
-			if (!stats[name]) {
+			if (!stats[name] && field.value !== "0" && field.value !== "X" && field.value.trim().length > 0){
 				//register the old value
-				fieldsToAppends.push({
+				newEmbedStats.addFields({
 					name: title(name),
 					value: field.value,
 					inline: true
@@ -73,17 +76,8 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 			}
 		}
 	}
-	const newEmbedStats = new EmbedBuilder()
-		.setTitle(title(ul("embed.stats")))
-		.setColor("#0099ff");
-	for (const field of fieldsToAppends) {
-		if (field.value === "0") continue;
-		newEmbedStats.addFields({
-			name: field.name,
-			value: field.value,
-			inline: true
-		});
-	}
+	
+	
 	const areFields = newEmbedStats.toJSON()?.fields;
 	if (!areFields || areFields.length === 0) {
 		//stats was removed
@@ -110,7 +104,7 @@ export async function editTemplate(interaction: ModalSubmitInteraction, ul: TFun
 	
 	for (const [name, oldValue] of Object.entries(templateFields)) {
 		const value = interaction.fields.fields.has(name) ? interaction.fields.fields.get(name)?.value : oldValue;
-		if (!value || value === "0") continue;
+		if (!value || value === "0" || value === "X" || value.trim().length ===0) continue;
 		if (name === ul("register.embed.dice") && oldValue !== value) {
 			//verify dice with one value from the statistical embeds
 			const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
@@ -167,18 +161,12 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 		acc[name] = value;
 		return acc;
 	}, {} as {[name: string]: string});
-	
-	const fieldsToAppends: APIEmbedField[] = [];
+	const newEmbedDice = new EmbedBuilder()
+		.setTitle(title(ul("embed.dice")))
+		.setColor(diceEmbeds.toJSON().color ?? "Aqua");
 	for (const [skill, dice] of Object.entries(dices)) {
 		//test if dice is valid
-		if (dice === "0" || dice.trim().length ===0) {
-			fieldsToAppends.push({
-				name: title(skill),
-				value: "0",
-				inline: true
-			});
-			continue;
-		}
+		if (dice === "X" || dice.trim().length ===0 || dice === "0") continue;
 		const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
 		if (!statsEmbeds) {
 			if (!roll(dice)) {
@@ -188,7 +176,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 		} 
 		const statsValues = parseStatsString(statsEmbeds);
 		const diceEvaluated = evalStatsDice(dice, statsValues);
-		fieldsToAppends.push({
+		newEmbedDice.addFields({
 			name: title(skill),
 			value: diceEvaluated,
 			inline: true
@@ -198,9 +186,9 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	if (oldDice) {
 		for (const field of oldDice) {
 			const name = field.name.toLowerCase();
-			if (!dices[name]) {
+			if (!dices[name] && field.value !== "0" && field.value !== "X" && field.value.trim().length > 0) {
 				//register the old value
-				fieldsToAppends.push({
+				newEmbedDice.addFields({
 					name: title(name),
 					value: field.value,
 					inline: true
@@ -208,19 +196,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 			}
 		}
 	}
-	const newEmbedDice = new EmbedBuilder()
-		.setTitle(title(ul("embed.dice")))
-		.setColor(diceEmbeds.toJSON().color ?? "Aqua");
-	//delete fields if the value is 0
-	for (const field of fieldsToAppends) {
-		if (field.value !== "0") {
-			newEmbedDice.addFields({
-				name: field.name,
-				value: field.value,
-				inline: true
-			});
-		}
-	}
+	
 	const areFields = newEmbedDice.toJSON()?.fields;
 	if (!areFields || areFields.length === 0) {
 		//dice was removed
