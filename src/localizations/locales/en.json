@@ -150,7 +150,11 @@
     },
     "dice": {
     },
-    "editStats": "⚠ Respect the syntax. Use X as value to delete field.",
+    "edit": {
+      "dice": "⚠ Respect the syntax. \nUse \"X\", \"0\" or leave blank to delete.",
+      "stats": "⚠ Respect the syntax. Use \"X\" or leave blank to delete.",
+      "template": "Use \"0\" or \"X\" to remove the value."
+    },
     "editTemplate": "Use \"0\" or \"X\" to remove the value",
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{max}}",

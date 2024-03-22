@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonInteraction, Embed, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { TFunction } from "i18next";
 
-import { isArrayEqual, title } from "..";
+import { cleanStatsName, isArrayEqual, title } from "..";
 import { getGuildData } from "../db";
 import { getEmbeds, parseEmbedFields } from "../embeds/parse";
 
@@ -14,6 +14,7 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 	let statsStrings = "";
 	for (const [name, value] of Object.entries(stats)) {
 		let stringValue = value;
+		if (!registeredStats?.includes(cleanStatsName(name))) continue; //remove stats that are not registered
 		if (value.match(/`(.*)`/)) {
 			const combinaison = value.match(/`(.*)`/)?.[1];
 			if (combinaison) stringValue = combinaison;
@@ -34,7 +35,7 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("allStats")
-			.setLabel(ul("modals.editStats"))
+			.setLabel(ul("modals.edit.stats"))
 			.setRequired(true)
 			.setStyle(TextInputStyle.Paragraph)
 			.setValue(statsStrings),
@@ -49,7 +50,7 @@ export async function showEditTemplate(interaction: ButtonInteraction, ul: TFunc
 	const templateFields = parseEmbedFields(template.toJSON() as Embed);
 	const modal = new ModalBuilder()
 		.setCustomId("editTemplate")
-		.setTitle(title(ul("modals.editTemplate")));
+		.setTitle(title(ul("modals.edit.template")));
 
 	for (const [name, value] of Object.entries(templateFields)) {
 		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
@@ -79,7 +80,7 @@ export async function showEditDice(interaction: ButtonInteraction, ul: TFunction
 	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("allDice")
-			.setLabel(ul("modals.editStats"))
+			.setLabel(ul("modals.edit.dice"))
 			.setRequired(true)
 			.setStyle(TextInputStyle.Paragraph)
 			.setValue(dices),

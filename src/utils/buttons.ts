@@ -1,19 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { TFunction } from "i18next";
 
-const registerStatsButton=(ul: TFunction<"translation", undefined>) => {
-	return new ButtonBuilder()
-		.setCustomId("register")
-		.setLabel(ul("button.add.stats"))
-		.setStyle(ButtonStyle.Primary);
-};
 
-const registerTemplateButton=(ul: TFunction<"translation", undefined>) => {
-	return new ButtonBuilder()
-		.setCustomId("register")
-		.setLabel(ul("button.add.template"))
-		.setStyle(ButtonStyle.Primary);
-};
 
 export function editUserButtons(ul: TFunction<"translation", undefined>, stats?: boolean, dice?: boolean, template?: boolean) {
 	const editUser = new ButtonBuilder()
@@ -36,10 +24,8 @@ export function editUserButtons(ul: TFunction<"translation", undefined>, stats?:
 		return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice, editTemplate]);
 	const components = [addDice];
 	if (stats) components.push(editUser);
-	else components.push(registerStatsButton(ul));
 	if (dice) components.push(editDice);
 	if (template) components.push(editTemplate);
-	else components.push(registerTemplateButton(ul));
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(components);
 }
 
