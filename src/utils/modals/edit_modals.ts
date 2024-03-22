@@ -49,7 +49,7 @@ export async function showEditTemplate(interaction: ButtonInteraction, ul: TFunc
 	const templateFields = parseEmbedFields(template.toJSON() as Embed);
 	const modal = new ModalBuilder()
 		.setCustomId("editTemplate")
-		.setTitle(title(ul("common.template")));
+		.setTitle(title(ul("modals.editTemplate")));
 
 	for (const [name, value] of Object.entries(templateFields)) {
 		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(

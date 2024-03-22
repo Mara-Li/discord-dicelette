@@ -56,6 +56,9 @@
       "title": "Enregistrement de l'utilisateur"
     },
     "dice": "Dés de compétences",
+    "edit": {
+      "template": "Utiliser \"0\" pour supprimer la valeur."
+    },
     "stats": "Statistiques",
     "template": "Modèle",
     "user": "Joueur enregistré"
@@ -144,7 +147,8 @@
     "dice": {
       "removed": "Les dés ont été supprimés de l'utilisateur"
     },
-    "editStats": "⚠ Respecter la syntaxe",
+    "editStats": "⚠ Respecter la syntaxe. Utiliser 0 comme valeur pour supprimer le champ",
+    "editTemplate": "Utiliser \"0\" pour supprimer la valeur",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
       "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",

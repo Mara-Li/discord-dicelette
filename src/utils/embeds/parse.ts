@@ -27,7 +27,15 @@ export function getEmbedsList(ul: TFunction<"translation", undefined>, embedToRe
 	const statsEmbed = embedToReplace.which === "stats" ? embedToReplace.embed : getEmbeds(ul, message, "stats");
 	const diceEmbed = embedToReplace.which === "damage" ? embedToReplace.embed : getEmbeds(ul, message, "damage");
 	const templateEmbed = embedToReplace.which === "template" ? embedToReplace.embed : getEmbeds(ul, message, "template");
-	return createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
+	return {
+		list: createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed),
+		exists: {
+			user: !!userDataEmbed,
+			stats: !!statsEmbed,
+			damage: !!diceEmbed,
+			template: !!templateEmbed
+		}
+	};
 }
 
 export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "stats" | "damage" | "template", ul: TFunction<"translation", undefined>) {

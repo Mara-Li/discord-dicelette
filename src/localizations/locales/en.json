@@ -56,6 +56,9 @@
       "title": "User registration"
     },
     "dice": "Skill Dice",
+    "edit": {
+      "template": ""
+    },
     "stats": "Statistics",
     "template": "Model",
     "user": "Registered player"
@@ -64,7 +67,7 @@
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
     "invalidDice": {
-      "embeds": "",
+      "embeds": "No die embeds detected",
       "withDice": "Error: Invalid die {{dice}}",
       "withError": "Error: Invalid die {{dice}}\n\n```{{error}}```",
       "withoutDice": "Error: Invalid die"
@@ -142,9 +145,10 @@
       "name": "Character name"
     },
     "dice": {
-      "removed": ""
+      "removed": "The dice have been removed from the user"
     },
-    "editStats": "⚠ Respect the syntax",
+    "editStats": "⚠ Respect the syntax. Use 0 as value to delete field.",
+    "editTemplate": "",
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{max}}",
       "minAndMax": "Enter a value between {{min}} and {{max}}",
