@@ -248,6 +248,7 @@ export const registerTemplate = {
 					user: {}
 				};
 			}
+			
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
 			console.error(e);

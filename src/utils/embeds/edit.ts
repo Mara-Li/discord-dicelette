@@ -83,7 +83,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		//stats was removed
 		const {list, exists} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 		const toAdd = removeEmbedsFromList(list, "stats", ul);
-		const components = editUserButtons(ul, false, exists.damage, exists.template);
+		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.stats"), ephemeral: true });
 	}
@@ -135,7 +135,7 @@ export async function editTemplate(interaction: ModalSubmitInteraction, ul: TFun
 		//template was removed
 		const embedsList = getEmbedsList(ul, {which: "template", embed: newEmbedTemplate}, interaction.message);
 		const toAdd = removeEmbedsFromList(embedsList.list, "template", ul);
-		const components = editUserButtons(ul, embedsList.exists.stats, embedsList.exists.damage, false);
+		const components = editUserButtons(ul, embedsList.exists.stats, embedsList.exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.template"), ephemeral: true });
 		return;
@@ -199,7 +199,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 		//dice was removed
 		const embedsList = getEmbedsList(ul, {which: "damage", embed: newEmbedDice}, interaction.message);
 		const toAdd = removeEmbedsFromList(embedsList.list, "damage", ul);
-		const components = editUserButtons(ul, embedsList.exists.stats, false, embedsList.exists.template);
+		const components = editUserButtons(ul, embedsList.exists.stats, false);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.dice"), ephemeral: true });
 		return;

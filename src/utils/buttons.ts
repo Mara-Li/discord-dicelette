@@ -1,15 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { TFunction } from "i18next";
 
-const addTemplateButton = (ul: TFunction<"translation", undefined>) => {
-	return new ButtonBuilder()
-		.setCustomId("add_template")
-		.setLabel(ul("button.add.template"))
-		.setEmoji("➕")
-		.setStyle(ButtonStyle.Primary);
-};
 
-export function editUserButtons(ul: TFunction<"translation", undefined>, stats?: boolean, dice?: boolean, template?: boolean) {
+export function editUserButtons(ul: TFunction<"translation", undefined>, stats?: boolean, dice?: boolean) {
 	const addDice = new ButtonBuilder()
 		.setCustomId("add_dice")
 		.setLabel(ul("button.dice"))
@@ -25,18 +18,12 @@ export function editUserButtons(ul: TFunction<"translation", undefined>, stats?:
 		.setLabel(ul("button.edit.dice"))
 		.setEmoji("📝")
 		.setStyle(ButtonStyle.Secondary);
-	const editTemplate = new ButtonBuilder()
-		.setCustomId("edit_template")
-		.setLabel(ul("button.edit.template"))
-		.setStyle(ButtonStyle.Secondary)
-		.setEmoji("📝");
-	if (stats && dice && template)	
-		return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice, editTemplate]);
+	
+	if (stats && dice)	
+		return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice]);
 	const components = [addDice];
 	if (stats) components.push(editUser);
 	if (dice) components.push(editDice);
-	if (template) components.push(editTemplate);
-	else components.push(addTemplateButton(ul));
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(components);
 }
 

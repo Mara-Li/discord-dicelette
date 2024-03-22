@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ButtonInteraction, Embed, EmbedBuilder, Message, ModalSubmitInteraction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Message, ModalSubmitInteraction, TextChannel } from "discord.js";
 import { TFunction } from "i18next";
 
+import { GuildData, StatisticalTemplate } from "../../interface";
 import { title } from "..";
-
-
-
 
 export function parseEmbed(interaction: ButtonInteraction | ModalSubmitInteraction) {
 	const embed = interaction.message?.embeds[0];
@@ -80,3 +78,40 @@ export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Mes
 
 
 
+export async function bulkEditTemplateUser(guildData: GuildData, interaction: CommandInteraction, ul: TFunction<"translation", undefined>, template: StatisticalTemplate) {
+	const users = guildData.user;
+	const channel = await interaction.guild?.channels.fetch(guildData.templateID.channelId);
+	if (!channel || !(channel instanceof TextChannel)) return;
+	const thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]");
+	if (!thread) return;
+	for (const userID in users) {
+		for (const char of users[userID]) {
+			const userMessages = await thread.messages.fetch(char.messageId);
+			const templateEmbed = getEmbeds(ul, userMessages, "template");
+			if (!templateEmbed) continue;
+			const newEmbed = new EmbedBuilder()
+				.setTitle(ul("embed.template"))
+				.setColor(templateEmbed.toJSON().color ?? "Aqua");
+			if (template.diceType)
+				newEmbed.addFields({
+					name: ul("common.dice"),
+					value: template.diceType,
+					inline: true
+				});
+			if (template.critical?.success) 
+				newEmbed.addFields({
+					name: ul("roll.critical.success"),
+					value: template.critical.success.toString(),
+					inline: true
+				});
+			if (template.critical?.failure) 
+				newEmbed.addFields({
+					name: ul("roll.critical.failure"),
+					value: template.critical.failure.toString(),
+					inline: true
+				});
+			const listEmbed = getEmbedsList(ul, {which: "template", embed: newEmbed}, userMessages);
+			await userMessages.edit({ embeds: listEmbed.list });
+		}
+	}
+}
