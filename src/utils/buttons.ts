@@ -15,8 +15,6 @@ const registerTemplateButton=(ul: TFunction<"translation", undefined>) => {
 		.setStyle(ButtonStyle.Primary);
 };
 
-
-
 export function editUserButtons(ul: TFunction<"translation", undefined>, stats?: boolean, dice?: boolean, template?: boolean) {
 	const editUser = new ButtonBuilder()
 		.setCustomId("edit_stats")
