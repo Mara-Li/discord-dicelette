@@ -4,7 +4,7 @@ import { TFunction } from "i18next";
 import { autCompleteCmd,commandsList } from "../commands";
 import { button_add_dice,submit_damageDice } from "../database/dice/add";
 import { validate_editDice, start_edit_dice } from "../database/dice/edit";
-import { continuePage,firstPage, pageNumber, register_user } from "../database/register/start";
+import { continuePage,submit_firstPage, pageNumber, open_register_user } from "../database/register/start";
 import { validate_user } from "../database/register/validate";
 import { edit_stats,editStats } from "../database/stats/edit";
 import { StatisticalTemplate } from "../interface";
@@ -81,7 +81,7 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 	} else if (interaction.customId === "editStats") {
 		await editStats(interaction, ul, );
 	} else if (interaction.customId=="firstPage") {
-		await firstPage(interaction);
+		await submit_firstPage(interaction);
 	} else if (interaction.customId === "editDice") {
 		await validate_editDice(interaction, ul);
 	} 
@@ -89,7 +89,7 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 
 async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User, template: StatisticalTemplate) {
 	if (interaction.customId === "register")
-		await register_user(interaction, template, interactionUser, ul);
+		await open_register_user(interaction, template, interactionUser, ul);
 	else if (interaction.customId=="continue") {
 		await continuePage(interaction, template, ul, interactionUser);
 	} else if (interaction.customId.includes("add_dice")) {

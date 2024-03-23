@@ -10,7 +10,14 @@ import { embedStatistiques, showStatistiqueModal } from "../stats/add";
 import { createEmbedFirstPage } from "./validate";
 
 
-
+/**
+ * Interaction to continue to the next page of the statistics when registering a new user
+ * @param interaction {ButtonInteraction}
+ * @param dbTemplate {StatisticalTemplate}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param interactionUser {User}
+ * @returns 
+ */
 export async function continuePage(interaction: ButtonInteraction, dbTemplate: StatisticalTemplate, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (!isModerator) {
@@ -38,12 +45,21 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
 	}
 	await embedStatistiques(interaction, template, pageNumber);
 }
-export async function firstPage(interaction: ModalSubmitInteraction) {
+/**
+ * Submit the first page when the modal is validated
+ * @param interaction {ModalSubmitInteraction}
+ */
+export async function submit_firstPage(interaction: ModalSubmitInteraction) {
 	if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
 	const template = await getTemplateWithDB(interaction);
 	if (!template) return;
 	await createEmbedFirstPage(interaction, template);
 }
+/**
+ * Modal opened to register a new user with the name of the character and the user id
+ * @param interaction {ButtonInteraction}
+ * @param template {StatisticalTemplate}
+ */
 export async function showFirstPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	let nbOfPages = 1;
 	if (template.statistics) {
@@ -76,12 +92,16 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 	modal.addComponents(charNameInput, userIdInputs);
 	await interaction.showModal(modal);
 }
-export async function register_user(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: TFunction<"translation", undefined>) {
+
+/**
+ * Open the showFirstPageModal function if the user is a moderator
+ * @param interaction {ModalSubmitInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ */
+export async function open_register_user(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: TFunction<"translation", undefined>) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (isModerator)
 		await showFirstPageModal(interaction, template);
-
-
 	else
 		await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
 }
