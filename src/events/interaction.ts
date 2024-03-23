@@ -79,7 +79,7 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 	} else if (interaction.customId.includes("page")) {
 		await pageNumber(interaction, ul);
 	} else if (interaction.customId === "editStats") {
-		await editStats(interaction, ul, );
+		await editStats(interaction, ul);
 	} else if (interaction.customId=="firstPage") {
 		await submit_firstPage(interaction);
 	} else if (interaction.customId === "editDice") {

@@ -22,7 +22,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	const channel = interaction.channel;
 	if (!channel) return;
 	const userFromField = interaction.fields.getTextInputValue("userID");
-	const user = interaction.guild?.members.cache.find(member => member.id === userFromField || member.user.username === userFromField.toLowerCase());
+	const user = interaction.guild?.members.cache.find(member => member.id.toLowerCase() === userFromField.toLowerCase() || member.user.username.toLowerCase() === userFromField.toLowerCase());
 	if (!user) {	
 		interaction.reply({ content: ul("error.user"), ephemeral: true });
 		return;
