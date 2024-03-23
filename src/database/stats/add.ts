@@ -4,7 +4,7 @@ import { StatisticalTemplate } from "../../interface";
 import { lError,ln } from "../../localizations";
 import { title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
-import { getStatistiqueFields } from "../../utils/parse_modals";
+import { getStatistiqueFields } from "../../utils/parse";
 import { ensureEmbed, evalCombinaison } from "../../utils/verify_template";
 
 

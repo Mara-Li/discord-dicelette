@@ -1,18 +1,17 @@
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
 import { TFunction } from "i18next";
-import { start_edit_dice,editDice } from "src/database/dice/edit";
 
 import { autCompleteCmd,commandsList } from "../commands";
-import { add_dice, submit_damageDice } from "../database/dice/add";
-import { validate_user } from "src/database/register/validate";
-import { register_user } from "src/database/register/start";
-import { continuePage } from "src/database/register/start";
-import { firstPage, pageNumber } from "../database/new_user/modal_submit";
+import { add_dice,submit_damageDice } from "../database/dice/add";
+import { editDice, start_edit_dice } from "../database/dice/edit";
+import { continuePage,firstPage, pageNumber, register_user } from "../database/register/start";
+import { validate_user } from "../database/register/validate";
 import { edit_stats,editStats } from "../database/stats/edit";
 import { StatisticalTemplate } from "../interface";
-import { lError, ln } from "../localizations";
-import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
+import { lError,ln } from "../localizations";
+import { getTemplate, getTemplateWithDB,readDB } from "../utils/db";
 import { ensureEmbed } from "../utils/verify_template";
+
 
 export default (client: Client): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
