@@ -159,10 +159,8 @@
     },
     "edit": {
       "dice": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
-      "stats": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
-      "template": ""
+      "stats": "⚠ Suivez la syntaxe. Supprimer avec X ou 0."
     },
-    "editTemplate": "",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
       "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",
