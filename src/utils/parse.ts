@@ -8,12 +8,23 @@ import { GuildData, StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
 import { title } from ".";
 
+/**
+ * Parse the embed fields from an interaction
+ * @param interaction {ButtonInteraction | ModalSubmitInteraction}
+ */
 export function parseEmbed(interaction: ButtonInteraction | ModalSubmitInteraction) {
 	const embed = interaction.message?.embeds[0];
 	if (!embed) return;
 	return parseEmbedFields(embed);
 }
 
+/**
+ * Create a list of embeds
+ * @param userDataEmbed {EmbedBuilder}
+ * @param statsEmbed {EmbedBuilder}
+ * @param diceEmbed {EmbedBuilder}
+ * @param templateEmbed {EmbedBuilder}
+ */
 export function createEmbedsList(userDataEmbed: EmbedBuilder, statsEmbed?: EmbedBuilder, diceEmbed?: EmbedBuilder, templateEmbed?: EmbedBuilder) {
 	const allEmbeds = [userDataEmbed];
 	if (statsEmbed) allEmbeds.push(statsEmbed);
@@ -22,6 +33,12 @@ export function createEmbedsList(userDataEmbed: EmbedBuilder, statsEmbed?: Embed
 	return allEmbeds;
 }
 
+/**
+ * Get the embeds from the message and replace based on the embed to replace
+ * Also it returns if the embeds exists or not (useful for the buttons)
+ * @param ul {TFunction<"translation", undefined>}
+ * @param embedToReplace {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}
+ */
 export function getEmbedsList(ul: TFunction<"translation", undefined>, embedToReplace: {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}, message?: Message) {
 	const userDataEmbed = embedToReplace.which === "user" ? embedToReplace.embed : getEmbeds(ul, message, "user");
 	if (!userDataEmbed) throw new Error("[error.noEmbed]");
@@ -39,6 +56,12 @@ export function getEmbedsList(ul: TFunction<"translation", undefined>, embedToRe
 	};
 }
 
+/**
+ * Remove the embeds from the list
+ * @param embeds {EmbedBuilder[]}
+ * @param which {"user" | "stats" | "damage" | "template"}
+ * @param ul {TFunction<"translation", undefined>}
+*/
 export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "stats" | "damage" | "template", ul: TFunction<"translation", undefined>) {
 	return embeds.filter(embed => {
 		if (which === "user") return embed.toJSON().title !== ul("embed.user");
@@ -48,7 +71,12 @@ export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "st
 	});
 }
 
-export function parseEmbedFields(embed: Embed) {
+/**
+ * Parse the embed fields 
+ * @param embed {Embed}
+ * @returns { [name: string]: string }
+ */
+export function parseEmbedFields(embed: Embed): {[name: string]: string} {
 	const fields = embed.fields;
 	const parsedFields: {[name: string]: string} = {};
 	for (const field of fields) {
@@ -58,14 +86,9 @@ export function parseEmbedFields(embed: Embed) {
 }
 
 /**
- * Get the embeds from the message
+ * Get the embeds from the message and recreate it as EmbedBuilder
  * @param message {Message}
- * @param which {0|1|2|3}
- * - 0 : userData
- * - 1 : statistics
- * - 2 : damage
- * - 3 : template
- * @returns 
+ * @param which {"user" | "stats" | "damage" | "template"}
  */
 export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Message, which?: "user" | "stats" | "damage" | "template") {
 	const allEmbeds = message?.embeds;
@@ -80,7 +103,13 @@ export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Mes
 }
 
 
-
+/**
+ * Update the template of existing user when the template is edited by moderation
+ * @param guildData {GuildData}
+ * @param interaction {CommandInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param template {StatisticalTemplate}
+ */
 export async function bulkEditTemplateUser(guildData: GuildData, interaction: CommandInteraction, ul: TFunction<"translation", undefined>, template: StatisticalTemplate) {
 	const users = guildData.user;
 	const channel = await interaction.guild?.channels.fetch(guildData.templateID.channelId);
@@ -117,6 +146,11 @@ export async function bulkEditTemplateUser(guildData: GuildData, interaction: Co
 	}
 }
 
+/**
+ * Get the statistiques fields from the modals and verify if all value are correct and if the total is not exceeded
+ * @param interaction {ButtonInteraction}
+ * @param templateData {StatisticalTemplate}
+ */
 export function getStatistiqueFields(interaction: ModalSubmitInteraction, templateData: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
 	const combinaisonFields: {[name: string]: string} = {};
