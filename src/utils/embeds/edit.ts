@@ -1,9 +1,8 @@
-import { EmbedBuilder, ModalSubmitInteraction } from "discord.js";
+import { APIEmbedField, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
 import { TFunction } from "i18next";
-import removeAccents from "remove-accents";
 
 import { roll } from "../../dice";
-import { parseStatsString, title } from "..";
+import { cleanSkillName, cleanStatsName, parseStatsString, title } from "..";
 import { editUserButtons } from "../buttons";
 import { getTemplateWithDB } from "../db";
 import { evalOneCombinaison, evalStatsDice } from "../verify_template";
@@ -17,8 +16,8 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	const templateStats = await getTemplateWithDB(interaction);
 	if (!templateStats) return;
 	const valuesAsStats = values.split("\n- ").map(stat => {
-		const [name, value] = stat.split(": ");
-		return { name: removeAccents(name.replace("- ", "").trim().toLowerCase()), value };
+		const [name, value] = stat.split(/ ?: ?/);
+		return { name: name.replace("- ", "").trim().toLowerCase(), value };
 	});
 	//fusion all stats into an object instead of list
 	const stats = valuesAsStats.reduce((acc, { name, value }) => {
@@ -26,12 +25,13 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		return acc;
 	}, {} as {[name: string]: string});
 	//verify value from template
-	const newEmbedStats = new EmbedBuilder()
-		.setTitle(title(ul("embed.stats")))
-		.setColor("#0099ff");
+	const embedsStatsFields: APIEmbedField[] = [];
 	for (const [name, value] of Object.entries(stats)) {
-		const stat = templateStats.statistics?.[name];
-		if (value === "X" || value.trim().length === 0) continue;
+		const stat = templateStats.statistics?.[cleanStatsName(name)];
+		if (value.toLowerCase() === "x" 
+			|| value.trim().length === 0 
+			|| embedsStatsFields.find(field => cleanStatsName(field.name) === cleanStatsName(name))
+		) continue;
 		if (!stat) {
 			throw new Error(ul("error.statNotFound", {value: name}));
 		}
@@ -43,7 +43,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 			if (isNaN(combinaison)) {
 				throw new Error(`[error.invalidFormula] ${value}`);
 			}
-			newEmbedStats.addFields({
+			embedsStatsFields.push({
 				name: title(name),
 				value: `\`${value}\` = ${combinaison}`,
 				inline: true
@@ -55,7 +55,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		} else if (stat.max && num > stat.max) {
 			throw new Error(ul("error.mustBeLower", {value: name, max: stat.max}));
 		} //skip register total because it can be a level up. Total is just for the registering, like creating a new char in a game
-		newEmbedStats.addFields({
+		embedsStatsFields.push({
 			name: title(name),
 			value: num.toString(),
 			inline: true
@@ -66,9 +66,14 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	if (oldStats) {
 		for (const field of oldStats) {
 			const name = field.name.toLowerCase();
-			if (!stats[name] && field.value !== "0" && field.value !== "X" && field.value.trim().length > 0){
+			if (
+				field.value !== "0" 
+				&& field.value !== "X" 
+				&& field.value.trim().length > 0 
+				&& embedsStatsFields.find(field => cleanStatsName(field.name) === cleanStatsName(name))
+			){
 				//register the old value
-				newEmbedStats.addFields({
+				embedsStatsFields.push({
 					name: title(name),
 					value: field.value,
 					inline: true
@@ -76,7 +81,18 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 			}
 		}
 	}
-	
+	//remove duplicate
+	const fieldsToAppend: APIEmbedField[] = [];
+	for (const field of embedsStatsFields) {
+		const name = field.name.toLowerCase();
+		if (fieldsToAppend.find(f => cleanStatsName(f.name) === cleanStatsName(name))) continue;
+		fieldsToAppend.push(field);
+	}
+
+	const newEmbedStats = new EmbedBuilder()
+		.setTitle(title(ul("embed.stats")))
+		.setColor(statsEmbeds.toJSON().color ?? "Aqua")
+		.addFields(fieldsToAppend);
 	
 	const areFields = newEmbedStats.toJSON()?.fields;
 	if (!areFields || areFields.length === 0) {
@@ -100,7 +116,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	const values = interaction.fields.getTextInputValue("allDice");
 	const valuesAsDice = values.split("\n- ").map(dice => {
 		const [name, value] = dice.split(/ ?: ?/);
-		return { name: removeAccents(name.replace("- ", "").trim().toLowerCase()), value };
+		return { name: name.replace("- ", "").trim().toLowerCase(), value };
 	});
 	const dices = valuesAsDice.reduce((acc, { name, value }) => {
 		acc[name] = value;
@@ -111,7 +127,11 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 		.setColor(diceEmbeds.toJSON().color ?? "Aqua");
 	for (const [skill, dice] of Object.entries(dices)) {
 		//test if dice is valid
-		if (dice === "X" || dice.trim().length ===0 || dice === "0") continue;
+		if (dice === "X" 
+			|| dice.trim().length ===0 
+			|| dice === "0" 
+			|| newEmbedDice.toJSON().fields?.find(field => cleanStatsName(field.name) === cleanStatsName(skill))
+		) continue;
 		const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
 		if (!statsEmbeds) {
 			if (!roll(dice)) {
@@ -131,8 +151,12 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	if (oldDice) {
 		for (const field of oldDice) {
 			const name = field.name.toLowerCase();
-			if (!dices[name] && field.value !== "0" && field.value !== "X" && field.value.trim().length > 0) {
-				//register the old value
+			if (field.value !== "0" 
+				&& field.value !== "X" 
+				&& field.value.trim().length > 0 
+				&& !newEmbedDice.toJSON().fields?.find(field => cleanStatsName(field.name) === cleanStatsName(name))
+			) {
+			//register the old value
 				newEmbedDice.addFields({
 					name: title(name),
 					value: field.value,
@@ -141,7 +165,14 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 			}
 		}
 	}
-	
+	//remove duplicate
+	const fieldsToAppend: APIEmbedField[] = [];
+	const fields = newEmbedDice.toJSON().fields as APIEmbedField[];
+	for (const field of fields) {
+		const name = field.name.toLowerCase();
+		if (fieldsToAppend.find(f => cleanSkillName(f.name) === cleanSkillName(name))) continue;
+		fieldsToAppend.push(field);
+	}
 	const areFields = newEmbedDice.toJSON()?.fields;
 	if (!areFields || areFields.length === 0) {
 		//dice was removed

@@ -9,8 +9,9 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 	const statistics = getEmbeds(ul, interaction.message, "stats");
 	if (!statistics) throw new Error(ul("error.statNotFound"));
 	const stats = parseEmbedFields(statistics.toJSON() as Embed);
-	const registeredStats = getGuildData(interaction)?.templateID.statsName;
-	const userStats = Object.keys(stats).map(stat => stat.toLowerCase());
+	const originalGuildData = getGuildData(interaction)?.templateID.statsName;
+	const registeredStats = originalGuildData?.map(stat => cleanStatsName(stat));
+	const userStats = Object.keys(stats).map(stat => cleanStatsName(stat.toLowerCase()));
 	let statsStrings = "";
 	for (const [name, value] of Object.entries(stats)) {
 		let stringValue = value;
@@ -19,13 +20,14 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 			const combinaison = value.match(/`(.*)`/)?.[1];
 			if (combinaison) stringValue = combinaison;
 		}
-		statsStrings += `- ${name}: ${stringValue}\n`;
+		statsStrings += `- ${name}${ul("common.space")}: ${stringValue}\n`;
 	}
 	if (!isArrayEqual(registeredStats, userStats) && registeredStats && registeredStats.length > userStats.length) {
 		//check which stats was added
 		const diff = registeredStats.filter(x => !userStats.includes(x));
 		for (const stat of diff) {
-			statsStrings += `- ${stat}: 0\n`;
+			const realName = originalGuildData?.find(x => cleanStatsName(x) === cleanStatsName(stat));
+			statsStrings += `- ${title(realName)}${ul("common.space")}: 0\n`;
 		}
 	}
 
