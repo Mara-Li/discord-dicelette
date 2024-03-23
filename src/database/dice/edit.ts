@@ -48,11 +48,17 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	const newEmbedDice: APIEmbedField[] = [];
 	for (const [skill, dice] of Object.entries(dices)) {
 		//test if dice is valid
+		if (newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(skill))) continue;
 		if (dice === "X" 
 			|| dice.trim().length ===0 
-			|| dice === "0" 
-			|| newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(skill))
-		) continue;
+			|| dice === "0" ) {
+			newEmbedDice.push({
+				name: title(skill),
+				value: "X",
+				inline: true
+			});
+			continue;
+		}
 		const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
 		if (!statsEmbeds) {
 			if (!roll(dice)) {
@@ -72,11 +78,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	if (oldDice) {
 		for (const field of oldDice) {
 			const name = field.name.toLowerCase();
-			if (field.value !== "0" 
-				&& field.value !== "X" 
-				&& field.value.trim().length > 0 
-				&& !newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(name))
-			) {
+			if (!newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(name))) {
 			//register the old value
 				newEmbedDice.push({
 					name: title(name),
@@ -90,7 +92,12 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	const fieldsToAppend: APIEmbedField[] = [];
 	for (const field of newEmbedDice) {
 		const name = field.name.toLowerCase();
-		if (fieldsToAppend.find(f => cleanSkillName(f.name) === cleanSkillName(name))) continue;
+		const dice = field.value;
+		if (
+			fieldsToAppend.find(f => cleanSkillName(f.name) === cleanSkillName(name)) 
+			|| dice === "X" 
+			|| dice.trim().length ===0 
+			|| dice === "0" ) continue;
 		fieldsToAppend.push(field);
 	}
 	const diceEmbed = new EmbedBuilder()
