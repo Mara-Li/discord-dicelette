@@ -1,11 +1,12 @@
-import { BaseInteraction, ButtonInteraction, Guild, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
+import { BaseInteraction, ButtonInteraction, Embed, Guild, Message, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
+import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
-import { GuildData, StatisticalTemplate } from "../interface";
+import { GuildData, StatisticalTemplate, UserData } from "../interface";
 import { ln } from "../localizations";
-import { getUserByEmbed } from "./parse";
-import { verifyTemplateValue } from "./verify_template";
+import { getEmbeds, parseEmbedFields } from "./parse";
+import { ensureEmbed, verifyTemplateValue } from "./verify_template";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
 	const template = interaction.message?.attachments.first();
@@ -50,7 +51,10 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 	const ul = ln(interaction.locale);
 	const userData = getUserData(guildData, userId);
 	if (!userData) return;
-	const user = userData.find(char => char.charName === charName);
+	const user = userData.find(char => {
+		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName.toLowerCase());
+		return char.charName === charName;
+	});
 	if (!user) return;
 	const mainChannel = guildData.templateID.channelId;
 	const userMessageId = user.messageId;
@@ -74,9 +78,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId);
-		const embed = message.embeds[0];
-		if (!embed) return;
-		return getUserByEmbed(embed, ul);
+		return getUserByEmbed(message, ul);
 	} catch (error) {
 		const index = userData.findIndex(char => char.messageId === userMessageId);
 		userData.splice(index, 1);
@@ -98,10 +100,10 @@ export function readDB(guildID: string) {
 	return {db, parsedDatabase};
 }
 
-export async function registerUser(userID: string, interaction: BaseInteraction,msgId: string, thread: ThreadChannel, charName?: string, damage?: string[]) {
+export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: ThreadChannel, charName?: string, damage?: string[], deleteMsg: boolean = true) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
-	if (charName) charName = removeAccents(charName).toLowerCase();
+	if (charName) charName = charName.toLowerCase();
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
 	if (damage && guildData.templateID.damageName && guildData.templateID.damageName.length > 0) {
@@ -113,12 +115,14 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 		const char = user.find(char => char.charName === charName);
 		if (char){
 			//delete old message
-			try {
-				const oldMessage = await thread.messages.fetch(char.messageId);
-				if (oldMessage) oldMessage.delete();
-			} catch (error) {
-				console.error(error);
-				//skip unknow message
+			if (deleteMsg) 
+			{
+				try {
+					const oldMessage = await thread.messages.fetch(char.messageId);
+					if (oldMessage) oldMessage.delete();
+				} catch (error) {
+					//skip unknow message
+				}
 			}
 			//overwrite the message id
 			char.messageId = msgId;
@@ -137,4 +141,43 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 	const json = JSON.parse(data);
 	json[interaction.guild.id] = guildData;
 	fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
+}
+
+export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>, first: boolean = false) {
+	const user: Partial<UserData> = {};
+	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
+	if (!userEmbed) return;
+	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Embed);
+	if (parsedFields[ul("common.charName")] !== ul("common.noSet")) {
+		user.userName = parsedFields[ul("common.charName")];
+	}
+	const templateStat = first ? userEmbed.toJSON().fields : getEmbeds(ul, message, "stats")?.toJSON()?.fields;
+	let stats: {[name: string]: number} | undefined = undefined;
+	if (templateStat) {
+		stats = {};
+		for (const stat of templateStat) {
+			stats[stat.name.replace("✏️", "").toLowerCase().trim()] = parseInt(stat.value, 10);
+		}
+	}
+	user.stats = stats;
+	const damageFields = first ? userEmbed.toJSON().fields : getEmbeds(ul, message, "damage")?.toJSON()?.fields;
+	let templateDamage: {[name: string]: string} | undefined = undefined;
+	if (damageFields) {
+		templateDamage = {};
+		for (const damage of damageFields) {
+			templateDamage[damage.name.replace("🔪", "").trim().toLowerCase()] = damage.value;
+		}
+	}
+	const templateEmbed = first ? userEmbed : getEmbeds(ul, message, "template");
+	const templateFields = parseEmbedFields(templateEmbed?.toJSON() as Embed);
+	user.damage = templateDamage;
+	user.template = {
+		diceType: templateFields?.[ul("common.dice")] || undefined,
+		critical: {
+			success: templateFields?.[ul("roll.critical.success")] ? parseInt(parsedFields[ul("roll.critical.success")], 10) : undefined,
+			failure: templateFields?.[ul("roll.critical.failure")] ? parseInt(parsedFields[ul("roll.critical.failure")], 10) : undefined,
+		}
+	};
+	return user as UserData;
+
 }

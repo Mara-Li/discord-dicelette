@@ -1,16 +1,22 @@
-import { AutocompleteInteraction, BaseInteraction, Client, TextChannel } from "discord.js";
+import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
+import { TFunction } from "i18next";
 
-import { commandsList } from "../commands/base";
-import { autCompleteCmd } from "../commands/dbroll";
-import { lError, ln } from "../localizations";
-import { createEmbedFirstPage, embedStatistiques, registerDamageDice, validateUser } from "../utils/create_embed";
-import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
-import { showDamageDiceModals, showFirstPageModal, showStatistiqueModal } from "../utils/modals";
-import { parseEmbed } from "../utils/parse";
+import { autCompleteCmd,commandsList } from "../commands";
+import { button_add_dice,submit_damageDice } from "../database/dice/add";
+import { start_edit_dice,validate_editDice } from "../database/dice/edit";
+import { continuePage,open_register_user,pageNumber, submit_firstPage } from "../database/register/start";
+import { button_validate_user } from "../database/register/validate";
+import { editStats,start_edit_stats } from "../database/stats/edit";
+import { StatisticalTemplate } from "../interface";
+import { lError,ln } from "../localizations";
+import { getTemplate, getTemplateWithDB,readDB } from "../utils/db";
+import { ensureEmbed } from "../utils/verify_template";
+
 
 export default (client: Client): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
 		const ul = ln(interaction.locale);
+		const interactionUser = interaction.user;
 		if (interaction.isCommand()) {
 			const command = commandsList.find(
 				(cmd) => cmd.data.name === interaction.commandName
@@ -20,93 +26,8 @@ export default (client: Client): void => {
 				await command.execute(interaction);
 			} catch (error) {
 				console.log(error);
-				await interaction.reply({ content: ul("error.generic", {error: error as Error}), ephemeral: true });
+				await interaction.reply({ content: ul("error.generic", {e: error as Error}), ephemeral: true });
 			}
-		} else if (interaction.isButton() && interaction.customId === "register") {
-			const template = await getTemplate(interaction);
-			if (!template) {
-				await interaction.reply({ content: ul("error.noTemplate")});
-				return;
-			}
-			try {
-				await showFirstPageModal(interaction, template);
-			} catch (error) {
-				console.error(error);
-				await interaction.reply({ content: ul("error.generic", {error: error as Error}), ephemeral: true });
-			}
-		} else if (interaction.isModalSubmit() && interaction.customId=="firstPage") {
-			if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
-			const template = await getTemplateWithDB(interaction);
-			if (!template) return;
-			await createEmbedFirstPage(interaction, template);
-		} else if (interaction.isButton() && interaction.customId=="continue") {
-			try {
-				const template = await getTemplateWithDB(interaction);
-				if (!template) {
-					await interaction.reply({ content: ul("error.noTemplate")});
-					return;
-				}
-				const embed = parseEmbed(interaction);
-				if (!embed) return;
-				if (!template.statistics) return;
-				const allTemplateStat = Object.keys(template.statistics);
-				const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(stat));
-				if (statsAlreadySet.length === allTemplateStat.length) {
-					await interaction.reply({ content: ul("modals.alreadySet"), ephemeral: true });
-					return;
-				}
-				const page = isNaN(parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : parseInt(interaction.customId.replace("page", ""), 10)+1;
-				await showStatistiqueModal(interaction, template, statsAlreadySet, page);
-			} catch (error) {
-				console.error(error);
-				const translationError = lError(error as Error, interaction);
-				await interaction.reply({ content: translationError, ephemeral: true });
-			}
-		} else if (interaction.isButton() && interaction.customId === "registerDmg") {
-			await showDamageDiceModals(interaction);
-		} else if (interaction.isButton() && interaction.customId === "validate") {
-			try {
-				const template = await getTemplateWithDB(interaction);
-				if (!template) {
-					await interaction.reply({ content: ul("error.noTemplate")});
-					return;
-				}
-				await validateUser(interaction, template);
-			} catch (error) {
-				console.error(error);
-				const translationError = lError(error as Error, interaction);
-				await interaction.reply({ content: translationError, ephemeral: true });
-			}
-		} else if (interaction.isModalSubmit() && interaction.customId === "damageDice") {
-			const template = await getTemplateWithDB(interaction);
-			if (!template) {
-				await interaction.reply({ content: ul("error.noTemplate")});
-				return;
-			}
-			try {
-				await registerDamageDice(interaction);
-			} catch (error) {
-				console.error(error);
-				const translationError = lError(error as Error, interaction);
-				await interaction.reply({ content: translationError, ephemeral: true });
-			}
-		} else if (interaction.isModalSubmit() && interaction.customId.includes("page")) {
-			try {
-				const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);
-				if (isNaN(pageNumber)) return;
-				const template = await getTemplateWithDB(interaction);
-				if (!template) {
-					await interaction.reply({ content: ul("error.noTemplate")});
-					return;
-				}
-				await embedStatistiques(interaction, template, pageNumber);
-			} catch (error) {
-				console.error(error);
-				const translationError = lError(error as Error, interaction);
-				await interaction.reply({ content: translationError, ephemeral: true });
-			}
-		} else if (interaction.isButton() && interaction.customId.includes("cancel")) {
-			await interaction.message.edit({ components: [] });
 		} else if (interaction.isAutocomplete()) {
 			const interac = interaction as AutocompleteInteraction;
 			const command = autCompleteCmd.find(
@@ -126,7 +47,67 @@ export default (client: Client): void => {
 						logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
 					}
 				}
+			}	
+		} else if (interaction.isButton()) {
+			let template = await getTemplate(interaction);
+			template = template ? template : await getTemplateWithDB(interaction);
+			if (!template) {
+				await interaction.reply({ content: ul("error.noTemplate")});
+				return;
+			}
+			try {
+				await buttonSubmit(interaction, ul, interactionUser, template);
+			} catch (error) {
+				console.error(error);
+				await interaction.reply({ content: ul("error.generic", {e: (error as Error)}), ephemeral: true });
+			}
+		} else if (interaction.isModalSubmit()) {
+			try {
+				await modalSubmit(interaction, ul, interactionUser);
+			} catch (error) {
+				console.error(error);
+				const translationError = lError(error as Error, interaction);
+				await interaction.reply({ content: translationError, ephemeral: true });
 			}
 		}
 	});
 };
+
+async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+	if (interaction.customId.includes("damageDice")) {
+		await submit_damageDice(interaction, ul, interactionUser);
+	} else if (interaction.customId.includes("page")) {
+		await pageNumber(interaction, ul);
+	} else if (interaction.customId === "editStats") {
+		await editStats(interaction, ul);
+	} else if (interaction.customId=="firstPage") {
+		await submit_firstPage(interaction);
+	} else if (interaction.customId === "editDice") {
+		await validate_editDice(interaction, ul);
+	} 
+}
+
+async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User, template: StatisticalTemplate) {
+	if (interaction.customId === "register")
+		await open_register_user(interaction, template, interactionUser, ul);
+	else if (interaction.customId=="continue") {
+		await continuePage(interaction, template, ul, interactionUser);
+	} else if (interaction.customId.includes("add_dice")) {
+		await button_add_dice(interaction, ul, interactionUser);
+	} else if (interaction.customId === "edit_stats") {
+		await start_edit_stats(interaction, ul, interactionUser);
+	} else if (interaction.customId === "validate") {
+		await button_validate_user(interaction, interactionUser, template, ul);
+	} else if (interaction.customId === "cancel") await cancel(interaction, ul, interactionUser);
+	else if (interaction.customId === "edit_dice") await start_edit_dice(interaction, ul, interactionUser);
+}
+
+async function cancel(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+	const embed = ensureEmbed(interaction.message);
+	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
+	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+	if (user || isModerator)
+		await interaction.message.edit({ components: [] });
+	else await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
+}
+

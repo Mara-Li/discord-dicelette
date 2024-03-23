@@ -1,4 +1,19 @@
 {
+  "button": {
+    "add": {
+      "stats": "Ajouter des statistiques",
+      "template": "Ajouter un modèle"
+    },
+    "cancel": "Annuler",
+    "continue": "Continuer",
+    "dice": "Enregistrer un dé",
+    "edit": {
+      "dice": "Modifier les dés",
+      "stats": "Modifier les statistiques",
+      "template": "Modifier le modèle"
+    },
+    "validate": "Valider"
+  },
   "common": {
     "channel": "channel",
     "charName": "Nom du personnage",
@@ -8,9 +23,9 @@
     "page": "Page {{nb}}",
     "space": " ",
     "statistic": "statistique",
+    "template": "Modèle",
     "total": "Total",
-    "user": "Joueur",
-    "validate": "Valider"
+    "user": "Joueur"
   },
   "dbRoll": {
     "description": "Lance un dé avec une statistique enregistrée",
@@ -34,28 +49,56 @@
   },
   "edit": {
     "options": {
-      "field": {
-      },
-      "value": {
-      }
+      "field": {},
+      "value": {}
+    }
+  },
+  "embed": {
+    "add": {
+      "title": "Enregistrement de l'utilisateur"
+    },
+    "dice": "Dés de compétences",
+    "edit": {
+      "template": "Utiliser \"0\" pour supprimer la valeur."
+    },
+    "stats": "Statistiques",
+    "template": "Modèle",
+    "user": "Joueur enregistré"
+  },
+  "embeds": {
+    "display": {
+      "title": "Personnage"
+    },
+    "edit": {
+      "dice": "Dés modifiés",
+      "stats": "Statistiques modifiées !"
     }
   },
   "error": {
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{e.message}}\n```",
+    "invalidDice": {
+      "embeds": "Aucun embed de dé détecté",
+      "withDice": "Erreur : Dé invalide {{dice}}",
+      "withError": "Erreur : Dé invalide {{dice}}\n```{{error}}```",
+      "withoutDice": "Erreur : Dé invalide"
+    },
     "mustBeGreater": "La valeur {{value}} doit être plus grande que {{min}}",
     "mustBeLower": "La valeur {{value}} doit être plus petite que {{max}}",
     "noDamage": "{{atq}} n'est pas enregistré dans {{charName}}.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
+    "noEmbed": "Aucun embed trouvé",
+    "noMessage": "Aucun message trouvé.",
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
     "noTemplate": "Aucun modèle ou channel configuré",
     "noThread": "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
-    "noValidDice": "Erreur : Dé invalide {{dice}}",
-    "noValidDiceError": "Erreur : Dé invalide {{dice}}\n```{{error}}```",
     "notRegistered": "Vous n'êtes pas enregistré",
+    "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
+    "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
     "totalExceededBy": "Le total de {{value}} est dépassé de {{max}}",
-    "user": "Utilisateur introuvable"
+    "user": "Utilisateur introuvable",
+    "userNotRegistered": "{{user}} n'est pas enregistré."
   },
   "generate": {
     "help": "- Le type de dé doit être un type valide (il sera testé quand vous enregistrerez le modèle).\n- La valeur doit être un nombre, et peut être optionnel. Si vous l'enlevez, le dé sera comparé à la statistique plutôt qu'une valeur.\n- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.\n- La formule permet d'éditer la valeur combinée au dé. Utiliser `$` pour symboliser la valeur (ie: `+$`, `-$`, `($-10)/2`...).\n- Une statistique peut être une combinaison d'autre statistique, comme `force+endurance`. Si la valeur de `combinaison` est définie, alors que les paramètres `min` et `max` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.\n- Vous pouvez aussi enregistrer des dés de compétences, qui seront ensuite utilisés pour la commande `/dbd` depuis la base de données. De plus, les utilisateurs pourront enregistrer leur propre dés de compétences.\n\nNoter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.\n\nIl est possible d'enregistrer uniquement des dés de compétences voire rien du tout, si vous souhaitez utiliser uniquement les commandes pour les dés de compétences.",
@@ -103,23 +146,19 @@
     "set": "Logs configurés dans le channel {{channel}}"
   },
   "modals": {
-    "add": {
-      "dice": "Ajouter un dé"
+    "added": {
+      "dice": "Dés ajoutés",
+      "stats": "Statistiques ajoutés"
     },
-    "added": "Statistiques ajoutées",
     "alreadySet": "Toutes les statistiques sont déjà définies",
-    "cancel": "Annuler",
     "charName": {
       "description": "Entrez le nom de votre personnage",
       "name": "Nom du personnage"
     },
-    "continue": "Continuer",
     "edit": {
-      "dice": "Modifier les dés enregistrés",
-      "stats": "Modifier les statistiques",
-      "template": "Modifier la template"
+      "dice": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
+      "stats": "⚠ Suivez la syntaxe. Supprimer avec X ou 0."
     },
-    "embedTitle": "Utilisateur enregistré",
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{max}}",
       "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",
@@ -127,9 +166,14 @@
     },
     "finished": "Statistiques terminées",
     "firstPage": "Enregistrement de l'utilisateur - Page 1/{{page}}",
-    "register": "Enregistrer un dé de compétence",
-    "registering": "Enregistrement de l'utilisateur",
+    "noPermission": "Vous n'avez pas les autorisations pour faire cela",
+    "removed": {
+      "dice": "Les dés ont été supprimés de l'utilisateur",
+      "stats": "Les statistiques ont bien été supprimés",
+      "template": "Le modèle a bien été supprimé"
+    },
     "steps": "Enregistrement de l'utilisateur - Page {{page}}/{{max}}",
+    "templateUpdated": "Modèle mis-à-jour",
     "user": {
       "description": "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)",
       "name": "utilisateur"
@@ -150,7 +194,7 @@
       "comparator": "Comparateur :",
       "damage": "Dés de dégâts",
       "description": "Clickez sur le bouton pour enregistrer un personnage",
-      "dice": "Dé",
+      "dice": "Dé(s)",
       "noValue": "Aucune valeur",
       "registered": "Modèle enregistré !",
       "title": "Modèle"

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
+import removeAccents from "remove-accents";
 
 import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
-import { generateStatsDice, rollWithInteraction, title } from "../utils";
+import { filterChoices, generateStatsDice, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 
 const t = i18next.getFixedT("en");
@@ -57,9 +58,8 @@ export const dmgRoll = {
 		const user = getUserData(db, interaction.user.id);
 		if (!user) return;
 		let choices: string[] = [];
-		
 		if (focused.name === t("rAtq.atq_name.name")) {
-			for (const [_, value] of Object.entries(user)) {
+			for (const [, value] of Object.entries(user)) {
 				if (value.damageName) choices = choices.concat(value.damageName);
 			}
 			if (db.templateID.damageName && db.templateID.damageName.length > 0)
@@ -73,8 +73,9 @@ export const dmgRoll = {
 			choices = allCharactersFromUser;
 		}
 		if (choices.length === 0) return;
+		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			choices.map(result => ({ name: title(result) ?? result, value: result}))
+			filter.map(result => ({ name: title(result), value: result}))
 		);
 	},
 	async execute(interaction: CommandInteraction) {
@@ -83,14 +84,15 @@ export const dmgRoll = {
 		if (!db || !interaction.guild || !interaction.channel) return;
 		const user = getUserData(db, interaction.user.id);
 		if (!user) return;
-		const atq = options.getString(t("rAtq.atq_name.name"), true).toLowerCase();
+		const atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
 		const guildData = getGuildData(interaction);
 		if (!guildData) return;
-		let charName = options.getString(t("common.character")) ?? undefined;
+		let charOptions = options.getString(t("common.character"));
+		const charName = charOptions ? removeAccents(charOptions).toLowerCase() : undefined;
 		let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 		const ul = ln(interaction.locale as Locale);
 		try {
-			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName?.toLowerCase());
+			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
 			if (!userStatistique && !charName) {
 				//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
@@ -99,7 +101,7 @@ export const dmgRoll = {
 					return;
 				}
 				const firstChar = userData[0];
-				charName = title(firstChar.charName);
+				charOptions = title(firstChar.charName);
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
@@ -110,7 +112,7 @@ export const dmgRoll = {
 				await interaction.reply({ content: ul("error.emptyDamage"), ephemeral: true });
 				return;
 			}
-			const charNameComments = charName ? ` • **@${title(charName)}**` : "";
+			const charNameComments = charOptions ? ` • **@${title(charOptions)}**` : "";
 			comments += `__[${title(atq)}]__${charNameComments}`;
 			//search dice
 			let dice = userStatistique.damage?.[atq.toLowerCase()];
@@ -125,7 +127,7 @@ export const dmgRoll = {
 			await rollWithInteraction(interaction, roll, interaction.channel);
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: t("error.generic", {error: error as Error}), ephemeral: true });
+			await interaction.reply({ content: t("error.generic", {e: (error as Error)}), ephemeral: true });
 			return;
 		}
 	},

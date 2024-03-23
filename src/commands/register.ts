@@ -1,15 +1,13 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import fs from "fs";
-import removeAccents from "remove-accents";
 import dedent from "ts-dedent";
 
 import { Critical, Statistic, StatisticalTemplate } from "../interface";
 import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { title } from "../utils";
+import { bulkEditTemplateUser } from "../utils/parse";
 import { verifyTemplateValue } from "../utils/verify_template";
-import { dmgRoll } from "./dbAtq";
-import { rollForUser } from "./dbroll";
 
 const t = i18next.getFixedT("en");
 
@@ -84,7 +82,7 @@ export const generateTemplate = {
 			const statistiqueName = name.split(/[, ]+/);
 			statServer = {};
 			for (const stat of statistiqueName ) {
-				statServer[removeAccents(stat)] = {
+				statServer[stat] = {
 					max: 0,
 					min: 0,
 					combinaison: ""
@@ -98,7 +96,7 @@ export const generateTemplate = {
 			const atq = atqName.split(/[, ]+/);
 			atqDice = {};
 			for (const name of atq) {
-				atqDice[removeAccents(name)] = "1d5";
+				atqDice[name] = "1d5";
 			}
 		}
 		let critical : Critical | undefined = {
@@ -161,7 +159,7 @@ export const registerTemplate = {
 			//add register button
 			const button = new ButtonBuilder()
 				.setCustomId("register")
-				.setLabel(t("register.button"))
+				.setLabel(ul("register.button"))
 				.setStyle(ButtonStyle.Primary);
 			const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);	
 			const embedTemplate = new EmbedBuilder()
@@ -185,7 +183,7 @@ export const registerTemplate = {
 					if (max) msg += `- Max${ul("common.space")}: \`${max}\`\n`;
 					if (msg.length === 0) msg = ul("register.embed.noValue");
 					embedTemplate.addFields({
-						name: title(stat) ?? "",
+						name: title(stat),
 						value: msg,
 						inline: true,
 					});
@@ -251,6 +249,7 @@ export const registerTemplate = {
 					user: {}
 				};
 			}
+			await bulkEditTemplateUser(json[guildData], interaction, ul, templateData);
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
 			console.error(e);
@@ -291,4 +290,3 @@ export const logs = {
 	}
 };
 
-export const commands = [generateTemplate, registerTemplate, rollForUser, logs, dmgRoll];

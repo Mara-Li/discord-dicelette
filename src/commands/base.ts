@@ -15,7 +15,6 @@ import dedent from "ts-dedent";
 import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { rollWithInteraction , setTagsForRoll } from "../utils";
-import { commands } from "./register";
 
 const t = i18next.getFixedT("en");
 
@@ -50,7 +49,7 @@ export const diceRoll = {
 			await rollWithInteraction(interaction, dice, channel);
 		} catch (error) {
 			console.error("no valid dice :", dice, error);
-			await interaction.reply({ content: ul("error.noValidDiceError", {error: (error as Error).message, dice}), ephemeral: true });
+			await interaction.reply({ content: ul("error.invalidDice.withError", {error: (error as Error).message, dice}), ephemeral: true });
 			return;
 		}
 	},
@@ -145,5 +144,3 @@ export const help = {
 		return;
 	}
 };
-//@ts-ignore
-export const commandsList = [diceRoll, newScene, help].concat(commands);

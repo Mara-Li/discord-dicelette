@@ -7,6 +7,12 @@ export interface Resultat {
 	modifier?: Modifier;
 }
 
+export const enum THUMBNAIL {
+	DICE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/dice.png?raw=true",
+	TEMPLATE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/template.png?raw=true",
+	STATS = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/player.png?raw=true"
+}
+
 export interface Modifier {
 	sign?: Sign;
 	value: number;
@@ -99,7 +105,7 @@ export interface Critical {
  * 	- Using it, it will roll normally and send the result to the user 
  * - If the user doesn't exists or their stat was deleted: the bot will send a message to inform the user that he is not registered and roll normally, ignoring the statistique/characters (theses will be send into the comments part)
  */
-export interface User {
+export interface UserData {
 	userName?: string; //by default, will be the id of the user, if changed to a string, it will be used
 	stats?: {
 		[name: string] : number;

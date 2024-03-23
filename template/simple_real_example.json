@@ -1,0 +1,38 @@
+{
+  "charName": true,
+  "statistics": {
+    "force": {
+      "min": 3
+    },
+    "endurance": {
+      "min": 3
+    },
+    "agilite": {
+      "min": 3
+    },
+    "constitution": {
+      "min": 3
+    },
+    "education": {
+      "min": 3
+    },
+    "intelligence": {
+      "min": 3
+    },
+    "charisme": {
+      "min": 3
+    },
+    "pouvoir": {
+      "min": 3
+    },
+    "pv": {
+      "combinaison": "endurance*2+force"
+    }
+  },
+  "diceType": "1d20+{{$}}>20",
+  "critical": {
+    "failure": 1,
+    "success": 20
+  },
+  "total": 88
+}

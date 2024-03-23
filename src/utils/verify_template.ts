@@ -21,21 +21,28 @@ export function evalStatsDice(testDice: string, stats?: {[name: string]: number}
 		}
 	}	
 	try {
-		roll(replaceFormulaInDice(dice));
+		if (!roll(replaceFormulaInDice(dice))) throw new Error(`[error.invalidDice.withoutDice, common.space] ${dice}`);
 		return testDice;
 	} catch (error) {
-		throw new Error(`[error.invalidDice, common.space]: ${testDice}\n${(error as Error).message}`);
+		throw new Error(`[error.invalidDice.withoutDice, common.space]: ${testDice}\n${(error as Error).message}`);
 	}
 }
 
 export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	if (!template.statistics) return value;
-	const allStats = Object.keys(template.statistics);
+	value = removeAccents(value);
+	const allStats = Object.keys(template.statistics).map(stat => removeAccents(stat).toLowerCase());
 	let newDice = value;
 	for (const stat of allStats) {
-		const regex = new RegExp(escapeRegex(removeAccents(stat)), "gi");
+		const regex = new RegExp(escapeRegex(stat), "gi");
 		if (value.match(regex)) {
-			const {max, min} = template.statistics[stat];
+			let max: undefined | number = undefined;
+			let min: undefined | number = undefined;
+			const stats = template.statistics?.[stat];
+			if (stats) {
+				max = template.statistics[removeAccents(stat).toLowerCase()].max;
+				min = template.statistics[removeAccents(stat).toLowerCase()].min;
+			}
 			const total = template.total || 100;
 			const randomStatValue = generateRandomStat(total, max, min);
 			newDice = value.replace(regex, randomStatValue.toString());
@@ -44,13 +51,13 @@ export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	return replaceFormulaInDice(newDice);
 }
 
-export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: number}) {
+export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: string | number}) {
 	const newStats: {[name: string]: number} = {};
 	for (const [stat, combin] of Object.entries(combinaison)) {
 		//replace the stats in formula
-		let formula = combin;
+		let formula = removeAccents(combin);
 		for (const [statName, value] of Object.entries(stats)) {
-			const regex = new RegExp(statName, "gi");
+			const regex = new RegExp(removeAccents(statName), "gi");
 			formula = formula.replace(regex, value.toString());
 		}
 		try {
@@ -61,6 +68,19 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 		}
 	}
 	return newStats;
+}
+
+export function evalOneCombinaison(combinaison: string, stats: {[name: string]: string | number}) {
+	let formula = removeAccents(combinaison);
+	for (const [statName, value] of Object.entries(stats)) {
+		const regex = new RegExp(removeAccents(statName), "gi");
+		formula = formula.replace(regex, value.toString());
+	}
+	try {
+		return evaluate(formula);
+	} catch (error) {
+		throw new Error(`[error.invalidFormula, common.space]: ${combinaison}`);
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -138,12 +158,18 @@ export function testDamageRoll(template: StatisticalTemplate) {
 	}
 }
 
-export function ensureOldEmbeds(message?: Message) {
+/**
+ * Ensure the embeds are present
+ * @param message {Message}
+ * @returns 
+ */
+export function ensureEmbed(message?: Message) {
 	const oldEmbeds = message?.embeds[0];
 	if (!oldEmbeds || !oldEmbeds?.fields) throw new Error("[error.noEmbed]");
 	return oldEmbeds;
-
 }
+
+
 
 export function testCombinaison(template: StatisticalTemplate) {
 	if (!template.statistics) return;
@@ -189,7 +215,7 @@ export function getFormula(diceType?: string) {
 		return combinaison;
 	}
 	if (formula?.groups?.formula) {
-		combinaison.formula = formula?.groups?.formula.replaceAll("{{", "").replaceAll("}}", "");
+		combinaison.formula = removeAccents(formula?.groups?.formula.replaceAll("{{", "").replaceAll("}}", "")).toLowerCase();
 	}
 	if (formula?.groups?.comparison) {
 		combinaison.sign = formula?.groups?.sign;
@@ -213,15 +239,14 @@ export function testFormula(template: StatisticalTemplate) {
 			roll(template.diceType);
 			return true;
 		} catch(e) {
-			throw new Error(`[error.invalidDice] ${template.diceType}`);
+			throw new Error(`[error.invalidDice.withoutDice] ${template.diceType}`);
 		}
 	}
-	
 	const formule = formula.formula?.replace("$", randomStatValue.toString());
 	const compareFormule = formula.comparator?.replaceAll("$", randomStatValue.toString());
+	let newDice = template.diceType;
 	try {
-		let newDice = template.diceType;
-		if (formule && formula.formula){
+		if (formule && formula.formula) {
 			const value = evaluate(formule);
 			const regexOriginalFormula = new RegExp(`\\{\\{${escapeRegex(formula.formula)}\\}\\}`, "gmi");
 			const valueString = value > 0 ? `+${value}` : value.toString();
@@ -231,10 +256,11 @@ export function testFormula(template: StatisticalTemplate) {
 			const value = evaluate(compareFormule);
 			newDice = newDice.replace(formula.comparator, value.toString());
 		}
+		newDice = newDice.replaceAll("++", "+").replaceAll("+-", "-").replaceAll("--", "-").replaceAll("++", "+");
 		roll(newDice);
 		return true;
 	} catch (error) {
-		throw new Error(`[error.invalidFormula] ${JSON.stringify(formula)}`);
+		throw new Error(`[error.invalidFormula, error.generatedDice] ${newDice}\n${JSON.stringify(formula)}`);
 	}
 	
 }

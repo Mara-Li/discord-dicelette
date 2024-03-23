@@ -1,7 +1,7 @@
 // FILEPATH: /c:/Users/simonettili/Documents/Github/discord-dicelette/src/utils/verify_template.test.ts
 import { StatisticalTemplate } from "../src/interface";
 import { calculate, cleanedDice, formatRollCalculation } from "../src/utils/index";
-import { diceRandomParse,evalCombinaison, generateRandomStat,getFormula,testCombinaison, testDamageRoll, verifyTemplateValue } from "../src/utils/verify_template";
+import { diceRandomParse,evalCombinaison, generateRandomStat,getFormula,testCombinaison, testDamageRoll, testFormula, verifyTemplateValue } from "../src/utils/verify_template";
 
 describe("verify_template", () => {
 	describe("evalCombinaison", () => {
@@ -180,6 +180,26 @@ describe("verify_template", () => {
 				}
 			};
 			expect(() => testDamageRoll(template)).not.toThrow();
+		});
+		it("Test a roll with a combinaison on the dice and accents", () => {
+			const template: StatisticalTemplate = {
+				statistics: { éducation: { max: 10, min: 1 } },
+				diceType: "1d20",
+				damage: {
+					"piercing": "1déducation>20",
+				}
+			};
+			expect(() => testDamageRoll(template)).not.toThrow();
+		});
+		it("Test formula for simple dice", () => {
+			const template: StatisticalTemplate = {
+				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
+				diceType: "1d20+{{$}}>20",
+				damage: {
+					"piercing": "1dstat1>20",
+				}
+			};
+			expect(() => testFormula(template)).not.toThrow();
 		});
 	});
 	describe("roll_string_creation", () => {

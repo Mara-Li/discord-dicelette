@@ -1,4 +1,19 @@
 {
+  "button": {
+    "add": {
+      "stats": "Add statistics",
+      "template": "Add a template"
+    },
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "dice": "Save a die",
+    "edit": {
+      "dice": "Edit dice",
+      "stats": "Edit statistics",
+      "template": "Edit template"
+    },
+    "validate": "To validate"
+  },
   "common": {
     "channel": "channel",
     "charName": "character name",
@@ -6,11 +21,11 @@
     "dice": "Dé",
     "noSet": "/",
     "page": "Page {{nb}}",
-    "space": " ",
+    "space": "",
     "statistic": "statistique",
+    "template": "Model",
     "total": "Total",
-    "user": "Player",
-    "validate": "Validate"
+    "user": "Player"
   },
   "dbRoll": {
     "description": "Roll a die with a recorded statistic",
@@ -40,22 +55,52 @@
       }
     }
   },
+  "embed": {
+    "add": {
+      "title": "User registration"
+    },
+    "dice": "Skill Dice",
+    "edit": {
+      "template": "Use \"0\" to remove the value."
+    },
+    "stats": "Statistics",
+    "template": "Model",
+    "user": "Registered player"
+  },
+  "embeds": {
+    "display": {
+      "title": "Personnage"
+    },
+    "edit": {
+      "dice": "Modified dice",
+      "stats": "Stats changed!"
+    }
+  },
   "error": {
-    "emptyDamage": "",
+    "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{e.message}}\n```",
+    "invalidDice": {
+      "embeds": "No die embeds detected",
+      "withDice": "Error: Invalid die {{dice}}",
+      "withError": "Error: Invalid die {{dice}}\n\n```{{error}}```",
+      "withoutDice": "Error: Invalid die"
+    },
     "mustBeGreater": "The {{value}} value must be greater than {{min}}",
     "mustBeLower": "The {{value}} value must be smaller than {{max}}",
     "noDamage": "{{atq}} is not saved in {{charName}}.",
     "noDice": "You cannot issue this command without having a registered die type!",
+    "noEmbed": "No embeds found",
+    "noMessage": "No messages found.",
     "noStats": "This command cannot be used: no statistics have been recorded.",
     "noTemplate": "No template or channel configured",
     "noThread": "No thread found - Please re-register user if thread has been deleted",
-    "noValidDice": "Error: Invalid Dice {{dice}}",
-    "noValidDiceError": "Error: Invalid die {{dice}}",
     "notRegistered": "You are not registered",
+    "statNotFound": "Statistics not found! \nDid you make a typing error?",
+    "tooMuchDice": "Too many dice have been saved! \nYou cannot have more than 25 dice saved.",
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{value}} is exceeded by {{max}}",
-    "user": "User not found"
+    "user": "User not found",
+    "userNotRegistered": "{{user}} is not registered."
   },
   "generate": {
     "help": "- The die type must be a valid type (it will be tested when you save the model).\n- The value must be a number, and may be optional. If you remove it, the die will be compared to the statistic rather than a value.\n- Total must be a number, and may be optional. If you remove it, the total will be calculated automatically when the user is registered.\n- The formula is used to edit the combined value of the die. Use `$` to symbolize the value (ie: `+$`, `-$`, `($-10)/2`...).\n- A stat can be a combination of other stats, such as `strength+endurance`. If the `combination` value is set, then the `min` and `max` parameters will be disabled. In addition, users won't have to enter the value manually. Finally, this value will be excluded from the calculation of the point total allocated.\n- You can also register skill dice, which will then be used for the `/dbd` command from the database. In addition, users can register their own skill dice.\n\nPlease note that the file shown here is only an example, and must be customized before being saved.\n\nIt is possible to save only skill dice, or nothing at all, if you wish to use only the skill dice commands.",
@@ -103,33 +148,38 @@
     "set": "Logs configured in channel {{channel}}"
   },
   "modals": {
-    "add": {
-      "dice": ""
+    "added": {
+      "dice": "Dice added",
+      "stats": "Added statistiques"
     },
-    "added": "Statistics added",
     "alreadySet": "All statistics already set",
-    "cancel": "Cancel",
     "charName": {
       "description": "Enter your character's name",
       "name": "Character name"
     },
-    "continue": "Continue",
-    "edit": {
-      "dice": "",
-      "stats": "",
-      "template": ""
+    "dice": {
     },
-    "embedTitle": "Registered user",
+    "edit": {
+      "dice": "⚠ Respect the syntax. \nUse \"X\", \"0\" or leave blank to delete.",
+      "stats": "Stats changed!"
+    },
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{max}}",
       "minAndMax": "Enter a value between {{min}} and {{max}}",
       "minOnly": "Enter a value greater than {{min}}."
     },
     "finished": "Statistics finished",
-    "firstPage": "User registration - Page 1/{{page}}",
-    "register": "Register a skill die",
-    "registering": "User registration",
-    "steps": "User registration - Page {{page}}/{{max}}",
+    "firstPage": "User Registration - Page 1/{{page}}",
+    "noPermission": "You do not have permissions to do this",
+    "removed": {
+      "dice": "The dice have been removed from the user",
+      "stats": "The statistics have been deleted",
+      "template": "The model has been deleted"
+    },
+    "steps": "User Registration - Page {{page}}/{{max}}",
+    "template": {
+    },
+    "templateUpdated": "Updated model",
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
       "name": "user"

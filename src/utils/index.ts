@@ -1,4 +1,5 @@
-import { BaseInteraction, CommandInteraction, EmbedBuilder, ForumChannel, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { BaseInteraction, CommandInteraction, Embed, EmbedBuilder, ForumChannel, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
@@ -6,10 +7,12 @@ import removeAccents from "remove-accents";
 import { deleteAfter } from "../commands/base";
 import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
-import {User} from "../interface";
+import {UserData} from "../interface";
 import { ln } from "../localizations";
+import { editUserButtons } from "./buttons";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
+import { parseEmbedFields } from "./parse";
 import { getFormula } from "./verify_template";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
@@ -22,7 +25,7 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	const rollDice = roll(dice);
 	if (!rollDice) {
 		console.error("no valid dice :", dice);
-		await interaction.reply({ content: ul("error.noValidDice", {dice}), ephemeral: true });
+		await interaction.reply({ content: ul("error.invalidDice.withDice", {dice}), ephemeral: true });
 		return;
 	}
 	const parser = parseResult(rollDice, ul, critical);
@@ -70,11 +73,11 @@ export async function setTagsForRoll(forum: ForumChannel) {
 }
 
 export function title(str?: string) {
-	if (!str) return;
+	if (!str) return "";
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export async function repostInThread(embed: EmbedBuilder, interaction: BaseInteraction, userTemplate: User, userId: string) {
+export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: UserData, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}) {
 	const channel = interaction.channel;
 	if (!channel ||!(channel instanceof TextChannel)) return;
 	let thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as ThreadChannel | undefined;
@@ -84,16 +87,30 @@ export async function repostInThread(embed: EmbedBuilder, interaction: BaseInter
 			autoArchiveDuration: 10080,
 		});
 	}
-	userTemplate.userName = userTemplate.userName ? removeAccents(userTemplate.userName).toLowerCase() : undefined;
+	userTemplate.userName = userTemplate.userName ? userTemplate.userName.toLowerCase() : undefined;
 	const msg = await thread.send({ 
-		embeds: [embed] },);
+		embeds: embed,
+		components: [editUserButtons(ul, which.stats, which.dice)]},);
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
 	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
+}
+
+export function cleanSkillName(dice: string) {
+	return removeAccents(dice).toLowerCase().replaceAll("🔪", "").trim();
+}
+
+export function cleanStatsName(dice: string) {
+	return removeAccents(dice).toLowerCase().replaceAll("✏️", "").trim();
 }
 
 
 export function timestamp() {
 	return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
+}
+
+export function isArrayEqual(array1: string[]|undefined, array2: string[]|undefined) {
+	if (!array1 || !array2) return false;
+	return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }
 
 export function calculate(userStat: number, diceType?: string, override?: string|null, modificator: number = 0) {
@@ -110,7 +127,7 @@ export function calculate(userStat: number, diceType?: string, override?: string
 			calculation = calculation.replace("{{", "").replace("}}", "").replace("$", userStat.toString());
 			calculation = evaluate(`${calculation} + ${modificator}`).toString();
 		} catch (error) {
-			throw `[ulError.invalidFormula] ${calculation}`;
+			throw `[error.invalidFormula] ${calculation}`;
 		}
 	} else calculation = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
 	return {calculation, comparator};
@@ -166,4 +183,23 @@ export function formatRollCalculation(dice: string, comparator: string, comments
 		.replace("--", "+")
 		.replace("++", "+") : clean;
 	return `${diceCalculation}${comparator} ${comments}`;
+}
+
+export function filterChoices(choices: string[], focused: string) {
+	return choices.filter(choice => removeAccents(choice).toLowerCase().includes(removeAccents(focused).toLowerCase()));
+
+}
+
+export function parseStatsString(statsEmbed: EmbedBuilder) {
+	const stats = parseEmbedFields(statsEmbed.toJSON() as Embed);
+	const parsedStats: {[name: string]: number} = {};
+	for (const [name, value] of Object.entries(stats)) {
+		let number = parseInt(value, 10);
+		if (isNaN(number)) {
+			const stat = value.split("`").filter(x => x.trim().length > 0)[1].replace("=", "").trim();
+			number = parseInt(stat, 10);
+		}
+		parsedStats[name] = number;
+	}
+	return parsedStats;
 }
