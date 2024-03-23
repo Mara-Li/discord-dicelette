@@ -6,7 +6,7 @@ import { lError, ln } from "../../localizations";
 import { cleanSkillName, title } from "../../utils";
 import { editUserButtons, registerDmgButton, validateCancelButton } from "../../utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
-import { getEmbeds } from "../../utils/parse_embeds";
+import { getEmbeds } from "../../utils/parse";
 import { ensureEmbed, evalStatsDice } from "../../utils/verify_template";
 import { getUserNameAndChar } from "..";
 

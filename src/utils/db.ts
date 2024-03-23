@@ -5,7 +5,7 @@ import removeAccents from "remove-accents";
 
 import { GuildData, StatisticalTemplate, UserData } from "../interface";
 import { ln } from "../localizations";
-import { getEmbeds, parseEmbedFields } from "./parse_embeds";
+import { getEmbeds, parseEmbedFields } from "./parse";
 import { ensureEmbed, verifyTemplateValue } from "./verify_template";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {

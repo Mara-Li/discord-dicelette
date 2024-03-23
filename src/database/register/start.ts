@@ -5,7 +5,7 @@ import removeAccents from "remove-accents";
 import { StatisticalTemplate } from "../../interface";
 import { ln } from "../../localizations";
 import { getTemplateWithDB } from "../../utils/db";
-import { parseEmbed } from "../../utils/parse_embeds";
+import { parseEmbed } from "../../utils/parse";
 import { embedStatistiques, showStatistiqueModal } from "../stats/add";
 import { createEmbedFirstPage } from "./validate";
 

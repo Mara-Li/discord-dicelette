@@ -12,7 +12,7 @@ import { ln } from "../localizations";
 import { editUserButtons } from "./buttons";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
-import { parseEmbedFields } from "./parse_embeds";
+import { parseEmbedFields } from "./parse";
 import { getFormula } from "./verify_template";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {

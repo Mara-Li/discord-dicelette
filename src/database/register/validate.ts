@@ -6,7 +6,7 @@ import { StatisticalTemplate, UserData } from "../../interface";
 import { ln } from "../../localizations";
 import { cleanSkillName, cleanStatsName, repostInThread, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
-import { createEmbedsList, parseEmbedFields } from "../../utils/parse_embeds";
+import { createEmbedsList, parseEmbedFields } from "../../utils/parse";
 import { ensureEmbed } from "../../utils/verify_template";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {

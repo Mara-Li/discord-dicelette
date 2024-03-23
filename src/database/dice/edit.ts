@@ -5,7 +5,7 @@ import { roll } from "../../dice";
 import { cleanSkillName, cleanStatsName, parseStatsString, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { registerUser } from "../../utils/db";
-import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse_embeds";
+import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { ensureEmbed, evalStatsDice } from "../../utils/verify_template";
 import { getUserNameAndChar } from "..";
 

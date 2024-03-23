@@ -4,7 +4,7 @@ import { TFunction } from "i18next";
 import {cleanStatsName, isArrayEqual, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { getGuildData, getTemplateWithDB } from "../../utils/db";
-import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse_embeds";
+import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { ensureEmbed, evalOneCombinaison } from "../../utils/verify_template";
 
 export async function editStats(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
