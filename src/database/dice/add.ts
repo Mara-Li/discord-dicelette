@@ -16,7 +16,7 @@ import { createDiceEmbed, getUserNameAndChar } from "..";
  * @param ul {TFunction<"translation", undefined>}
  * @param interactionUser {User}
  */
-export async function add_dice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User
+export async function button_add_dice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User
 ) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
@@ -27,6 +27,13 @@ export async function add_dice(interaction: ButtonInteraction, ul: TFunction<"tr
 		await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
 }
 
+/**
+ * Modal to add a new skill dice
+ * @param interaction {ButtonInteraction}
+ * @param first {boolean} 
+ * - true: It's the modal when the user is registered
+ * - false: It's the modal when the user is already registered and a new dice is added to edit the user
+ */
 export async function showDamageDiceModals(interaction: ButtonInteraction, first?: boolean) {
 	const ul = ln(interaction.locale as Locale);
 	const id = first ? "damageDice_first" : "damageDice";
@@ -56,7 +63,13 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
 	await interaction.showModal(modal);
 }
 
-
+/**
+ * Interaction to submit the new skill dice
+ * Only works if the user is the owner of the user registered in the embed or if the user is a moderator
+ * @param interaction {ModalSubmitInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param interactionUser {User}
+ */
 export async function submit_damageDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	const template = await getTemplateWithDB(interaction);
 	if (!template) {
@@ -68,9 +81,17 @@ export async function submit_damageDice(interaction: ModalSubmitInteraction, ul:
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
 		await registerDamageDice(interaction, interaction.customId.includes("first"));
+	else
+		await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
 
 }
-
+/**
+ * Register the new skill dice in the embed and database
+ * @param interaction {ModalSubmitInteraction}
+ * @param first {boolean}
+ * - true: It's the modal when the user is registered
+ * - false: It's the modal when the user is already registered and a new dice is added to edit the user
+ */
 export async function registerDamageDice(interaction: ModalSubmitInteraction, first?: boolean) {
 	const ul = ln(interaction.locale as Locale);
 	const name = interaction.fields.getTextInputValue("damageName");

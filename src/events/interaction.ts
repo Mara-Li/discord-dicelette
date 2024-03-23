@@ -2,7 +2,7 @@ import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, Mo
 import { TFunction } from "i18next";
 
 import { autCompleteCmd,commandsList } from "../commands";
-import { add_dice,submit_damageDice } from "../database/dice/add";
+import { button_add_dice,submit_damageDice } from "../database/dice/add";
 import { editDice, start_edit_dice } from "../database/dice/edit";
 import { continuePage,firstPage, pageNumber, register_user } from "../database/register/start";
 import { validate_user } from "../database/register/validate";
@@ -93,7 +93,7 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 	else if (interaction.customId=="continue") {
 		await continuePage(interaction, template, ul, interactionUser);
 	} else if (interaction.customId.includes("add_dice")) {
-		await add_dice(interaction, ul, interactionUser);
+		await button_add_dice(interaction, ul, interactionUser);
 	} else if (interaction.customId === "edit_stats") {
 		await edit_stats(interaction, ul, interactionUser);
 	} else if (interaction.customId === "validate") {
