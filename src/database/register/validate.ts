@@ -10,6 +10,13 @@ import { createEmbedsList, parseEmbedFields } from "../../utils/parse";
 import { ensureEmbed } from "../../utils/verify_template";
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "..";
 
+/**
+ * Create the embed after registering the user
+ * If the template has statistics, show the continue button
+ * Else show the dice button
+ * @param interaction {ModalSubmitInteraction}
+ * @param template {StatisticalTemplate}
+ */
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
 	const channel = interaction.channel;
@@ -39,6 +46,12 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	await interaction.reply({ embeds: [embed], components: [allButtons] });	
 }
 
+/**
+ * Validate the user and create the embeds
+ * It will register the final embeds and send it in the thread
+ * @param {ButtonInteraction} interaction 
+ * @param template {StatisticalTemplate}
+ */
 export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = ensureEmbed(interaction.message);
@@ -149,12 +162,17 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	await interaction.reply({ content: ul("modals.finished"), ephemeral: true });
 	return;
 }
-export async function validate_user(interaction: ButtonInteraction, interactionUser: User, template: StatisticalTemplate, ul: TFunction<"translation", undefined>) {
+
+/**
+ * Validate the user and create the embeds when the button is clicked
+ * @param interaction {ButtonInteraction}
+ * @param interactionUser {User}
+ */
+
+export async function button_validate_user(interaction: ButtonInteraction, interactionUser: User, template: StatisticalTemplate, ul: TFunction<"translation", undefined>) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (isModerator)
 		await validateUser(interaction, template);
-
-
 	else
 		await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
 }
