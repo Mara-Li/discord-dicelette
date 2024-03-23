@@ -1,8 +1,10 @@
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
+import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder, TextChannel } from "discord.js";
 
+import { createDiceEmbed, createStatsEmbed } from "../database";
 import { ln } from "../localizations";
 import { filterChoices, title } from "../utils";
 import { getGuildData, getUserData } from "../utils/db";
+import { getEmbeds } from "../utils/parse";
 
 export const displayUser = {
 	data: new SlashCommandBuilder()
@@ -82,7 +84,39 @@ export const displayUser = {
 				[(user?.id ?? interaction.user.id)]: findChara
 			};
 		} 
-		await interaction.reply({ content: "Displaying user's stats", ephemeral: true });
-		console.log(charData);
+		const channel = await interaction.guild?.channels.fetch(guildData.templateID.channelId);
+		if (!channel || !(channel instanceof TextChannel)) return;
+		const thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]");
+		if (!thread) {
+			await interaction.reply(ul("error.noThread"));
+			return;
+		}
+		const messageID = charData[user?.id ?? interaction.user.id].messageId;
+		const userMessage = await thread.messages.fetch(messageID);
+		const statisticEmbed = getEmbeds(ul, userMessage, "stats");
+		const diceEmbed = getEmbeds(ul, userMessage, "damage");
+		const diceFields = diceEmbed?.toJSON().fields;
+		const statsFields = statisticEmbed?.toJSON().fields;
+		if (!statisticEmbed || !diceEmbed || !diceFields || !statsFields) {
+			await interaction.reply(ul("error.user"));
+			return;
+		}
+		const displayEmbed = new EmbedBuilder()
+			.setTitle(ul("embeds.display.title"))
+			.setThumbnail(user?.displayAvatarURL() ?? interaction.user.displayAvatarURL())
+			.setColor("Gold")
+			.addFields({
+				name: ul("common.user"),
+				value: user?.username ?? interaction.user.username,
+				inline: true
+			})
+			.addFields({
+				name: ul("common.character"),
+				value: charData[user?.id ?? interaction.user.id].charName ?? ul("common.noSet"),
+				inline: true
+			});
+		const newStatEmbed = createStatsEmbed(ul).addFields(statsFields);
+		const newDiceEmbed = createDiceEmbed(ul).addFields(diceFields);
+		await interaction.reply({ embeds: [displayEmbed, newStatEmbed, newDiceEmbed] });	
 	}
 };

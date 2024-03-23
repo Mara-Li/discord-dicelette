@@ -58,17 +58,9 @@ export const dmgRoll = {
 		const user = getUserData(db, interaction.user.id);
 		if (!user) return;
 		let choices: string[] = [];
-		
 		if (focused.name === t("rAtq.atq_name.name")) {
-			if (options.getString(t("common.character"))) {
-				const userChar = user.find((data) => data.charName === options.getString(t("common.character")));
-				if (userChar?.damageName) {
-					choices = choices.concat(userChar.damageName);
-				}
-			} else {
-				for (const [_, value] of Object.entries(user)) {
-					if (value.damageName) choices = choices.concat(value.damageName);
-				}
+			for (const [, value] of Object.entries(user)) {
+				if (value.damageName) choices = choices.concat(value.damageName);
 			}
 			if (db.templateID.damageName && db.templateID.damageName.length > 0)
 				choices = choices.concat(db.templateID.damageName);

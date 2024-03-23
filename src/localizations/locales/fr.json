@@ -68,6 +68,9 @@
     "user": "Joueur enregistré"
   },
   "embeds": {
+    "display": {
+      "title": "Personnage"
+    },
     "edit": {
       "dice": "Dés modifiés",
       "stats": "Statistiques modifiées !"

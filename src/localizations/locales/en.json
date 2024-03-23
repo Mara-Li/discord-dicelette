@@ -68,6 +68,9 @@
     "user": "Registered player"
   },
   "embeds": {
+    "display": {
+      "title": "Personnage"
+    },
     "edit": {
       "dice": "",
       "stats": "Stats changed!"
