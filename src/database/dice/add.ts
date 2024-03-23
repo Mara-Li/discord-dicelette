@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,ThreadChannel,User } from "discord.js";
+import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User } from "discord.js";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
@@ -8,6 +8,7 @@ import { editUserButtons, registerDmgButton, validateCancelButton } from "../../
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
 import { getEmbeds } from "../../utils/parse_embeds";
 import { ensureEmbed, evalStatsDice } from "../../utils/verify_template";
+import { getUserNameAndChar } from "..";
 
 /**
  * Interaction to add a new skill dice
@@ -56,7 +57,7 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
 }
 
 
-export async function damageDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+export async function submit_damageDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	const template = await getTemplateWithDB(interaction);
 	if (!template) {
 		await interaction.reply({ content: ul("error.noTemplate") });
@@ -115,11 +116,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		allEmbeds.push(diceEmbed);
 		if (templateEmbed) allEmbeds.push(templateEmbed);
 		const components = editUserButtons(ul, statsEmbed ? true: false, true);
-		const userID = userEmbed.toJSON().fields?.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "");
-		if (!userID) throw new Error(ul("error.user"));
-		if (!interaction.channel || !(interaction.channel instanceof ThreadChannel)) throw new Error(ul("error.noThread"));
-		let userName = userEmbed.toJSON().fields?.find(field => field.name === ul("common.charName"))?.value;
-		if (userName === ul("common.noSet")) userName = undefined;
+		const { userID, userName, thread } = await getUserNameAndChar(interaction, ul);
 
 		if (damageName && Object.keys(damageName).length > 25) {
 			await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
@@ -127,7 +124,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 			await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 			return;
 		}
-		registerUser(userID, interaction, interaction.message.id, interaction.channel, userName, damageName ? Object.keys(damageName) : undefined, false);
+		registerUser(userID, interaction, interaction.message.id, thread, userName, damageName ? Object.keys(damageName) : undefined, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
 		return;

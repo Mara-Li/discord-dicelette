@@ -1,9 +1,9 @@
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
 import { TFunction } from "i18next";
-import { edit_dice,editDice } from "src/database/dice/edit";
+import { start_edit_dice,editDice } from "src/database/dice/edit";
 
 import { autCompleteCmd,commandsList } from "../commands";
-import { add_dice, damageDice } from "../database/dice/add";
+import { add_dice, submit_damageDice } from "../database/dice/add";
 import { validate_user } from "src/database/register/validate";
 import { register_user } from "src/database/register/start";
 import { continuePage } from "src/database/register/start";
@@ -76,7 +76,7 @@ export default (client: Client): void => {
 
 async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	if (interaction.customId.includes("damageDice")) {
-		await damageDice(interaction, ul, interactionUser);
+		await submit_damageDice(interaction, ul, interactionUser);
 	} else if (interaction.customId.includes("page")) {
 		await pageNumber(interaction, ul);
 	} else if (interaction.customId === "editStats") {
@@ -100,7 +100,7 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 	} else if (interaction.customId === "validate") {
 		await validate_user(interaction, interactionUser, template, ul);
 	} else if (interaction.customId === "cancel") await cancel(interaction, ul, interactionUser);
-	else if (interaction.customId === "edit_dice") await edit_dice(interaction, ul, interactionUser);
+	else if (interaction.customId === "edit_dice") await start_edit_dice(interaction, ul, interactionUser);
 }
 
 async function cancel(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
