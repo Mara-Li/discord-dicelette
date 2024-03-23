@@ -6,6 +6,7 @@ import { Critical, Statistic, StatisticalTemplate } from "../interface";
 import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { title } from "../utils";
+import { bulkEditTemplateUser } from "../utils/embeds/parse";
 import { verifyTemplateValue } from "../utils/verify_template";
 
 const t = i18next.getFixedT("en");
@@ -248,7 +249,7 @@ export const registerTemplate = {
 					user: {}
 				};
 			}
-			
+			await bulkEditTemplateUser(json[guildData], interaction, ul, templateData);
 			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		} catch (e) {
 			console.error(e);

@@ -171,7 +171,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	}
 	const diceEmbed = new EmbedBuilder()
 		.setTitle(title(ul("embed.dice")))
-		.setColor(diceEmbeds.toJSON().color ?? "Aqua")
+		.setColor(diceEmbeds.toJSON().color ?? "Green")
 		.addFields(fieldsToAppend);
 	if (!fieldsToAppend || fieldsToAppend.length === 0) {
 		//dice was removed

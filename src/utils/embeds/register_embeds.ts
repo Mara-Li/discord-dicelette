@@ -119,6 +119,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const parsedFields = parseEmbedFields(oldEmbeds);
 	const userDataEmbed = new EmbedBuilder()
 		.setTitle(ul("embed.user"))
+		.setColor("Random")
 		.setThumbnail(oldEmbeds.thumbnail?.url || "");
 	let diceEmbed: EmbedBuilder | undefined = undefined;
 	let statsEmbed: EmbedBuilder | undefined = undefined;
@@ -126,6 +127,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		if (field.name.startsWith("🔪")) {
 			if (!diceEmbed) {
 				diceEmbed = new EmbedBuilder()
+					.setColor("Green")
 					.setTitle(ul("embed.dice"));
 			}
 			diceEmbed.addFields({
@@ -137,6 +139,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		} else if (field.name.startsWith("✏️")) {
 			if (!statsEmbed) {
 				statsEmbed = new EmbedBuilder()
+					.setColor("Aqua")
 					.setTitle(ul("embed.stats"));
 			}
 			statsEmbed.addFields({
@@ -166,6 +169,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				templateDamage[name] = dice;
 				if (!diceEmbed) {
 					diceEmbed = new EmbedBuilder()
+						.setColor("Green")
 						.setTitle(ul("embed.dice"));
 				}
 				diceEmbed.addFields({
@@ -191,7 +195,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	if (template.diceType || template.critical) {
 		templateEmbed = new EmbedBuilder()
 			.setTitle(ul("embed.template"))
-			.setColor("Aqua");
+			.setColor("DarkerGrey");
 		if (template.diceType)
 			templateEmbed.addFields({
 				name: ul("common.dice"),

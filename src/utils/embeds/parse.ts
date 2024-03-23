@@ -91,7 +91,7 @@ export async function bulkEditTemplateUser(guildData: GuildData, interaction: Co
 			if (!templateEmbed) continue;
 			const newEmbed = new EmbedBuilder()
 				.setTitle(ul("embed.template"))
-				.setColor(templateEmbed.toJSON().color ?? "Aqua");
+				.setColor(templateEmbed.toJSON().color ?? "DarkGrey");
 			if (template.diceType)
 				newEmbed.addFields({
 					name: ul("common.dice"),
