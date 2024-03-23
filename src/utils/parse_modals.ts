@@ -2,7 +2,7 @@ import { Locale, ModalSubmitInteraction } from "discord.js";
 import removeAccents from "remove-accents";
 import { StatisticalTemplate } from "src/interface";
 
-import { ln } from "../../localizations";
+import { ln } from "../localizations";
 
 export function getStatistiqueFields(interaction: ModalSubmitInteraction, templateData: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);

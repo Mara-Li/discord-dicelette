@@ -3,9 +3,9 @@ import fs from "fs";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
-import { GuildData, StatisticalTemplate, User } from "../interface";
+import { GuildData, StatisticalTemplate, UserData } from "../interface";
 import { ln } from "../localizations";
-import { getEmbeds, parseEmbedFields } from "./embeds/parse";
+import { getEmbeds, parseEmbedFields } from "./parse_embeds";
 import { ensureEmbed, verifyTemplateValue } from "./verify_template";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
@@ -144,7 +144,7 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 }
 
 export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>, first: boolean = false) {
-	const user: Partial<User> = {};
+	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
 	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Embed);
@@ -178,6 +178,6 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 			failure: templateFields?.[ul("roll.critical.failure")] ? parseInt(parsedFields[ul("roll.critical.failure")], 10) : undefined,
 		}
 	};
-	return user as User;
+	return user as UserData;
 
 }

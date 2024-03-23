@@ -1,13 +1,18 @@
-import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, ModalSubmitInteraction, TextChannel, User } from "discord.js";
+import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
 import { TFunction } from "i18next";
+import { edit_dice,editDice } from "src/database/dice/edit";
 
 import { autCompleteCmd,commandsList } from "../commands";
+import { add_dice, damageDice } from "../database/dice/add";
+import { validate_user } from "src/database/register/validate";
+import { register_user } from "src/database/register/start";
+import { continuePage } from "src/database/register/start";
+import { firstPage, pageNumber } from "../database/new_user/modal_submit";
+import { edit_stats,editStats } from "../database/stats/edit";
 import { StatisticalTemplate } from "../interface";
 import { lError, ln } from "../localizations";
 import { getTemplate, getTemplateWithDB, readDB } from "../utils/db";
-import { editDice, editStats } from "../utils/embeds/edit";
-import { add_dice,cancel,continuePage, edit_dice, edit_stats, register_user, validate_user } from "../utils/submit/button";
-import { damageDice, firstPage, pageNumber } from "../utils/submit/modal";
+import { ensureEmbed } from "../utils/verify_template";
 
 export default (client: Client): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
@@ -97,3 +102,13 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 	} else if (interaction.customId === "cancel") await cancel(interaction, ul, interactionUser);
 	else if (interaction.customId === "edit_dice") await edit_dice(interaction, ul, interactionUser);
 }
+
+async function cancel(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+	const embed = ensureEmbed(interaction.message);
+	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
+	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+	if (user || isModerator)
+		await interaction.message.edit({ components: [] });
+	else await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
+}
+

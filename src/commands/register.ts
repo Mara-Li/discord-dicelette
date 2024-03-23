@@ -6,7 +6,7 @@ import { Critical, Statistic, StatisticalTemplate } from "../interface";
 import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { title } from "../utils";
-import { bulkEditTemplateUser } from "../utils/embeds/parse";
+import { bulkEditTemplateUser } from "../utils/parse_embeds";
 import { verifyTemplateValue } from "../utils/verify_template";
 
 const t = i18next.getFixedT("en");

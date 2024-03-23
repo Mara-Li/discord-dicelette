@@ -1,12 +1,11 @@
-import { APIEmbedField, EmbedBuilder, ModalSubmitInteraction } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, EmbedBuilder,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
 import { TFunction } from "i18next";
 
-import { roll } from "../../dice";
-import { cleanSkillName, cleanStatsName, parseStatsString, title } from "..";
-import { editUserButtons } from "../buttons";
-import { getTemplateWithDB } from "../db";
-import { evalOneCombinaison, evalStatsDice } from "../verify_template";
-import { getEmbeds, getEmbedsList, removeEmbedsFromList } from "./parse";
+import {cleanStatsName, isArrayEqual, title } from "../../utils";
+import { editUserButtons } from "../../utils/buttons";
+import { getGuildData, getTemplateWithDB } from "../../utils/db";
+import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse_embeds";
+import { ensureEmbed, evalOneCombinaison } from "../../utils/verify_template";
 
 export async function editStats(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
 	if (!interaction.message) return;
@@ -108,81 +107,55 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
 }
 
-export async function editDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
-	if (!interaction.message) return;
-	const diceEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "damage");
-	if (!diceEmbeds) return;
-	const values = interaction.fields.getTextInputValue("allDice");
-	const valuesAsDice = values.split("\n- ").map(dice => {
-		const [name, value] = dice.split(/ ?: ?/);
-		return { name: name.replace("- ", "").trim().toLowerCase(), value };
-	});
-	const dices = valuesAsDice.reduce((acc, { name, value }) => {
-		acc[name] = value;
-		return acc;
-	}, {} as {[name: string]: string});
-	const newEmbedDice: APIEmbedField[] = [];
-	for (const [skill, dice] of Object.entries(dices)) {
-		//test if dice is valid
-		if (dice === "X" 
-			|| dice.trim().length ===0 
-			|| dice === "0" 
-			|| newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(skill))
-		) continue;
-		const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
-		if (!statsEmbeds) {
-			if (!roll(dice)) {
-				throw new Error(ul("error.invalidDice.withDice", {dice}));
-			}
-			continue;
-		} 
-		const statsValues = parseStatsString(statsEmbeds);
-		const diceEvaluated = evalStatsDice(dice, statsValues);
-		newEmbedDice.push({
-			name: title(skill),
-			value: diceEvaluated,
-			inline: true
-		});
+
+export async function showEditorStats(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
+	const statistics = getEmbeds(ul, interaction.message, "stats");
+	if (!statistics) throw new Error(ul("error.statNotFound"));
+	const stats = parseEmbedFields(statistics.toJSON() as Embed);
+	const originalGuildData = getGuildData(interaction)?.templateID.statsName;
+	const registeredStats = originalGuildData?.map(stat => cleanStatsName(stat));
+	const userStats = Object.keys(stats).map(stat => cleanStatsName(stat.toLowerCase()));
+	let statsStrings = "";
+	for (const [name, value] of Object.entries(stats)) {
+		let stringValue = value;
+		if (!registeredStats?.includes(cleanStatsName(name))) continue; //remove stats that are not registered
+		if (value.match(/`(.*)`/)) {
+			const combinaison = value.match(/`(.*)`/)?.[1];
+			if (combinaison) stringValue = combinaison;
+		}
+		statsStrings += `- ${name}${ul("common.space")}: ${stringValue}\n`;
 	}
-	const oldDice = diceEmbeds.toJSON().fields;
-	if (oldDice) {
-		for (const field of oldDice) {
-			const name = field.name.toLowerCase();
-			if (field.value !== "0" 
-				&& field.value !== "X" 
-				&& field.value.trim().length > 0 
-				&& !newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(name))
-			) {
-			//register the old value
-				newEmbedDice.push({
-					name: title(name),
-					value: field.value,
-					inline: true
-				});
-			}
+	if (!isArrayEqual(registeredStats, userStats) && registeredStats && registeredStats.length > userStats.length) {
+		//check which stats was added
+		const diff = registeredStats.filter(x => !userStats.includes(x));
+		for (const stat of diff) {
+			const realName = originalGuildData?.find(x => cleanStatsName(x) === cleanStatsName(stat));
+			statsStrings += `- ${title(realName)}${ul("common.space")}: 0\n`;
 		}
 	}
-	//remove duplicate
-	const fieldsToAppend: APIEmbedField[] = [];
-	for (const field of newEmbedDice) {
-		const name = field.name.toLowerCase();
-		if (fieldsToAppend.find(f => cleanSkillName(f.name) === cleanSkillName(name))) continue;
-		fieldsToAppend.push(field);
-	}
-	const diceEmbed = new EmbedBuilder()
-		.setTitle(title(ul("embed.dice")))
-		.setColor(diceEmbeds.toJSON().color ?? "Green")
-		.addFields(fieldsToAppend);
-	if (!fieldsToAppend || fieldsToAppend.length === 0) {
-		//dice was removed
-		const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
-		const toAdd = removeEmbedsFromList(embedsList.list, "damage", ul);
-		const components = editUserButtons(ul, embedsList.exists.stats, false);
-		await interaction.message.edit({ embeds: toAdd, components: [components] });
-		await interaction.reply({ content: ul("modals.removed.dice"), ephemeral: true });
-		return;
-	} 
-	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
-	await interaction.message.edit({ embeds: embedsList.list });
-	await interaction.reply({ content: ul("embeds.edit.dice"), ephemeral: true });
+
+	const modal = new ModalBuilder()
+		.setCustomId("editStats")
+		.setTitle(title(ul("common.statistic")));
+	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+		new TextInputBuilder()
+			.setCustomId("allStats")
+			.setLabel(ul("modals.edit.stats"))
+			.setRequired(true)
+			.setStyle(TextInputStyle.Paragraph)
+			.setValue(statsStrings),
+	);
+	modal.addComponents(input);
+	await interaction.showModal(modal);
+}
+
+
+
+export async function edit_stats(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+	const embed = ensureEmbed(interaction.message);
+	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
+	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+	if (user || isModerator)
+		showEditorStats(interaction, ul);
+	else await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
 }

@@ -7,12 +7,12 @@ import removeAccents from "remove-accents";
 import { deleteAfter } from "../commands/base";
 import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
-import {User} from "../interface";
+import {UserData} from "../interface";
 import { ln } from "../localizations";
 import { editUserButtons } from "./buttons";
 import { registerUser } from "./db";
-import { parseEmbedFields } from "./embeds/parse";
 import { findForumChannel,findThread } from "./find";
+import { parseEmbedFields } from "./parse_embeds";
 import { getFormula } from "./verify_template";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
@@ -77,7 +77,7 @@ export function title(str?: string) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: User, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}) {
+export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: UserData, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}) {
 	const channel = interaction.channel;
 	if (!channel ||!(channel instanceof TextChannel)) return;
 	let thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as ThreadChannel | undefined;

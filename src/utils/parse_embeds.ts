@@ -2,8 +2,8 @@
 import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Message, ModalSubmitInteraction, TextChannel } from "discord.js";
 import { TFunction } from "i18next";
 
-import { GuildData, StatisticalTemplate } from "../../interface";
-import { title } from "..";
+import { GuildData, StatisticalTemplate } from "../interface";
+import { title } from ".";
 
 export function parseEmbed(interaction: ButtonInteraction | ModalSubmitInteraction) {
 	const embed = interaction.message?.embeds[0];
