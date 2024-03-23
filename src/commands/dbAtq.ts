@@ -127,7 +127,7 @@ export const dmgRoll = {
 			await rollWithInteraction(interaction, roll, interaction.channel);
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: t("error.generic", {error: error as Error}), ephemeral: true });
+			await interaction.reply({ content: t("error.generic", {e: (error as Error)}), ephemeral: true });
 			return;
 		}
 	},

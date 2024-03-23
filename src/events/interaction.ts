@@ -3,10 +3,10 @@ import { TFunction } from "i18next";
 
 import { autCompleteCmd,commandsList } from "../commands";
 import { button_add_dice,submit_damageDice } from "../database/dice/add";
-import { validate_editDice, start_edit_dice } from "../database/dice/edit";
-import { continuePage,submit_firstPage, pageNumber, open_register_user } from "../database/register/start";
+import { start_edit_dice,validate_editDice } from "../database/dice/edit";
+import { continuePage,open_register_user,pageNumber, submit_firstPage } from "../database/register/start";
 import { button_validate_user } from "../database/register/validate";
-import { start_edit_stats,editStats } from "../database/stats/edit";
+import { editStats,start_edit_stats } from "../database/stats/edit";
 import { StatisticalTemplate } from "../interface";
 import { lError,ln } from "../localizations";
 import { getTemplate, getTemplateWithDB,readDB } from "../utils/db";
@@ -26,7 +26,7 @@ export default (client: Client): void => {
 				await command.execute(interaction);
 			} catch (error) {
 				console.log(error);
-				await interaction.reply({ content: ul("error.generic", {error: error as Error}), ephemeral: true });
+				await interaction.reply({ content: ul("error.generic", {e: error as Error}), ephemeral: true });
 			}
 		} else if (interaction.isAutocomplete()) {
 			const interac = interaction as AutocompleteInteraction;
@@ -59,7 +59,7 @@ export default (client: Client): void => {
 				await buttonSubmit(interaction, ul, interactionUser, template);
 			} catch (error) {
 				console.error(error);
-				await interaction.reply({ content: ul("error.generic", {error: error as Error}), ephemeral: true });
+				await interaction.reply({ content: ul("error.generic", {e: (error as Error)}), ephemeral: true });
 			}
 		} else if (interaction.isModalSubmit()) {
 			try {

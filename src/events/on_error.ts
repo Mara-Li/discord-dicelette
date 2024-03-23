@@ -5,12 +5,10 @@ dotenv.config({ path: ".env" });
 
 export const botError = (client	: Client): void => {
 	client.on("error", async (error) => {
-		console.error("hello");
-		console.error(error);	//prevent the crash of the entire application
-		//send a message to the owner of the bot
+		console.error(error);
 		if (!process.env.OWNER_ID) return;
 		const dm = await client.users.createDM(process.env.OWNER_ID);
-		dm.send(`An error has occurred:\n\`\`\`\n${error}\n\`\`\``);
+		dm.send(`An error has occurred:\n\`\`\`\n${error.message}\n\`\`\``);
 	});
 };
 

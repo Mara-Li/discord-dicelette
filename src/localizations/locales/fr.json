@@ -49,10 +49,8 @@
   },
   "edit": {
     "options": {
-      "field": {
-      },
-      "value": {
-      }
+      "field": {},
+      "value": {}
     }
   },
   "embed": {

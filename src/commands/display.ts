@@ -92,31 +92,37 @@ export const displayUser = {
 			return;
 		}
 		const messageID = charData[user?.id ?? interaction.user.id].messageId;
-		const userMessage = await thread.messages.fetch(messageID);
-		const statisticEmbed = getEmbeds(ul, userMessage, "stats");
-		const diceEmbed = getEmbeds(ul, userMessage, "damage");
-		const diceFields = diceEmbed?.toJSON().fields;
-		const statsFields = statisticEmbed?.toJSON().fields;
-		if (!statisticEmbed || !diceEmbed || !diceFields || !statsFields) {
-			await interaction.reply(ul("error.user"));
+		try {
+			const userMessage = await thread.messages.fetch(messageID);
+			const statisticEmbed = getEmbeds(ul, userMessage, "stats");
+			const diceEmbed = getEmbeds(ul, userMessage, "damage");
+			const diceFields = diceEmbed?.toJSON().fields;
+			const statsFields = statisticEmbed?.toJSON().fields;
+			if (!statisticEmbed || !diceEmbed || !diceFields || !statsFields) {
+				await interaction.reply(ul("error.user"));
+				return;
+			}
+			const displayEmbed = new EmbedBuilder()
+				.setTitle(ul("embeds.display.title"))
+				.setThumbnail(user?.displayAvatarURL() ?? interaction.user.displayAvatarURL())
+				.setColor("Gold")
+				.addFields({
+					name: ul("common.user"),
+					value: user?.username ?? interaction.user.username,
+					inline: true
+				})
+				.addFields({
+					name: ul("common.character"),
+					value: charData[user?.id ?? interaction.user.id].charName ?? ul("common.noSet"),
+					inline: true
+				});
+			const newStatEmbed = createStatsEmbed(ul).addFields(statsFields);
+			const newDiceEmbed = createDiceEmbed(ul).addFields(diceFields);
+			await interaction.reply({ embeds: [displayEmbed, newStatEmbed, newDiceEmbed] });	
+		} catch (error) {
+			await interaction.reply(ul("error.noMessage"));
 			return;
 		}
-		const displayEmbed = new EmbedBuilder()
-			.setTitle(ul("embeds.display.title"))
-			.setThumbnail(user?.displayAvatarURL() ?? interaction.user.displayAvatarURL())
-			.setColor("Gold")
-			.addFields({
-				name: ul("common.user"),
-				value: user?.username ?? interaction.user.username,
-				inline: true
-			})
-			.addFields({
-				name: ul("common.character"),
-				value: charData[user?.id ?? interaction.user.id].charName ?? ul("common.noSet"),
-				inline: true
-			});
-		const newStatEmbed = createStatsEmbed(ul).addFields(statsFields);
-		const newDiceEmbed = createDiceEmbed(ul).addFields(diceFields);
-		await interaction.reply({ embeds: [displayEmbed, newStatEmbed, newDiceEmbed] });	
+		
 	}
 };
