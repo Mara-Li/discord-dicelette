@@ -9,6 +9,12 @@ import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from
 import { ensureEmbed, evalStatsDice } from "../../utils/verify_template";
 import { createDiceEmbed, getUserNameAndChar } from "..";
 
+/**
+ * Show the modal to **edit** the registered dice
+ * Will parse registered dice and show them in the modal as `- Skill : Dice`
+ * @param interaction {ButtonInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ */
 export async function showEditDice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
 	const diceEmbed = getEmbeds(ul, interaction.message, "damage");
 	if (!diceEmbed) throw new Error(ul("error.invalidDice.embeds"));
@@ -32,7 +38,14 @@ export async function showEditDice(interaction: ButtonInteraction, ul: TFunction
 	await interaction.showModal(modal);
 }
 
-export async function editDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
+/**
+ * Validate the edit of the dice from the modals
+ * Will parse the dice and validate if they are correct
+ * Edit the embed with the new dice or remove it if it's empty
+ * @param interaction {ModalSubmitInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ */
+export async function validate_editDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
 	if (!interaction.message) return;
 	const diceEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "damage");
 	if (!diceEmbeds) return;

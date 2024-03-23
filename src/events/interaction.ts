@@ -3,7 +3,7 @@ import { TFunction } from "i18next";
 
 import { autCompleteCmd,commandsList } from "../commands";
 import { button_add_dice,submit_damageDice } from "../database/dice/add";
-import { editDice, start_edit_dice } from "../database/dice/edit";
+import { validate_editDice, start_edit_dice } from "../database/dice/edit";
 import { continuePage,firstPage, pageNumber, register_user } from "../database/register/start";
 import { validate_user } from "../database/register/validate";
 import { edit_stats,editStats } from "../database/stats/edit";
@@ -83,7 +83,7 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 	} else if (interaction.customId=="firstPage") {
 		await firstPage(interaction);
 	} else if (interaction.customId === "editDice") {
-		await editDice(interaction, ul);
+		await validate_editDice(interaction, ul);
 	} 
 }
 
