@@ -8,6 +8,11 @@ import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from
 import { ensureEmbed, evalOneCombinaison } from "../../utils/verify_template";
 import { createStatsEmbed } from "..";
 
+/**
+ * Validate the stats and edit the embed with the new stats for editing
+ * @param interaction {ModalSubmitInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ */
 export async function editStats(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
 	if (!interaction.message) return;
 	const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
@@ -106,7 +111,11 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
 }
 
-
+/**
+ * Show the stats editor
+ * @param interaction {ButtonInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ */
 export async function showEditorStats(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
 	const statistics = getEmbeds(ul, interaction.message, "stats");
 	if (!statistics) throw new Error(ul("error.statNotFound"));
@@ -149,8 +158,13 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 }
 
 
-
-export async function edit_stats(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+/**
+ * The button that trigger the stats editor
+ * @param interaction {ButtonInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param interactionUser {User}
+ */
+export async function start_edit_stats(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);

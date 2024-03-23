@@ -6,7 +6,7 @@ import { button_add_dice,submit_damageDice } from "../database/dice/add";
 import { validate_editDice, start_edit_dice } from "../database/dice/edit";
 import { continuePage,submit_firstPage, pageNumber, open_register_user } from "../database/register/start";
 import { button_validate_user } from "../database/register/validate";
-import { edit_stats,editStats } from "../database/stats/edit";
+import { start_edit_stats,editStats } from "../database/stats/edit";
 import { StatisticalTemplate } from "../interface";
 import { lError,ln } from "../localizations";
 import { getTemplate, getTemplateWithDB,readDB } from "../utils/db";
@@ -95,7 +95,7 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 	} else if (interaction.customId.includes("add_dice")) {
 		await button_add_dice(interaction, ul, interactionUser);
 	} else if (interaction.customId === "edit_stats") {
-		await edit_stats(interaction, ul, interactionUser);
+		await start_edit_stats(interaction, ul, interactionUser);
 	} else if (interaction.customId === "validate") {
 		await button_validate_user(interaction, interactionUser, template, ul);
 	} else if (interaction.customId === "cancel") await cancel(interaction, ul, interactionUser);

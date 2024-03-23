@@ -7,7 +7,12 @@ import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
 import { getStatistiqueFields } from "../../utils/parse";
 import { ensureEmbed, evalCombinaison } from "../../utils/verify_template";
 
-
+/**
+ * Embed to display the statistics when adding a new user
+ * @param interaction {ModalSubmitInteraction}
+ * @param template {StatisticalTemplate}
+ * @param page {number}
+ */
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page = 2) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
@@ -70,7 +75,18 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		const errorMsg = lError(error as Error, interaction);
 		await interaction.reply({ content: errorMsg, ephemeral: true });
 	}
-}export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page = 1) {
+}
+
+/**
+ * Modal to display the statistics when adding a new user
+ * Will display the statistics that are not already set 
+ * 5 statistics per page
+ * @param interaction {ButtonInteraction}
+ * @param template {StatisticalTemplate}
+ * @param stats {string[]}
+ * @param page {number}
+ */
+export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page: number = 1) {
 	if (!template.statistics) return;
 	const ul = ln(interaction.locale as Locale);
 	const statsWithoutCombinaison = Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison) ?? [];
