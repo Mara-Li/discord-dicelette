@@ -1,4 +1,4 @@
-import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, EmbedBuilder,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
 import { TFunction } from "i18next";
 
 import {cleanStatsName, isArrayEqual, title } from "../../utils";
@@ -6,6 +6,7 @@ import { editUserButtons } from "../../utils/buttons";
 import { getGuildData, getTemplateWithDB } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { ensureEmbed, evalOneCombinaison } from "../../utils/verify_template";
+import { createStatsEmbed } from "..";
 
 export async function editStats(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
 	if (!interaction.message) return;
@@ -88,9 +89,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		fieldsToAppend.push(field);
 	}
 
-	const newEmbedStats = new EmbedBuilder()
-		.setTitle(title(ul("embed.stats")))
-		.setColor(statsEmbeds.toJSON().color ?? "Aqua")
+	const newEmbedStats = createStatsEmbed(ul)
 		.addFields(fieldsToAppend);
 	
 	if (!fieldsToAppend || fieldsToAppend.length === 0) {

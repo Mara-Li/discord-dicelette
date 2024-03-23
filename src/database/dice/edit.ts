@@ -1,4 +1,4 @@
-import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, EmbedBuilder, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
 import { TFunction } from "i18next";
 
 import { roll } from "../../dice";
@@ -7,7 +7,7 @@ import { editUserButtons } from "../../utils/buttons";
 import { registerUser } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { ensureEmbed, evalStatsDice } from "../../utils/verify_template";
-import { getUserNameAndChar } from "..";
+import { createDiceEmbed, getUserNameAndChar } from "..";
 
 export async function showEditDice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
 	const diceEmbed = getEmbeds(ul, interaction.message, "damage");
@@ -100,10 +100,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 			|| dice === "0" ) continue;
 		fieldsToAppend.push(field);
 	}
-	const diceEmbed = new EmbedBuilder()
-		.setTitle(title(ul("embed.dice")))
-		.setColor(diceEmbeds.toJSON().color ?? "Green")
-		.addFields(fieldsToAppend);
+	const diceEmbed = createDiceEmbed(ul).addFields(fieldsToAppend);
 	const {userID, userName, thread} = await getUserNameAndChar(interaction, ul);	
 	if (!fieldsToAppend || fieldsToAppend.length === 0) {
 		//dice was removed

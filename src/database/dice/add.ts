@@ -8,7 +8,7 @@ import { editUserButtons, registerDmgButton, validateCancelButton } from "../../
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
 import { getEmbeds } from "../../utils/parse";
 import { ensureEmbed, evalStatsDice } from "../../utils/verify_template";
-import { getUserNameAndChar } from "..";
+import { createDiceEmbed, getUserNameAndChar } from "..";
 
 /**
  * Interaction to add a new skill dice
@@ -77,8 +77,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	let value = interaction.fields.getTextInputValue("damageValue");
 	if (!interaction.message) throw new Error(ul("error.noMessage"));
 	const oldDiceEmbeds = first ? ensureEmbed(interaction.message).toJSON() : getEmbeds(ul, interaction.message ?? undefined, "damage")?.toJSON();
-	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder(oldDiceEmbeds) : new EmbedBuilder()
-		.setTitle(ul("embed.dice"));
+	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder(oldDiceEmbeds) : createDiceEmbed(ul);
 	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
 			//add fields only if not already in the diceEmbed

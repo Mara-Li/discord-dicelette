@@ -8,6 +8,7 @@ import { cleanSkillName, cleanStatsName, repostInThread, title } from "../../uti
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
 import { createEmbedsList, parseEmbedFields } from "../../utils/parse";
 import { ensureEmbed } from "../../utils/verify_template";
+import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "..";
 
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
@@ -51,18 +52,13 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	}
 	userID = userID.replace("<@", "").replace(">", "");
 	const parsedFields = parseEmbedFields(oldEmbeds);
-	const userDataEmbed = new EmbedBuilder()
-		.setTitle(ul("embed.user"))
-		.setColor("Random")
-		.setThumbnail(oldEmbeds.thumbnail?.url || "");
+	const userDataEmbed = createUserEmbed(ul, oldEmbeds.thumbnail?.url || "");
 	let diceEmbed: EmbedBuilder | undefined = undefined;
 	let statsEmbed: EmbedBuilder | undefined = undefined;
 	for (const field of oldEmbeds.fields) {
 		if (field.name.startsWith("🔪")) {
 			if (!diceEmbed) {
-				diceEmbed = new EmbedBuilder()
-					.setColor("Green")
-					.setTitle(ul("embed.dice"));
+				diceEmbed = createDiceEmbed(ul);
 			}
 			diceEmbed.addFields({
 				name: title(cleanSkillName(field.name)),
@@ -72,9 +68,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			});
 		} else if (field.name.startsWith("✏️")) {
 			if (!statsEmbed) {
-				statsEmbed = new EmbedBuilder()
-					.setColor("Aqua")
-					.setTitle(ul("embed.stats"));
+				statsEmbed = createStatsEmbed(ul);
 			}
 			statsEmbed.addFields({
 				name: title(cleanStatsName(field.name)),
@@ -102,9 +96,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			for (const [name, dice] of Object.entries(template.damage)) {
 				templateDamage[name] = dice;
 				if (!diceEmbed) {
-					diceEmbed = new EmbedBuilder()
-						.setColor("Green")
-						.setTitle(ul("embed.dice"));
+					diceEmbed = createDiceEmbed(ul);
 				}
 				diceEmbed.addFields({
 					name: `${name}`,

@@ -3,6 +3,7 @@ import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Mes
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
+import { createTemplateEmbed } from "../database";
 import { GuildData, StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
 import { title } from ".";
@@ -91,9 +92,7 @@ export async function bulkEditTemplateUser(guildData: GuildData, interaction: Co
 			const userMessages = await thread.messages.fetch(char.messageId);
 			const templateEmbed = getEmbeds(ul, userMessages, "template");
 			if (!templateEmbed) continue;
-			const newEmbed = new EmbedBuilder()
-				.setTitle(ul("embed.template"))
-				.setColor(templateEmbed.toJSON().color ?? "DarkGrey");
+			const newEmbed = createTemplateEmbed(ul);
 			if (template.diceType)
 				newEmbed.addFields({
 					name: ul("common.dice"),
