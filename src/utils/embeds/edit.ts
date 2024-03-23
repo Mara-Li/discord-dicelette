@@ -94,8 +94,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		.setColor(statsEmbeds.toJSON().color ?? "Aqua")
 		.addFields(fieldsToAppend);
 	
-	const areFields = newEmbedStats.toJSON()?.fields;
-	if (!areFields || areFields.length === 0) {
+	if (!fieldsToAppend || fieldsToAppend.length === 0) {
 		//stats was removed
 		const {list, exists} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 		const toAdd = removeEmbedsFromList(list, "stats", ul);
@@ -122,15 +121,13 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 		acc[name] = value;
 		return acc;
 	}, {} as {[name: string]: string});
-	const newEmbedDice = new EmbedBuilder()
-		.setTitle(title(ul("embed.dice")))
-		.setColor(diceEmbeds.toJSON().color ?? "Aqua");
+	const newEmbedDice: APIEmbedField[] = [];
 	for (const [skill, dice] of Object.entries(dices)) {
 		//test if dice is valid
 		if (dice === "X" 
 			|| dice.trim().length ===0 
 			|| dice === "0" 
-			|| newEmbedDice.toJSON().fields?.find(field => cleanStatsName(field.name) === cleanStatsName(skill))
+			|| newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(skill))
 		) continue;
 		const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
 		if (!statsEmbeds) {
@@ -141,7 +138,7 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 		} 
 		const statsValues = parseStatsString(statsEmbeds);
 		const diceEvaluated = evalStatsDice(dice, statsValues);
-		newEmbedDice.addFields({
+		newEmbedDice.push({
 			name: title(skill),
 			value: diceEvaluated,
 			inline: true
@@ -154,10 +151,10 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 			if (field.value !== "0" 
 				&& field.value !== "X" 
 				&& field.value.trim().length > 0 
-				&& !newEmbedDice.toJSON().fields?.find(field => cleanStatsName(field.name) === cleanStatsName(name))
+				&& !newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(name))
 			) {
 			//register the old value
-				newEmbedDice.addFields({
+				newEmbedDice.push({
 					name: title(name),
 					value: field.value,
 					inline: true
@@ -167,23 +164,25 @@ export async function editDice(interaction: ModalSubmitInteraction, ul: TFunctio
 	}
 	//remove duplicate
 	const fieldsToAppend: APIEmbedField[] = [];
-	const fields = newEmbedDice.toJSON().fields as APIEmbedField[];
-	for (const field of fields) {
+	for (const field of newEmbedDice) {
 		const name = field.name.toLowerCase();
 		if (fieldsToAppend.find(f => cleanSkillName(f.name) === cleanSkillName(name))) continue;
 		fieldsToAppend.push(field);
 	}
-	const areFields = newEmbedDice.toJSON()?.fields;
-	if (!areFields || areFields.length === 0) {
+	const diceEmbed = new EmbedBuilder()
+		.setTitle(title(ul("embed.dice")))
+		.setColor(diceEmbeds.toJSON().color ?? "Aqua")
+		.addFields(fieldsToAppend);
+	if (!fieldsToAppend || fieldsToAppend.length === 0) {
 		//dice was removed
-		const embedsList = getEmbedsList(ul, {which: "damage", embed: newEmbedDice}, interaction.message);
+		const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 		const toAdd = removeEmbedsFromList(embedsList.list, "damage", ul);
 		const components = editUserButtons(ul, embedsList.exists.stats, false);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.dice"), ephemeral: true });
 		return;
 	} 
-	const embedsList = getEmbedsList(ul, {which: "damage", embed: newEmbedDice}, interaction.message);
+	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
 	await interaction.reply({ content: ul("embeds.edit.dice"), ephemeral: true });
 }
