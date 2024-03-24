@@ -18,46 +18,46 @@ export default (client: Client): void => {
 		const ul = ln(interaction.locale);
 		const interactionUser = interaction.user;
 		try {
-		if (interaction.isCommand()) {
-			const command = commandsList.find(
-				(cmd) => cmd.data.name === interaction.commandName
-			);
-			if (!command) return;
-			await command.execute(interaction);
+			if (interaction.isCommand()) {
+				const command = commandsList.find(
+					(cmd) => cmd.data.name === interaction.commandName
+				);
+				if (!command) return;
+				await command.execute(interaction);
 			
-		} else if (interaction.isAutocomplete()) {
-			const interac = interaction as AutocompleteInteraction;
-			const command = autCompleteCmd.find(
-				(cmd) => cmd.data.name === interac.commandName
-			);
-			if (!command) return;
-			await command.autocomplete(interac);
-		} else if (interaction.isButton()) {
-			let template = await getTemplate(interaction);
-			template = template ? template : await getTemplateWithDB(interaction);
-			if (!template) {
-				await interaction.reply({ content: ul("error.noTemplate")});
-				return;
+			} else if (interaction.isAutocomplete()) {
+				const interac = interaction as AutocompleteInteraction;
+				const command = autCompleteCmd.find(
+					(cmd) => cmd.data.name === interac.commandName
+				);
+				if (!command) return;
+				await command.autocomplete(interac);
+			} else if (interaction.isButton()) {
+				let template = await getTemplate(interaction);
+				template = template ? template : await getTemplateWithDB(interaction);
+				if (!template) {
+					await interaction.reply({ content: ul("error.noTemplate")});
+					return;
+				}
+				await buttonSubmit(interaction, ul, interactionUser, template);
+			} else if (interaction.isModalSubmit()) {
+				await modalSubmit(interaction, ul, interactionUser);
 			}
-			await buttonSubmit(interaction, ul, interactionUser, template);
-		} else if (interaction.isModalSubmit()) {
-			await modalSubmit(interaction, ul, interactionUser);
-		}
-	} catch (error) {
-		console.error(error);
-		if (!interaction.guild) return;
-		const msgError = lError(error as Error, interaction);
-		if (interaction.isButton() || interaction.isModalSubmit() || interaction.isCommand())
-			await interaction.reply({ content: msgError, ephemeral: true });
-		const db = readDB(interaction.guild.id);
-		if (!db) return;
-		if (db.db.logs) {
-			const logs = await interaction.guild.channels.fetch(db.db.logs);
-			if (logs instanceof TextChannel) {
-				logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
+		} catch (error) {
+			console.error(error);
+			if (!interaction.guild) return;
+			const msgError = lError(error as Error, interaction);
+			if (interaction.isButton() || interaction.isModalSubmit() || interaction.isCommand())
+				await interaction.reply({ content: msgError, ephemeral: true });
+			const db = readDB(interaction.guild.id);
+			if (!db) return;
+			if (db.db.logs) {
+				const logs = await interaction.guild.channels.fetch(db.db.logs);
+				if (logs instanceof TextChannel) {
+					logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
+				}
 			}
 		}
-	}
 	});
 };
 

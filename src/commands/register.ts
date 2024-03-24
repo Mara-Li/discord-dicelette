@@ -3,7 +3,7 @@ import fs from "fs";
 import dedent from "ts-dedent";
 
 import { Critical, Statistic, StatisticalTemplate } from "../interface";
-import { cmdLn, lError, ln } from "../localizations";
+import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { title } from "../utils";
 import { bulkEditTemplateUser } from "../utils/parse";
@@ -148,114 +148,108 @@ export const registerTemplate = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const ul = ln(interaction.locale as Locale);
 		const template = options.getAttachment(t("register.options.template.name"), true);
-		try {
-			//fetch the template
-			const res = await fetch(template.url).then(res => res.json());
-			const templateData = verifyTemplateValue(res);
-			const guildData = interaction.guild.id;
-			const channel = options.getChannel(ul("common.channel"), true);
-			if (!(channel instanceof TextChannel)) return;
-			//send template as JSON in the channel, send as file
-			//add register button
-			const button = new ButtonBuilder()
-				.setCustomId("register")
-				.setLabel(ul("register.button"))
-				.setStyle(ButtonStyle.Primary);
-			const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);	
-			const embedTemplate = new EmbedBuilder()
-				.setTitle(ul("register.embed.title"))
-				.setDescription(ul("register.embed.description"))
-				.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
-				.setColor("Random");
+		//fetch the template
+		const res = await fetch(template.url).then(res => res.json());
+		const templateData = verifyTemplateValue(res);
+		const guildData = interaction.guild.id;
+		const channel = options.getChannel(ul("common.channel"), true);
+		if (!(channel instanceof TextChannel)) return;
+		//send template as JSON in the channel, send as file
+		//add register button
+		const button = new ButtonBuilder()
+			.setCustomId("register")
+			.setLabel(ul("register.button"))
+			.setStyle(ButtonStyle.Primary);
+		const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);	
+		const embedTemplate = new EmbedBuilder()
+			.setTitle(ul("register.embed.title"))
+			.setDescription(ul("register.embed.description"))
+			.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
+			.setColor("Random");
 			
-			if (templateData.statistics && (Object.keys(templateData.statistics).length >= 20)) {
-				interaction.reply({ content: ul("error.tooMuchStats"), ephemeral: true });
-				return;
-			}
-			if (templateData.statistics) {	
-				for (const [stat, value] of Object.entries(templateData.statistics)) {
-					const min = value.min;
-					const max = value.max;
-					const combinaison = value.combinaison;
-					let msg = "";
-					if (combinaison) msg += `- Combinaison${ul("common.space")}: \`${combinaison}\`\n`;
-					if (min) msg += `- Min${ul("common.space")}: \`${min}\`\n`;
-					if (max) msg += `- Max${ul("common.space")}: \`${max}\`\n`;
-					if (msg.length === 0) msg = ul("register.embed.noValue");
-					embedTemplate.addFields({
-						name: title(stat),
-						value: msg,
-						inline: true,
-					});
-				}
-			}
-			if (templateData.diceType)
+		if (templateData.statistics && (Object.keys(templateData.statistics).length >= 20)) {
+			interaction.reply({ content: ul("error.tooMuchStats"), ephemeral: true });
+			return;
+		}
+		if (templateData.statistics) {	
+			for (const [stat, value] of Object.entries(templateData.statistics)) {
+				const min = value.min;
+				const max = value.max;
+				const combinaison = value.combinaison;
+				let msg = "";
+				if (combinaison) msg += `- Combinaison${ul("common.space")}: \`${combinaison}\`\n`;
+				if (min) msg += `- Min${ul("common.space")}: \`${min}\`\n`;
+				if (max) msg += `- Max${ul("common.space")}: \`${max}\`\n`;
+				if (msg.length === 0) msg = ul("register.embed.noValue");
 				embedTemplate.addFields({
-					name: ul("register.embed.dice"),
-					value: templateData.diceType,
-				});
-			let msgComparator = "";
-			if (templateData.critical) {
-				if (templateData.critical.success) msgComparator += `- ${ul("roll.critical.success")} \`${templateData.critical.success}\`\n`;
-				if (templateData.critical.failure) msgComparator += `- ${ul("roll.critical.failure")} \`${templateData.critical.failure}\`\n`;
-				embedTemplate.addFields({
-					name: ul("register.embed.comparator"),
-					value: msgComparator,
+					name: title(stat),
+					value: msg,
+					inline: true,
 				});
 			}
-			if (templateData.total) embedTemplate.addFields({
-				name: ul("common.total"),
-				value: `${ul("common.total")}${ul("common.space")}: ${templateData.total}`,
+		}
+		if (templateData.diceType)
+			embedTemplate.addFields({
+				name: ul("register.embed.dice"),
+				value: templateData.diceType,
 			});
-			if (templateData.damage) {
-				const damage = Object.entries(templateData.damage).map(([name, value]) => `- ${name} : ${value}`).join("\n");
-				embedTemplate.addFields({
-					name: ul("register.embed.damage"),
-					value: damage,
-				});
-			}
-			const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
-			msg.pin();
-			await interaction.reply({ content: ul("register.embed.registered"), ephemeral: true });
-			//save in database file
-			const data = fs.readFileSync("database.json", "utf-8");
-			const json = JSON.parse(data);
-			const statsName = templateData.statistics ? Object.keys(templateData.statistics) : undefined;
-			const damageName = templateData.damage ? Object.keys(templateData.damage) : undefined;
-			if (json[guildData]) {
-				if (json[guildData].templateID.messageId && json[guildData].templateID.channelId) {
-					try {
-						const channel = await interaction.guild.channels.fetch(json[guildData].templateID.channelId);
-						const msg = await (channel as TextChannel).messages.fetch(json[guildData].templateID.messageId);
-						await msg.delete();
-					} catch (e) {
-						//ignore
-					}
+		let msgComparator = "";
+		if (templateData.critical) {
+			if (templateData.critical.success) msgComparator += `- ${ul("roll.critical.success")} \`${templateData.critical.success}\`\n`;
+			if (templateData.critical.failure) msgComparator += `- ${ul("roll.critical.failure")} \`${templateData.critical.failure}\`\n`;
+			embedTemplate.addFields({
+				name: ul("register.embed.comparator"),
+				value: msgComparator,
+			});
+		}
+		if (templateData.total) embedTemplate.addFields({
+			name: ul("common.total"),
+			value: `${ul("common.total")}${ul("common.space")}: ${templateData.total}`,
+		});
+		if (templateData.damage) {
+			const damage = Object.entries(templateData.damage).map(([name, value]) => `- ${name} : ${value}`).join("\n");
+			embedTemplate.addFields({
+				name: ul("register.embed.damage"),
+				value: damage,
+			});
+		}
+		const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
+		msg.pin();
+		await interaction.reply({ content: ul("register.embed.registered"), ephemeral: true });
+		//save in database file
+		const data = fs.readFileSync("database.json", "utf-8");
+		const json = JSON.parse(data);
+		const statsName = templateData.statistics ? Object.keys(templateData.statistics) : undefined;
+		const damageName = templateData.damage ? Object.keys(templateData.damage) : undefined;
+		if (json[guildData]) {
+			if (json[guildData]?.templateID?.messageId && json?.[guildData]?.templateID?.channelId) {
+				try {
+					const channel = await interaction.guild.channels.fetch(json[guildData].templateID.channelId);
+					const msg = await (channel as TextChannel).messages.fetch(json[guildData].templateID.messageId);
+					await msg.delete();
+				} catch (e) {
+					//ignore
 				}
-				json[guildData].templateID = {
+			}
+			json[guildData].templateID = {
+				channelId: channel.id,
+				messageId: msg.id,
+				statsName,
+				damageName
+			};
+		} else {
+			json[guildData] = {
+				templateID: {
 					channelId: channel.id,
 					messageId: msg.id,
 					statsName,
 					damageName
-				};
-			} else {
-				json[guildData] = {
-					templateID: {
-						channelId: channel.id,
-						messageId: msg.id,
-						statsName,
-						damageName
-					},
-					user: {}
-				};
-			}
-			await bulkEditTemplateUser(json[guildData], interaction, ul, templateData);
-			fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
-		} catch (e) {
-			console.error(e);
-			const translationError = lError((e as Error), interaction);
-			await interaction.reply({ content: `${translationError}`, ephemeral: true });
+				},
+				user: {}
+			};
 		}
+		await bulkEditTemplateUser(json[guildData], interaction, ul, templateData);
+		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 	}	
 };
 

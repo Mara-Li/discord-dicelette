@@ -118,30 +118,34 @@ export async function bulkEditTemplateUser(guildData: GuildData, interaction: Co
 	if (!thread) return;
 	for (const userID in users) {
 		for (const char of users[userID]) {
-			const userMessages = await thread.messages.fetch(char.messageId);
-			const templateEmbed = getEmbeds(ul, userMessages, "template");
-			if (!templateEmbed) continue;
-			const newEmbed = createTemplateEmbed(ul);
-			if (template.diceType)
-				newEmbed.addFields({
-					name: ul("common.dice"),
-					value: template.diceType,
-					inline: true
-				});
-			if (template.critical?.success) 
-				newEmbed.addFields({
-					name: ul("roll.critical.success"),
-					value: template.critical.success.toString(),
-					inline: true
-				});
-			if (template.critical?.failure) 
-				newEmbed.addFields({
-					name: ul("roll.critical.failure"),
-					value: template.critical.failure.toString(),
-					inline: true
-				});
-			const listEmbed = getEmbedsList(ul, {which: "template", embed: newEmbed}, userMessages);
-			await userMessages.edit({ embeds: listEmbed.list });
+			try {
+				const userMessages = await thread.messages.fetch(char.messageId);
+				const templateEmbed = getEmbeds(ul, userMessages, "template");
+				if (!templateEmbed) continue;
+				const newEmbed = createTemplateEmbed(ul);
+				if (template.diceType)
+					newEmbed.addFields({
+						name: ul("common.dice"),
+						value: template.diceType,
+						inline: true
+					});
+				if (template.critical?.success) 
+					newEmbed.addFields({
+						name: ul("roll.critical.success"),
+						value: template.critical.success.toString(),
+						inline: true
+					});
+				if (template.critical?.failure) 
+					newEmbed.addFields({
+						name: ul("roll.critical.failure"),
+						value: template.critical.failure.toString(),
+						inline: true
+					});
+				const listEmbed = getEmbedsList(ul, {which: "template", embed: newEmbed}, userMessages);
+				await userMessages.edit({ embeds: listEmbed.list });
+			} catch (error) {
+				continue;
+			}
 		}
 	}
 }
