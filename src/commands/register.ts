@@ -197,8 +197,8 @@ export const registerTemplate = {
 			});
 		let msgComparator = "";
 		if (templateData.critical) {
-			if (templateData.critical.success) msgComparator += `- ${ul("roll.critical.success")} \`${templateData.critical.success}\`\n`;
-			if (templateData.critical.failure) msgComparator += `- ${ul("roll.critical.failure")} \`${templateData.critical.failure}\`\n`;
+			if (templateData.critical.success) msgComparator += `- ${ul("roll.critical.success")}${ul("common.space")}: \`${templateData.critical.success}\`\n`;
+			if (templateData.critical.failure) msgComparator += `- ${ul("roll.critical.failure")}${ul("common.space")}: \`${templateData.critical.failure}\`\n`;
 			embedTemplate.addFields({
 				name: ul("register.embed.comparator"),
 				value: msgComparator,
@@ -206,7 +206,7 @@ export const registerTemplate = {
 		}
 		if (templateData.total) embedTemplate.addFields({
 			name: ul("common.total"),
-			value: `${ul("common.total")}${ul("common.space")}: ${templateData.total}`,
+			value: `${ul("common.total")}${ul("common.space")}: \`${templateData.total}\``,
 		});
 		if (templateData.damage) {
 			const damage = Object.entries(templateData.damage).map(([name, value]) => `- ${name} : ${value}`).join("\n");
