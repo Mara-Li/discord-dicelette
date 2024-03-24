@@ -4,17 +4,26 @@
     "Force": {
       "min": 1
     },
-    "agilite": {
+    "Dextérité": {
       "min": 1
     },
-    "endurance": {
+    "Constitution": {
+      "min": 1
+    },
+    "Intelligence": {
+      "min": 1
+    },
+    "Sagesse": {
+      "min": 1
+    },
+    "Charisme": {
       "min": 1
     }
   },
-  "diceType": "1d20+{{$}}>20",
+  "diceType": "1d20+{{ceil(($-10)/2)}}>20",
   "critical": {
     "failure": 1,
     "success": 20
   },
-  "total": 88
+  "total": 27
 }
