@@ -1,31 +1,31 @@
 {
   "charName": true,
   "statistics": {
-    "force": {
+    "Force": {
       "min": 3
     },
-    "endurance": {
+    "Endurance": {
       "min": 3
     },
-    "agilite": {
+    "Agilité": {
       "min": 3
     },
-    "constitution": {
+    "Constitution": {
       "min": 3
     },
-    "education": {
+    "Éducation": {
       "min": 3
     },
-    "intelligence": {
+    "Intelligence": {
       "min": 3
     },
-    "charisme": {
+    "Charisme": {
       "min": 3
     },
-    "pouvoir": {
+    "Pouvoir": {
       "min": 3
     },
-    "pv": {
+    "PV": {
       "combinaison": "endurance*2+force"
     }
   },
