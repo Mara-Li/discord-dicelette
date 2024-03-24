@@ -11,7 +11,7 @@ export function ln(userLang: Locale) {
 	return i18next.getFixedT(localeName?.[1] ?? "en");
 }
 
-export function lError(error: Error, interaction: BaseInteraction) {
+export function lError(error: Error, interaction?: BaseInteraction, userLang?: Locale) {
 	let errorMessage = error.message;
 	let errors: string[] = [];
 	//check if errorMessage is a list
@@ -21,7 +21,7 @@ export function lError(error: Error, interaction: BaseInteraction) {
 		errorMessage = errorMessage.replace(/\[(.*)\]/, "");
 	}
 	//get key from translation
-	const ul = ln(interaction.locale);
+	const ul = ln(interaction?.locale ?? userLang ?? Locale.EnglishUS);
 	let msgError = "";
 	for (const error of errors) {
 		msgError += ul(error.trim());

@@ -7,29 +7,32 @@ import dedent from "ts-dedent";
 import { Compare, Modifier, Resultat, Sign } from "./interface";
 
 export const COMMENT_REGEX = /\s+(#|\/{2}|\[|\/\*)(.*)/;
-const SIGN_REGEX =/[><=]=?/;
+const SIGN_REGEX =/[><=!]+/;
+const SIGN_REGEX_SPACE = /[><=!]+(\S+)/;
 
 
 export function roll(dice: string): Resultat | undefined{
 	//parse dice string
 	if (!dice.includes("d")) return undefined;
-	const compareRegex = dice.match(/[><=]=?(\S+)/);
+	const compareRegex = dice.match(SIGN_REGEX_SPACE);
+	console.log(compareRegex);
 	let compare : Compare | undefined;
 	if (compareRegex) {
-		dice = dice.replace(/[><=]=?(\S+)/, "");
+		dice = dice.replace(SIGN_REGEX_SPACE, "");
 		const calc = compareRegex[1];
 		const sign = calc.match(/[+-\/\*\^]/)?.[0];
 		const compareSign = compareRegex[0].match(SIGN_REGEX)?.[0];
 		if (sign) {
 			const toCalc = calc.replace(SIGN_REGEX, "").replace(/\s/g, "");
+			console.log(calc);
 			const total = evaluate(toCalc);
-			dice = dice.replace(/[><=]=?(\S+)/, `${compareSign}${total}`);
+			dice = dice.replace(SIGN_REGEX_SPACE, `${compareSign}${total}`);
 			compare = {
-				sign: compareSign as "<" | ">" | ">=" | "<=" | "=",
+				sign: compareSign as "<" | ">" | ">=" | "<=" | "=" | "!=" | "==",
 				value: total,
 			};
 		} else compare = {
-			sign: compareSign as "<" | ">" | ">=" | "<=" | "=",
+			sign: compareSign as "<" | ">" | ">=" | "<=" | "=" | "!=" | "==",
 			value: parseInt(calc, 10),
 		};
 	}
@@ -98,11 +101,13 @@ export function parseResult(output: Resultat, ul: TFunction<"translation", undef
 					total += parseInt(t, 10);
 				}
 			}
+			console.log(output.compare);
 			if (output.modifier) {
 				const {sign, value} = output.modifier;
 				total = calculator(sign as Sign, value, total);
 
 			}
+			console.log(total, output.compare.sign, output.compare.value);
 			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${ul("roll.success")}**` : `**${ul("roll.failure")}**`;
 			if (critical) {
 				if (critical.failure && total === critical.failure) {

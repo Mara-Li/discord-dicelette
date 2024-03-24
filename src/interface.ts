@@ -19,7 +19,7 @@ export interface Modifier {
 }
 
 export interface Compare {
-	sign: "<" | ">" | ">=" | "<=" | "=";
+	sign: "<" | ">" | ">=" | "<=" | "=" | "!=" | "==";
 	value: number;
 }
 

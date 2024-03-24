@@ -61,7 +61,9 @@ export const generateTemplate = {
 		.addNumberOption(option =>
 			option
 				.setName(t("generate.options.critical_fail.name"))
+				.setNameLocalizations(cmdLn("generate.options.critical_fail.name"))
 				.setDescription(t("generate.options.critical_fail.description"))
+				.setDescriptionLocalizations(cmdLn("generate.options.critical_fail.description"))
 				.setRequired(false)
 		)
 		.addStringOption(option =>
