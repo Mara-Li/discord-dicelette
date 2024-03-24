@@ -1,6 +1,6 @@
 // FILEPATH: /c:/Users/simonettili/Documents/Github/discord-dicelette/src/utils/verify_template.test.ts
 import { StatisticalTemplate } from "../src/interface";
-import { calculate, cleanedDice, formatRollCalculation } from "../src/utils/index";
+import { calculate, cleanedDice, formatRollCalculation, generateStatsDice } from "../src/utils/index";
 import { diceRandomParse,evalCombinaison, generateRandomStat,getFormula,testCombinaison, testDamageRoll, testFormula, verifyTemplateValue } from "../src/utils/verify_template";
 
 describe("verify_template", () => {
@@ -240,17 +240,51 @@ describe("verify_template", () => {
 			const expectedFormula = "1d20-2>20 coucou";
 			expect(formula).toEqual(expectedFormula);
 		});
-		it("creating roll dice with complicated formula", () => {
-			const dice = "1d{{$}}>20";
-			const userStat = 5;
-			const calculation = calculate(userStat, dice);
-			const clean = cleanedDice(dice);
-			const formula = `${clean}${calculation.calculation}${calculation.comparator} coucou`;
-			const expectedFormula = "1d5>20 coucou";
+	});
+	describe("skill_dice_creation", () => {
+		it("creating roll dice with face formula", () => {
+			let dice = "1dstat1>20";
+			const userStat = {
+				stat1: 5,
+				stat2: 10
+			};
+			dice = generateStatsDice(dice, userStat);
+			const formula = `${dice} cc`;
+			const expectedFormula = "1d5>20 cc";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating complicated roll dice with face formula", () => {
+			let dice = "1d20+{{ceil((stat1-10)/2)}}>20";
+			const userStat = {
+				stat1: 10,
+				stat2: 10
+			};
+			dice = generateStatsDice(dice, userStat);
+			const formula = `${dice} cc`;
+			const expectedFormula = "1d20+0>20 cc";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("create a simple dice adding bonus superior to stats", () => {
+			let dice = "1d20+stat1>stat1";
+			const userStat = {
+				stat1: 5,
+				stat2: 10
+			};
+			dice = generateStatsDice(dice, userStat);
+			const formula = `${dice} cc`;
+			const expectedFormula = "1d20+5>5 cc";
+			expect(formula).toEqual(expectedFormula);
+		});
+		it("creating complicated roll dice with comparator as formula", () => {
+			let dice = "1d20+stat1>{{ceil(stat1/2)}}";
+			const userStat = {
+				stat1: 5,
+				stat2: 10
+			};
+			dice = generateStatsDice(dice, userStat);
+			const formula = `${dice} cc`;
+			const expectedFormula = "1d20+5>3 cc";
 			expect(formula).toEqual(expectedFormula);
 		});
 	});
-
-
-	
 });
