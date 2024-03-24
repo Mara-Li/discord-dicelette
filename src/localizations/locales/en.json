@@ -196,7 +196,10 @@
       "comparator": "Comparator:",
       "damage": "Damage dice",
       "description": "Click the button to register a character",
-      "dice": "Dice",
+      "dice": {
+        "singular": "Die",
+        "plural": "Dice"
+      },
       "noValue": "No value",
       "registered": "Model registered!",
       "title": "Model"

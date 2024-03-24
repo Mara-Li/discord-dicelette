@@ -192,8 +192,8 @@ export const registerTemplate = {
 		}
 		if (templateData.diceType)
 			embedTemplate.addFields({
-				name: ul("register.embed.dice"),
-				value: templateData.diceType,
+				name: ul("common.dice"),
+				value: `\`${templateData.diceType}\``,
 			});
 		let msgComparator = "";
 		if (templateData.critical) {
