@@ -127,9 +127,7 @@ export const rollForUser = {
 			if (override) {
 				const SIGN_REGEX =/(?<sign>[><=!]+)(?<comparator>(\d+))/;
 				const diceMatch = SIGN_REGEX.exec(dice);
-				if (diceMatch?.groups?.sign && diceMatch?.groups?.comparator) {
-					dice = dice.replace(SIGN_REGEX, override);
-				}
+				dice = diceMatch?.groups?.sign && diceMatch?.groups?.comparator ? dice.replace(SIGN_REGEX, override) : `${dice}${override}`;
 			}
 			const charNameComments = optionChar ? ` • **@${title(optionChar)}**` : "";
 			comments += `__[${title(statistique)}]__${charNameComments}`;
