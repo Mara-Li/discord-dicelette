@@ -15,7 +15,6 @@ export function roll(dice: string): Resultat | undefined{
 	//parse dice string
 	if (!dice.includes("d")) return undefined;
 	const compareRegex = dice.match(SIGN_REGEX_SPACE);
-	console.log(compareRegex);
 	let compare : Compare | undefined;
 	if (compareRegex) {
 		dice = dice.replace(SIGN_REGEX_SPACE, "");
@@ -24,7 +23,6 @@ export function roll(dice: string): Resultat | undefined{
 		const compareSign = compareRegex[0].match(SIGN_REGEX)?.[0];
 		if (sign) {
 			const toCalc = calc.replace(SIGN_REGEX, "").replace(/\s/g, "");
-			console.log(calc);
 			const total = evaluate(toCalc);
 			dice = dice.replace(SIGN_REGEX_SPACE, `${compareSign}${total}`);
 			compare = {

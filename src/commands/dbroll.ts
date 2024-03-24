@@ -3,7 +3,7 @@ import removeAccents from "remove-accents";
 
 import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
-import { calculate, filterChoices, formatRollCalculation, rollWithInteraction, title } from "../utils";
+import {filterChoices, replaceFormulaInDice, rollWithInteraction, title } from "../utils";
 import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
 
 const t = i18next.getFixedT("en");
@@ -119,15 +119,22 @@ export const rollForUser = {
 			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 			const userStat = userStatistique.stats?.[removeAccents(statistique)];
 			const template = userStatistique.template;
-			const dice = template.diceType?.replace("$", userStat.toString());
+			let dice = template.diceType?.replaceAll("$", userStat.toString());
 			if (!dice) {
 				await interaction.reply({ content: ul("error.noDice"), ephemeral: true });
 				return;
 			}
-			const {calculation, comparator} = calculate(userStat, dice, override, modificator);
+			if (override) {
+				const SIGN_REGEX =/(?<sign>[><=!]+)(?<comparator>(\d+))/;
+				const diceMatch = SIGN_REGEX.exec(dice);
+				if (diceMatch?.groups?.sign && diceMatch?.groups?.comparator) {
+					dice = dice.replace(SIGN_REGEX, override);
+				}
+			}
 			const charNameComments = optionChar ? ` • **@${title(optionChar)}**` : "";
 			comments += `__[${title(statistique)}]__${charNameComments}`;
-			const roll = formatRollCalculation(dice, comparator, comments, calculation);
+			const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
+			const roll = `${replaceFormulaInDice(dice)}${modificatorString} ${comments}`;
 			await rollWithInteraction(interaction, roll, interaction.channel, template.critical);
 		}
 		catch (error) {

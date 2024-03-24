@@ -13,7 +13,6 @@ import { editUserButtons } from "./buttons";
 import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
 import { parseEmbedFields } from "./parse";
-import { getFormula } from "./verify_template";
 
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
@@ -113,25 +112,6 @@ export function isArrayEqual(array1: string[]|undefined, array2: string[]|undefi
 	return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }
 
-export function calculate(userStat: number, diceType?: string, override?: string|null, modificator: number = 0) {
-	const formula = getFormula(diceType);
-	let comparator: string = "";
-	if (!override && formula?.sign && formula?.comparator) {
-		comparator += formula.sign ?? "";
-		const value = formula.comparator?.replace("$", userStat.toString());
-		comparator += value ? evaluate(value.toString()) : userStat.toString();
-	} else if (override) comparator = override;
-	let calculation = formula?.formula;
-	if (calculation) {
-		try {
-			calculation = calculation.replace("{{", "").replace("}}", "").replace("$", userStat.toString());
-			calculation = evaluate(`${calculation} + ${modificator}`).toString();
-		} catch (error) {
-			throw `[error.invalidFormula] ${calculation}`;
-		}
-	} else calculation = modificator ? modificator > 0 ? `+${modificator}` : modificator.toString() : "";
-	return {calculation, comparator};
-}
 
 export function replaceFormulaInDice(dice: string) {
 	const formula = /(?<formula>\{{2}(.+?)\}{2})/gmi;
@@ -140,12 +120,12 @@ export function replaceFormulaInDice(dice: string) {
 		const formula = formulaMatch.groups.formula.replaceAll("{{", "").replaceAll("}}", "");
 		try {
 			const result = evaluate(formula);
-			return dice.replace(formulaMatch.groups.formula, result.toString());
+			return cleanedDice(dice.replace(formulaMatch.groups.formula, result.toString()));
 		} catch (error) {
 			throw new Error(`[error.invalidFormula, common.space]: ${formulaMatch.groups.formula}`);
 		}
 	}
-	return dice;
+	return cleanedDice(dice);
 }
 
 export function generateStatsDice(originalDice: string, stats?: {[name: string]: number}) {
@@ -171,19 +151,12 @@ export function escapeRegex(string: string) {
 	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export function cleanedDice(dice?: string) {
-	return  dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
-		.replace(/[><=!]+?(.*)/gmi, "");
+export function cleanedDice(dice: string) {
+	console.log(dice);
+	return dice.replaceAll("+-", "-").replaceAll("--", "+").replaceAll("++", "+");
 }
 
-export function formatRollCalculation(dice: string, comparator: string, comments: string, calculation?: string) {
-	const clean = cleanedDice(dice);
-	const diceCalculation = calculation ? `${clean}${calculation}`
-		.replace("+-", "-")
-		.replace("--", "+")
-		.replace("++", "+") : clean;
-	return `${diceCalculation}${comparator} ${comments}`;
-}
+
 
 export function filterChoices(choices: string[], focused: string) {
 	return choices.filter(choice => removeAccents(choice).toLowerCase().includes(removeAccents(focused).toLowerCase()));

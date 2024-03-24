@@ -51,6 +51,18 @@ export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	return replaceFormulaInDice(newDice);
 }
 
+export function diceTypeRandomParse(dice: string, template: StatisticalTemplate) {
+	if (!template.statistics) return dice;
+	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics?.[stat].combinaison);
+	if (!firstStatNotCombinaison) return dice;
+	const stats = template.statistics[firstStatNotCombinaison];
+	const {min, max} = stats;
+	const total = template.total || 100;
+	const randomStatValue = generateRandomStat(total, max, min);
+	return replaceFormulaInDice(dice.replace("$", randomStatValue.toString()));
+}
+
+
 export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: string | number}) {
 	const newStats: {[name: string]: number} = {};
 	for (const [stat, combin] of Object.entries(combinaison)) {
@@ -113,7 +125,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	if (template.diceType) {
 		try {
 			statistiqueTemplate.diceType = template.diceType;
-			testFormula(statistiqueTemplate);
+			diceTypeRandomParse(template.diceType, statistiqueTemplate);
 		} catch (e) {
 			throw new Error((e as Error).message);
 		}
@@ -170,8 +182,6 @@ export function ensureEmbed(message?: Message) {
 	return oldEmbeds;
 }
 
-
-
 export function testCombinaison(template: StatisticalTemplate) {
 	if (!template.statistics) return;
 	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistics).filter(([_, value]) => value.combinaison !== undefined));
@@ -199,71 +209,6 @@ export function testCombinaison(template: StatisticalTemplate) {
 	if (error.length > 0) 
 		throw new Error(`[error.invalidFormula, common.space] ${error.join(", ")}`);
 	return;
-}
-
-export function getFormula(diceType?: string) {
-	if (!diceType) return undefined;
-	const regex = /(?<formula>\{{2}(.+?)\}{2})(?<comparison>(?<sign>[><=!]+)?(?<compare>.*)?)?/gmi;
-	const formula = regex.exec(diceType);
-	const combinaison: {formula?: string; sign?: string; comparator?: string;}|undefined = {};
-	if (!formula) {
-		//search sign 
-		const sign = /(?<sign>[><=!]+)(?<compare>(.*))/gmi.exec(diceType);
-		if (sign?.groups) {
-			if (sign.groups.sign) combinaison.sign = sign.groups.sign;
-			if (sign.groups.compare) combinaison.comparator = sign.groups.compare;
-		} else return undefined;
-		return combinaison;
-	}
-	if (formula?.groups?.formula) {
-		combinaison.formula = removeAccents(formula?.groups?.formula.replaceAll("{{", "").replaceAll("}}", "")).toLowerCase();
-	}
-	if (formula?.groups?.comparison) {
-		combinaison.sign = formula?.groups?.sign;
-		combinaison.comparator = formula?.groups?.compare;
-	}
-	return combinaison;
-}
-
-export function testFormula(template: StatisticalTemplate) {
-	if (!template.statistics || !template.diceType) return;
-	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics?.[stat].combinaison);
-	if (!firstStatNotCombinaison) return;
-	const stats = template.statistics[firstStatNotCombinaison];
-	const {min, max} = stats;
-	const total = template.total || 100;
-	
-	const randomStatValue = generateRandomStat(total, max, min);
-	const formula = getFormula(template.diceType);
-	if (!formula) {
-		try {
-			roll(template.diceType.replaceAll("$", randomStatValue.toString()));
-			return true;
-		} catch(e) {
-			throw new Error(`[error.invalidDice.withoutDice] ${template.diceType}`);
-		}
-	}
-	const formule = formula.formula?.replace("$", randomStatValue.toString());
-	const compareFormule = formula.comparator?.replaceAll("$", randomStatValue.toString());
-	let newDice = template.diceType;
-	try {
-		if (formule && formula.formula) {
-			const value = evaluate(formule);
-			const regexOriginalFormula = new RegExp(`\\{\\{${escapeRegex(formula.formula)}\\}\\}`, "gmi");
-			const valueString = value > 0 ? `+${value}` : value.toString();
-			newDice = newDice.replace(regexOriginalFormula, valueString);
-		} else newDice = newDice.replace("$", randomStatValue.toString());
-		if (compareFormule && formula.comparator) {
-			const value = evaluate(compareFormule);
-			newDice = newDice.replace(formula.comparator, value.toString());
-		}
-		newDice = newDice.replaceAll("++", "+").replaceAll("+-", "-").replaceAll("--", "-").replaceAll("++", "+");
-		roll(newDice);
-		return true;
-	} catch (error) {
-		throw new Error(`[error.invalidFormula, error.generatedDice] ${newDice}\n${JSON.stringify(formula)}`);
-	}
-	
 }
 
 export function generateRandomStat(total: number | undefined = 100, max?: number, min?: number) {
