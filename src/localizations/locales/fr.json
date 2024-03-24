@@ -20,7 +20,7 @@
     "character": "personnage",
     "dice": "Dé",
     "noSet": "/",
-    "page": "Page {{nb}}",
+    "page": "Page {{- nb}}",
     "space": " ",
     "statistic": "statistique",
     "template": "Modèle",
@@ -76,16 +76,16 @@
   },
   "error": {
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
-    "generic": "Une erreur est survenue :\n```\n{{e.message}}\n```",
+    "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
     "invalidDice": {
       "embeds": "Aucun embed de dé détecté",
-      "withDice": "Erreur : Dé invalide {{dice}}",
-      "withError": "Erreur : Dé invalide {{dice}}\n```{{error}}```",
+      "withDice": "Erreur : Dé invalide {{- dice}}",
+      "withError": "Erreur : Dé invalide {{- dice}}\n```{{- error}}```",
       "withoutDice": "Erreur : Dé invalide"
     },
-    "mustBeGreater": "La valeur {{value}} doit être plus grande que {{min}}",
-    "mustBeLower": "La valeur {{value}} doit être plus petite que {{max}}",
-    "noDamage": "{{atq}} n'est pas enregistré dans {{charName}}.",
+    "mustBeGreater": "La valeur {{- value}} doit être plus grande que {{- min}}",
+    "mustBeLower": "La valeur {{- value}} doit être plus petite que {{- max}}",
+    "noDamage": "{{- atq}} n'est pas enregistré dans {{- charName}}.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
     "noEmbed": "Aucun embed trouvé",
     "noMessage": "Aucun message trouvé.",
@@ -96,9 +96,9 @@
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
-    "totalExceededBy": "Le total de {{value}} est dépassé de {{max}}",
+    "totalExceededBy": "Le total de {{- value}} est dépassé de {{- max}}",
     "user": "Utilisateur introuvable",
-    "userNotRegistered": "{{user}} n'est pas enregistré."
+    "userNotRegistered": "{{- user}} n'est pas enregistré."
   },
   "generate": {
     "help": "- Le type de dé doit être un type valide (il sera testé quand vous enregistrerez le modèle).\n- La valeur doit être un nombre, et peut être optionnel. Si vous l'enlevez, le dé sera comparé à la statistique plutôt qu'une valeur.\n- Le total doit être un nombre, et peut être optionnel. Si vous l'enlevez, le total sera calculé automatiquement quand l'utilisateur sera enregistré.\n- La formule permet d'éditer la valeur combinée au dé. Utiliser `$` pour symboliser la valeur (ie: `+$`, `-$`, `($-10)/2`...).\n- Une statistique peut être une combinaison d'autre statistique, comme `force+endurance`. Si la valeur de `combinaison` est définie, alors que les paramètres `min` et `max` seront désactivés. De plus, les utilisateurs n'auront pas à entrer la valeur à la main. Enfin, cette valeur sera exclue du calcul du total de point alloué.\n- Vous pouvez aussi enregistrer des dés de compétences, qui seront ensuite utilisés pour la commande `/dbd` depuis la base de données. De plus, les utilisateurs pourront enregistrer leur propre dés de compétences.\n\nNoter que le fichier proposé ici n'est qu'un exemple et doit être personnalisé avant d'être enregistré.\n\nIl est possible d'enregistrer uniquement des dés de compétences voire rien du tout, si vous souhaitez utiliser uniquement les commandes pour les dés de compétences.",
@@ -136,14 +136,14 @@
   },
   "help": {
     "description": "Affiche l'aide",
-    "message": ":game_die: **Dice Roller** :game_die:\n-> Retrouvez le *bot* sur [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.fr.md>)\n\n## Usage\n- </roll:{{rollId}}> : Lance un dé\n- </scene:{{sceneId}}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.\n\nVous pouvez aussi créer une \"bulle temporelle\" avec les paramètres `/scene tempo:True`. Par défaut, le nom du thread sera la date du jour.\n\nVous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :\n- __Un dé direct__ : `dés`, comme `d6` ou `2d6`\n- __Un dé indirect__ : `mon message [dés]`, comme `*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*`.\n- __Un dé semi-direct__ : `1d100 mon message`, comme `1d100 Phibi saute sur Wumpus et lui inflige des dégâts`.\n\n## Notation des dés\n[Voir la documentation pour la notation des dés (en anglais)](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nLe bot supporte aussi :\n- [Les groupes de dés](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Les modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Les commentaires](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Les mathématiques](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- Ainsi que les \"bulk rolls\" (lancer plusieurs dés en même temps) avec la notation suivante : `[nombre de dés]#[dés]`, comme par exemple `2#d6` pour lancer 2 dés à 6 faces",
+    "message": ":game_die: **Dice Roller** :game_die:\n-> Retrouvez le *bot* sur [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.fr.md>)\n\n## Usage\n- </roll:{{- rollId}}> : Lance un dé\n- </scene:{{- sceneId}}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.\n\nVous pouvez aussi créer une \"bulle temporelle\" avec les paramètres `/scene tempo:True`. Par défaut, le nom du thread sera la date du jour.\n\nVous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :\n- __Un dé direct__ : `dés`, comme `d6` ou `2d6`\n- __Un dé indirect__ : `mon message [dés]`, comme `*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*`.\n- __Un dé semi-direct__ : `1d100 mon message`, comme `1d100 Phibi saute sur Wumpus et lui inflige des dégâts`.\n\n## Notation des dés\n[Voir la documentation pour la notation des dés (en anglais)](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nLe bot supporte aussi :\n- [Les groupes de dés](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Les modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Les commentaires](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Les mathématiques](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- Ainsi que les \"bulk rolls\" (lancer plusieurs dés en même temps) avec la notation suivante : `[nombre de dés]#[dés]`, comme par exemple `2#d6` pour lancer 2 dés à 6 faces",
     "name": "aide"
   },
   "logs": {
     "description": "Choisir un channel où envoyer les logs d'erreurs",
     "name": "logs",
     "options": "Le channel où envoyer les logs",
-    "set": "Logs configurés dans le channel {{channel}}"
+    "set": "Logs configurés dans le channel {{- channel}}"
   },
   "modals": {
     "added": {
@@ -160,19 +160,19 @@
       "stats": "⚠ Suivez la syntaxe. Supprimer avec X ou 0."
     },
     "enterValue": {
-      "maxOnly": "Entrez une valeur plus petite que {{max}}",
-      "minAndMax": "Entrez une valeur entre {{min}} et {{max}}",
-      "minOnly": "Entrez une valeur plus grande que {{min}}"
+      "maxOnly": "Entrez une valeur plus petite que {{- max}}",
+      "minAndMax": "Entrez une valeur entre {{- min}} et {{- max}}",
+      "minOnly": "Entrez une valeur plus grande que {{- min}}"
     },
     "finished": "Statistiques terminées",
-    "firstPage": "Enregistrement de l'utilisateur - Page 1/{{page}}",
+    "firstPage": "Enregistrement de l'utilisateur - Page 1/{{- page}}",
     "noPermission": "Vous n'avez pas les autorisations pour faire cela",
     "removed": {
       "dice": "Les dés ont été supprimés de l'utilisateur",
       "stats": "Les statistiques ont bien été supprimés",
       "template": "Le modèle a bien été supprimé"
     },
-    "steps": "Enregistrement de l'utilisateur - Page {{page}}/{{max}}",
+    "steps": "Enregistrement de l'utilisateur - Page {{- page}}/{{- max}}",
     "templateUpdated": "Modèle mis-à-jour",
     "user": {
       "description": "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)",
@@ -225,7 +225,7 @@
   },
   "scene": {
     "description": "Crée un nouveau thread pour les dés",
-    "interaction": "Nouveau thread de scène créé : {{scene}}",
+    "interaction": "Nouveau thread de scène créé : {{- scene}}",
     "name": "scene",
     "noScene": "Aucune scène spécifiée",
     "option": {
