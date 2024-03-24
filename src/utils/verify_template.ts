@@ -202,12 +202,12 @@ export function testCombinaison(template: StatisticalTemplate) {
 
 export function getFormula(diceType?: string) {
 	if (!diceType) return undefined;
-	const regex = /(?<formula>\{{2}(.+?)\}{2})(?<comparison>(?<sign>[><=]=?)?(?<compare>.*)?)?/gmi;
+	const regex = /(?<formula>\{{2}(.+?)\}{2})(?<comparison>(?<sign>[><=!]+)?(?<compare>.*)?)?/gmi;
 	const formula = regex.exec(diceType);
 	const combinaison: {formula?: string; sign?: string; comparator?: string;}|undefined = {};
 	if (!formula) {
 		//search sign 
-		const sign = /(?<sign>[><=]=?)(?<compare>(.*))/gmi.exec(diceType);
+		const sign = /(?<sign>[><=!]+)(?<compare>(.*))/gmi.exec(diceType);
 		if (sign?.groups) {
 			if (sign.groups.sign) combinaison.sign = sign.groups.sign;
 			if (sign.groups.compare) combinaison.comparator = sign.groups.compare;

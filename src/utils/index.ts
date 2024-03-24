@@ -173,7 +173,7 @@ export function escapeRegex(string: string) {
 
 export function cleanedDice(dice?: string) {
 	return  dice?.replace(/\{{2}(.+?)\}{2}/gmi, "")
-		.replace(/[><=]=?(.*)/gmi, "");
+		.replace(/[><=!]+?(.*)/gmi, "");
 }
 
 export function formatRollCalculation(dice: string, comparator: string, comments: string, calculation?: string) {
