@@ -1,16 +1,13 @@
 {
   "button": {
     "add": {
-      "stats": "Ajouter des statistiques",
-      "template": "Ajouter un modèle"
     },
     "cancel": "Annuler",
     "continue": "Continuer",
     "dice": "Enregistrer un dé",
     "edit": {
       "dice": "Modifier les dés",
-      "stats": "Modifier les statistiques",
-      "template": "Modifier le modèle"
+      "stats": "Modifier les statistiques"
     },
     "validate": "Valider"
   },
@@ -23,7 +20,6 @@
     "page": "Page {{- nb}}",
     "space": " ",
     "statistic": "statistique",
-    "template": "Modèle",
     "total": "Total",
     "user": "Joueur"
   },
@@ -49,8 +45,10 @@
   },
   "edit": {
     "options": {
-      "field": {},
-      "value": {}
+      "field": {
+      },
+      "value": {
+      }
     }
   },
   "embed": {
@@ -59,7 +57,6 @@
     },
     "dice": "Dés de compétences",
     "edit": {
-      "template": "Utiliser \"0\" pour supprimer la valeur."
     },
     "stats": "Statistiques",
     "template": "Modèle",
@@ -80,8 +77,7 @@
     "invalidDice": {
       "embeds": "Aucun embed de dé détecté",
       "withDice": "Erreur : Dé invalide {{- dice}}",
-      "withError": "Erreur : Dé invalide {{- dice}}\n```{{- error}}```",
-      "withoutDice": "Erreur : Dé invalide"
+      "withError": "Erreur : Dé invalide {{- dice}}\n```{{- error}}```"
     },
     "mustBeGreater": "La valeur {{- value}} doit être plus grande que {{- min}}",
     "mustBeLower": "La valeur {{- value}} doit être plus petite que {{- max}}",
@@ -169,11 +165,9 @@
     "noPermission": "Vous n'avez pas les autorisations pour faire cela",
     "removed": {
       "dice": "Les dés ont été supprimés de l'utilisateur",
-      "stats": "Les statistiques ont bien été supprimés",
-      "template": "Le modèle a bien été supprimé"
+      "stats": "Les statistiques ont bien été supprimés"
     },
     "steps": "Enregistrement de l'utilisateur - Page {{- page}}/{{- max}}",
-    "templateUpdated": "Modèle mis-à-jour",
     "user": {
       "description": "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)",
       "name": "utilisateur"

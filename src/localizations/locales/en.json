@@ -1,16 +1,13 @@
 {
   "button": {
     "add": {
-      "stats": "Add statistics",
-      "template": "Add a template"
     },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
     "edit": {
       "dice": "Edit dice",
-      "stats": "Edit statistics",
-      "template": "Edit template"
+      "stats": "Edit statistics"
     },
     "validate": "To validate"
   },
@@ -23,7 +20,6 @@
     "page": "Page {{- nb}}",
     "space": "",
     "statistic": "statistique",
-    "template": "Model",
     "total": "Total",
     "user": "Player"
   },
@@ -49,8 +45,10 @@
   },
   "edit": {
     "options": {
-      "field": {},
-      "value": {}
+      "field": {
+      },
+      "value": {
+      }
     }
   },
   "embed": {
@@ -59,7 +57,6 @@
     },
     "dice": "Skill Dice",
     "edit": {
-      "template": "Use \"0\" to remove the value."
     },
     "stats": "Statistics",
     "template": "Model",
@@ -80,8 +77,7 @@
     "invalidDice": {
       "embeds": "No die embeds detected",
       "withDice": "Error: Invalid die {{- dice}}",
-      "withError": "Error: Invalid die {{- dice}}\n\n```{{- error}}```",
-      "withoutDice": "Error: Invalid die"
+      "withError": "Error: Invalid die {{- dice}}\n\n```{{- error}}```"
     },
     "mustBeGreater": "The {{- value}} value must be greater than {{- min}}",
     "mustBeLower": "The {{- value}} value must be smaller than {{- max}}",
@@ -155,7 +151,8 @@
       "description": "Enter your character's name",
       "name": "Character name"
     },
-    "dice": {},
+    "dice": {
+    },
     "edit": {
       "dice": "⚠ Respect the syntax. \nUse \"X\", \"0\" or leave blank to delete.",
       "stats": "Stats changed!"
@@ -170,12 +167,11 @@
     "noPermission": "You do not have permissions to do this",
     "removed": {
       "dice": "The dice have been removed from the user",
-      "stats": "The statistics have been deleted",
-      "template": "The model has been deleted"
+      "stats": "The statistics have been deleted"
     },
     "steps": "User Registration - Page {{- page}}/{{- max}}",
-    "template": {},
-    "templateUpdated": "Updated model",
+    "template": {
+    },
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
       "name": "user"
@@ -196,10 +192,6 @@
       "comparator": "Comparator:",
       "damage": "Damage dice",
       "description": "Click the button to register a character",
-      "dice": {
-        "singular": "Die",
-        "plural": "Dice"
-      },
       "noValue": "No value",
       "registered": "Model registered!",
       "title": "Model"
