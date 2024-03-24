@@ -119,7 +119,7 @@ export const rollForUser = {
 			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 			const userStat = userStatistique.stats?.[removeAccents(statistique)];
 			const template = userStatistique.template;
-			const dice = template.diceType;
+			const dice = template.diceType?.replace("$", userStat.toString());
 			if (!dice) {
 				await interaction.reply({ content: ul("error.noDice"), ephemeral: true });
 				return;

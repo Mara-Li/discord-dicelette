@@ -143,6 +143,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	return statistiqueTemplate;
 }
 
+
 export function testDamageRoll(template: StatisticalTemplate) {
 	if (!template.damage) return;
 	if (Object.keys(template.damage).length === 0) throw new Error("[error.emptyObject]");
@@ -236,7 +237,7 @@ export function testFormula(template: StatisticalTemplate) {
 	const formula = getFormula(template.diceType);
 	if (!formula) {
 		try {
-			roll(template.diceType);
+			roll(template.diceType.replaceAll("$", randomStatValue.toString()));
 			return true;
 		} catch(e) {
 			throw new Error(`[error.invalidDice.withoutDice] ${template.diceType}`);
@@ -251,7 +252,7 @@ export function testFormula(template: StatisticalTemplate) {
 			const regexOriginalFormula = new RegExp(`\\{\\{${escapeRegex(formula.formula)}\\}\\}`, "gmi");
 			const valueString = value > 0 ? `+${value}` : value.toString();
 			newDice = newDice.replace(regexOriginalFormula, valueString);
-		}
+		} else newDice = newDice.replace("$", randomStatValue.toString());
 		if (compareFormule && formula.comparator) {
 			const value = evaluate(compareFormule);
 			newDice = newDice.replace(formula.comparator, value.toString());

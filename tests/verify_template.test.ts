@@ -143,6 +143,7 @@ describe("verify_template", () => {
 			};
 			expect(getFormula("1d20+5>$")).toEqual(res);
 		});
+
 		it("simulate dice with comparator statistiques", () => {
 			const userStat = 10;
 			const diceType = "1d20+5>$";
@@ -165,10 +166,11 @@ describe("verify_template", () => {
 				statistics: { stat1: { max: 10, min: 1 } },
 				diceType: "1d20",
 				damage: {
-					"piercing": "1d6 + stat1>20",
+					"piercing": "1d6 + stat1>stat1",
 				}
 			};
-			const expectedFormula = diceRandomParse("1d20 + stat1", testTemplate);
+			const expectedFormula = diceRandomParse("1d20 + {{ceil((stat1-10)/2)}}>stat1", testTemplate);
+			console.log(expectedFormula);
 			expect(expectedFormula).toEqual(expectedFormula);
 		});
 		it("Test a roll with a combinaison on the dice", () => {
@@ -176,7 +178,7 @@ describe("verify_template", () => {
 				statistics: { stat1: { max: 10, min: 1, combinaison: "stat2 + 3" } },
 				diceType: "1d20",
 				damage: {
-					"piercing": "1dstat1>20",
+					"piercing": "1d20stat1*2>stat1",
 				}
 			};
 			expect(() => testDamageRoll(template)).not.toThrow();
@@ -204,10 +206,10 @@ describe("verify_template", () => {
 	});
 	describe("roll_string_creation", () => {
 		it("creating roll dice with formula", () => {
-			const dice = "1d20+{{$}}>20";
+			const dice = "1d20+$>20";
 			const userStat = 10;
 			const calculation = calculate(userStat, dice);
-			const clean = cleanedDice(dice);
+			const clean = cleanedDice(dice)?.replace("$", userStat.toString());
 			const formula = `${clean}${calculation.calculation}${calculation.comparator} coucou`;
 			const expectedFormula = "1d20+10>20 coucou";
 			expect(formula).toEqual(expectedFormula);
