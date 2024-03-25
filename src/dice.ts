@@ -37,15 +37,27 @@ export function roll(dice: string): Resultat | undefined{
 			value: parseInt(calc, 10),
 		};
 	}
-	const modifier = dice.match(/(\+|\-|%|\/|\^|\*|\*{2})(\d+)/);
+	const modifier = dice.matchAll(/(\+|\-|%|\/|\^|\*|\*{2})(\d+)/gi);
 	let modificator : Modifier | undefined;
-	if (modifier) {
-		modificator = {
-			sign: modifier[1] as Sign,
-			value: parseInt(modifier[2], 10),
-		};
-	}
-
+	for (const mod of modifier) {
+		//calculate the modifier if multiple
+		if (modificator) {
+			const sign = modificator.sign;
+			let value = modificator.value;
+			if (sign)
+				value = calculator(sign, value, parseInt(mod[2], 10));
+			modificator = {
+				sign: mod[1] as Sign,
+				value,
+			};
+		} else {
+			modificator = {
+				sign: mod[1] as Sign,
+				value: parseInt(mod[2], 10),
+			};
+		}
+	} 
+	
 	if (dice.match(/\d+?#(.*)/)) {
 		const diceArray = dice.split("#");
 		const numberOfDice = parseInt(diceArray[0], 10);

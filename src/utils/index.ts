@@ -231,8 +231,8 @@ export function parseStatsString(statsEmbed: EmbedBuilder) {
 	for (const [name, value] of Object.entries(stats)) {
 		let number = parseInt(value, 10);
 		if (isNaN(number)) {
-			const stat = value.split("`").filter(x => x.trim().length > 0)[1].replace("=", "").trim();
-			number = parseInt(stat, 10);
+			const combinaison = value.replace(/`(.*)` =/, "").trim();
+			number = parseInt(combinaison, 10);
 		}
 		parsedStats[name] = number;
 	}
