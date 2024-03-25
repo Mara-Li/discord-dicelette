@@ -38,6 +38,12 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
 	await showStatistiqueModal(interaction, dbTemplate, statsAlreadySet, page);
 }
 
+/**
+ * Register the statistic in the embed when registering a new user and validate the modal
+ * Also verify if the template is registered before embeding the statistics
+ * @param interaction {ModalSubmitInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ */
 export async function pageNumber(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
 	const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);
 	if (isNaN(pageNumber)) return;

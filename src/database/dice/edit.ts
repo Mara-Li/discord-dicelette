@@ -137,6 +137,14 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	await interaction.message.edit({ embeds: embedsList.list });
 	await interaction.reply({ content: ul("embeds.edit.dice"), ephemeral: true });
 }
+
+/**
+ * Start the showEditDice when the button is interacted
+ * It will also verify if the user can edit their dice 
+ * @param interaction {ButtonInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param interactionUser {User}
+ */
 export async function start_edit_dice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;

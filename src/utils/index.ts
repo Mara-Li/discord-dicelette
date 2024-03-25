@@ -14,6 +14,13 @@ import { registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
 import { parseEmbedFields } from "./parse";
 
+/**
+ * create the roll dice, parse interaction etc... When the slashcommands is used for dice
+ * @param interaction {CommandInteraction}
+ * @param dice {string}
+ * @param channel {TextBasedChannel}
+ * @param critical {failure?: number, success?: number}
+ */
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
 	const ul = ln(interaction.locale);
@@ -47,7 +54,10 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	
 }
 
-
+/**
+ * Set the tags for thread channel in forum
+ * @param forum {ForumChannel}
+ */
 export async function setTagsForRoll(forum: ForumChannel) {
 	//check if the tags `🪡 roll logs` exists
 	const allTags = forum.availableTags;
@@ -71,11 +81,24 @@ export async function setTagsForRoll(forum: ForumChannel) {
 	return availableTags.find(tag => tag.name === "Dice Roll" && tag.emoji?.name === "🪡") as GuildForumTagData;
 }
 
+/**
+ * Title case a string
+ * @param str {str}
+ */
 export function title(str?: string) {
 	if (!str) return "";
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+/**
+ * Repost the character sheet in the thread named `📝 • [STATS]` (it will be created if not exists)
+ * @param embed {EmbedBuilder[]}
+ * @param interaction {BaseInteraction}
+ * @param userTemplate {UserData}
+ * @param userId {string}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param which {stats?: boolean, dice?: boolean, template?: boolean} (for adding button)
+ */
 export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: UserData, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}) {
 	const channel = interaction.channel;
 	if (!channel ||!(channel instanceof TextChannel)) return;
@@ -93,24 +116,44 @@ export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInt
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
 	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
 }
+
+/**
+ * Remove the emoji from the registering user embed
+ * Also set to lowercase
+ * @param dice {string}
+ */
 export function removeEmoji(dice: string) {
 	return dice.replaceAll("🔪", "").replaceAll("✏️", "").trim().toLowerCase();
 }
 
+/** Remove the emoji AND accents, and set to lowercase 
+ * @param dice {string}
+*/
 export function removeEmojiAccents(dice: string) {
 	return removeAccents(removeEmoji(dice));
 }
 
+/**
+ * Create a neat timestamp in the discord format
+ */
 export function timestamp() {
 	return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
 }
 
+/**
+ * Verify if an array is equal to another
+ * @param array1 {string[]|undefined}
+ * @param array2 {string[]|undefined}
+ */
 export function isArrayEqual(array1: string[]|undefined, array2: string[]|undefined) {
 	if (!array1 || !array2) return false;
 	return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }
 
-
+/**
+ * Replace the {{}} in the dice string and evaluate the interior if any
+ * @param dice {string}
+ */
 export function replaceFormulaInDice(dice: string) {
 	const formula = /(?<formula>\{{2}(.+?)\}{2})/gmi;
 	const formulaMatch = formula.exec(dice);
@@ -126,6 +169,11 @@ export function replaceFormulaInDice(dice: string) {
 	return cleanedDice(dice);
 }
 
+/**
+ * Replace the stat name by their value using stat and after evaluate any formula using `replaceFormulaInDice`
+ * @param originalDice {dice}
+ * @param stats {[name: string]: number}
+ */
 export function generateStatsDice(originalDice: string, stats?: {[name: string]: number}) {
 	let dice = originalDice;
 	if (stats && Object.keys(stats).length > 0) {
@@ -145,21 +193,38 @@ export function generateStatsDice(originalDice: string, stats?: {[name: string]:
 	
 }
 
+/**
+ * Escape regex string
+ * @param string {string}
+ */
 export function escapeRegex(string: string) {
 	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * Replace the ++ +- -- by their proper value:
+ * - `++` = `+`
+ * - `+-` = `-`
+ * - `--` = `+`
+ * @param dice {string}
+ */
 export function cleanedDice(dice: string) {
 	return dice.replaceAll("+-", "-").replaceAll("--", "+").replaceAll("++", "+");
 }
-
-
-
+/**
+ * filter the choices by removing the accents and check if it includes the removedAccents focused
+ * @param choices {string[]}
+ * @param focused {string}
+ */
 export function filterChoices(choices: string[], focused: string) {
 	return choices.filter(choice => removeAccents(choice).toLowerCase().includes(removeAccents(focused).toLowerCase()));
 
 }
 
+/**
+ * Parse the fields in stats, used to fix combinaison and get only them and not their result
+ * @param statsEmbed {EmbedBuilder}
+ */
 export function parseStatsString(statsEmbed: EmbedBuilder) {
 	const stats = parseEmbedFields(statsEmbed.toJSON() as Embed);
 	const parsedStats: {[name: string]: number} = {};

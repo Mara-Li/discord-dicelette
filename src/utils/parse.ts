@@ -71,7 +71,7 @@ export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "st
 }
 
 /**
- * Parse the embed fields 
+ * Parse the embed fields and remove the backtick if any
  * @param embed {Embed}
  * @returns { [name: string]: string }
  */
@@ -186,6 +186,12 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 	return { combinaisonFields, stats };
 }
 
+/**
+ * Remove backtick in value
+ * Used when parsing the user embed
+ * @param text {string}
+ * @returns 
+ */
 export function removeBacktick(text: string) {
 	return text.replace(/`/g, "");
 }

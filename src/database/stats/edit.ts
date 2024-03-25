@@ -1,7 +1,7 @@
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
 import { TFunction } from "i18next";
 
-import {removeEmojiAccents, isArrayEqual, title } from "../../utils";
+import {isArrayEqual, removeEmojiAccents, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { getGuildData, getTemplateWithDB } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";

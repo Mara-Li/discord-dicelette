@@ -10,7 +10,10 @@ export const COMMENT_REGEX = /\s+(#|\/{2}|\[|\/\*)(.*)/;
 const SIGN_REGEX =/[><=!]+/;
 const SIGN_REGEX_SPACE = /[><=!]+(\S+)/;
 
-
+/**
+ * Parse the string provided and turn it as a readable dice for dice parser
+ * @param dice {string}
+ */
 export function roll(dice: string): Resultat | undefined{
 	//parse dice string
 	if (!dice.includes("d")) return undefined;
@@ -75,12 +78,24 @@ export function roll(dice: string): Resultat | undefined{
 		modifier: modificator,
 	};
 }
-
+/**
+ * Evaluate a formula and replace "^" by "**" if any
+ * @param {Sign} sign
+ * @param {number} value 
+ * @param {number} total 
+ * @returns 
+ */
 function calculator(sign: Sign, value: number, total: number): number {
 	if (sign === "^") sign = "**";
 	return evaluate(`${total} ${sign} ${value}`);
 }
 
+/**
+ * Parse the result of the dice to be readable
+ * @param {Resultat} output
+ * @param {TFunction<"translation", undefined>} ul 
+ * @param {failure: number | undefined, success: number | undefined}critical 
+ */
 export function parseResult(output: Resultat, ul: TFunction<"translation", undefined>, critical?: {failure?: number, success?: number}) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
@@ -124,12 +139,18 @@ export function parseResult(output: Resultat, ul: TFunction<"translation", undef
 	return dedent(`${comment}${result}`);
 }
 
-function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "≤" | "=" | "" {
+/**
+ * Replace the compare sign as it will invert the result for a better reading
+ * As the comparaison is after the total (like 20>10)
+ * @param {Compare} compare 
+ * @param {number} total
+ */
+function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "≤" | "=" | "!=" | "==" | "" {
 	//as the comparaison value is AFTER the total, we need to invert the sign to have a good comparaison string
 	const {sign, value} = compare;
 	const success = eval(`${total} ${sign} ${value}`);
 	if (success) {
-		return sign.replace(">=", "≥").replace("<=", "≤") as "<" | ">" | "≥" | "≤" | "=" | "";
+		return sign.replace(">=", "≥").replace("<=", "≤") as "<" | ">" | "≥" | "≤" | "=" | "" | "!=" | "==";
 	}
 	switch (sign) {
 	case "<":
@@ -142,6 +163,10 @@ function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "
 		return "≥";
 	case "=":
 		return "=";
+	case "!=":
+		return "!=";
+	case "==":
+		return "==";
 	default:
 		return "";
 	}
