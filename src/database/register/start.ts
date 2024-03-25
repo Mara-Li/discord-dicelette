@@ -73,7 +73,7 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 	let nbOfPages = 1;
 	if (template.statistics) {
 		const nbOfStatistique = Object.keys(template.statistics).length;
-		nbOfPages = Math.floor(nbOfStatistique / 5) > 0 ? Math.floor(nbOfStatistique / 5) : 2;
+		nbOfPages = Math.ceil(nbOfStatistique / 5) > 0 ? Math.ceil(nbOfStatistique / 5) : 2;
 	}
 
 	const ul = ln(interaction.locale as Locale);
