@@ -43,6 +43,12 @@
       "statistic": "The statistic to use"
     }
   },
+  "display": {
+    "character": "",
+    "description": "",
+    "title": "",
+    "user": ""
+  },
   "edit": {
     "options": {
       "field": {
