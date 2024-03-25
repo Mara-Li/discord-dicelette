@@ -43,8 +43,8 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
 	const damageDice = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("damageName")
-			.setLabel("Name")
-			.setPlaceholder(ul("modals.dice"))
+			.setLabel(ul("modals.dice.name"))
+			.setPlaceholder(ul("modals.dice.placeholder"))
 			.setRequired(true)
 			.setValue("")
 			.setStyle(TextInputStyle.Short)
@@ -52,7 +52,7 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
 	const diceValue = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("damageValue")
-			.setLabel("Value")
+			.setLabel(ul("modals.dice.value"))
 			.setPlaceholder("1d5")
 			.setRequired(true)
 			.setValue("")

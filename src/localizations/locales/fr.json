@@ -174,7 +174,11 @@
       "description": "Entrez le nom de votre personnage",
       "name": "Nom du personnage"
     },
-    "dice": "Entrer un dé valide",
+    "dice": {
+      "name": "Nom",
+      "placeholder": "Entrer un dé valide",
+      "value": "Valeur"
+    },
     "edit": {
       "dice": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
       "stats": "⚠ Suivez la syntaxe. Supprimer avec X ou 0."
