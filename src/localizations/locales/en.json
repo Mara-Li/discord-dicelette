@@ -160,9 +160,23 @@
   },
   "logs": {
     "description": "Choose a channel where to send error logs",
+    "dice": {
+      "add": "{{- user}} added the dice for <{{-fiche}}>",
+      "edit": "{{- user}} modified the dice of <{{- fiche}}>"
+    },
+    "edit": {
+    },
     "name": "logs",
     "options": "The channel to send logs to",
-    "set": "Logs configured in channel {{- channel}}"
+    "removed": {
+    },
+    "set": "Logs configured in channel {{- channel}}",
+    "stat": {
+      "added": "{{- user}} modified the statistics of <{{-fiche}}>"
+    },
+    "stats": {
+      "removed": "{{- user}} deleted the statistics of the sheet <{{- fiche}}>"
+    }
   },
   "modals": {
     "added": {
@@ -180,8 +194,8 @@
       "value": "Value"
     },
     "edit": {
-      "dice": "⚠ Respect the syntax. \nUse \"X\", \"0\" or leave blank to delete.",
-      "stats": "Stats changed!"
+      "dice": "⚠ Respect the syntax. Delete with X or 0.",
+      "stats": "⚠ Suivez la syntaxe. Supprimer avec X."
     },
     "enterValue": {
       "maxOnly": "Enter a value smaller than {{- max}}",

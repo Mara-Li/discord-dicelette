@@ -160,9 +160,23 @@
   },
   "logs": {
     "description": "Choisir un channel où envoyer les logs d'erreurs",
+    "dice": {
+      "add": "{{- user}} a ajouté les dés pour <{{-fiche}}>",
+      "edit": "{{- user}} a modifié les dés de <{{- fiche}}>"
+    },
+    "edit": {
+    },
     "name": "logs",
     "options": "Le channel où envoyer les logs",
-    "set": "Logs configurés dans le channel {{- channel}}"
+    "removed": {
+    },
+    "set": "Logs configurés dans le channel {{- channel}}",
+    "stat": {
+      "added": "{{- user}} a modifié les statistiques de <{{-fiche}}>"
+    },
+    "stats": {
+      "removed": "{{- user}} a supprimé les statistiques de la fiche <{{- fiche}}>"
+    }
   },
   "modals": {
     "added": {
@@ -181,7 +195,7 @@
     },
     "edit": {
       "dice": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
-      "stats": "⚠ Suivez la syntaxe. Supprimer avec X ou 0."
+      "stats": "⚠ Suivez la syntaxe. Supprimer avec X."
     },
     "enterValue": {
       "maxOnly": "Entrez une valeur plus petite que {{- max}}",

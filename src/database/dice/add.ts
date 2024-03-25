@@ -1,9 +1,9 @@
-import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User } from "discord.js";
+import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Guild, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
 import { lError, ln } from "../../localizations";
-import { removeEmojiAccents, title } from "../../utils";
+import { removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons, registerDmgButton, validateCancelButton } from "../../utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
 import { getEmbeds } from "../../utils/parse";
@@ -140,13 +140,12 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 
 		if (damageName && Object.keys(damageName).length > 25) {
 			await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
-			const components = editUserButtons(ul, statsEmbed ? true: false, false);
-			await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 			return;
 		}
 		registerUser(userID, interaction, interaction.message.id, thread, userName, damageName ? Object.keys(damageName) : undefined, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
+		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
 		return;
 	}
 	if (damageName && Object.keys(damageName).length > 25) {
@@ -158,5 +157,6 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	const components = registerDmgButton(ul);
 	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
 	await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
+	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
 	return;
 }

@@ -1,7 +1,7 @@
-import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
-import {isArrayEqual, removeEmojiAccents, title } from "../../utils";
+import {isArrayEqual, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { getGuildData, getTemplateWithDB } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
@@ -104,11 +104,14 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.stats"), ephemeral: true });
+		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
 	}
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 	await interaction.message.edit({ embeds: list });
 	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
+	await sendLogs(ul("logs.stat.added", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
+
 }
 
 /**

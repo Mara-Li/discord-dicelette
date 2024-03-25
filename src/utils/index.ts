@@ -1,4 +1,4 @@
-import { BaseInteraction, CommandInteraction, Embed, EmbedBuilder, ForumChannel, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { BaseInteraction, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
 import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
@@ -7,10 +7,10 @@ import removeAccents from "remove-accents";
 import { deleteAfter } from "../commands/base";
 import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
-import {UserData} from "../interface";
+import { UserData} from "../interface";
 import { ln } from "../localizations";
 import { editUserButtons } from "./buttons";
-import { registerUser } from "./db";
+import { getGuildData, registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
 import { parseEmbedFields } from "./parse";
 
@@ -237,4 +237,16 @@ export function parseStatsString(statsEmbed: EmbedBuilder) {
 		parsedStats[name] = number;
 	}
 	return parsedStats;
+}
+
+export async function sendLogs(message: string, interaction: BaseInteraction, guild: Guild) {
+	const guildData = getGuildData(interaction);
+	if (!guildData?.logs) return;
+	const channel = guildData.logs;
+	try {
+		const channelToSend = await guild.channels.fetch(channel) as TextChannel;
+		await channelToSend.send(message);
+	} catch (error) {
+		return;
+	}
 }
