@@ -17,8 +17,8 @@ export const displayUser = {
 		.setDescriptionLocalizations(cmdLn("display.description"))
 		.addUserOption(option =>
 			option
-				.setName(t("common.user"))
-				.setNameLocalizations(cmdLn("common.user"))
+				.setName(t("display.userLowercase"))
+				.setNameLocalizations(cmdLn("display.userLowercase"))
 				.setDescription(t("display.user"))
 				.setDescriptionLocalizations(cmdLn("display.user"))
 				.setRequired(false)
@@ -60,7 +60,7 @@ export const displayUser = {
 			await interaction.reply(ul("error.noTemplate"));
 			return;
 		}
-		const user = options.getUser(t("common.user"));
+		const user = options.getUser(t("display.userLowercase"));
 		const charName = options.getString(t("common.character"))?.toLowerCase();
 		let charData: { [key: string]: {
 			charName?: string;

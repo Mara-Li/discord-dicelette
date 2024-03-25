@@ -152,7 +152,6 @@ export function escapeRegex(string: string) {
 }
 
 export function cleanedDice(dice: string) {
-	console.log(dice);
 	return dice.replaceAll("+-", "-").replaceAll("--", "+").replaceAll("++", "+");
 }
 

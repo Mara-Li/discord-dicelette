@@ -99,13 +99,11 @@ export function parseResult(output: Resultat, ul: TFunction<"translation", undef
 					total += parseInt(t, 10);
 				}
 			}
-			console.log(output.compare);
 			if (output.modifier) {
 				const {sign, value} = output.modifier;
 				total = calculator(sign as Sign, value, total);
 
 			}
-			console.log(total, output.compare.sign, output.compare.value);
 			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${ul("roll.success")}**` : `**${ul("roll.failure")}**`;
 			if (critical) {
 				if (critical.failure && total === critical.failure) {

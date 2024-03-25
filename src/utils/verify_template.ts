@@ -105,7 +105,6 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	else if (template.statistics && Object.keys(template.statistics).length > 0) {
 		for (const [key, value] of Object.entries(template.statistics)) {
 			const dataValue = value as { max?: number, min?: number, combinaison?: string };
-			const statName = removeAccents(key).toLowerCase();
 			if (dataValue.max && dataValue.min && dataValue.max <= dataValue.min)
 				throw new Error("[error.maxGreater]");				
 			if (dataValue.max && dataValue.max <= 0 ) dataValue.max = undefined;
@@ -115,7 +114,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 			if (!statistiqueTemplate.statistics) {
 				statistiqueTemplate.statistics = {} as Statistic;
 			}
-			statistiqueTemplate.statistics[statName] = {
+			statistiqueTemplate.statistics[key] = {
 				max: dataValue.max,
 				min: dataValue.min,
 				combinaison: formula || undefined,

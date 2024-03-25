@@ -46,8 +46,9 @@
   "display": {
     "character": "Le personnage à afficher",
     "description": "Permet d'afficher la fiche d'un joueur/personnage",
-    "title": "Afficher",
-    "user": "L'utilisateur à afficher"
+    "title": "afficher",
+    "user": "L'utilisateur à afficher",
+    "userLowercase": "joueur"
   },
   "edit": {
     "options": {

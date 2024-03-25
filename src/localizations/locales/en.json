@@ -44,10 +44,11 @@
     }
   },
   "display": {
-    "character": "",
-    "description": "",
-    "title": "",
-    "user": ""
+    "character": "The character to display",
+    "description": "Allows you to display the profile of a player/character",
+    "title": "display",
+    "user": "The user to display",
+    "userLowercase": "player"
   },
   "edit": {
     "options": {
