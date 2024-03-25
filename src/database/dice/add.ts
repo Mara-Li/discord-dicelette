@@ -1,6 +1,5 @@
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Guild, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User, userMention } from "discord.js";
 import { TFunction } from "i18next";
-import removeAccents from "remove-accents";
 
 import { lError, ln } from "../../localizations";
 import { removeEmojiAccents, sendLogs, title } from "../../utils";
@@ -118,12 +117,12 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	}
 	if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(name)) === -1 || !diceEmbed.toJSON().fields){
 		diceEmbed.addFields({
-			name: first ? `🔪${title(removeAccents(name))}` : title(removeAccents(name)),
+			name: first ? `🔪${title(name)}` : title(name),
 			value,
 			inline: true,
 		});}
 	const damageName = diceEmbed.toJSON().fields?.reduce((acc, field) => {
-		acc[removeEmojiAccents(field.name)] = field.value;
+		acc[field.name] = field.value;
 		return acc;
 	}, {} as {[name: string]: string});
 	if (!first) {
