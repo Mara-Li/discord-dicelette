@@ -3,7 +3,7 @@ import { TFunction } from "i18next";
 
 import { StatisticalTemplate } from "../../interface";
 import { ln } from "../../localizations";
-import { cleanStatsName } from "../../utils";
+import { removeEmojiAccents } from "../../utils";
 import { getTemplateWithDB } from "../../utils/db";
 import { parseEmbed } from "../../utils/parse";
 import { embedStatistiques, showStatistiqueModal } from "../stats/add";
@@ -28,8 +28,8 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
 	if (!embed) return;
 	if (!dbTemplate.statistics) return;
 
-	const allTemplateStat = Object.keys(dbTemplate.statistics).map(stat => cleanStatsName(stat));
-	const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(cleanStatsName(stat))).map(stat => cleanStatsName(stat));
+	const allTemplateStat = Object.keys(dbTemplate.statistics).map(stat => removeEmojiAccents(stat));
+	const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(removeEmojiAccents(stat))).map(stat => removeEmojiAccents(stat));
 	if (statsAlreadySet.length === allTemplateStat.length) {
 		await interaction.reply({ content: ul("modals.alreadySet"), ephemeral: true });
 		return;

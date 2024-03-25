@@ -3,7 +3,7 @@ import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
 import { lError, ln } from "../../localizations";
-import { cleanSkillName, title } from "../../utils";
+import { removeEmojiAccents, title } from "../../utils";
 import { editUserButtons, registerDmgButton, validateCancelButton } from "../../utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
 import { getEmbeds } from "../../utils/parse";
@@ -102,7 +102,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
 			//add fields only if not already in the diceEmbed
-			if (diceEmbed.toJSON().fields?.findIndex(f => cleanSkillName(f.name) === cleanSkillName(field.name)) === -1){
+			if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(field.name)) === -1){
 				diceEmbed.addFields(field);
 			}
 		}
@@ -116,14 +116,14 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		await interaction.reply({ content: errorMsg, ephemeral: true });
 		return;
 	}
-	if (diceEmbed.toJSON().fields?.findIndex(f => cleanSkillName(f.name) === cleanSkillName(name)) === -1 || !diceEmbed.toJSON().fields){
+	if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(name)) === -1 || !diceEmbed.toJSON().fields){
 		diceEmbed.addFields({
 			name: first ? `🔪${title(removeAccents(name))}` : title(removeAccents(name)),
 			value,
 			inline: true,
 		});}
 	const damageName = diceEmbed.toJSON().fields?.reduce((acc, field) => {
-		acc[cleanSkillName(field.name)] = field.value;
+		acc[removeEmojiAccents(field.name)] = field.value;
 		return acc;
 	}, {} as {[name: string]: string});
 	if (!first) {

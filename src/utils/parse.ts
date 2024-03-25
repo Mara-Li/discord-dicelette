@@ -5,7 +5,7 @@ import { TFunction } from "i18next";
 import { createTemplateEmbed } from "../database";
 import { GuildData, StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
-import { cleanStatsName, title } from ".";
+import { removeEmojiAccents, title } from ".";
 
 /**
  * Parse the embed fields from an interaction
@@ -161,7 +161,7 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 	let total = templateData.total;
 	if (!templateData.statistics) return { combinaisonFields, stats };
 	for (const [key, value] of Object.entries(templateData.statistics)) {
-		const name = cleanStatsName(key);
+		const name = removeEmojiAccents(key);
 		if (!interaction.fields.fields.has(name) && !value.combinaison) continue;
 		if (value.combinaison) {
 			combinaisonFields[key] = value.combinaison;

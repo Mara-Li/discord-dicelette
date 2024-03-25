@@ -93,15 +93,13 @@ export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInt
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
 	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
 }
-
-export function cleanSkillName(dice: string) {
-	return removeAccents(dice).toLowerCase().replaceAll("🔪", "").trim();
+export function removeEmoji(dice: string) {
+	return dice.replaceAll("🔪", "").replaceAll("✏️", "").trim().toLowerCase();
 }
 
-export function cleanStatsName(dice: string) {
-	return removeAccents(dice).toLowerCase().replaceAll("✏️", "").trim();
+export function removeEmojiAccents(dice: string) {
+	return removeAccents(removeEmoji(dice));
 }
-
 
 export function timestamp() {
 	return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;

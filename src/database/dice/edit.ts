@@ -2,7 +2,7 @@ import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, ModalActionR
 import { TFunction } from "i18next";
 
 import { roll } from "../../dice";
-import { cleanSkillName, cleanStatsName, parseStatsString, title } from "../../utils";
+import { parseStatsString, removeEmojiAccents, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { registerUser } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
@@ -61,7 +61,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	const newEmbedDice: APIEmbedField[] = [];
 	for (const [skill, dice] of Object.entries(dices)) {
 		//test if dice is valid
-		if (newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(skill))) continue;
+		if (newEmbedDice.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(skill))) continue;
 		if (dice === "X" 
 			|| dice.trim().length ===0 
 			|| dice === "0" ) {
@@ -91,7 +91,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	if (oldDice) {
 		for (const field of oldDice) {
 			const name = field.name.toLowerCase();
-			if (!newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(name))) {
+			if (!newEmbedDice.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(name))) {
 			//register the old value
 				newEmbedDice.push({
 					name: title(name),
@@ -107,7 +107,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		const name = field.name.toLowerCase();
 		const dice = field.value;
 		if (
-			fieldsToAppend.find(f => cleanSkillName(f.name) === cleanSkillName(name)) 
+			fieldsToAppend.find(f => removeEmojiAccents(f.name) === removeEmojiAccents(name)) 
 			|| dice === "X" 
 			|| dice.trim().length ===0 
 			|| dice === "0" ) continue;

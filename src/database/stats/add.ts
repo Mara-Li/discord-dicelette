@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRo
 
 import { StatisticalTemplate } from "../../interface";
 import { lError,ln } from "../../localizations";
-import { cleanStatsName, title } from "../../utils";
+import { removeEmojiAccents, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
 import { getStatistiqueFields } from "../../utils/parse";
 import { ensureEmbed, evalCombinaison } from "../../utils/verify_template";
@@ -35,13 +35,13 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				inline: true,
 			});
 		}
-		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison) : [];
+		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison).map(name => removeEmojiAccents(name)) : [];
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;
 		const parsedFields: { [name: string]: string; } = {};
 		for (const field of fields) {
-			parsedFields[field.name.toLowerCase().replace("✏️", "").trim()] = field.value.toLowerCase();
+			parsedFields[removeEmojiAccents(field.name)] = field.value.toLowerCase();
 		}
 
 		const embedStats = Object.fromEntries(Object.entries(parsedFields).filter(
@@ -98,7 +98,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		.setTitle(ul("modals.steps", { page, max: nbOfPages + 1 }));
 	let statToDisplay = statsWithoutCombinaison;
 	if (stats && stats.length > 0) {
-		statToDisplay = statToDisplay.filter(stat => !stats.includes(cleanStatsName(stat)));
+		statToDisplay = statToDisplay.filter(stat => !stats.includes(removeEmojiAccents(stat)));
 		if (statToDisplay.length === 0) {
 			//remove button
 			const button = registerDmgButton(ul);
@@ -107,9 +107,9 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		}
 	}
 	const statsToDisplay = statToDisplay.slice(0, 4);
-	const statisticsLowerCase = Object.fromEntries(Object.entries(template.statistics).map(([key, value]) => [cleanStatsName(key), value]));
+	const statisticsLowerCase = Object.fromEntries(Object.entries(template.statistics).map(([key, value]) => [removeEmojiAccents(key), value]));
 	for (const stat of statsToDisplay) {
-		const cleanedName = cleanStatsName(stat);
+		const cleanedName = removeEmojiAccents(stat);
 		const value = statisticsLowerCase[cleanedName];
 		if (value.combinaison) continue;
 		let msg = "";
