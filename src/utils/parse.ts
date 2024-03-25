@@ -80,7 +80,7 @@ export function parseEmbedFields(embed: Embed): {[name: string]: string} {
 	const fields = embed.fields;
 	const parsedFields: {[name: string]: string} = {};
 	for (const field of fields) {
-		parsedFields[field.name] = field.value;
+		parsedFields[removeBacktick(field.name)] = removeBacktick(field.value);
 	}
 	return parsedFields;
 }
@@ -126,19 +126,19 @@ export async function bulkEditTemplateUser(guildData: GuildData, interaction: Co
 				if (template.diceType)
 					newEmbed.addFields({
 						name: ul("common.dice"),
-						value: template.diceType,
+						value: `\`${template.diceType}\``,
 						inline: true
 					});
 				if (template.critical?.success) 
 					newEmbed.addFields({
 						name: ul("roll.critical.success"),
-						value: template.critical.success.toString(),
+						value: `\`${template.critical.success}\``,
 						inline: true
 					});
 				if (template.critical?.failure) 
 					newEmbed.addFields({
 						name: ul("roll.critical.failure"),
-						value: template.critical.failure.toString(),
+						value: `\`${template.critical.failure}\``,
 						inline: true
 					});
 				const listEmbed = getEmbedsList(ul, {which: "template", embed: newEmbed}, userMessages);
@@ -185,4 +185,8 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 		} else stats[name] = num;
 	}
 	return { combinaisonFields, stats };
+}
+
+export function removeBacktick(text: string) {
+	return text.replace(/`/g, "");
 }

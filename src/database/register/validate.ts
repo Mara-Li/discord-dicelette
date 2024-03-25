@@ -75,7 +75,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			}
 			diceEmbed.addFields({
 				name: title(cleanSkillName(field.name)),
-				value: field.value,
+				value: `\`${field.value}\``,
 				inline: true,
 			
 			});
@@ -113,7 +113,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				}
 				diceEmbed.addFields({
 					name: `${name}`,
-					value: dice,
+					value: `\`${dice}\``,
 					inline: true,
 				});
 			}
@@ -138,20 +138,20 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		if (template.diceType)
 			templateEmbed.addFields({
 				name: ul("common.dice"),
-				value: template.diceType,
+				value: `\`${template.diceType}\``,
 				inline: true,
 			});
 		if (template.critical?.success){
 			templateEmbed.addFields({
 				name: ul("roll.critical.success"),
-				value: template.critical.success.toString(),
+				value: `\`${template.critical.success}\``,
 				inline: true,
 			});	
 		}
 		if (template.critical?.failure){
 			templateEmbed.addFields({
 				name: ul("roll.critical.failure"),
-				value: template.critical.failure.toString(),
+				value: `\`${template.critical.failure}\``,
 				inline: true,
 			});	
 		}

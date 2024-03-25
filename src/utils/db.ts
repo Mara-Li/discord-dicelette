@@ -5,7 +5,8 @@ import removeAccents from "remove-accents";
 
 import { GuildData, StatisticalTemplate, UserData } from "../interface";
 import { ln } from "../localizations";
-import { getEmbeds, parseEmbedFields } from "./parse";
+import { cleanSkillName, cleanStatsName } from ".";
+import { getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
 import { ensureEmbed, verifyTemplateValue } from "./verify_template";
 
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
@@ -156,7 +157,7 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
-			stats[stat.name.replace("✏️", "").toLowerCase().trim()] = parseInt(stat.value, 10);
+			stats[cleanStatsName(stat.name)] = parseInt(removeBacktick(stat.value), 10);
 		}
 	}
 	user.stats = stats;
@@ -165,7 +166,7 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 	if (damageFields) {
 		templateDamage = {};
 		for (const damage of damageFields) {
-			templateDamage[damage.name.replace("🔪", "").trim().toLowerCase()] = damage.value;
+			templateDamage[cleanSkillName(damage.name)] = removeBacktick(damage.value);
 		}
 	}
 	const templateEmbed = first ? userEmbed : getEmbeds(ul, message, "template");
