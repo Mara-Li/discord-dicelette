@@ -44,7 +44,7 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
 		new TextInputBuilder()
 			.setCustomId("damageName")
 			.setLabel("Name")
-			.setPlaceholder(ul("modals.enterValue.minAndMax", { min: 1, max: 100 }))
+			.setPlaceholder(ul("modals.dice"))
 			.setRequired(true)
 			.setValue("")
 			.setStyle(TextInputStyle.Short)

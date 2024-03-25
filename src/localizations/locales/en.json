@@ -174,8 +174,7 @@
       "description": "Enter your character's name",
       "name": "Character name"
     },
-    "dice": {
-    },
+    "dice": "Enter a valid die",
     "edit": {
       "dice": "⚠ Respect the syntax. \nUse \"X\", \"0\" or leave blank to delete.",
       "stats": "Stats changed!"
