@@ -113,7 +113,7 @@ export const dmgRoll = {
 				return;
 			}
 			const charNameComments = charOptions ? ` • **@${title(charOptions)}**` : "";
-			comments += `__[${title(atq)}]__${charNameComments}`;
+			comments += ` __[${title(atq)}]__${charNameComments}`;
 			//search dice
 			let dice = userStatistique.damage?.[atq.toLowerCase()];
 			if (!dice) {
