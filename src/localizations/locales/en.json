@@ -93,6 +93,7 @@
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
     "user": "User not found",
+    "userChan": "You cannot choose the channel {{- chan}} without choosing a channel where to post the cards, because it will be impossible to create a thread there.",
     "userNotRegistered": "{{- user}} is not registered."
   },
   "generate": {

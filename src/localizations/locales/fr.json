@@ -93,6 +93,7 @@
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
     "totalExceededBy": "Le total de {{- value}} est dépassé de {{- max}}",
     "user": "Utilisateur introuvable",
+    "userChan": "Vous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "userNotRegistered": "{{- user}} n'est pas enregistré."
   },
   "generate": {
