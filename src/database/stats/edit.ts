@@ -1,7 +1,7 @@
-import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
-import {cleanStatsName, isArrayEqual, title } from "../../utils";
+import {isArrayEqual, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { getGuildData, getTemplateWithDB } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
@@ -32,10 +32,10 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	//verify value from template
 	const embedsStatsFields: APIEmbedField[] = [];
 	for (const [name, value] of Object.entries(stats)) {
-		const stat = templateStats.statistics?.[cleanStatsName(name)];
+		const stat = templateStats.statistics?.[removeEmojiAccents(name)];
 		if (value.toLowerCase() === "x" 
 			|| value.trim().length === 0 
-			|| embedsStatsFields.find(field => cleanStatsName(field.name) === cleanStatsName(name))
+			|| embedsStatsFields.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(name))
 		) continue;
 		if (!stat) {
 			throw new Error(ul("error.statNotFound", {value: name}));
@@ -75,7 +75,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 				field.value !== "0" 
 				&& field.value !== "X" 
 				&& field.value.trim().length > 0 
-				&& embedsStatsFields.find(field => cleanStatsName(field.name) === cleanStatsName(name))
+				&& embedsStatsFields.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(name))
 			){
 				//register the old value
 				embedsStatsFields.push({
@@ -90,7 +90,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	const fieldsToAppend: APIEmbedField[] = [];
 	for (const field of embedsStatsFields) {
 		const name = field.name.toLowerCase();
-		if (fieldsToAppend.find(f => cleanStatsName(f.name) === cleanStatsName(name))) continue;
+		if (fieldsToAppend.find(f => removeEmojiAccents(f.name) === removeEmojiAccents(name))) continue;
 		fieldsToAppend.push(field);
 	}
 
@@ -104,11 +104,14 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.stats"), ephemeral: true });
+		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
 	}
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 	await interaction.message.edit({ embeds: list });
 	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
+	await sendLogs(ul("logs.stat.added", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
+
 }
 
 /**
@@ -121,12 +124,12 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 	if (!statistics) throw new Error(ul("error.statNotFound"));
 	const stats = parseEmbedFields(statistics.toJSON() as Embed);
 	const originalGuildData = getGuildData(interaction)?.templateID.statsName;
-	const registeredStats = originalGuildData?.map(stat => cleanStatsName(stat));
-	const userStats = Object.keys(stats).map(stat => cleanStatsName(stat.toLowerCase()));
+	const registeredStats = originalGuildData?.map(stat => removeEmojiAccents(stat));
+	const userStats = Object.keys(stats).map(stat => removeEmojiAccents(stat.toLowerCase()));
 	let statsStrings = "";
 	for (const [name, value] of Object.entries(stats)) {
 		let stringValue = value;
-		if (!registeredStats?.includes(cleanStatsName(name))) continue; //remove stats that are not registered
+		if (!registeredStats?.includes(removeEmojiAccents(name))) continue; //remove stats that are not registered
 		if (value.match(/`(.*)`/)) {
 			const combinaison = value.match(/`(.*)`/)?.[1];
 			if (combinaison) stringValue = combinaison;
@@ -137,7 +140,7 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 		//check which stats was added
 		const diff = registeredStats.filter(x => !userStats.includes(x));
 		for (const stat of diff) {
-			const realName = originalGuildData?.find(x => cleanStatsName(x) === cleanStatsName(stat));
+			const realName = originalGuildData?.find(x => removeEmojiAccents(x) === removeEmojiAccents(stat));
 			statsStrings += `- ${title(realName)}${ul("common.space")}: 0\n`;
 		}
 	}

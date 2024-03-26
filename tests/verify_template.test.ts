@@ -139,7 +139,6 @@ describe("verify_template", () => {
 				}
 			};
 			const expectedFormula = diceRandomParse("1d20 + {{ceil((stat1-10)/2)}}>stat1", testTemplate);
-			console.log(expectedFormula);
 			expect(expectedFormula).toEqual(expectedFormula);
 		});
 		it("Test a roll with a combinaison on the dice", () => {

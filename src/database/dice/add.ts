@@ -1,9 +1,8 @@
-import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User } from "discord.js";
+import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Guild, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User, userMention } from "discord.js";
 import { TFunction } from "i18next";
-import removeAccents from "remove-accents";
 
 import { lError, ln } from "../../localizations";
-import { cleanSkillName, title } from "../../utils";
+import { removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons, registerDmgButton, validateCancelButton } from "../../utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
 import { getEmbeds } from "../../utils/parse";
@@ -43,8 +42,8 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
 	const damageDice = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("damageName")
-			.setLabel("Name")
-			.setPlaceholder(ul("modals.enterValue.minAndMax", { min: 1, max: 100 }))
+			.setLabel(ul("modals.dice.name"))
+			.setPlaceholder(ul("modals.dice.placeholder"))
 			.setRequired(true)
 			.setValue("")
 			.setStyle(TextInputStyle.Short)
@@ -52,7 +51,7 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
 	const diceValue = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("damageValue")
-			.setLabel("Value")
+			.setLabel(ul("modals.dice.value"))
 			.setPlaceholder("1d5")
 			.setRequired(true)
 			.setValue("")
@@ -102,7 +101,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
 			//add fields only if not already in the diceEmbed
-			if (diceEmbed.toJSON().fields?.findIndex(f => cleanSkillName(f.name) === cleanSkillName(field.name)) === -1){
+			if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(field.name)) === -1){
 				diceEmbed.addFields(field);
 			}
 		}
@@ -116,14 +115,14 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		await interaction.reply({ content: errorMsg, ephemeral: true });
 		return;
 	}
-	if (diceEmbed.toJSON().fields?.findIndex(f => cleanSkillName(f.name) === cleanSkillName(name)) === -1 || !diceEmbed.toJSON().fields){
+	if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(name)) === -1 || !diceEmbed.toJSON().fields){
 		diceEmbed.addFields({
-			name: first ? `🔪${title(removeAccents(name))}` : title(removeAccents(name)),
+			name: first ? `🔪${title(name)}` : title(name),
 			value,
 			inline: true,
 		});}
 	const damageName = diceEmbed.toJSON().fields?.reduce((acc, field) => {
-		acc[cleanSkillName(field.name)] = field.value;
+		acc[field.name] = field.value;
 		return acc;
 	}, {} as {[name: string]: string});
 	if (!first) {
@@ -140,13 +139,12 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 
 		if (damageName && Object.keys(damageName).length > 25) {
 			await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
-			const components = editUserButtons(ul, statsEmbed ? true: false, false);
-			await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 			return;
 		}
 		registerUser(userID, interaction, interaction.message.id, thread, userName, damageName ? Object.keys(damageName) : undefined, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
+		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
 		return;
 	}
 	if (damageName && Object.keys(damageName).length > 25) {
@@ -158,5 +156,6 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	const components = registerDmgButton(ul);
 	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
 	await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
+	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
 	return;
 }

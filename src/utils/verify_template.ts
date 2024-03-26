@@ -8,6 +8,11 @@ import { roll } from "../dice";
 import { Statistic, StatisticalTemplate } from "../interface";
 import { escapeRegex, replaceFormulaInDice } from ".";
 
+/**
+ * Verify if the provided dice work with random value
+ * @param testDice {string}
+ * @param stats {[name: string]: number}
+ */
 export function evalStatsDice(testDice: string, stats?: {[name: string]: number}) {
 	let dice = testDice;
 	if (stats && Object.keys(stats).length > 0) {
@@ -28,6 +33,13 @@ export function evalStatsDice(testDice: string, stats?: {[name: string]: number}
 	}
 }
 
+/**
+ * Generate a random dice and remove the formula (+ evaluate it)
+ * Used for diceDamage only
+ * @param value {string}
+ * @param template {StatisticalTemplate}
+ * @returns 
+ */
 export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	if (!template.statistics) return value;
 	value = removeAccents(value);
@@ -51,6 +63,11 @@ export function diceRandomParse(value: string, template: StatisticalTemplate) {
 	return replaceFormulaInDice(newDice);
 }
 
+/**
+ * Same as damageDice but for DiceType
+ * @param dice {string}
+ * @param template {StatisticalTemplate}
+ */
 export function diceTypeRandomParse(dice: string, template: StatisticalTemplate) {
 	if (!template.statistics) return dice;
 	const firstStatNotCombinaison = Object.keys(template.statistics).find(stat => !template.statistics?.[stat].combinaison);
@@ -62,7 +79,11 @@ export function diceTypeRandomParse(dice: string, template: StatisticalTemplate)
 	return replaceFormulaInDice(dice.replace("$", randomStatValue.toString()));
 }
 
-
+/**
+ * Random the combinaison and evaluate it to check if everything is valid
+ * @param combinaison {[name: string]: string}
+ * @param stats {[name: string]: string|number}
+ */
 export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[name: string]: string | number}) {
 	const newStats: {[name: string]: number} = {};
 	for (const [stat, combin] of Object.entries(combinaison)) {
@@ -82,6 +103,11 @@ export function evalCombinaison(combinaison: {[name: string]: string}, stats: {[
 	return newStats;
 }
 
+/**
+ * Evaluate one selected combinaison
+ * @param combinaison {string}
+ * @param stats {[name: string]: string|number}
+ */
 export function evalOneCombinaison(combinaison: string, stats: {[name: string]: string | number}) {
 	let formula = removeAccents(combinaison);
 	for (const [statName, value] of Object.entries(stats)) {
@@ -95,6 +121,11 @@ export function evalOneCombinaison(combinaison: string, stats: {[name: string]: 
 	}
 }
 
+/**
+ * Parse the provided JSON and verify each field to check if everything could work when rolling
+ * @param {any} template 
+ * @returns {StatisticalTemplate}
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function verifyTemplateValue(template: any): StatisticalTemplate {
 	const statistiqueTemplate: StatisticalTemplate = {
@@ -105,7 +136,6 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	else if (template.statistics && Object.keys(template.statistics).length > 0) {
 		for (const [key, value] of Object.entries(template.statistics)) {
 			const dataValue = value as { max?: number, min?: number, combinaison?: string };
-			const statName = removeAccents(key).toLowerCase();
 			if (dataValue.max && dataValue.min && dataValue.max <= dataValue.min)
 				throw new Error("[error.maxGreater]");				
 			if (dataValue.max && dataValue.max <= 0 ) dataValue.max = undefined;
@@ -115,7 +145,7 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 			if (!statistiqueTemplate.statistics) {
 				statistiqueTemplate.statistics = {} as Statistic;
 			}
-			statistiqueTemplate.statistics[statName] = {
+			statistiqueTemplate.statistics[key] = {
 				max: dataValue.max,
 				min: dataValue.min,
 				combinaison: formula || undefined,
@@ -155,7 +185,10 @@ export function verifyTemplateValue(template: any): StatisticalTemplate {
 	return statistiqueTemplate;
 }
 
-
+/**
+ * Test each damage roll from the template.damage
+ * @param {StatisticalTemplate} template 
+ */
 export function testDamageRoll(template: StatisticalTemplate) {
 	if (!template.damage) return;
 	if (Object.keys(template.damage).length === 0) throw new Error("[error.emptyObject]");
@@ -173,8 +206,7 @@ export function testDamageRoll(template: StatisticalTemplate) {
 
 /**
  * Ensure the embeds are present
- * @param message {Message}
- * @returns 
+ * @param {Message} message 
  */
 export function ensureEmbed(message?: Message) {
 	const oldEmbeds = message?.embeds[0];
@@ -182,6 +214,10 @@ export function ensureEmbed(message?: Message) {
 	return oldEmbeds;
 }
 
+/**
+ * Test all combinaison with generated random value
+ * @param {StatisticalTemplate} template 
+ */
 export function testCombinaison(template: StatisticalTemplate) {
 	if (!template.statistics) return;
 	const onlyCombinaisonStats = Object.fromEntries(Object.entries(template.statistics).filter(([_, value]) => value.combinaison !== undefined));
@@ -211,6 +247,13 @@ export function testCombinaison(template: StatisticalTemplate) {
 	return;
 }
 
+/**
+ * Generate a random stat based on the template and the statistical min and max
+ * @param {number|undefined} total
+ * @param {number | undefined} max 
+ * @param {number | undefined} min 
+ * @returns 
+ */
 export function generateRandomStat(total: number | undefined = 100, max?: number, min?: number) {
 	let randomStatValue = total + 1;
 	while (randomStatValue >= total) {

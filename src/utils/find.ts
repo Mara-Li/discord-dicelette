@@ -1,7 +1,11 @@
 import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
 
 import { setTagsForRoll } from ".";
-
+/**
+ * Find a thread by their data or create it
+ * @param channel {TextChannel}
+ * @param reason {string}
+ */
 export async function findThread(channel: TextChannel, reason?: string) {
 	await channel.threads.fetch();
 	await channel.threads.fetchArchived();
@@ -38,6 +42,13 @@ export async function findThread(channel: TextChannel, reason?: string) {
 	return newThread;
 }
 
+/**
+ * Find a forum channel already existing or creat it
+ * @param forum {ForumChannel}
+ * @param reason {string}
+ * @param thread {ThreadChannel | TextChannel}
+ * @returns 
+ */
 export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel) {
 	const allForumChannel = forum.threads.cache.sort((a, b) => {
 		const aDate = a.createdTimestamp;

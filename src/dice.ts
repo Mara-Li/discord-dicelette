@@ -10,7 +10,10 @@ export const COMMENT_REGEX = /\s+(#|\/{2}|\[|\/\*)(.*)/;
 const SIGN_REGEX =/[><=!]+/;
 const SIGN_REGEX_SPACE = /[><=!]+(\S+)/;
 
-
+/**
+ * Parse the string provided and turn it as a readable dice for dice parser
+ * @param dice {string}
+ */
 export function roll(dice: string): Resultat | undefined{
 	//parse dice string
 	if (!dice.includes("d")) return undefined;
@@ -34,15 +37,27 @@ export function roll(dice: string): Resultat | undefined{
 			value: parseInt(calc, 10),
 		};
 	}
-	const modifier = dice.match(/(\+|\-|%|\/|\^|\*|\*{2})(\d+)/);
+	const modifier = dice.matchAll(/(\+|\-|%|\/|\^|\*|\*{2})(\d+)/gi);
 	let modificator : Modifier | undefined;
-	if (modifier) {
-		modificator = {
-			sign: modifier[1] as Sign,
-			value: parseInt(modifier[2], 10),
-		};
-	}
-
+	for (const mod of modifier) {
+		//calculate the modifier if multiple
+		if (modificator) {
+			const sign = modificator.sign;
+			let value = modificator.value;
+			if (sign)
+				value = calculator(sign, value, parseInt(mod[2], 10));
+			modificator = {
+				sign: mod[1] as Sign,
+				value,
+			};
+		} else {
+			modificator = {
+				sign: mod[1] as Sign,
+				value: parseInt(mod[2], 10),
+			};
+		}
+	} 
+	
 	if (dice.match(/\d+?#(.*)/)) {
 		const diceArray = dice.split("#");
 		const numberOfDice = parseInt(diceArray[0], 10);
@@ -75,12 +90,24 @@ export function roll(dice: string): Resultat | undefined{
 		modifier: modificator,
 	};
 }
-
+/**
+ * Evaluate a formula and replace "^" by "**" if any
+ * @param {Sign} sign
+ * @param {number} value 
+ * @param {number} total 
+ * @returns 
+ */
 function calculator(sign: Sign, value: number, total: number): number {
 	if (sign === "^") sign = "**";
 	return evaluate(`${total} ${sign} ${value}`);
 }
 
+/**
+ * Parse the result of the dice to be readable
+ * @param {Resultat} output
+ * @param {TFunction<"translation", undefined>} ul 
+ * @param {failure: number | undefined, success: number | undefined}critical 
+ */
 export function parseResult(output: Resultat, ul: TFunction<"translation", undefined>, critical?: {failure?: number, success?: number}) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
@@ -99,13 +126,11 @@ export function parseResult(output: Resultat, ul: TFunction<"translation", undef
 					total += parseInt(t, 10);
 				}
 			}
-			console.log(output.compare);
 			if (output.modifier) {
 				const {sign, value} = output.modifier;
 				total = calculator(sign as Sign, value, total);
 
 			}
-			console.log(total, output.compare.sign, output.compare.value);
 			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${ul("roll.success")}**` : `**${ul("roll.failure")}**`;
 			if (critical) {
 				if (critical.failure && total === critical.failure) {
@@ -126,12 +151,18 @@ export function parseResult(output: Resultat, ul: TFunction<"translation", undef
 	return dedent(`${comment}${result}`);
 }
 
-function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "≤" | "=" | "" {
+/**
+ * Replace the compare sign as it will invert the result for a better reading
+ * As the comparaison is after the total (like 20>10)
+ * @param {Compare} compare 
+ * @param {number} total
+ */
+function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "≤" | "=" | "!=" | "==" | "" {
 	//as the comparaison value is AFTER the total, we need to invert the sign to have a good comparaison string
 	const {sign, value} = compare;
 	const success = eval(`${total} ${sign} ${value}`);
 	if (success) {
-		return sign.replace(">=", "≥").replace("<=", "≤") as "<" | ">" | "≥" | "≤" | "=" | "";
+		return sign.replace(">=", "≥").replace("<=", "≤") as "<" | ">" | "≥" | "≤" | "=" | "" | "!=" | "==";
 	}
 	switch (sign) {
 	case "<":
@@ -144,6 +175,10 @@ function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "
 		return "≥";
 	case "=":
 		return "=";
+	case "!=":
+		return "!=";
+	case "==":
+		return "==";
 	default:
 		return "";
 	}

@@ -1,25 +1,34 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder, TextChannel } from "discord.js";
+import i18next from "i18next";
 
 import { createDiceEmbed, createStatsEmbed } from "../database";
-import { ln } from "../localizations";
+import { cmdLn,ln } from "../localizations";
 import { filterChoices, title } from "../utils";
 import { getGuildData, getUserData } from "../utils/db";
 import { getEmbeds } from "../utils/parse";
 
+const t = i18next.getFixedT("en");
+
 export const displayUser = {
 	data: new SlashCommandBuilder()
-		.setName("display")
-		.setDescription("Display user's stats")
+		.setName(t("display.title"))
+		.setDescription(t("display.description"))
+		.setNameLocalizations(cmdLn("display.title"))
+		.setDescriptionLocalizations(cmdLn("display.description"))
 		.addUserOption(option =>
 			option
-				.setName("user")
-				.setDescription("The user to display")
+				.setName(t("display.userLowercase"))
+				.setNameLocalizations(cmdLn("display.userLowercase"))
+				.setDescription(t("display.user"))
+				.setDescriptionLocalizations(cmdLn("display.user"))
 				.setRequired(false)
 		)
 		.addStringOption(option =>
 			option
-				.setName("chara_name")
-				.setDescription("The character name to display")
+				.setName(t("common.character"))
+				.setNameLocalizations(cmdLn("common.character"))
+				.setDescription(t("display.character"))
+				.setDescriptionLocalizations(cmdLn("display.character"))
 				.setRequired(false)
 				.setAutocomplete(true)
 		),	
@@ -29,7 +38,7 @@ export const displayUser = {
 		const guildData = getGuildData(interaction);
 		if (!guildData) return;
 		let choices: string[] = [];
-		if (fixed.name === "chara_name") {
+		if (fixed.name === t("common.character")) {
 			//get ALL characters from the guild
 			const allCharactersFromGuild = Object.values(guildData.user)
 				.map((data) => data.map((char) => char.charName ?? ""))
@@ -51,8 +60,8 @@ export const displayUser = {
 			await interaction.reply(ul("error.noTemplate"));
 			return;
 		}
-		const user = options.getUser("user");
-		const charName = options.getString("chara_name")?.toLowerCase();
+		const user = options.getUser(t("display.userLowercase"));
+		const charName = options.getString(t("common.character"))?.toLowerCase();
 		let charData: { [key: string]: {
 			charName?: string;
 			messageId: string;

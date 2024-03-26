@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Message, ModalSubmitInteraction, TextChannel } from "discord.js";
 import { TFunction } from "i18next";
-import removeAccents from "remove-accents";
 
 import { createTemplateEmbed } from "../database";
 import { GuildData, StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
-import { title } from ".";
+import { removeEmojiAccents, title } from ".";
 
 /**
  * Parse the embed fields from an interaction
@@ -72,7 +71,7 @@ export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "st
 }
 
 /**
- * Parse the embed fields 
+ * Parse the embed fields and remove the backtick if any
  * @param embed {Embed}
  * @returns { [name: string]: string }
  */
@@ -80,7 +79,7 @@ export function parseEmbedFields(embed: Embed): {[name: string]: string} {
 	const fields = embed.fields;
 	const parsedFields: {[name: string]: string} = {};
 	for (const field of fields) {
-		parsedFields[field.name] = field.value;
+		parsedFields[removeBacktick(field.name)] = removeBacktick(field.value);
 	}
 	return parsedFields;
 }
@@ -126,19 +125,19 @@ export async function bulkEditTemplateUser(guildData: GuildData, interaction: Co
 				if (template.diceType)
 					newEmbed.addFields({
 						name: ul("common.dice"),
-						value: template.diceType,
+						value: `\`${template.diceType}\``,
 						inline: true
 					});
 				if (template.critical?.success) 
 					newEmbed.addFields({
 						name: ul("roll.critical.success"),
-						value: template.critical.success.toString(),
+						value: `\`${template.critical.success}\``,
 						inline: true
 					});
 				if (template.critical?.failure) 
 					newEmbed.addFields({
 						name: ul("roll.critical.failure"),
-						value: template.critical.failure.toString(),
+						value: `\`${template.critical.failure}\``,
 						inline: true
 					});
 				const listEmbed = getEmbedsList(ul, {which: "template", embed: newEmbed}, userMessages);
@@ -162,10 +161,10 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 	let total = templateData.total;
 	if (!templateData.statistics) return { combinaisonFields, stats };
 	for (const [key, value] of Object.entries(templateData.statistics)) {
-		if (!interaction.fields.fields.has(key) && !value.combinaison) continue;
-		const name = removeAccents(key).toLowerCase().replace("✏️", "").trim();
+		const name = removeEmojiAccents(key);
+		if (!interaction.fields.fields.has(name) && !value.combinaison) continue;
 		if (value.combinaison) {
-			combinaisonFields[name] = value.combinaison;
+			combinaisonFields[key] = value.combinaison;
 			continue;
 		}
 		const statValue = interaction.fields.getTextInputValue(name);
@@ -181,8 +180,18 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 			if (total < 0) {
 				const exceeded = total * -1;
 				throw new Error(ul("error.totalExceededBy", {value: name, max: exceeded}));
-			} else stats[name] = num;
-		} else stats[name] = num;
+			} else stats[key] = num;
+		} else stats[key] = num;
 	}
 	return { combinaisonFields, stats };
+}
+
+/**
+ * Remove backtick in value
+ * Used when parsing the user embed
+ * @param text {string}
+ * @returns 
+ */
+export function removeBacktick(text: string) {
+	return text.replace(/`/g, "");
 }

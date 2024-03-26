@@ -61,6 +61,12 @@ export default (client: Client): void => {
 	});
 };
 
+/**
+ * Switch for modal submission
+ * @param interaction {ModalSubmitInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param interactionUser {User}
+ */
 async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	if (interaction.customId.includes("damageDice")) {
 		await submit_damageDice(interaction, ul, interactionUser);
@@ -75,6 +81,13 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"t
 	} 
 }
 
+/**
+ * Switch for button interaction
+ * @param interaction {ButtonInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param interactionUser {User}
+ * @param template {StatisticalTemplate}
+ */
 async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User, template: StatisticalTemplate) {
 	if (interaction.customId === "register")
 		await open_register_user(interaction, template, interactionUser, ul);
@@ -90,6 +103,13 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 	else if (interaction.customId === "edit_dice") await start_edit_dice(interaction, ul, interactionUser);
 }
 
+/**
+ * Interaction when the cancel button is pressed
+ * Also prevent to cancel by user not autorized
+ * @param interaction {ButtonInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param interactionUser {User}
+ */
 async function cancel(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;

@@ -1,8 +1,8 @@
-import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
 import { roll } from "../../dice";
-import { cleanSkillName, cleanStatsName, parseStatsString, title } from "../../utils";
+import { parseStatsString, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { registerUser } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
@@ -61,7 +61,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	const newEmbedDice: APIEmbedField[] = [];
 	for (const [skill, dice] of Object.entries(dices)) {
 		//test if dice is valid
-		if (newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(skill))) continue;
+		if (newEmbedDice.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(skill))) continue;
 		if (dice === "X" 
 			|| dice.trim().length ===0 
 			|| dice === "0" ) {
@@ -91,7 +91,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	if (oldDice) {
 		for (const field of oldDice) {
 			const name = field.name.toLowerCase();
-			if (!newEmbedDice.find(field => cleanStatsName(field.name) === cleanStatsName(name))) {
+			if (!newEmbedDice.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(name))) {
 			//register the old value
 				newEmbedDice.push({
 					name: title(name),
@@ -107,7 +107,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		const name = field.name.toLowerCase();
 		const dice = field.value;
 		if (
-			fieldsToAppend.find(f => cleanSkillName(f.name) === cleanSkillName(name)) 
+			fieldsToAppend.find(f => removeEmojiAccents(f.name) === removeEmojiAccents(name)) 
 			|| dice === "X" 
 			|| dice.trim().length ===0 
 			|| dice === "0" ) continue;
@@ -136,7 +136,16 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
 	await interaction.reply({ content: ul("embeds.edit.dice"), ephemeral: true });
+	await sendLogs(ul("logs.dice.edit", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
 }
+
+/**
+ * Start the showEditDice when the button is interacted
+ * It will also verify if the user can edit their dice 
+ * @param interaction {ButtonInteraction}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param interactionUser {User}
+ */
 export async function start_edit_dice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;

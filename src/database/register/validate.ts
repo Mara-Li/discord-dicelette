@@ -4,7 +4,7 @@ import { TFunction } from "i18next";
 
 import { StatisticalTemplate, UserData } from "../../interface";
 import { ln } from "../../localizations";
-import { cleanSkillName, cleanStatsName, repostInThread, title } from "../../utils";
+import {removeEmoji, removeEmojiAccents, repostInThread, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
 import { createEmbedsList, parseEmbedFields } from "../../utils/parse";
 import { ensureEmbed } from "../../utils/verify_template";
@@ -74,8 +74,8 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				diceEmbed = createDiceEmbed(ul);
 			}
 			diceEmbed.addFields({
-				name: title(cleanSkillName(field.name)),
-				value: field.value,
+				name: title(removeEmojiAccents(field.name)),
+				value: `\`${field.value}\``,
 				inline: true,
 			
 			});
@@ -84,7 +84,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				statsEmbed = createStatsEmbed(ul);
 			}
 			statsEmbed.addFields({
-				name: title(cleanStatsName(field.name)),
+				name: title(removeEmoji(field.name)),
 				value: field.value,
 				inline: true,
 			
@@ -94,7 +94,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: {[name: string]: number} = {};
 	for (const stat of templateStat) {
-		stats[stat] = parseInt(parsedFields[cleanStatsName(stat)], 10);
+		stats[stat] = parseInt(parsedFields[removeEmojiAccents(stat)], 10);
 	}
 	const damageFields = oldEmbeds.fields.filter(field => field.name.startsWith("🔪"));
 	let templateDamage: {[name: string]: string} | undefined = undefined;
@@ -103,7 +103,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		templateDamage = {};
 		
 		for (const damage of damageFields) {
-			templateDamage[cleanSkillName(damage.name)] = damage.value;
+			templateDamage[removeEmojiAccents(damage.name)] = damage.value;
 		}
 		if (template.damage)
 			for (const [name, dice] of Object.entries(template.damage)) {
@@ -113,7 +113,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				}
 				diceEmbed.addFields({
 					name: `${name}`,
-					value: dice,
+					value: `\`${dice}\``,
 					inline: true,
 				});
 			}
@@ -138,20 +138,20 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		if (template.diceType)
 			templateEmbed.addFields({
 				name: ul("common.dice"),
-				value: template.diceType,
+				value: `\`${template.diceType}\``,
 				inline: true,
 			});
 		if (template.critical?.success){
 			templateEmbed.addFields({
 				name: ul("roll.critical.success"),
-				value: template.critical.success.toString(),
+				value: `\`${template.critical.success}\``,
 				inline: true,
 			});	
 		}
 		if (template.critical?.failure){
 			templateEmbed.addFields({
 				name: ul("roll.critical.failure"),
-				value: template.critical.failure.toString(),
+				value: `\`${template.critical.failure}\``,
 				inline: true,
 			});	
 		}

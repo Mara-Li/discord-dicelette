@@ -5,9 +5,14 @@ import removeAccents from "remove-accents";
 
 import { GuildData, StatisticalTemplate, UserData } from "../interface";
 import { ln } from "../localizations";
-import { getEmbeds, parseEmbedFields } from "./parse";
+import {removeEmojiAccents } from ".";
+import { getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
 import { ensureEmbed, verifyTemplateValue } from "./verify_template";
 
+/**
+ * Get the guild template when clicking on the "registering user" button or when submiting
+ * @param interaction {ButtonInteraction}
+ */
 export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
 	const template = interaction.message?.attachments.first();
 	if (!template) return;
@@ -15,6 +20,11 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
 	return verifyTemplateValue(res);
 }
 
+/**
+ * Get the guildDate from database when interacting with the bot
+ * @param interaction {BaseInteraction}
+ * @returns 
+ */
 export function getGuildData(interaction: BaseInteraction): GuildData|undefined {
 	if (!interaction.guild) return;
 	const guildData = interaction.guild.id;
@@ -24,6 +34,10 @@ export function getGuildData(interaction: BaseInteraction): GuildData|undefined 
 	return parsedData[guildData] as GuildData;
 }
 
+/**
+ * Get the statistical Template using the database templateID information
+ * @param interaction {ButtonInteraction | ModalSubmitInteraction}
+ */
 export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSubmitInteraction) {
 	if (!interaction.guild) return;
 	const guild = interaction.guild;
@@ -41,12 +55,24 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 
 }
 
+/**
+ * Get the userData from database
+ * @param guildData {GuildData}
+ * @param userId {string}
+ */
 export function getUserData(guildData: GuildData, userId: string) {
 	if (!guildData.user) return undefined;
 	return guildData.user[userId];
 }
 
-
+/**
+ * Create the UserData starting from the guildData and using a userId
+ * @param guildData {GuildData}
+ * @param userId {string}
+ * @param guild {Guild}
+ * @param interaction {BaseInteraction}
+ * @param charName {string}
+ */
 export async function getUserFromMessage(guildData: GuildData, userId: string, guild: Guild, interaction: BaseInteraction, charName?: string) {
 	const ul = ln(interaction.locale);
 	const userData = getUserData(guildData, userId);
@@ -92,6 +118,10 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 	}
 }
 
+/**
+ * Read and parse the database and return the database and parsedDb with guildID
+ * @param guildID {string}
+ */
 export function readDB(guildID: string) {
 	const database = fs.readFileSync("database.json", "utf-8");
 	const parsedDatabase = JSON.parse(database);
@@ -100,6 +130,17 @@ export function readDB(guildID: string) {
 	return {db, parsedDatabase};
 }
 
+/**
+ * Register an user in the database
+ * @param userID {string}
+ * @param interaction {BaseInteraction}
+ * @param msgId {string}
+ * @param thread {ThreadChannel}
+ * @param charName {string|undefined}
+ * @param damage {string[]|undefined}
+ * @param deleteMsg {boolean=true} delete the old message if needed (overwriting user)
+ * @returns 
+ */
 export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: ThreadChannel, charName?: string, damage?: string[], deleteMsg: boolean = true) {
 	if (!interaction.guild) return;
 	const guildData = getGuildData(interaction);
@@ -143,6 +184,12 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 	fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
 }
 
+/**
+ * Get the userData from the embed
+ * @param message {Message}
+ * @param ul {TFunction<"translation", undefined>}
+ * @param first {boolean=false} Indicate it the registering of the user or an edit
+ */
 export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>, first: boolean = false) {
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
@@ -156,7 +203,7 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
-			stats[stat.name.replace("✏️", "").toLowerCase().trim()] = parseInt(stat.value, 10);
+			stats[removeEmojiAccents(stat.name)] = parseInt(removeBacktick(stat.value), 10);
 		}
 	}
 	user.stats = stats;
@@ -165,7 +212,7 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 	if (damageFields) {
 		templateDamage = {};
 		for (const damage of damageFields) {
-			templateDamage[damage.name.replace("🔪", "").trim().toLowerCase()] = damage.value;
+			templateDamage[removeEmojiAccents(damage.name)] = removeBacktick(damage.value);
 		}
 	}
 	const templateEmbed = first ? userEmbed : getEmbeds(ul, message, "template");

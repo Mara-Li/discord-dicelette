@@ -115,7 +115,6 @@ export const newScene = {
 			});
 
 			const threadMention = channelMention(newThread.id);
-			console.log(threadMention);
 			const reply = await interaction.reply({ content: ul("scene.interaction", {scene: threadMention}) });
 			deleteAfter(reply, 180000);
 			const rollID = allCommands.findKey(command => command.name === "roll");

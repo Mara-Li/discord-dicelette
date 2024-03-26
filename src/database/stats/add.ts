@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRo
 
 import { StatisticalTemplate } from "../../interface";
 import { lError,ln } from "../../localizations";
-import { title } from "../../utils";
+import { removeEmojiAccents, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
 import { getStatistiqueFields } from "../../utils/parse";
 import { ensureEmbed, evalCombinaison } from "../../utils/verify_template";
@@ -13,7 +13,7 @@ import { ensureEmbed, evalCombinaison } from "../../utils/verify_template";
  * @param template {StatisticalTemplate}
  * @param page {number}
  */
-export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page = 2) {
+export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page: number = 2) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = ensureEmbed(interaction.message);
@@ -35,13 +35,13 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				inline: true,
 			});
 		}
-		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison) : [];
+		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison).map(name => removeEmojiAccents(name)) : [];
 		const embedObject = embed.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;
 		const parsedFields: { [name: string]: string; } = {};
 		for (const field of fields) {
-			parsedFields[field.name.toLowerCase().replace("✏️", "").trim()] = field.value.toLowerCase();
+			parsedFields[removeEmojiAccents(field.name)] = field.value.toLowerCase();
 		}
 
 		const embedStats = Object.fromEntries(Object.entries(parsedFields).filter(
@@ -89,14 +89,16 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page: number = 1) {
 	if (!template.statistics) return;
 	const ul = ln(interaction.locale as Locale);
-	const statsWithoutCombinaison = Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison) ?? [];
+	const statsWithoutCombinaison = Object.keys(template.statistics).filter(stat => {
+		return !template.statistics?.[stat]?.combinaison;
+	}) ?? [];
 	const nbOfPages = Math.ceil(statsWithoutCombinaison.length / 5) >= 1 ? Math.ceil(statsWithoutCombinaison.length / 5) : page;
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
 		.setTitle(ul("modals.steps", { page, max: nbOfPages + 1 }));
 	let statToDisplay = statsWithoutCombinaison;
 	if (stats && stats.length > 0) {
-		statToDisplay = statToDisplay.filter(stat => !stats.includes(stat));
+		statToDisplay = statToDisplay.filter(stat => !stats.includes(removeEmojiAccents(stat)));
 		if (statToDisplay.length === 0) {
 			//remove button
 			const button = registerDmgButton(ul);
@@ -105,8 +107,10 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		}
 	}
 	const statsToDisplay = statToDisplay.slice(0, 4);
+	const statisticsLowerCase = Object.fromEntries(Object.entries(template.statistics).map(([key, value]) => [removeEmojiAccents(key), value]));
 	for (const stat of statsToDisplay) {
-		const value = template.statistics[stat];
+		const cleanedName = removeEmojiAccents(stat);
+		const value = statisticsLowerCase[cleanedName];
 		if (value.combinaison) continue;
 		let msg = "";
 		if (value.min && value.max)
@@ -115,7 +119,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		else if (value.max) msg = ul("modals.enterValue.maxOnly", { max: value.max });
 		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()
-				.setCustomId(stat)
+				.setCustomId(cleanedName)
 				.setLabel(stat)
 				.setPlaceholder(msg)
 				.setRequired(true)

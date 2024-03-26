@@ -127,12 +127,24 @@ export const rollForUser = {
 			if (override) {
 				const SIGN_REGEX =/(?<sign>[><=!]+)(?<comparator>(\d+))/;
 				const diceMatch = SIGN_REGEX.exec(dice);
-				dice = diceMatch?.groups?.sign && diceMatch?.groups?.comparator ? dice.replace(SIGN_REGEX, override) : `${dice}${override}`;
+				const overrideMatch = SIGN_REGEX.exec(override);
+				if (diceMatch && overrideMatch && diceMatch.groups && overrideMatch.groups) {
+					dice = dice.replace(diceMatch[0], overrideMatch[0]);
+				} else if (!diceMatch && overrideMatch) {
+					dice += overrideMatch[0];
+				}
 			}
 			const charNameComments = optionChar ? ` • **@${title(optionChar)}**` : "";
-			comments += `__[${title(statistique)}]__${charNameComments}`;
+			comments += ` __[${title(statistique)}]__${charNameComments}`;
 			const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
-			const roll = `${replaceFormulaInDice(dice)}${modificatorString} ${comments}`;
+			const comparatorMatch = (/(?<sign>[><=!]+)(?<comparator>(\d+))/).exec(dice);
+			let comparator = "";
+			if (comparatorMatch) {
+				//remove from dice
+				dice = dice.replace(comparatorMatch[0], "");
+				comparator = comparatorMatch[0];
+			}
+			const roll = `${replaceFormulaInDice(dice)}${modificatorString}${comparator} ${comments}`;
 			await rollWithInteraction(interaction, roll, interaction.channel, template.critical);
 		}
 		catch (error) {

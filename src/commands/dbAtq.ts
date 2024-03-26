@@ -113,7 +113,7 @@ export const dmgRoll = {
 				return;
 			}
 			const charNameComments = charOptions ? ` • **@${title(charOptions)}**` : "";
-			comments += `__[${title(atq)}]__${charNameComments}`;
+			comments += ` __[${title(atq)}]__${charNameComments}`;
 			//search dice
 			let dice = userStatistique.damage?.[atq.toLowerCase()];
 			if (!dice) {
@@ -123,7 +123,13 @@ export const dmgRoll = {
 			dice = generateStatsDice(dice, userStatistique.stats);
 			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 			const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
-			const roll = `${dice}${modificatorString} ${comments}`;
+			const comparatorMatch = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(dice);
+			let comparator = "";
+			if (comparatorMatch) {
+				dice = dice.replace(comparatorMatch[0], "");
+				comparator = comparatorMatch[0];
+			}
+			const roll = `${dice}${modificatorString}${comparator} ${comments}`;
 			await rollWithInteraction(interaction, roll, interaction.channel);
 		} catch (error) {
 			console.error(error);

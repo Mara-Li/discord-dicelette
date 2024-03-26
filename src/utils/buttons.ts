@@ -1,7 +1,13 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { TFunction } from "i18next";
 
-
+/**
+ * Button to edit the user embed character sheet
+ * By default, only add the "add dice" button
+ * @param ul {TFunction<"translation", undefined>}
+ * @param stats {boolean} Only add it if true
+ * @param dice {boolean} Only add the edit dice button it if true
+ */
 export function editUserButtons(ul: TFunction<"translation", undefined>, stats?: boolean, dice?: boolean) {
 	const addDice = new ButtonBuilder()
 		.setCustomId("add_dice")
@@ -27,8 +33,10 @@ export function editUserButtons(ul: TFunction<"translation", undefined>, stats?:
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(components);
 }
 
-
-
+/**
+ * Add the cancel and continue button when registering user and their are multiple page
+ * @param ul {TFunction<"translation", undefined>}
+ */
 export function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 	const continueButton = new ButtonBuilder()
 		.setCustomId("continue")
@@ -41,6 +49,10 @@ export function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 	return new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton]);
 }
 
+/**
+ * Add the button for validating an user
+ * @param ul {TFunction<"translation", undefined>}
+ */
 export function validateCancelButton(ul: TFunction<"translation", undefined>) {
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
@@ -53,6 +65,10 @@ export function validateCancelButton(ul: TFunction<"translation", undefined>) {
 	return new ActionRowBuilder<ButtonBuilder>().addComponents([validateButton, cancelButton]);
 }
 
+/**
+ * Button when registering the user, adding the "add dice" button
+ * @param ul {TFunction<"translation", undefined>}
+ */
 export function registerDmgButton(ul: TFunction<"translation", undefined>) {
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
