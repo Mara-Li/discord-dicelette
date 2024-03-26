@@ -73,7 +73,7 @@ export function getUserData(guildData: GuildData, userId: string) {
  * @param interaction {BaseInteraction}
  * @param charName {string}
  */
-export async function getUserFromMessage(guildData: GuildData, userId: string, guild: Guild, interaction: BaseInteraction, charName?: string) {
+export async function getUserFromMessage(guildData: GuildData, userId: string, guild: Guild, interaction: BaseInteraction, charName?: string, integrateCombinaison: boolean = true) {
 	const ul = ln(interaction.locale);
 	const userData = getUserData(guildData, userId);
 	if (!userData) return;
@@ -104,7 +104,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId);
-		return getUserByEmbed(message, ul);
+		return getUserByEmbed(message, ul, undefined, integrateCombinaison);
 	} catch (error) {
 		const index = userData.findIndex(char => char.messageId === userMessageId);
 		userData.splice(index, 1);
@@ -190,7 +190,7 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
  * @param ul {TFunction<"translation", undefined>}
  * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
-export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>, first: boolean = false) {
+export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>, first: boolean = false, integrateCombinaison: boolean = true) {
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
@@ -203,7 +203,15 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
-			stats[removeEmojiAccents(stat.name)] = parseInt(removeBacktick(stat.value), 10);
+			const value = parseInt(removeBacktick(stat.value), 10);
+			if (isNaN(value)) {
+				//it's a combinaison 
+				//remove the `x` = text;
+				const combinaison = stat.value.split("=")[1].trim();
+				if (integrateCombinaison)
+					stats[removeEmojiAccents(stat.name)] = parseInt(combinaison, 10);
+			}
+			else stats[removeEmojiAccents(stat.name)] = value;
 		}
 	}
 	user.stats = stats;

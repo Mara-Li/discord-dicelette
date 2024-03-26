@@ -7,7 +7,7 @@ import path from "path";
 import { UserData } from "../interface";
 import { cmdLn, ln } from "../localizations";
 import { filterChoices, title } from "../utils";
-import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
+import { getUserData, getUserFromMessage,guildInteractionData } from "../utils/db";
 
 function chart(userData : UserData, lineColor?: string, fillColor?: string) {
 	if (!lineColor) lineColor = "#FF0000";
@@ -128,7 +128,7 @@ export const graph = {
 	async autocomplete(interaction: AutocompleteInteraction): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
-		const guildData = getGuildData(interaction);
+		const guildData = guildInteractionData(interaction);
 		if (!guildData) return;
 		let choices: string[] = [];
 		if (fixed.name === t("common.character")) {
@@ -147,7 +147,7 @@ export const graph = {
 	},
 	async execute(interaction: CommandInteraction) {
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const guildData = getGuildData(interaction);
+		const guildData = guildInteractionData(interaction);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
 			await interaction.reply(ul("error.noTemplate"));
@@ -190,11 +190,18 @@ export const graph = {
 			if (!interaction.guild || !interaction.channel) return;
 			const userId =  user?.id ?? interaction.user.id;
 			const charName = charData[userId].charName;
-			const userStatistique = await getUserFromMessage(guildData, userId, interaction.guild, interaction, charName);
-			if (!userStatistique) {
+			const userStatistique = await getUserFromMessage(guildData, userId, interaction.guild, interaction, charName, false);
+
+			if (!userStatistique || !userStatistique.stats) {
 				await interaction.reply(ul("error.notRegistered"));
 				return;
 			}
+			//remove combinaison : if the value is NaN => remove it
+			Object.entries(userStatistique.stats).forEach(([key, value]) => {
+				if (isNaN(value)) {
+					delete userStatistique?.stats?.[key];
+				}
+			});
 			const lineColor = options.getString("line");
 			const fillColor = options.getString("background");
 			const color = generateColor(lineColor, fillColor);
@@ -205,7 +212,7 @@ export const graph = {
 			}
 			await interaction.reply({ files: [image] });
 		} catch (error) {
-			await interaction.reply(ul("error.noMessage"));
+			await interaction.reply(ul("error.generic", {e: (error as Error)}));
 		}
 	}
 		
