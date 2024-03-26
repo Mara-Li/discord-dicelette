@@ -101,11 +101,11 @@ export function title(str?: string) {
  */
 export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: UserData, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}) {
 	const channel = interaction.channel;
-	if (!channel ||!(channel instanceof TextChannel)) return;
+	if (!channel ||(channel instanceof CategoryChannel)) return;
 	const guildData = guildInteractionData(interaction);
 	if (!guildData) throw new Error(ul("error.generic", {e: "No server data found in database for this server."}));
 	let thread = await searchUserChannel(guildData, interaction, ul);
-	if (!thread) {
+	if (!thread && channel instanceof TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as AnyThreadChannel | undefined;
 		if (!thread) {
 			thread = await channel.threads.create({
@@ -114,6 +114,9 @@ export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInt
 			}) as AnyThreadChannel;
 			registerManagerID(guildData, interaction, thread.id);
 		}
+	}
+	if (!thread) {
+		throw new Error(ul("error.noThread"));
 	}
 	userTemplate.userName = userTemplate.userName ? userTemplate.userName.toLowerCase() : undefined;
 	const msg = await thread.send({ 

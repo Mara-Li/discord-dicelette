@@ -1,4 +1,4 @@
-import { AnyThreadChannel, BaseInteraction, ButtonInteraction, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
+import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import fs from "fs";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
@@ -42,14 +42,14 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 	if (!interaction.guild) return;
 	const guild = interaction.guild;
 	const guildData = guildInteractionData(interaction);
-	if (!guildData) return;
+	if (!guildData) throw new Error("No guild data");
 	const {channelId, messageId} = guildData.templateID;
 	const channel = await guild.channels.fetch(channelId);
-	if (!channel || !(channel instanceof TextChannel)) return;
+	if (!channel || (channel instanceof CategoryChannel)) return;
 	const message = await channel.messages.fetch(messageId);
-	if (!message) return;
+	if (!message) throw new Error("No message found");
 	const template = message.attachments.first();
-	if (!template) return;
+	if (!template) throw new Error("No template found");
 	const res = await fetch(template.url).then(res => res.json());
 	return verifyTemplateValue(res);
 

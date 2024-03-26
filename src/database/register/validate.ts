@@ -20,7 +20,10 @@ import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "..";
 export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
 	const channel = interaction.channel;
-	if (!channel) return;
+	if (!channel) {
+		throw new Error("No channel found");
+		return;
+	}
 	const userFromField = interaction.fields.getTextInputValue("userID");
 	const user = interaction.guild?.members.cache.find(member => member.id.toLowerCase() === userFromField.toLowerCase() || member.user.username.toLowerCase() === userFromField.toLowerCase());
 	if (!user) {	
@@ -156,7 +159,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			});	
 		}
 	}
-	await interaction?.message?.delete();
+	//await interaction?.message?.delete();
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
 	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: userDataEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false});
 	await interaction.reply({ content: ul("modals.finished"), ephemeral: true });
