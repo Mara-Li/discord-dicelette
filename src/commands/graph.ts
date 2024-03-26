@@ -6,15 +6,15 @@ import path from "path";
 
 import { UserData } from "../interface";
 import { cmdLn, ln } from "../localizations";
-import { filterChoices, title } from "../utils";
+import { filterChoices, removeEmojiAccents, title } from "../utils";
 import { getUserData, getUserFromMessage,guildInteractionData } from "../utils/db";
 
-function chart(userData : UserData, lineColor?: string, fillColor?: string) {
+function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string) {
 	if (!lineColor) lineColor = "#FF0000";
 	if (!fillColor) fillColor = "#FF0000";
 	if (!userData.stats) return;
 	const data = {
-		labels: Object.keys(userData.stats).map(key => title(key)),
+		labels: labels.map(key => title(key)),
 		datasets: [{
 			data: Object.values(userData.stats),
 			fill: true,
@@ -62,7 +62,7 @@ function chart(userData : UserData, lineColor?: string, fillColor?: string) {
 					color: "darkgrey",
 					font: {
 						size: 30,
-						family: "'Jost'",
+						family: "Jost",
 						weight: "700",
 					},
 					display: true,
@@ -78,8 +78,8 @@ function chart(userData : UserData, lineColor?: string, fillColor?: string) {
 		aspectRatio: 1,
 	};
 	const renderer = new ChartJSNodeCanvas({ width: 800, height: 800});
-	renderer.registerFont(fontPath("Jost"), { family: "Jost", weight: "700" });
-	renderer.registerFont(fontPath("Ubuntu"), { family: "Ubuntu" });
+	renderer.registerFont(fontPath("Jost-Regular"), { family: "Jost", weight: "700" });
+	renderer.registerFont(fontPath("Ubuntu-Regular"), { family: "Ubuntu" });
 	return renderer.renderToBuffer({
 		type: "radar",
 		data,
@@ -148,6 +148,7 @@ export const graph = {
 	async execute(interaction: CommandInteraction) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const guildData = guildInteractionData(interaction);
+		console.log(guildData?.templateID.statsName);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
 			await interaction.reply(ul("error.noTemplate"));
@@ -196,16 +197,14 @@ export const graph = {
 				await interaction.reply(ul("error.notRegistered"));
 				return;
 			}
-			//remove combinaison : if the value is NaN => remove it
-			Object.entries(userStatistique.stats).forEach(([key, value]) => {
-				if (isNaN(value)) {
-					delete userStatistique?.stats?.[key];
-				}
-			});
+			const labels = guildData.templateID.statsName;
+			//only keep labels that exists in the user stats
+			const userStatKeys = Object.keys(userStatistique.stats).map(key => removeEmojiAccents(key));
+			const filteredLabels = labels.filter(label => userStatKeys.includes(removeEmojiAccents(label)));
 			const lineColor = options.getString("line");
 			const fillColor = options.getString("background");
 			const color = generateColor(lineColor, fillColor);
-			const image = await imagePersonalized(userStatistique, color.line, color.background);
+			const image = await imagePersonalized(userStatistique, filteredLabels, color.line, color.background);
 			if (!image) {
 				await interaction.reply(ul("error.noMessage"));
 				return;
@@ -240,8 +239,8 @@ function convertHexToRGBA(color: string, alpha?: number) {
 	return `rgba(${parsedColor.rgba.join(", ")})`;
 }
 
-export async function imagePersonalized(stat: UserData, lineColor?: string, fillColor?: string) {
-	const charGraph = await chart(stat, lineColor, fillColor);
+export async function imagePersonalized(stat: UserData, labels: string[], lineColor?: string, fillColor?: string) {
+	const charGraph = await chart(stat, labels, lineColor, fillColor);
 	if (!charGraph) return;
 	return new AttachmentBuilder(charGraph);
 }
