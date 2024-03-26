@@ -1,10 +1,7 @@
 {
   "button": {
-<<<<<<< HEAD
-=======
     "add": {
     },
->>>>>>> dc6287f0911c995c27f7372c5a7b8b19572ee388
     "cancel": "Annuler",
     "continue": "Continuer",
     "dice": "Enregistrer un dé",
@@ -46,8 +43,6 @@
       "statistic": "La statistique à utiliser"
     }
   },
-<<<<<<< HEAD
-=======
   "display": {
     "character": "Le personnage à afficher",
     "description": "Permet d'afficher la fiche d'un joueur/personnage",
@@ -55,15 +50,6 @@
     "user": "L'utilisateur à afficher",
     "userLowercase": "joueur"
   },
-  "edit": {
-    "options": {
-      "field": {
-      },
-      "value": {
-      }
-    }
-  },
->>>>>>> dc6287f0911c995c27f7372c5a7b8b19572ee388
   "embed": {
     "add": {
       "title": "Enregistrement de l'utilisateur"
@@ -89,25 +75,6 @@
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
     "invalidDice": {
       "embeds": "Aucun embed de dé détecté",
-<<<<<<< HEAD
-=======
-      "mustBeGreater": "La valeur {{value}} doit être plus grande que {{min}}",
-      "mustBeLower": "La valeur {{value}} doit être plus petite que {{max}}",
-      "noDamage": "{{atq}} n'est pas enregistré dans {{charName}}.",
-      "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
-      "noEmbed": "Aucun embed trouvé",
-      "noMessage": "Aucun message trouvé.",
-      "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
-      "noTemplate": "Aucun modèle ou channel configuré",
-      "noThread": "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
-      "notRegistered": "Vous n'êtes pas enregistré",
-      "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
-      "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
-      "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
-      "totalExceededBy": "Le total de {{value}} est dépassé de {{max}}",
-      "user": "Utilisateur introuvable",
-      "userNotRegistered": "{{user}} n'est pas enregistré.",
->>>>>>> dc6287f0911c995c27f7372c5a7b8b19572ee388
       "withDice": "Erreur : Dé invalide {{- dice}}",
       "withError": "Erreur : Dé invalide {{- dice}}\n```{{- error}}```"
     },
@@ -170,8 +137,9 @@
   "logs": {
     "description": "Choisir un channel où envoyer les logs d'erreurs",
     "dice": {
-      "add": "{{- user}} a ajouté les dés pour <{{-fiche}}>",
-      "edit": "{{- user}} a modifié les dés de <{{- fiche}}>"
+      "add": "{{- user}} a ajouté les dés pour {{- char}} (dans {{- fiche}})",
+      "edit": "{{- user}} a modifié les dés de {{- char}} (dans {{- fiche}})",
+      "remove": "{{- user}} a supprimé les dés de {{-char}} (dans {{- fiche}})"
     },
     "edit": {
     },
@@ -181,10 +149,10 @@
     },
     "set": "Logs configurés dans le channel {{- channel}}",
     "stat": {
-      "added": "{{- user}} a modifié les statistiques de <{{-fiche}}>"
+      "added": "{{- user}} a modifié les statistiques de {{- char}} (dans {{- fiche}})"
     },
     "stats": {
-      "removed": "{{- user}} a supprimé les statistiques de la fiche <{{- fiche}}>"
+      "removed": "{{- user}} a supprimé les statistiques de {{- char}} (dans {{- fiche}})"
     }
   },
   "modals": {

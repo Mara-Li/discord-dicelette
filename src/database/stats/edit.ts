@@ -6,7 +6,7 @@ import { editUserButtons } from "../../utils/buttons";
 import { getGuildData, getTemplateWithDB } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { ensureEmbed, evalOneCombinaison } from "../../utils/verify_template";
-import { createStatsEmbed } from "..";
+import { createStatsEmbed, getUserNameAndChar } from "..";
 
 /**
  * Validate the stats and edit the embed with the new stats for editing
@@ -96,7 +96,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 
 	const newEmbedStats = createStatsEmbed(ul)
 		.addFields(fieldsToAppend);
-	
+	const {userID, userName} = await getUserNameAndChar(interaction, ul);
 	if (!fieldsToAppend || fieldsToAppend.length === 0) {
 		//stats was removed
 		const {list, exists} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
@@ -104,13 +104,13 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.stats"), ephemeral: true });
-		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
+		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
 	}
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 	await interaction.message.edit({ embeds: list });
 	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
-	await sendLogs(ul("logs.stat.added", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
+	await sendLogs(ul("logs.stat.added", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
 
 }
 

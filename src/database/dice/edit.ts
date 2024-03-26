@@ -123,6 +123,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await interaction.reply({ content: ul("modals.removed.dice"), ephemeral: true });
 		registerUser(userID, interaction, interaction.message.id, thread, userName, undefined, false);
+		await sendLogs(ul("logs.dice.remove", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
 		return;
 	} else if (fieldsToAppend.length > 25) {
 		await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
@@ -136,7 +137,11 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
 	await interaction.reply({ content: ul("embeds.edit.dice"), ephemeral: true });
-	await sendLogs(ul("logs.dice.edit", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
+	await sendLogs(ul("logs.dice.edit", {
+		user: userMention(interaction.user.id), 
+		fiche: interaction.message.url, 
+		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`})
+	, interaction, interaction.guild as Guild);
 }
 
 /**

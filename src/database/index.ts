@@ -2,14 +2,19 @@ import { ButtonInteraction, EmbedBuilder, ModalSubmitInteraction, ThreadChannel 
 import { TFunction } from "i18next";
 
 import { getEmbeds } from "../utils/parse";
+import { ensureEmbed } from "../utils/verify_template";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found
  * @param interaction {ButtonInteraction | ModalSubmitInteraction}
  * @param ul {TFunction<"translation", undefined>}
  */
-export async function getUserNameAndChar(interaction: ButtonInteraction | ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
-	const userEmbed = getEmbeds(ul, interaction?.message ?? undefined, "user");
+export async function getUserNameAndChar(interaction: ButtonInteraction | ModalSubmitInteraction, ul: TFunction<"translation", undefined>, first ?: boolean) {
+	let userEmbed = getEmbeds(ul, interaction?.message ?? undefined, "user");
+	if (!first){
+		const firstEmbed = ensureEmbed(interaction?.message ?? undefined);
+		if (firstEmbed) userEmbed = new EmbedBuilder(firstEmbed.toJSON());
+	}
 	if (!userEmbed) throw new Error(ul("error.noEmbed"));
 	const userID = userEmbed.toJSON().fields?.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "");
 	if (!userID) throw new Error(ul("error.user"));

@@ -1,6 +1,7 @@
 {
   "button": {
-    "add": {},
+    "add": {
+    },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -42,8 +43,6 @@
       "statistic": "The statistic to use"
     }
   },
-<<<<<<< HEAD
-=======
   "display": {
     "character": "The character to display",
     "description": "Allows you to display the profile of a player/character",
@@ -51,21 +50,13 @@
     "user": "The user to display",
     "userLowercase": "player"
   },
-  "edit": {
-    "options": {
-      "field": {
-      },
-      "value": {
-      }
-    }
-  },
->>>>>>> dc6287f0911c995c27f7372c5a7b8b19572ee388
   "embed": {
     "add": {
       "title": "User registration"
     },
     "dice": "Skill Dice",
-    "edit": {},
+    "edit": {
+    },
     "stats": "Statistics",
     "template": "Model",
     "user": "Registered player"
@@ -83,6 +74,7 @@
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
     "invalidDice": {
+      "embeds": "No die embeds detected",
       "withDice": "Error: Invalid die {{- dice}}",
       "withError": "Error: Invalid die {{- dice}}\n\n```{{- error}}```"
     },
@@ -145,8 +137,9 @@
   "logs": {
     "description": "Choose a channel where to send error logs",
     "dice": {
-      "add": "{{- user}} added the dice for <{{-fiche}}>",
-      "edit": "{{- user}} modified the dice of <{{- fiche}}>"
+      "add": "{{- user}} added the dice for {{- user}} (in {{- fiche}})",
+      "edit": "{{- user}} modified the dice of {{- user}} (in {{- fiche}})",
+      "remove": "{{- user}} deleted the dice from {{-char}} (in {{- fiche}})"
     },
     "edit": {
     },
@@ -156,10 +149,10 @@
     },
     "set": "Logs configured in channel {{- channel}}",
     "stat": {
-      "added": "{{- user}} modified the statistics of <{{-fiche}}>"
+      "added": "{{- user}} modified the statistics of {{- user}} (in {{- fiche}})"
     },
     "stats": {
-      "removed": "{{- user}} deleted the statistics of the sheet <{{- fiche}}>"
+      "removed": "{{- user}} deleted the statistics of the sheet {{- user}} (in {{- fiche}})"
     }
   },
   "modals": {
@@ -172,15 +165,11 @@
       "description": "Enter your character's name",
       "name": "Character name"
     },
-<<<<<<< HEAD
-    "dice": {},
-=======
     "dice": {
       "name": "Name",
       "placeholder": "Enter a valid die",
       "value": "Value"
     },
->>>>>>> dc6287f0911c995c27f7372c5a7b8b19572ee388
     "edit": {
       "dice": "⚠ Respect the syntax. Delete with X or 0.",
       "stats": "⚠ Suivez la syntaxe. Supprimer avec X."
@@ -198,7 +187,8 @@
       "stats": "The statistics have been deleted"
     },
     "steps": "User Registration - Page {{- page}}/{{- max}}",
-    "template": {},
+    "template": {
+    },
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
       "name": "user"

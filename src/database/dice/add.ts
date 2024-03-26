@@ -125,6 +125,8 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		acc[field.name] = field.value;
 		return acc;
 	}, {} as {[name: string]: string});
+	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul, first);
+
 	if (!first) {
 		const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
 		if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed
@@ -135,8 +137,6 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		allEmbeds.push(diceEmbed);
 		if (templateEmbed) allEmbeds.push(templateEmbed);
 		const components = editUserButtons(ul, statsEmbed ? true: false, true);
-		const { userID, userName, thread } = await getUserNameAndChar(interaction, ul);
-
 		if (damageName && Object.keys(damageName).length > 25) {
 			await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
 			return;
@@ -144,7 +144,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 		registerUser(userID, interaction, interaction.message.id, thread, userName, damageName ? Object.keys(damageName) : undefined, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
-		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
+		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
 		return;
 	}
 	if (damageName && Object.keys(damageName).length > 25) {
@@ -156,6 +156,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	const components = registerDmgButton(ul);
 	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
 	await interaction.reply({ content: ul("modals.added.dice"), ephemeral: true });
-	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url}), interaction, interaction.guild as Guild);
+
+	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
 	return;
 }
