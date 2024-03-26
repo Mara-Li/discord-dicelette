@@ -130,6 +130,24 @@
       }
     }
   },
+  "graph": {
+    "bg": {
+      "description": "Background color of the chart. By default: #0e47b2",
+      "name": "background"
+    },
+    "line": {
+      "description": "Line color. By default: #0e47b2",
+      "name": "line"
+    },
+    "max": {
+      "description": "Maximum value for chart generation",
+      "name": "max"
+    },
+    "min": {
+      "description": "Minimum value for graph generation",
+      "name": "min"
+    }
+  },
   "help": {
     "description": "Display help",
     "message": ":game_die: **Dice Roller** :game_die:\n-> Find the *bot* on [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.md>)\n\n## Usage\n- </roll:{{- rollId}}> : Roll a die\n- </scene:{{- sceneId}}> : Creates a new thread for dice. This will archive all previous threads.\n\nYou can also create a \"time bubble\" with the parameters `/scene tempo:True`. By default, the thread name will be the current date.\n\nYou can use the bot directly in a message (**without using slash commands**), with :\n- __A direct die__ : `des`, like `d6` or `2d6`.\n- __An indirect die__ : `my message [dice]`, like `*Phibi jumps on Wumpus and inflicts [2d6] damage*`.\n- __A semi-direct die__: `1d100 my message`, as `1d100 Phibi jumps on Wumpus and inflicts damage`.\n\n## Dice notation\n[See documentation for dice notation](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nThe bot also supports:\n- [Dice groups](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Comments](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Math](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- As well as \"bulk rolls\" (throwing several dice at the same time) with the following notation: `[number of dice]#[dice]`, for example `2#d6` to throw 2 6-sided dice.of dice]#",

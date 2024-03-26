@@ -1,4 +1,4 @@
-import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
+import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import fs from "fs";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
@@ -38,7 +38,7 @@ export function guildInteractionData(interaction: BaseInteraction): GuildData|un
  * Get the statistical Template using the database templateID information
  * @param interaction {ButtonInteraction | ModalSubmitInteraction}
  */
-export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSubmitInteraction) {
+export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSubmitInteraction | CommandInteraction) {
 	if (!interaction.guild) return;
 	const guild = interaction.guild;
 	const guildData = guildInteractionData(interaction);

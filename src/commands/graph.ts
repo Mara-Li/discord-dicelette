@@ -7,9 +7,9 @@ import path from "path";
 import { UserData } from "../interface";
 import { cmdLn, ln } from "../localizations";
 import { filterChoices, removeEmojiAccents, title } from "../utils";
-import { getUserData, getUserFromMessage,guildInteractionData } from "../utils/db";
+import { getTemplateWithDB, getUserData, getUserFromMessage,guildInteractionData } from "../utils/db";
 
-function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string) {
+async function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string, min?: number, max?: number) {
 	if (!lineColor) lineColor = "#FF0000";
 	if (!fillColor) fillColor = "#FF0000";
 	if (!userData.stats) return;
@@ -68,6 +68,8 @@ function chart(userData : UserData, labels: string[], lineColor?: string, fillCo
 					display: true,
 					centerPointLabels: false,
 				},
+				suggestedMin: min,
+				suggestedMax: max,
 			},
 		},
 		plugins: {
@@ -80,7 +82,7 @@ function chart(userData : UserData, labels: string[], lineColor?: string, fillCo
 	const renderer = new ChartJSNodeCanvas({ width: 800, height: 800});
 	renderer.registerFont(fontPath("Jost-Regular"), { family: "Jost", weight: "700" });
 	renderer.registerFont(fontPath("Ubuntu-Regular"), { family: "Ubuntu" });
-	return renderer.renderToBuffer({
+	return await renderer.renderToBuffer({
 		type: "radar",
 		data,
 		options
@@ -116,13 +118,31 @@ export const graph = {
 				.setAutocomplete(true)
 		)
 		.addStringOption((option) => option
-			.setName("line")
-			.setDescription("Couleur des lignes. Par défaut: #0e47b2")
+			.setName(t("graph.line.name"))
+			.setDescription(t("graph.line.description"))
+			.setDescriptionLocalizations(cmdLn("graph.line.description"))
+			.setNameLocalizations(cmdLn("graph.line.name"))
 			.setRequired(false)
 		)
+		.addNumberOption((option) => option
+			.setName(t("graph.min.name"))
+			.setDescription(t("graph.min.description"))
+			.setDescriptionLocalizations(cmdLn("graph.min.description"))
+			.setNameLocalizations(cmdLn("graph.min.name"))
+			.setRequired(false)
+		)
+		.addNumberOption((option) => option
+			.setName(t("graph.max.name"))
+			.setDescription(t("graph.max.description"))
+			.setRequired(false)
+			.setDescriptionLocalizations(cmdLn("graph.max.description"))
+			.setNameLocalizations(cmdLn("graph.max.name"))
+		)
 		.addStringOption((option) => option
-			.setName("background")
-			.setDescription("Couleur du fond du graphique. Par défaut: #0e47b2")
+			.setName(t("graph.bg.name"))
+			.setDescription(t("graph.bg.description"))
+			.setNameLocalizations(cmdLn("graph.bg.name"))
+			.setDescriptionLocalizations(cmdLn("graph.bg.description"))
 			.setRequired(false)
 		),	
 	async autocomplete(interaction: AutocompleteInteraction): Promise<void> {
@@ -148,7 +168,8 @@ export const graph = {
 	async execute(interaction: CommandInteraction) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const guildData = guildInteractionData(interaction);
-		console.log(guildData?.templateID.statsName);
+		let min = options.getNumber(t("graph.min.name")) ?? undefined;
+		let max = options.getNumber(t("graph.max.name")) ?? undefined;
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
 			await interaction.reply(ul("error.noTemplate"));
@@ -201,10 +222,45 @@ export const graph = {
 			//only keep labels that exists in the user stats
 			const userStatKeys = Object.keys(userStatistique.stats).map(key => removeEmojiAccents(key));
 			const filteredLabels = labels.filter(label => userStatKeys.includes(removeEmojiAccents(label)));
-			const lineColor = options.getString("line");
-			const fillColor = options.getString("background");
+			const lineColor = options.getString(t("graph.line.name"));
+			const fillColor = options.getString(t("graph.bg.name"));
 			const color = generateColor(lineColor, fillColor);
-			const image = await imagePersonalized(userStatistique, filteredLabels, color.line, color.background);
+			const serverTemplate = await getTemplateWithDB(interaction);
+			
+			if (serverTemplate?.statistics && (!min || !max)) {
+				if (!min) {
+					const allMin = Object.values(serverTemplate.statistics).map(stat => {
+						if (stat.min === undefined) return 0;
+						return stat.min;
+					});
+					min = Math.min(...allMin);
+				}
+				if (!max) {
+					const allMax = Object.values(serverTemplate.statistics).map(stat => {
+						if (stat.max === undefined) return 0;
+						return stat.max;
+					});
+					max = Math.max(...allMax);
+				}
+				
+				if (min === 0) min = undefined;
+				if (max === 0) {
+					if (serverTemplate.critical?.success) {
+						max = serverTemplate.critical.success;
+					} else if (serverTemplate.diceType) {
+						const comparatorRegex = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(serverTemplate.diceType);
+						if (comparatorRegex?.groups?.comparator) {
+							max = parseInt(comparatorRegex.groups.comparator, 10);
+						} else {
+							const diceMatch = /d(?<face>\d+)/.exec(serverTemplate.diceType);
+							if (diceMatch?.groups?.face) {
+								max = parseInt(diceMatch.groups.face, 10);
+							}
+						}
+					}
+				}
+			}
+			const image = await imagePersonalized(userStatistique, filteredLabels, color.line, color.background, min, max);
 			if (!image) {
 				await interaction.reply(ul("error.noMessage"));
 				return;
@@ -239,8 +295,8 @@ function convertHexToRGBA(color: string, alpha?: number) {
 	return `rgba(${parsedColor.rgba.join(", ")})`;
 }
 
-export async function imagePersonalized(stat: UserData, labels: string[], lineColor?: string, fillColor?: string) {
-	const charGraph = await chart(stat, labels, lineColor, fillColor);
+async function imagePersonalized(stat: UserData, labels: string[], lineColor?: string, fillColor?: string, min?: number, max?: number) {
+	const charGraph = await chart(stat, labels, lineColor, fillColor, min, max);
 	if (!charGraph) return;
 	return new AttachmentBuilder(charGraph);
 }
