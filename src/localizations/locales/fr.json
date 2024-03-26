@@ -86,7 +86,7 @@
     "noMessage": "Aucun message trouvé.",
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
     "noTemplate": "Aucun modèle ou channel configuré",
-    "noThread": "Aucun thread trouvé — Veuillez réenregistrer l'utilisateur si le thread a été supprimé",
+    "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
     "notRegistered": "Vous n'êtes pas enregistré",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",

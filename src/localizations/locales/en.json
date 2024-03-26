@@ -86,7 +86,7 @@
     "noMessage": "No messages found.",
     "noStats": "This command cannot be used: no statistics have been recorded.",
     "noTemplate": "No template or channel configured",
-    "noThread": "No thread found - Please re-register user if thread has been deleted",
+    "noThread": "No valid channel found - Please re-register the template if the channel was deleted",
     "notRegistered": "You are not registered",
     "statNotFound": "Statistics not found! \nDid you make a typing error?",
     "tooMuchDice": "Too many dice have been saved! \nYou cannot have more than 25 dice saved.",
