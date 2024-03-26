@@ -1,9 +1,9 @@
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder, TextChannel } from "discord.js";
+import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
 import { createDiceEmbed, createStatsEmbed } from "../database";
 import { cmdLn,ln } from "../localizations";
-import { filterChoices, title } from "../utils";
+import { filterChoices, searchUserChannel, title } from "../utils";
 import { getGuildData, getUserData } from "../utils/db";
 import { getEmbeds } from "../utils/parse";
 
@@ -93,16 +93,10 @@ export const displayUser = {
 				[(user?.id ?? interaction.user.id)]: findChara
 			};
 		} 
-		const channel = await interaction.guild?.channels.fetch(guildData.templateID.channelId);
-		if (!channel || !(channel instanceof TextChannel)) return;
-		const thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]");
-		if (!thread) {
-			await interaction.reply(ul("error.noThread"));
-			return;
-		}
+		const thread = await searchUserChannel(guildData, interaction, ul);
 		const messageID = charData[user?.id ?? interaction.user.id].messageId;
 		try {
-			const userMessage = await thread.messages.fetch(messageID);
+			const userMessage = await thread?.messages.fetch(messageID);
 			const statisticEmbed = getEmbeds(ul, userMessage, "stats");
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
 			const diceFields = diceEmbed?.toJSON().fields;

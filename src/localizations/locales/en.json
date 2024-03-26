@@ -219,6 +219,10 @@
       "template": {
         "description": "The template to be registered",
         "name": "template"
+      },
+      "userChan": {
+        "description": "Allows you to choose a channel in which the files will be sent and managed",
+        "name": ""
       }
     }
   },

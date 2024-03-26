@@ -1,4 +1,4 @@
-import { BaseInteraction, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildForumTagData, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, ModalSubmitInteraction, TextBasedChannel, TextChannel, ThreadChannel, userMention } from "discord.js";
 import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
@@ -7,7 +7,7 @@ import removeAccents from "remove-accents";
 import { deleteAfter } from "../commands/base";
 import { parseResult,roll } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
-import { UserData} from "../interface";
+import { GuildData, UserData} from "../interface";
 import { ln } from "../localizations";
 import { editUserButtons } from "./buttons";
 import { getGuildData, registerUser } from "./db";
@@ -249,4 +249,25 @@ export async function sendLogs(message: string, interaction: BaseInteraction, gu
 	} catch (error) {
 		return;
 	}
+}
+
+export async function searchUserChannel(guildData: GuildData, interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction, ul: TFunction<"translation", undefined> ) {
+	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
+	if (guildData.managerId) {
+		const channel = await interaction.guild?.channels.fetch(guildData.managerId);
+		if (!channel || !(channel instanceof TextChannel)) {
+			await interaction.reply(ul("error.noThread"));
+			return;
+		}
+		thread = channel;
+	} else {
+		const channel = await interaction.guild?.channels.fetch(guildData.templateID.channelId);
+		if (!channel || !(channel instanceof TextChannel)) return;
+		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]");
+	}
+	if (!thread) {
+		await interaction.reply(ul("error.noThread"));
+		return;
+	}
+	return thread;
 }

@@ -217,6 +217,10 @@
       "template": {
         "description": "Le modèle à enregistrer",
         "name": "template"
+      },
+      "userChan": {
+        "description": "Permet de choisir un channel dans lequel les fiches seront envoyés et gérées",
+        "name": "user_chan"
       }
     }
   },

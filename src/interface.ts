@@ -27,6 +27,7 @@ export type Sign = "+" | "-" | "*" | "/" | "%" | "^" | "**";
 
 export interface GuildData {
 	logs?: string,
+	managerId: string;
 	templateID: {
 		channelId: string;
 		messageId: string;

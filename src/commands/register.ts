@@ -135,7 +135,7 @@ export const registerTemplate = {
 				.setNameLocalizations(cmdLn("common.channel"))
 				.setDescriptionLocalizations(cmdLn("register.options.channel"))
 				.setRequired(true)
-				.addChannelTypes(ChannelType.GuildText)
+				.addChannelTypes(ChannelType.PublicThread, ChannelType.GuildText, ChannelType.PrivateThread)
 		)
 		.addAttachmentOption(option =>
 			option
@@ -144,6 +144,15 @@ export const registerTemplate = {
 				.setNameLocalizations(cmdLn("register.options.template.name"))
 				.setDescriptionLocalizations(cmdLn("register.options.template.description"))
 				.setRequired(true)
+		)
+		.addChannelOption(option =>
+			option
+				.setName(t("register.options.userChan.name"))
+				.setDescription(t("register.options.userChan.description"))
+				.setNameLocalizations(cmdLn("register.options.userChan.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.userChan.description"))
+				.setRequired(false)
+				.addChannelTypes(ChannelType.PublicThread, ChannelType.GuildText, ChannelType.PrivateThread)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
@@ -155,6 +164,7 @@ export const registerTemplate = {
 		const templateData = verifyTemplateValue(res);
 		const guildData = interaction.guild.id;
 		const channel = options.getChannel(ul("common.channel"), true);
+		const userChan = options.getChannel(ul("register.options.userChan.name"), false);
 		if (!(channel instanceof TextChannel)) return;
 		//send template as JSON in the channel, send as file
 		//add register button
@@ -239,11 +249,15 @@ export const registerTemplate = {
 				statsName,
 				damageName
 			};
+			if (userChan) {
+				json[guildData].managerId = userChan.id;
+			}
 		} else {
 			json[guildData] = {
 				templateID: {
 					channelId: channel.id,
 					messageId: msg.id,
+					managerId: userChan?.id,
 					statsName,
 					damageName
 				},
