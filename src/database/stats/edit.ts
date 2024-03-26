@@ -3,7 +3,7 @@ import { TFunction } from "i18next";
 
 import {isArrayEqual, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
-import { getGuildData, getTemplateWithDB } from "../../utils/db";
+import { guildInteractionData, getTemplateWithDB } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { ensureEmbed, evalOneCombinaison } from "../../utils/verify_template";
 import { createStatsEmbed, getUserNameAndChar } from "..";
@@ -123,7 +123,7 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 	const statistics = getEmbeds(ul, interaction.message, "stats");
 	if (!statistics) throw new Error(ul("error.statNotFound"));
 	const stats = parseEmbedFields(statistics.toJSON() as Embed);
-	const originalGuildData = getGuildData(interaction)?.templateID.statsName;
+	const originalGuildData = guildInteractionData(interaction)?.templateID.statsName;
 	const registeredStats = originalGuildData?.map(stat => removeEmojiAccents(stat));
 	const userStats = Object.keys(stats).map(stat => removeEmojiAccents(stat.toLowerCase()));
 	let statsStrings = "";

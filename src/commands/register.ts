@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
 import dedent from "ts-dedent";
 
@@ -165,7 +165,10 @@ export const registerTemplate = {
 		const guildData = interaction.guild.id;
 		const channel = options.getChannel(ul("common.channel"), true);
 		const userChan = options.getChannel(ul("register.options.userChan.name"), false);
-		if (!(channel instanceof TextChannel)) return;
+		if (!(channel instanceof TextChannel) && (!(channel instanceof ThreadChannel))) {
+			await interaction.reply({ content: "ERROR", ephemeral: true });
+			return;
+		}
 		//send template as JSON in the channel, send as file
 		//add register button
 		const button = new ButtonBuilder()
@@ -240,7 +243,7 @@ export const registerTemplate = {
 					const msg = await (channel as TextChannel).messages.fetch(json[guildData].templateID.messageId);
 					await msg.delete();
 				} catch (e) {
-					//ignore
+					console.error(e);
 				}
 			}
 			json[guildData].templateID = {

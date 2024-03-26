@@ -4,7 +4,7 @@ import removeAccents from "remove-accents";
 import { cmdLn, lError, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import {filterChoices, replaceFormulaInDice, rollWithInteraction, title } from "../utils";
-import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
+import { guildInteractionData, getUserData, getUserFromMessage } from "../utils/db";
 
 const t = i18next.getFixedT("en");
 
@@ -60,7 +60,7 @@ export const rollForUser = {
 	async autocomplete(interaction: AutocompleteInteraction) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
-		const guildData = getGuildData(interaction);
+		const guildData = guildInteractionData(interaction);
 		if (!guildData) return;
 		let choices: string[] = [];
 		if (focused.name === t("common.statistic")) {
@@ -84,7 +84,7 @@ export const rollForUser = {
 	async execute(interaction: CommandInteraction) {
 		if (!interaction.guild || !interaction.channel) return;
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const guildData = getGuildData(interaction);
+		const guildData = guildInteractionData(interaction);
 		const ul = ln(interaction.locale);
 		if (!guildData) return;
 		let optionChar = options.getString(t("common.character"));

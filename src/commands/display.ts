@@ -4,7 +4,7 @@ import i18next from "i18next";
 import { createDiceEmbed, createStatsEmbed } from "../database";
 import { cmdLn,ln } from "../localizations";
 import { filterChoices, searchUserChannel, title } from "../utils";
-import { getGuildData, getUserData } from "../utils/db";
+import { guildInteractionData, getUserData } from "../utils/db";
 import { getEmbeds } from "../utils/parse";
 
 const t = i18next.getFixedT("en");
@@ -35,7 +35,7 @@ export const displayUser = {
 	async autocomplete(interaction: AutocompleteInteraction): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
-		const guildData = getGuildData(interaction);
+		const guildData = guildInteractionData(interaction);
 		if (!guildData) return;
 		let choices: string[] = [];
 		if (fixed.name === t("common.character")) {
@@ -54,7 +54,7 @@ export const displayUser = {
 	}, 
 	async execute(interaction: CommandInteraction) {
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const guildData = getGuildData(interaction);
+		const guildData = guildInteractionData(interaction);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
 			await interaction.reply(ul("error.noTemplate"));
