@@ -1,7 +1,6 @@
 {
   "button": {
-    "add": {
-    },
+    "add": {},
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -43,21 +42,12 @@
       "statistic": "The statistic to use"
     }
   },
-  "edit": {
-    "options": {
-      "field": {
-      },
-      "value": {
-      }
-    }
-  },
   "embed": {
     "add": {
       "title": "User registration"
     },
     "dice": "Skill Dice",
-    "edit": {
-    },
+    "edit": {},
     "stats": "Statistics",
     "template": "Model",
     "user": "Registered player"
@@ -75,23 +65,6 @@
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
     "invalidDice": {
-      "embeds": "No die embeds detected",
-      "mustBeGreater": "The {{value}} value must be greater than {{min}}",
-      "mustBeLower": "The {{value}} value must be smaller than {{max}}",
-      "noDamage": "{{atq}} is not saved in {{charName}}.",
-      "noDice": "You cannot issue this command without having a registered die type!",
-      "noEmbed": "No embeds found",
-      "noMessage": "No messages found.",
-      "noStats": "This command cannot be used: no statistics have been recorded.",
-      "noTemplate": "No model or channel configured",
-      "noThread": "No threads found — Please re-register user if thread was deleted",
-      "notRegistered": "You are not registered",
-      "statNotFound": "Statistics not found! \nDid you make a typing error?",
-      "tooMuchDice": "Too many dice have been saved! \nYou cannot have more than 25 dice saved.",
-      "tooMuchStats": "You cannot have more than 20 stats",
-      "totalExceededBy": "The total of {{value}} is exceeded by {{max}}",
-      "user": "User not found",
-      "userNotRegistered": "{{user}} is not registered.",
       "withDice": "Error: Invalid die {{- dice}}",
       "withError": "Error: Invalid die {{- dice}}\n\n```{{- error}}```"
     },
@@ -113,7 +86,7 @@
     "userNotRegistered": "{{- user}} is not registered."
   },
   "generate": {
-    "help": "- The die type must be a valid type (it will be tested when you save the model).\n- The value must be a number, and may be optional. If you remove it, the die will be compared to the statistic rather than a value.\n- Total must be a number, and may be optional. If you remove it, the total will be calculated automatically when the user is registered.\n- The formula is used to edit the combined value of the die. Use `$` to symbolize the value (ie: `+$`, `-$`, `($-10)/2`...).\n- A stat can be a combination of other stats, such as `strength+endurance`. If the `combination` value is set, then the `min` and `max` parameters will be disabled. In addition, users won't have to enter the value manually. Finally, this value will be excluded from the calculation of the point total allocated.\n- You can also register skill dice, which will then be used for the `/dbd` command from the database. In addition, users can register their own skill dice.\n\nPlease note that the file shown here is only an example, and must be customized before being saved.\n\nIt is possible to save only skill dice, or nothing at all, if you wish to use only the skill dice commands.",
+    "help": "See [documentation](<https://dicelette.github.io/en/docs/model/register>) for template notation and help",
     "name": "generate",
     "options": {
       "character": {
@@ -167,8 +140,7 @@
       "description": "Enter your character's name",
       "name": "Character name"
     },
-    "dice": {
-    },
+    "dice": {},
     "edit": {
       "dice": "⚠ Respect the syntax. \nUse \"X\", \"0\" or leave blank to delete.",
       "stats": "Stats changed!"
@@ -186,8 +158,7 @@
       "stats": "The statistics have been deleted"
     },
     "steps": "User Registration - Page {{- page}}/{{- max}}",
-    "template": {
-    },
+    "template": {},
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
       "name": "user"
