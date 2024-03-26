@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Message, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Message, ModalSubmitInteraction } from "discord.js";
 import { TFunction } from "i18next";
 
 import { createTemplateEmbed } from "../database";
 import { GuildData, StatisticalTemplate } from "../interface";
 import { ln } from "../localizations";
-import { removeEmojiAccents, title } from ".";
+import { removeEmojiAccents, searchUserChannel, title } from ".";
 
 /**
  * Parse the embed fields from an interaction
@@ -111,9 +111,7 @@ export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Mes
  */
 export async function bulkEditTemplateUser(guildData: GuildData, interaction: CommandInteraction, ul: TFunction<"translation", undefined>, template: StatisticalTemplate) {
 	const users = guildData.user;
-	const channel = await interaction.guild?.channels.fetch(guildData.templateID.channelId);
-	if (!channel || !(channel instanceof TextChannel)) return;
-	const thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]");
+	const thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread) return;
 	for (const userID in users) {
 		for (const char of users[userID]) {

@@ -1,4 +1,4 @@
-import {Client, TextChannel} from "discord.js";
+import {Client, GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel} from "discord.js";
 import fs from "fs";
 
 import { GuildData } from "../interface";
@@ -19,6 +19,10 @@ export const delete_channel = (client	: Client): void => {
 				delete guildDb.templateID;
 			}
 			if (guildDb.logs === channelID) delete guildDb.logs;
+			if (guildDb.managerId === channelID) {
+				delete guildDb.managerId;
+				cleanUserDB(guildDb, channel);
+			}
 			fs.writeFileSync("database.json", JSON.stringify(parsedDatabase, null, 2), "utf-8");
 		} catch (error) {
 			console.error(error);
@@ -45,16 +49,12 @@ export const delete_thread = (client: Client): void => {
 			const parsedDatabase = JSON.parse(database);
 			if (!parsedDatabase[guildID]) return;
 			const guildDB = parsedDatabase[guildID] as Partial<GuildData>;
-			if (thread.name === "📝 • [STATS]" && thread.parentId === guildDB.templateID?.channelId) {
+			if ((thread.name === "📝 • [STATS]" && thread.parentId === guildDB.templateID?.channelId) || thread.id === guildDB.managerId) {
 				//verify if the user message was in the thread
-				const dbUser = guildDB?.user;
-				if (!dbUser) return;
-				for (const [user, data] of Object.entries(dbUser)) {
-					const oldMessage = thread.messages.cache.find(message => data.some(char => char.messageId === message.id));
-					if (oldMessage) delete dbUser[user];
-				}
+				cleanUserDB(guildDB, thread);
 			}
 			if (guildDB.logs === thread.id) delete guildDB.logs;
+			if (guildDB.templateID?.channelId === thread.id) delete guildDB.templateID;
 			fs.writeFileSync("database.json", JSON.stringify(parsedDatabase, null, 2), "utf-8");
 		} catch (error) {
 			console.error(error);
@@ -126,3 +126,13 @@ export const on_kick = (client: Client): void => {
 		}
 	});
 };
+
+function cleanUserDB(guildDB: Partial<GuildData>, thread: GuildTextBasedChannel | ThreadChannel | NonThreadGuildBasedChannel) {
+	const dbUser = guildDB?.user;
+	if (!dbUser) return;
+	if (!(thread instanceof TextChannel)) return;
+	for (const [user, data] of Object.entries(dbUser)) {
+		const oldMessage = thread.messages.cache.find(message => data.some(char => char.messageId === message.id));
+		if (oldMessage) delete dbUser[user];
+	}
+}

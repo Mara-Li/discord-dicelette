@@ -1,11 +1,11 @@
-import { BaseInteraction, ButtonInteraction, Embed, Guild, Message, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
+import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import fs from "fs";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
 import { GuildData, StatisticalTemplate, UserData } from "../interface";
 import { ln } from "../localizations";
-import {removeEmojiAccents } from ".";
+import {removeEmojiAccents, searchUserChannel } from ".";
 import { getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
 import { ensureEmbed, verifyTemplateValue } from "./verify_template";
 
@@ -25,7 +25,7 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
  * @param interaction {BaseInteraction}
  * @returns 
  */
-export function getGuildData(interaction: BaseInteraction): GuildData|undefined {
+export function guildInteractionData(interaction: BaseInteraction): GuildData|undefined {
 	if (!interaction.guild) return;
 	const guildData = interaction.guild.id;
 	const data = fs.readFileSync("database.json", "utf-8");
@@ -41,15 +41,15 @@ export function getGuildData(interaction: BaseInteraction): GuildData|undefined 
 export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSubmitInteraction) {
 	if (!interaction.guild) return;
 	const guild = interaction.guild;
-	const guildData = getGuildData(interaction);
-	if (!guildData) return;
+	const guildData = guildInteractionData(interaction);
+	if (!guildData) throw new Error("No guild data");
 	const {channelId, messageId} = guildData.templateID;
 	const channel = await guild.channels.fetch(channelId);
-	if (!channel || !(channel instanceof TextChannel)) return;
+	if (!channel || (channel instanceof CategoryChannel)) return;
 	const message = await channel.messages.fetch(messageId);
-	if (!message) return;
+	if (!message) throw new Error("No message found");
 	const template = message.attachments.first();
-	if (!template) return;
+	if (!template) throw new Error("No template found");
 	const res = await fetch(template.url).then(res => res.json());
 	return verifyTemplateValue(res);
 
@@ -99,7 +99,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
 		throw new Error(ul("error.noTemplate"));
 	}
-	const thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as TextChannel | undefined;
+	const thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread) 
 		throw new Error(ul("error.noThread"));
 	try {
@@ -141,9 +141,9 @@ export function readDB(guildID: string) {
  * @param deleteMsg {boolean=true} delete the old message if needed (overwriting user)
  * @returns 
  */
-export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: ThreadChannel, charName?: string, damage?: string[], deleteMsg: boolean = true) {
+export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: AnyThreadChannel | TextChannel | NewsChannel, charName?: string, damage?: string[], deleteMsg: boolean = true) {
 	if (!interaction.guild) return;
-	const guildData = getGuildData(interaction);
+	const guildData = guildInteractionData(interaction);
 	if (charName) charName = charName.toLowerCase();
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
@@ -227,4 +227,20 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
 	};
 	return user as UserData;
 
+}
+
+/**
+ * Register the managerId in the database
+ * @param {GuildData} guildData 
+ * @param {BaseInteraction} interaction 
+ * @param {string} channel 
+ */
+export function registerManagerID(guildData: GuildData, interaction: BaseInteraction, channel?: string) {
+	if (!channel) return;
+	guildData.managerId = channel;
+	const guildId = interaction.guild?.id;
+	if (!guildId) return;
+	const data = fs.readFileSync("database.json", "utf-8");
+	const json = JSON.parse(data);
+	json[interaction.guild.id] = guildData;
 }

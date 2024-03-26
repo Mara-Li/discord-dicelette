@@ -5,7 +5,7 @@ import removeAccents from "remove-accents";
 import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { filterChoices, generateStatsDice, rollWithInteraction, title } from "../utils";
-import { getGuildData, getUserData, getUserFromMessage } from "../utils/db";
+import { guildInteractionData, getUserData, getUserFromMessage } from "../utils/db";
 
 const t = i18next.getFixedT("en");
 
@@ -53,7 +53,7 @@ export const dmgRoll = {
 	async autocomplete(interaction: AutocompleteInteraction) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
-		const db = getGuildData(interaction);
+		const db = guildInteractionData(interaction);
 		if (!db || !db.templateID) return;
 		const user = getUserData(db, interaction.user.id);
 		if (!user) return;
@@ -80,12 +80,12 @@ export const dmgRoll = {
 	},
 	async execute(interaction: CommandInteraction) {
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const db = getGuildData(interaction);
+		const db = guildInteractionData(interaction);
 		if (!db || !interaction.guild || !interaction.channel) return;
 		const user = getUserData(db, interaction.user.id);
 		if (!user) return;
 		const atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
-		const guildData = getGuildData(interaction);
+		const guildData = guildInteractionData(interaction);
 		if (!guildData) return;
 		let charOptions = options.getString(t("common.character"));
 		const charName = charOptions ? removeAccents(charOptions).toLowerCase() : undefined;
