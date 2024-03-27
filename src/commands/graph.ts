@@ -173,6 +173,10 @@ export const graph = {
 			await interaction.reply(ul("error.noTemplate"));
 			return;
 		}
+		if (!guildData.templateID.statsName) {
+			await interaction.reply(ul("error.noStats"));
+			return;
+		}
 		const user = options.getUser(t("display.userLowercase"));
 		const charName = options.getString(t("common.character"))?.toLowerCase();
 		let charData: { [key: string]: {
