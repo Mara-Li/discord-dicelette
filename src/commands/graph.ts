@@ -146,6 +146,7 @@ export const graph = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = guildInteractionData(interaction);
+		
 		if (!guildData) return;
 		let choices: string[] = [];
 		if (fixed.name === t("common.character")) {
@@ -173,7 +174,8 @@ export const graph = {
 			await interaction.reply(ul("error.noTemplate"));
 			return;
 		}
-		if (!guildData.templateID.statsName) {
+		const serverTemplate = await getTemplateWithDB(interaction);
+		if (!guildData.templateID.statsName || !serverTemplate?.statistics) {
 			await interaction.reply(ul("error.noStats"));
 			return;
 		}
@@ -227,7 +229,6 @@ export const graph = {
 			const lineColor = options.getString(t("graph.line.name"));
 			const fillColor = options.getString(t("graph.bg.name"));
 			const color = generateColor(lineColor, fillColor);
-			const serverTemplate = await getTemplateWithDB(interaction);
 			
 			if (serverTemplate?.statistics && (!min || !max)) {
 				if (!min) {
