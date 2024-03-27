@@ -45,13 +45,10 @@ async function chart(userData : UserData, labels: string[], lineColor?: string, 
 				},
 				ticks: {
 					stepSize: steps,
-					display: true,
-					//eslint-disable-next-line @typescript-eslint/no-explicit-any
-					callback: (value: any) => {
-						return `• ${value}`;
-					},
+					display: false,					
 					color: "darkgrey",
 					showLabelBackdrop: false,
+					centerPointLabels: true,
 					font: {
 						family: "Ubuntu",
 						size: 30,
@@ -247,14 +244,14 @@ export const graph = {
 				if (min === 0) min = undefined;
 				if (max === 0) {
 					if (serverTemplate.critical?.success) {
-						max = Math.ceil(serverTemplate.critical.success * 1.25);
+						max = serverTemplate.critical.success;
 					} else if (serverTemplate.diceType) {
 						const comparatorRegex = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(serverTemplate.diceType);
 						if (comparatorRegex?.groups?.comparator) {
-							max = Math.ceil(parseInt(comparatorRegex.groups.comparator, 10) *1.25);
+							max = parseInt(comparatorRegex.groups.comparator, 10);
 						} else {
 							const diceMatch = /d(?<face>\d+)/.exec(serverTemplate.diceType);
-							max = diceMatch?.groups?.face ? Math.ceil(parseInt(diceMatch.groups.face, 10)*1.25) : undefined;
+							max = diceMatch?.groups?.face ? parseInt(diceMatch.groups.face, 10) : undefined;
 						}
 					}
 				} else max = undefined;
