@@ -2,7 +2,7 @@ import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, Guild, Modal
 import { TFunction } from "i18next";
 
 import { roll } from "../../dice";
-import { parseStatsString, removeEmojiAccents, sendLogs, title } from "../../utils";
+import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { registerUser } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
@@ -137,10 +137,11 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
 	await interaction.reply({ content: ul("embeds.edit.dice"), ephemeral: true });
+	const compare = displayOldAndNewStats(diceEmbeds.toJSON().fields, fieldsToAppend);
 	await sendLogs(ul("logs.dice.edit", {
 		user: userMention(interaction.user.id), 
 		fiche: interaction.message.url, 
-		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`})
+		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}\n${compare}`})
 	, interaction, interaction.guild as Guild);
 }
 
@@ -159,5 +160,4 @@ export async function start_edit_dice(interaction: ButtonInteraction, ul: TFunct
 		await showEditDice(interaction, ul);
 	else await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
 }
-
 

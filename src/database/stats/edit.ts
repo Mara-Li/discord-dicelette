@@ -1,7 +1,7 @@
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
-import {isArrayEqual, removeEmojiAccents, sendLogs, title } from "../../utils";
+import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { getTemplateWithDB,guildInteractionData } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
@@ -92,7 +92,6 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		if (fieldsToAppend.find(f => removeEmojiAccents(f.name) === removeEmojiAccents(name))) continue;
 		fieldsToAppend.push(field);
 	}
-
 	const newEmbedStats = createStatsEmbed(ul)
 		.addFields(fieldsToAppend);
 	const {userID, userName} = await getUserNameAndChar(interaction, ul);
@@ -109,9 +108,12 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 	await interaction.message.edit({ embeds: list });
 	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
-	await sendLogs(ul("logs.stat.added", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+	const compare = displayOldAndNewStats(statsEmbeds.toJSON().fields, fieldsToAppend);
+	await sendLogs(ul("logs.stat.added", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}\n${compare}`}), interaction, interaction.guild as Guild);
 
 }
+
+
 
 /**
  * Show the stats editor

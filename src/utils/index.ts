@@ -1,4 +1,4 @@
-import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, MediaChannel, ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
+import { AnyThreadChannel, APIEmbedField, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, MediaChannel, ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
 import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
@@ -258,6 +258,30 @@ export async function sendLogs(message: string, interaction: BaseInteraction, gu
 	} catch (error) {
 		return;
 	}
+}
+
+
+export function displayOldAndNewStats(oldStats?: APIEmbedField[], newStats?: APIEmbedField[]) {
+	let stats = "";
+	if (oldStats && newStats) {
+		for (const field of oldStats) {
+			const name = field.name.toLowerCase();
+			const newField = newStats.find(f => f.name.toLowerCase() === name);
+			if (!newField) {
+				stats += `- ~~${field.name}: ${field.value}~~\n`;
+				continue;
+			}
+			stats += `- ${field.name}: ${field.value} => ${newField.value}\n`;		
+		}
+		//verify if there is new stats
+		for (const field of newStats) {
+			const name = field.name.toLowerCase();
+			if (!oldStats.find(f => f.name.toLowerCase() === name)) {
+				stats += `- ${field.name}: 0 => ${field.value}\n`;
+			}
+		}
+	}
+	return stats;
 }
 
 export async function searchUserChannel(guildData: GuildData, interaction: BaseInteraction, ul: TFunction<"translation", undefined> ) {
