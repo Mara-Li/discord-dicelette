@@ -6,7 +6,7 @@ import path from "path";
 
 import { UserData } from "../interface";
 import { cmdLn, ln } from "../localizations";
-import { filterChoices, removeEmojiAccents, title } from "../utils";
+import { filterChoices, removeEmojiAccents, sendLogs, title } from "../utils";
 import { getTemplateWithDB, getUserData, getUserFromMessage,guildInteractionData } from "../utils/db";
 
 async function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string, min?: number, max?: number) {
@@ -168,6 +168,7 @@ export const graph = {
 	async execute(interaction: CommandInteraction) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const guildData = guildInteractionData(interaction);
+		if (!interaction.guild) return;
 		let min = options.getNumber(t("graph.min.name")) ?? undefined;
 		let max = options.getNumber(t("graph.max.name")) ?? undefined;
 		const ul = ln(interaction.locale as Locale);
@@ -246,19 +247,17 @@ export const graph = {
 				if (min === 0) min = undefined;
 				if (max === 0) {
 					if (serverTemplate.critical?.success) {
-						max = serverTemplate.critical.success;
+						max = Math.ceil(serverTemplate.critical.success * 1.25);
 					} else if (serverTemplate.diceType) {
 						const comparatorRegex = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(serverTemplate.diceType);
 						if (comparatorRegex?.groups?.comparator) {
-							max = parseInt(comparatorRegex.groups.comparator, 10);
+							max = Math.ceil(parseInt(comparatorRegex.groups.comparator, 10) *1.25);
 						} else {
 							const diceMatch = /d(?<face>\d+)/.exec(serverTemplate.diceType);
-							if (diceMatch?.groups?.face) {
-								max = parseInt(diceMatch.groups.face, 10);
-							}
+							max = diceMatch?.groups?.face ? Math.ceil(parseInt(diceMatch.groups.face, 10)*1.25) : undefined;
 						}
 					}
-				}
+				} else max = undefined;
 			}
 			const image = await imagePersonalized(userStatistique, filteredLabels, color.line, color.background, min, max);
 			if (!image) {
@@ -268,6 +267,8 @@ export const graph = {
 			await interaction.reply({ files: [image] });
 		} catch (error) {
 			await interaction.reply(ul("error.generic", {e: (error as Error)}));
+			sendLogs(ul("error.generic", {e: (error as Error)}), interaction, interaction.guild);
+			console.log(error);
 		}
 	}
 		

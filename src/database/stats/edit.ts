@@ -3,7 +3,7 @@ import { TFunction } from "i18next";
 
 import {isArrayEqual, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
-import { guildInteractionData, getTemplateWithDB } from "../../utils/db";
+import { getTemplateWithDB,guildInteractionData } from "../../utils/db";
 import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { ensureEmbed, evalOneCombinaison } from "../../utils/verify_template";
 import { createStatsEmbed, getUserNameAndChar } from "..";
@@ -19,7 +19,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	if (!statsEmbeds) return;
 	const values  = interaction.fields.getTextInputValue("allStats");
 	const templateStats = await getTemplateWithDB(interaction);
-	if (!templateStats) return;
+	if (!templateStats || !templateStats.statistics) return;
 	const valuesAsStats = values.split("\n- ").map(stat => {
 		const [name, value] = stat.split(/ ?: ?/);
 		return { name: name.replace("- ", "").trim().toLowerCase(), value };
@@ -30,9 +30,10 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		return acc;
 	}, {} as {[name: string]: string});
 	//verify value from template
+	const template = Object.fromEntries(Object.entries(templateStats.statistics).map(([name, value]) => [removeEmojiAccents(name), value]));
 	const embedsStatsFields: APIEmbedField[] = [];
 	for (const [name, value] of Object.entries(stats)) {
-		const stat = templateStats.statistics?.[removeEmojiAccents(name)];
+		const stat = template?.[removeEmojiAccents(name)];
 		if (value.toLowerCase() === "x" 
 			|| value.trim().length === 0 
 			|| embedsStatsFields.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(name))
@@ -57,9 +58,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		}
 		else if (stat.min && num < stat.min) {
 			throw new Error(ul("error.mustBeGreater", {value: name, min: stat.min}));
-		} else if (stat.max && num > stat.max) {
-			throw new Error(ul("error.mustBeLower", {value: name, max: stat.max}));
-		} //skip register total because it can be a level up. Total is just for the registering, like creating a new char in a game
+		}  //skip register total + max because leveling can be done here
 		embedsStatsFields.push({
 			name: title(name),
 			value: num.toString(),
@@ -130,8 +129,8 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 	for (const [name, value] of Object.entries(stats)) {
 		let stringValue = value;
 		if (!registeredStats?.includes(removeEmojiAccents(name))) continue; //remove stats that are not registered
-		if (value.match(/`(.*)`/)) {
-			const combinaison = value.match(/`(.*)`/)?.[1];
+		if (value.match(/=/)) {
+			const combinaison = value.split("=")?.[0].trim();
 			if (combinaison) stringValue = combinaison;
 		}
 		statsStrings += `- ${name}${ul("common.space")}: ${stringValue}\n`;

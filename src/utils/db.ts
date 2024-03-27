@@ -82,23 +82,7 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		return char.charName === charName;
 	});
 	if (!user) return;
-	const mainChannel = guildData.templateID.channelId;
 	const userMessageId = user.messageId;
-	const channel = await guild.channels.fetch(mainChannel);
-	if (!channel || !(channel instanceof TextChannel)) {
-		//clean the database
-		guildData.templateID = {
-			channelId: "",
-			messageId: "",
-			statsName: [],
-			damageName: []
-		};
-		const data = fs.readFileSync("database.json", "utf-8");
-		const json = JSON.parse(data);
-		json[guild.id] = guildData;
-		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
-		throw new Error(ul("error.noTemplate"));
-	}
 	const thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread) 
 		throw new Error(ul("error.noThread"));
