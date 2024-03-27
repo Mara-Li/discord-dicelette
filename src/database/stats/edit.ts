@@ -109,8 +109,12 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 	await interaction.message.edit({ embeds: list });
 	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
 	const compare = displayOldAndNewStats(statsEmbeds.toJSON().fields, fieldsToAppend);
-	await sendLogs(ul("logs.stat.added", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}\n${compare}`}), interaction, interaction.guild as Guild);
-
+	const logMessage = ul("logs.stat.added", {
+		user: userMention(interaction.user.id), 
+		fiche: interaction.message.url, 
+		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`
+	});
+	await sendLogs(`${logMessage}\n${compare}`, interaction, interaction.guild as Guild);
 }
 
 

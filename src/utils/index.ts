@@ -270,14 +270,14 @@ export function displayOldAndNewStats(oldStats?: APIEmbedField[], newStats?: API
 			if (!newField) {
 				stats += `- ~~${field.name}: ${field.value}~~\n`;
 				continue;
-			}
-			stats += `- ${field.name}: ${field.value} => ${newField.value}\n`;		
+			} if (field.value === newField.value) continue;
+			stats += `- ${field.name}: ${field.value} ⇒ ${newField.value}\n`;		
 		}
 		//verify if there is new stats
 		for (const field of newStats) {
 			const name = field.name.toLowerCase();
 			if (!oldStats.find(f => f.name.toLowerCase() === name)) {
-				stats += `- ${field.name}: 0 => ${field.value}\n`;
+				stats += `- ${field.name}: 0 ⇒ ${field.value}\n`;
 			}
 		}
 	}

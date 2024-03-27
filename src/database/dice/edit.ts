@@ -138,11 +138,12 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	await interaction.message.edit({ embeds: embedsList.list });
 	await interaction.reply({ content: ul("embeds.edit.dice"), ephemeral: true });
 	const compare = displayOldAndNewStats(diceEmbeds.toJSON().fields, fieldsToAppend);
-	await sendLogs(ul("logs.dice.edit", {
+	const logMessage = ul("logs.dice.edit", {
 		user: userMention(interaction.user.id), 
 		fiche: interaction.message.url, 
-		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}\n${compare}`})
-	, interaction, interaction.guild as Guild);
+		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}
+	);
+	await sendLogs(`${logMessage}\n${compare}`, interaction, interaction.guild as Guild);
 }
 
 /**
