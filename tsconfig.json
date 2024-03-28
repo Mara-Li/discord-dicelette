@@ -1,4 +1,7 @@
 {
+    "ts-node": {
+        "require": ["tsconfig-paths/register"]
+    },
     "compilerOptions": {
         "target": "ESNext",
         "module": "commonjs",
@@ -20,9 +23,9 @@
             "node_modules/@types"
         ],
         "sourceMap": false,
-        "baseUrl": "./src/",
+        "baseUrl": ".",
         "paths": {
-            "@core/*" : ["../@core/core/*"],
+            "@core/*" : ["./@core/core/*"],
         }
     },
     "files": [
