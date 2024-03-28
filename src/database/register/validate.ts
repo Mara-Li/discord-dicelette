@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import {StatisticalTemplate} from "@core/interface";
 import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, PermissionsBitField, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
-import { StatisticalTemplate, UserData } from "../../interface";
+import { UserData } from "../../interface";
 import { ln } from "../../localizations";
 import {removeEmoji, removeEmojiAccents, repostInThread, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
-import { createEmbedsList, parseEmbedFields } from "../../utils/parse";
-import { ensureEmbed } from "../../utils/verify_template";
+import { createEmbedsList, ensureEmbed,parseEmbedFields } from "../../utils/parse";
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "..";
 
 /**

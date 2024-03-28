@@ -1,11 +1,11 @@
+import { StatisticalTemplate } from "@core/interface";
+import {evalCombinaison } from "@core/verify_template";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
-import { StatisticalTemplate } from "../../interface";
 import { lError,ln } from "../../localizations";
 import { removeEmojiAccents, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
-import { getStatistiqueFields } from "../../utils/parse";
-import { ensureEmbed, evalCombinaison } from "../../utils/verify_template";
+import { ensureEmbed,getStatistiqueFields } from "../../utils/parse";
 
 /**
  * Embed to display the statistics when adding a new user

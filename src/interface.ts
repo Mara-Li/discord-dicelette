@@ -1,6 +1,4 @@
-import { Critical } from "./core/core/interface";
-
-
+import { Critical } from "../@core/core/interface";
 
 export const enum THUMBNAIL {
 	DICE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/dice.png?raw=true",

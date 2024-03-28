@@ -1,13 +1,14 @@
+import { StatisticalTemplate } from "@core/interface";
+import { verifyTemplateValue } from "@core/verify_template";
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import fs from "fs";
 import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
-import { GuildData, StatisticalTemplate, UserData } from "../interface";
+import { GuildData, UserData } from "../interface";
 import { ln } from "../localizations";
 import {removeEmojiAccents, searchUserChannel } from ".";
-import { getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
-import { ensureEmbed, verifyTemplateValue } from "./verify_template";
+import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
 
 /**
  * Get the guild template when clicking on the "registering user" button or when submiting

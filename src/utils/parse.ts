@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import {StatisticalTemplate} from "@core/interface";
 import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Message, ModalSubmitInteraction } from "discord.js";
 import { TFunction } from "i18next";
 
 import { createTemplateEmbed } from "../database";
 import { GuildData } from "../interface";
-import {StatisticalTemplate} from "../core/core/interface";
 import { ln } from "../localizations";
 import { removeEmojiAccents, searchUserChannel, title } from ".";
 

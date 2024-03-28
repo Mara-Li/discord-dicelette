@@ -1,3 +1,4 @@
+import { roll } from "@core/dice";
 import { AnyThreadChannel, APIEmbedField, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, MediaChannel, ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
 import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
@@ -5,7 +6,6 @@ import moment from "moment";
 import removeAccents from "remove-accents";
 
 import { deleteAfter } from "../commands/base";
-import { roll } from "../core/core/dice";
 import { parseResult } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
 import { GuildData, UserData} from "../interface";

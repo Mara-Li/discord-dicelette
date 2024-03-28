@@ -20,7 +20,10 @@
             "node_modules/@types"
         ],
         "sourceMap": false,
-        "baseUrl": "./"
+        "baseUrl": "./",
+        "paths": {
+            "@core/*" : ["@core/core/*"],
+        }
     },
     "files": [
         "src/index.ts"

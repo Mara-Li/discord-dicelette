@@ -1,7 +1,7 @@
+import { StatisticalTemplate } from "@core/interface";
 import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
 import { TFunction } from "i18next";
 
-import { StatisticalTemplate } from "../../interface";
 import { ln } from "../../localizations";
 import { removeEmojiAccents } from "../../utils";
 import { getTemplateWithDB } from "../../utils/db";

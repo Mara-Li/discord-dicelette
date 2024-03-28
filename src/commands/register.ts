@@ -1,13 +1,13 @@
+import { Critical, Statistic, StatisticalTemplate } from "@core/interface";
+import { verifyTemplateValue } from "@core/verify_template";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
 import dedent from "ts-dedent";
 
-import { Critical, Statistic, StatisticalTemplate } from "../interface";
 import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
 import { title } from "../utils";
 import { bulkEditTemplateUser } from "../utils/parse";
-import { verifyTemplateValue } from "../utils/verify_template";
 
 const t = i18next.getFixedT("en");
 

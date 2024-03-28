@@ -3,8 +3,8 @@ import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import dedent from "ts-dedent";
 
-import { Compare, Resultat, Sign } from "./core/core/interface";
-import { calculator } from "./core/core/dice";
+import { calculator } from "../@core/core/dice";
+import { Compare, Resultat, Sign } from "../@core/core/interface";
 
 /**
  * Parse the result of the dice to be readable

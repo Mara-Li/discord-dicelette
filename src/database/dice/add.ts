@@ -1,3 +1,4 @@
+import { evalStatsDice } from "@core/verify_template";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Guild, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
@@ -5,10 +6,8 @@ import { lError, ln } from "../../localizations";
 import { removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons, registerDmgButton, validateCancelButton } from "../../utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
-import { getEmbeds, ensureEmbed } from "../../utils/parse";
-
+import { ensureEmbed,getEmbeds } from "../../utils/parse";
 import { createDiceEmbed, getUserNameAndChar } from "..";
-import { evalStatsDice } from "../../core/core/verify_template";
 
 /**
  * Interaction to add a new skill dice

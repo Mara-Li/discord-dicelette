@@ -1,12 +1,12 @@
+import { roll } from "@core/dice";
+import { evalStatsDice } from "@core/verify_template";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
-import { roll } from "../../dice";
 import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { registerUser } from "../../utils/db";
-import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
-import { ensureEmbed, evalStatsDice } from "../../utils/verify_template";
+import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { createDiceEmbed, getUserNameAndChar } from "..";
 
 /**

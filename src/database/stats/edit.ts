@@ -1,11 +1,11 @@
+import { evalOneCombinaison } from "@core/verify_template";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
 import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { getTemplateWithDB,guildInteractionData } from "../../utils/db";
-import { getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
-import { ensureEmbed, evalOneCombinaison } from "../../utils/verify_template";
+import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
 import { createStatsEmbed, getUserNameAndChar } from "..";
 
 /**
