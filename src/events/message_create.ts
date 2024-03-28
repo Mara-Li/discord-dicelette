@@ -1,9 +1,10 @@
 /* eslint-disable no-useless-escape */
+import { COMMENT_REGEX, roll } from "@core/dice";
+import { Resultat } from "@core/interface";
 import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 
 import { deleteAfter } from "../commands/base";
-import { COMMENT_REGEX, parseResult, roll } from "../dice";
-import { Resultat } from "../interface";
+import { parseResult } from "../dice";
 import { lError, ln } from "../localizations";
 import { timestamp } from "../utils";
 import { readDB } from "../utils/db";

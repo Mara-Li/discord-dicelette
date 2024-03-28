@@ -20,16 +20,16 @@
             "node_modules/@types"
         ],
         "sourceMap": false,
-        "baseUrl": "./",
+        "baseUrl": "./src/",
         "paths": {
-            "@core/*" : ["@core/core/*"],
+            "@core/*" : ["../@core/core/*"],
         }
     },
     "files": [
         "src/index.ts"
     ],
     "include": [
-        "./**/*.ts"
+        "./**/*.ts",
     ],
     "exclude": [
         "node_modules",

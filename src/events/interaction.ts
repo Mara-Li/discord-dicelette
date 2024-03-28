@@ -1,3 +1,4 @@
+import { StatisticalTemplate } from "@core/interface";
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
 import { TFunction } from "i18next";
 
@@ -7,10 +8,9 @@ import { start_edit_dice,validate_editDice } from "../database/dice/edit";
 import { continuePage,open_register_user,pageNumber, submit_firstPage } from "../database/register/start";
 import { button_validate_user } from "../database/register/validate";
 import { editStats,start_edit_stats } from "../database/stats/edit";
-import { StatisticalTemplate } from "../interface";
 import { lError,ln } from "../localizations";
 import { getTemplate, getTemplateWithDB,readDB } from "../utils/db";
-import { ensureEmbed } from "../utils/verify_template";
+import { ensureEmbed } from "../utils/parse";
 
 
 export default (client: Client): void => {

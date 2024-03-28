@@ -1,8 +1,7 @@
 import { ButtonInteraction, EmbedBuilder, ModalSubmitInteraction, ThreadChannel } from "discord.js";
 import { TFunction } from "i18next";
 
-import { getEmbeds } from "../utils/parse";
-import { ensureEmbed } from "../utils/verify_template";
+import { ensureEmbed,getEmbeds } from "../utils/parse";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found
