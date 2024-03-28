@@ -3,9 +3,20 @@ import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Mes
 import { TFunction } from "i18next";
 
 import { createTemplateEmbed } from "../database";
-import { GuildData, StatisticalTemplate } from "../interface";
+import { GuildData } from "../interface";
+import {StatisticalTemplate} from "../core/core/interface";
 import { ln } from "../localizations";
 import { removeEmojiAccents, searchUserChannel, title } from ".";
+
+/**
+ * Ensure the embeds are present
+ * @param {Message} message 
+ */
+export function ensureEmbed(message?: Message) {
+	const oldEmbeds = message?.embeds[0];
+	if (!oldEmbeds || !oldEmbeds?.fields) throw new Error("[error.noEmbed]");
+	return oldEmbeds;
+}
 
 /**
  * Parse the embed fields from an interaction

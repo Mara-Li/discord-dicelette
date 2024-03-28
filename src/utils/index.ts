@@ -5,7 +5,8 @@ import moment from "moment";
 import removeAccents from "remove-accents";
 
 import { deleteAfter } from "../commands/base";
-import { parseResult,roll } from "../dice";
+import { roll } from "../core/core/dice";
+import { parseResult } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
 import { GuildData, UserData} from "../interface";
 import { ln } from "../localizations";

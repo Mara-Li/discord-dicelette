@@ -5,9 +5,10 @@ import { lError, ln } from "../../localizations";
 import { removeEmojiAccents, sendLogs, title } from "../../utils";
 import { editUserButtons, registerDmgButton, validateCancelButton } from "../../utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
-import { getEmbeds } from "../../utils/parse";
-import { ensureEmbed, evalStatsDice } from "../../utils/verify_template";
+import { getEmbeds, ensureEmbed } from "../../utils/parse";
+
 import { createDiceEmbed, getUserNameAndChar } from "..";
+import { evalStatsDice } from "../../core/core/verify_template";
 
 /**
  * Interaction to add a new skill dice
