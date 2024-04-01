@@ -6,9 +6,11 @@
   "repository": "",
   "scripts": {
     "init": "pnpm i && node install.js",
+    "prebuild": "rm -rf dist",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "prestart": "pnpm run build",
-    "start": "pm2 start -r tsconfig-paths/register dist/src/index.js --name dicelette --log-date-format=\"YYYY-MM-DD HH:mm Z\"",
+    "start": "pm2 start dist/src/index.js --node-args='-r tsconfig-paths/register' --name dicelette --log-date-format=\"YYYY-MM-DD HH:mm Z\"",
+    "start:node": "node dist/src/index.js -r tsconfig-paths/register",
     "stop": "pm2 stop dicelette",
     "prerestart": "pnpm run build",
     "restart": "pm2 restart dicelette",
