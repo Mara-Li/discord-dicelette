@@ -1,7 +1,6 @@
 {
   "button": {
-    "add": {
-    },
+    "add": {},
     "cancel": "Annuler",
     "continue": "Continuer",
     "dice": "Enregistrer un dé",
@@ -55,8 +54,7 @@
       "title": "Enregistrement de l'utilisateur"
     },
     "dice": "Dés de compétences",
-    "edit": {
-    },
+    "edit": {},
     "stats": "Statistiques",
     "template": "Modèle",
     "user": "Joueur enregistré"
@@ -97,7 +95,7 @@
     "userNotRegistered": "{{- user}} n'est pas enregistré."
   },
   "generate": {
-    "help": "[Voir la documentation complète sur la génération d'un modèle](<https://dicelette.github.io/docs/model/register>)",
+    "help": "[Voir la documentation complète sur la génération d'un modèle](<https://dicelette.github.io/docs/model/register>).\nVous pouvez utiliser [ceci](<https://dicelette.github.io/docs/model/register/form>) pour générer un modèle en utilisant une interface.",
     "name": "générer",
     "options": {
       "character": {
@@ -150,7 +148,7 @@
   },
   "help": {
     "description": "Affiche l'aide",
-    "message": ":game_die: **Dice Roller** :game_die:\n-> Retrouvez le *bot* sur [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.fr.md>)\n\n## Usage\n- </roll:{{- rollId}}> : Lance un dé\n- </scene:{{- sceneId}}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.\n\nVous pouvez aussi créer une \"bulle temporelle\" avec les paramètres `/scene tempo:True`. Par défaut, le nom du thread sera la date du jour.\n\nVous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :\n- __Un dé direct__ : `dés`, comme `d6` ou `2d6`\n- __Un dé indirect__ : `mon message [dés]`, comme `*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*`.\n- __Un dé semi-direct__ : `1d100 mon message`, comme `1d100 Phibi saute sur Wumpus et lui inflige des dégâts`.\n\n## Notation des dés\n[Voir la documentation pour la notation des dés (en anglais)](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nLe bot supporte aussi :\n- [Les groupes de dés](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Les modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Les commentaires](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Les mathématiques](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- Ainsi que les \"bulk rolls\" (lancer plusieurs dés en même temps) avec la notation suivante : `[nombre de dés]#[dés]`, comme par exemple `2#d6` pour lancer 2 dés à 6 faces",
+    "message": ":game_die: **Dice Roller** :game_die:\n-> Retrouvez le *bot* sur [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.fr.md>)\n-> [Documentation](<https://dicelette.github.io/en>)\n\n## Usage\n- </roll:{{- rollId}}> : Lance un dé\n- </scene:{{- sceneId}}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.\n\nVous pouvez aussi créer une \"bulle temporelle\" avec les paramètres `/scene tempo:True`. Par défaut, le nom du thread sera la date du jour.\n\nVous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :\n- __Un dé direct__ : `dés`, comme `d6` ou `2d6`\n- __Un dé indirect__ : `mon message [dés]`, comme `*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*`.\n- __Un dé semi-direct__ : `1d100 mon message`, comme `1d100 Phibi saute sur Wumpus et lui inflige des dégâts`.\n\n## Notation des dés\n[Voir la documentation pour la notation des dés (en anglais)](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nLe bot supporte aussi :\n- [Les groupes de dés](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Les modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Les commentaires](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Les mathématiques](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- Ainsi que les \"bulk rolls\" (lancer plusieurs dés en même temps) avec la notation suivante : `[nombre de dés]#[dés]`, comme par exemple `2#d6` pour lancer 2 dés à 6 faces",
     "name": "aide"
   },
   "logs": {
@@ -160,12 +158,10 @@
       "edit": "{{- user}} a modifié les dés de {{- char}} (dans {{- fiche}})",
       "remove": "{{- user}} a supprimé les dés de {{-char}} (dans {{- fiche}})"
     },
-    "edit": {
-    },
+    "edit": {},
     "name": "logs",
     "options": "Le channel où envoyer les logs",
-    "removed": {
-    },
+    "removed": {},
     "set": "Logs configurés dans le channel {{- channel}}",
     "stat": {
       "added": "{{- user}} a modifié les statistiques de {{- char}} (dans {{- fiche}})"

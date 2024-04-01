@@ -1,7 +1,6 @@
 {
   "button": {
-    "add": {
-    },
+    "add": {},
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -55,8 +54,7 @@
       "title": "User registration"
     },
     "dice": "Skill Dice",
-    "edit": {
-    },
+    "edit": {},
     "stats": "Statistics",
     "template": "Model",
     "user": "Registered player"
@@ -97,7 +95,7 @@
     "userNotRegistered": "{{- user}} is not registered."
   },
   "generate": {
-    "help": "See [documentation](<https://dicelette.github.io/en/docs/model/register>) for template notation and help",
+    "help": "See [documentation](<https://dicelette.github.io/en/docs/model/register>) for template notation and help.\nYou can use ![this](<https://dicelette.github.io/en/docs/model/register/form>) to generate a template with a UI.",
     "name": "generate",
     "options": {
       "character": {
@@ -150,7 +148,7 @@
   },
   "help": {
     "description": "Display help",
-    "message": ":game_die: **Dice Roller** :game_die:\n-> Find the *bot* on [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.md>)\n\n## Usage\n- </roll:{{- rollId}}> : Roll a die\n- </scene:{{- sceneId}}> : Creates a new thread for dice. This will archive all previous threads.\n\nYou can also create a \"time bubble\" with the parameters `/scene tempo:True`. By default, the thread name will be the current date.\n\nYou can use the bot directly in a message (**without using slash commands**), with :\n- __A direct die__ : `des`, like `d6` or `2d6`.\n- __An indirect die__ : `my message [dice]`, like `*Phibi jumps on Wumpus and inflicts [2d6] damage*`.\n- __A semi-direct die__: `1d100 my message`, as `1d100 Phibi jumps on Wumpus and inflicts damage`.\n\n## Dice notation\n[See documentation for dice notation](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nThe bot also supports:\n- [Dice groups](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Comments](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Math](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- As well as \"bulk rolls\" (throwing several dice at the same time) with the following notation: `[number of dice]#[dice]`, for example `2#d6` to throw 2 6-sided dice.of dice]#",
+    "message": ":game_die: **Dicelette** :game_die:\n-> Find the *bot* on [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.md>)\n -> [Documentation](<https://dicelette.github.io/en>)\n\n## Usage\n- </roll:{{- rollId}}> : Roll a die\n- </scene:{{- sceneId}}> : Creates a new thread for dice. This will archive all previous threads.\n\nYou can also create a \"time bubble\" with the parameters `/scene tempo:True`. By default, the thread name will be the current date.\n\nYou can use the bot directly in a message (**without using slash commands**), with :\n- __A direct die__ : `des`, like `d6` or `2d6`.\n- __An indirect die__ : `my message [dice]`, like `*Phibi jumps on Wumpus and inflicts [2d6] damage*`.\n- __A semi-direct die__: `1d100 my message`, as `1d100 Phibi jumps on Wumpus and inflicts damage`.\n\n## Dice notation\n[See documentation for dice notation](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nThe bot also supports:\n- [Dice groups](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Comments](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Math](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- As well as \"bulk rolls\" (throwing several dice at the same time) with the following notation: `[number of dice]#[dice]`, for example `2#d6` to throw 2 6-sided dice.of dice]#",
     "name": "help"
   },
   "logs": {
@@ -160,12 +158,10 @@
       "edit": "{{- user}} modified the dice of {{- user}} (in {{- fiche}})",
       "remove": "{{- user}} deleted the dice from {{-char}} (in {{- fiche}})"
     },
-    "edit": {
-    },
+    "edit": {},
     "name": "logs",
     "options": "The channel to send logs to",
-    "removed": {
-    },
+    "removed": {},
     "set": "Logs configured in channel {{- channel}}",
     "stat": {
       "added": "{{- user}} modified the statistics of {{- user}} (in {{- fiche}})"
@@ -206,8 +202,7 @@
       "stats": "The statistics have been deleted"
     },
     "steps": "User Registration - Page {{- page}}/{{- max}}",
-    "template": {
-    },
+    "template": {},
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
       "name": "user"
