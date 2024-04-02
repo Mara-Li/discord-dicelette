@@ -82,10 +82,13 @@ export const displayUser = {
 			}
 		} else {
 			const userData = getUserData(guildData, user?.id ?? interaction.user.id);
-			const findChara = userData?.find((char) => char.charName === charName);
+			console.log(userData);
+			let findChara = userData?.find((char) => char.charName === charName);
+			//take the first in userData
+			findChara = userData?.[0];
 			if (!findChara) {
-				const userName = user?.username ?? interaction.user.username;
-				if (charName) userName.concat(` (${charName})`);
+				let userName = `<@${user?.id ?? interaction.user.id}>`;
+				if (charName) userName += ` (${charName})` ;
 				await interaction.reply(ul("error.userNotRegistered", {user: userName}));
 				return;
 			}
@@ -111,7 +114,7 @@ export const displayUser = {
 				.setColor("Gold")
 				.addFields({
 					name: ul("common.user"),
-					value: user?.username ?? interaction.user.username,
+					value: `<@${user?.id ?? interaction.user.id}>`,
 					inline: true
 				})
 				.addFields({

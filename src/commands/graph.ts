@@ -95,8 +95,10 @@ const t = i18next.getFixedT("en");
 
 export const graph = {
 	data: new SlashCommandBuilder()
-		.setName("graph")
-		.setDescription("Generate a graph of the user's stats")
+		.setName(t("graph.name"))
+		.setNameLocalizations(cmdLn("graph.name"))
+		.setDescription(t("graph.description"))
+		.setDescriptionLocalizations(cmdLn("graph.description"))
 		.addUserOption(option =>
 			option
 				.setName(t("display.userLowercase"))

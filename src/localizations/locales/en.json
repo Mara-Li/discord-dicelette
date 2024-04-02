@@ -1,6 +1,7 @@
 {
   "button": {
-    "add": {},
+    "add": {
+    },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -54,7 +55,8 @@
       "title": "User registration"
     },
     "dice": "Skill Dice",
-    "edit": {},
+    "edit": {
+    },
     "stats": "Statistics",
     "template": "Model",
     "user": "Registered player"
@@ -95,6 +97,7 @@
     "userNotRegistered": "{{- user}} is not registered."
   },
   "generate": {
+    "description": "Generate server template for stats/dice commands",
     "help": "See [documentation](<https://dicelette.github.io/en/docs/model/register>) for template notation and help.\nYou can use ![this](<https://dicelette.github.io/en/docs/model/register/form>) to generate a template with a UI.",
     "name": "generate",
     "options": {
@@ -133,6 +136,7 @@
       "description": "Background color of the chart. By default: #0e47b2",
       "name": "background"
     },
+    "description": "Generate a graph of the user's stats",
     "line": {
       "description": "Line color. By default: #0e47b2",
       "name": "line"
@@ -144,7 +148,8 @@
     "min": {
       "description": "Minimum value for graph generation",
       "name": "min"
-    }
+    },
+    "name": "graph"
   },
   "help": {
     "description": "Display help",
@@ -158,10 +163,12 @@
       "edit": "{{- user}} modified the dice of {{- user}} (in {{- fiche}})",
       "remove": "{{- user}} deleted the dice from {{-char}} (in {{- fiche}})"
     },
-    "edit": {},
+    "edit": {
+    },
     "name": "logs",
     "options": "The channel to send logs to",
-    "removed": {},
+    "removed": {
+    },
     "set": "Logs configured in channel {{- channel}}",
     "stat": {
       "added": "{{- user}} modified the statistics of {{- user}} (in {{- fiche}})"
@@ -202,7 +209,8 @@
       "stats": "The statistics have been deleted"
     },
     "steps": "User Registration - Page {{- page}}/{{- max}}",
-    "template": {},
+    "template": {
+    },
     "user": {
       "description": "Enter the user attached to the character (id or global username)",
       "name": "user"

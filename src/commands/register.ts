@@ -15,7 +15,8 @@ export const generateTemplate = {
 	data: new SlashCommandBuilder()
 		.setName(t("generate.name"))
 		.setNameLocalizations(cmdLn("generate.name"))
-		.setDescription("Generate a template for the statistique command")
+		.setDescription(t("generate.description"))
+		.setDescriptionLocalizations(cmdLn("generate.description"))
 		.addStringOption(option =>
 			option
 				.setName(t("generate.options.stats.name"))
@@ -128,6 +129,7 @@ export const registerTemplate = {
 		.setNameLocalizations(cmdLn("register.name"))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 		.setDescription(t("register.description"))
+		.setDescriptionLocalizations(cmdLn("register.description"))
 		.addChannelOption(option =>
 			option
 				.setName(t("common.channel"))
@@ -277,6 +279,7 @@ export const registerTemplate = {
 export const logs = {
 	data: new SlashCommandBuilder()
 		.setName(t("logs.name"))
+		.setNameLocalizations(cmdLn("logs.name"))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 		.setDescription(t("logs.description"))
 		.setDescriptionLocalizations(cmdLn("logs.description"))
