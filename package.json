@@ -25,7 +25,7 @@
   "license": "GNU GPLv3",
   "dependencies": {
     "@dice-roller/rpg-dice-roller": "^5.5.0",
-    "@dicelette/core": "^1.0.10",
+    "@dicelette/core": "^1.1.1",
     "@discordjs/rest": "^2.2.0",
     "@lisandra-dev/eslint-config": "^1.1.4",
     "@types/parse-color": "^1.0.3",
