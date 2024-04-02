@@ -1,6 +1,0 @@
-[submodule "@core"]
-	path = @core
-	url = git@github.com:Dicelette/core.git
-[submodule "core"]
-	path = core
-	url = git@github.com:Dicelette/core.git

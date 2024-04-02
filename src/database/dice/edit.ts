@@ -1,5 +1,4 @@
-import { roll } from "@core/dice";
-import { evalStatsDice } from "@core/verify_template";
+import { evalStatsDice,roll } from "@dicelette/core";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 

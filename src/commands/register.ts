@@ -1,5 +1,4 @@
-import { Critical, Statistic, StatisticalTemplate } from "@core/interface";
-import { verifyTemplateValue } from "@core/verify_template";
+import { Critical, Statistic, StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
 import dedent from "ts-dedent";

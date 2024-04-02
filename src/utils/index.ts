@@ -1,4 +1,4 @@
-import { roll } from "@core/dice";
+import { roll } from "@dicelette/core";
 import { AnyThreadChannel, APIEmbedField, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, MediaChannel, ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
 import { TFunction } from "i18next";
 import { evaluate } from "mathjs";

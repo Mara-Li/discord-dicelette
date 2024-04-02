@@ -1,5 +1,4 @@
-import { StatisticalTemplate } from "@core/interface";
-import { verifyTemplateValue } from "@core/verify_template";
+import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import fs from "fs";
 import { TFunction } from "i18next";

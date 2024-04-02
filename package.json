@@ -7,27 +7,25 @@
   "scripts": {
     "init": "pnpm i && node install.js",
     "prebuild": "rm -rf dist",
-    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "build": "tsc",
     "prestart": "pnpm run build",
-    "start": "pm2 start dist/src/index.js --node-args='-r tsconfig-paths/register' --name dicelette --log-date-format=\"YYYY-MM-DD HH:mm Z\"",
-    "start:node": "node dist/src/index.js -r tsconfig-paths/register",
+    "start": "pm2 start dist/src/index.js --name dicelette --log-date-format=\"YYYY-MM-DD HH:mm Z\"",
+    "start:node": "node dist/src/index.js",
     "stop": "pm2 stop dicelette",
     "prerestart": "pnpm run build",
     "restart": "pm2 restart dicelette",
     "delete": "pm2 delete dicelette",
-    "dev": "ts-node-dev -r tsconfig-paths/register --respawn -- src/index.ts",
+    "dev": "tsx watch src/index.ts ",
     "dev:prod": "cross-env ENV=production ts-node-dev --respawn -- src/index.ts",
     "lint:fix": "eslint --fix --ext .ts src/",
     "test": "jest"
-  },
-  "_moduleAliases": {
-    "@core": "../@core"
   },
   "keywords": [],
   "author": "",
   "license": "GNU GPLv3",
   "dependencies": {
     "@dice-roller/rpg-dice-roller": "^5.5.0",
+    "@dicelette/core": "^1.0.10",
     "@discordjs/rest": "^2.2.0",
     "@lisandra-dev/eslint-config": "^1.1.4",
     "@types/parse-color": "^1.0.3",
@@ -59,6 +57,7 @@
     "parse-color": "^1.0.0",
     "ts-jest": "^29.1.2",
     "tsc-alias": "^1.8.8",
+    "tsx": "^4.7.1",
     "typescript": "^5.4.3"
   }
 }

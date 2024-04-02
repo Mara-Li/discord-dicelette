@@ -24,18 +24,15 @@
         ],
         "sourceMap": false,
         "baseUrl": ".",
-        "paths": {
-            "@core/*" : ["./@core/core/*"],
-        }
     },
     "files": [
         "src/index.ts"
     ],
     "include": [
         "./**/*.ts",
+        "node_modules/@dicelette/core/**/*.ts",
     ],
     "exclude": [
-        "node_modules",
-        "dist"
+        "dist",
     ],
 }

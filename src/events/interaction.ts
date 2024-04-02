@@ -1,4 +1,4 @@
-import { StatisticalTemplate } from "@core/interface";
+import { StatisticalTemplate } from "@dicelette/core";
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
 import { TFunction } from "i18next";
 

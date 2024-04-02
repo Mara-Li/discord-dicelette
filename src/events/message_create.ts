@@ -1,6 +1,5 @@
 /* eslint-disable no-useless-escape */
-import { COMMENT_REGEX, roll } from "@core/dice";
-import { Resultat } from "@core/interface";
+import { COMMENT_REGEX, Resultat,roll } from "@dicelette/core";
 import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 
 import { deleteAfter } from "../commands/base";
