@@ -5,7 +5,7 @@ import dedent from "ts-dedent";
 
 import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
-import { title } from "../utils";
+import { downloadTutorialImages, title } from "../utils";
 import { bulkEditTemplateUser } from "../utils/parse";
 
 const t = i18next.getFixedT("en");
@@ -234,7 +234,9 @@ export const registerTemplate = {
 		}
 		const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
 		msg.pin();
-		await interaction.reply({ content: ul("register.embed.registered"), ephemeral: true });
+		
+		await interaction.reply({ content: ul("register.embed.registered"), files: await downloadTutorialImages() });
+
 		//save in database file
 		const data = fs.readFileSync("database.json", "utf-8");
 		const json = JSON.parse(data);

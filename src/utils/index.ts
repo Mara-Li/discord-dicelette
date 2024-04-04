@@ -1,5 +1,5 @@
 import { roll } from "@dicelette/core";
-import { AnyThreadChannel, APIEmbedField, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, MediaChannel, ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
+import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, MediaChannel,ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
 import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
@@ -8,7 +8,7 @@ import removeAccents from "remove-accents";
 import { deleteAfter } from "../commands/base";
 import { parseResult } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
-import { GuildData, UserData} from "../interface";
+import { GuildData, TUTORIAL_IMAGES, UserData} from "../interface";
 import { ln } from "../localizations";
 import { editUserButtons } from "./buttons";
 import { guildInteractionData, registerManagerID, registerUser } from "./db";
@@ -313,3 +313,13 @@ export async function searchUserChannel(guildData: GuildData, interaction: BaseI
 	return thread;
 }
 
+
+export async function downloadTutorialImages() {
+	const imageBufferAttachments: AttachmentBuilder[] = [];
+	for (const url of TUTORIAL_IMAGES) {
+		const index = TUTORIAL_IMAGES.indexOf(url);
+		const newMessageAttachment = new AttachmentBuilder(url, {name:`tutorial_${index}.png`});
+		imageBufferAttachments.push(newMessageAttachment);
+	}
+	return imageBufferAttachments;
+}
