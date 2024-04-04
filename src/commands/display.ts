@@ -14,6 +14,7 @@ export const displayUser = {
 		.setName(t("display.title"))
 		.setDescription(t("display.description"))
 		.setNameLocalizations(cmdLn("display.title"))
+		.setDefaultMemberPermissions(0)
 		.setDescriptionLocalizations(cmdLn("display.description"))
 		.addUserOption(option =>
 			option

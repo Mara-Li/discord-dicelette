@@ -14,6 +14,7 @@ export const generateTemplate = {
 	data: new SlashCommandBuilder()
 		.setName(t("generate.name"))
 		.setNameLocalizations(cmdLn("generate.name"))
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 		.setDescription(t("generate.description"))
 		.setDescriptionLocalizations(cmdLn("generate.description"))
 		.addStringOption(option =>
