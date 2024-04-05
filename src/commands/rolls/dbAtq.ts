@@ -4,7 +4,7 @@ import removeAccents from "remove-accents";
 
 import { cmdLn, ln } from "../../localizations";
 import { default as i18next } from "../../localizations/i18next";
-import { filterChoices, generateStatsDice, rollWithInteraction, title } from "../../utils";
+import { filterChoices, generateStatsDice, reply, rollWithInteraction, title } from "../../utils";
 import { getUserData, getUserFromMessage,guildInteractionData } from "../../utils/db";
 
 const t = i18next.getFixedT("en");
@@ -97,7 +97,7 @@ export const dmgRoll = {
 				//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
-					await interaction.reply({ content: ul("error.notRegistered"), ephemeral: true });
+					await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
@@ -105,11 +105,11 @@ export const dmgRoll = {
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
-				await interaction.reply({ content: ul("error.notRegistered"), ephemeral: true });
+				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
 				return;
 			}
 			if (!userStatistique.damage) {
-				await interaction.reply({ content: ul("error.emptyDamage"), ephemeral: true });
+				await reply(interaction,{ content: ul("error.emptyDamage"), ephemeral: true });
 				return;
 			}
 			const charNameComments = charOptions ? ` • **@${title(charOptions)}**` : "";
@@ -117,7 +117,7 @@ export const dmgRoll = {
 			//search dice
 			let dice = userStatistique.damage?.[atq.toLowerCase()];
 			if (!dice) {
-				await interaction.reply({ content: ul("error.noDamage", {atq: title(atq), charName: charName ?? ""}), ephemeral: true });
+				await reply(interaction,{ content: ul("error.noDamage", {atq: title(atq), charName: charName ?? ""}), ephemeral: true });
 				return;
 			}
 			dice = generateStatsDice(dice, userStatistique.stats);
@@ -133,7 +133,7 @@ export const dmgRoll = {
 			await rollWithInteraction(interaction, roll, interaction.channel);
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: t("error.generic", {e: (error as Error)}), ephemeral: true });
+			await reply(interaction,{ content: t("error.generic", {e: (error as Error)}), ephemeral: true });
 			return;
 		}
 	},

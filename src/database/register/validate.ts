@@ -5,7 +5,7 @@ import { TFunction } from "i18next";
 
 import { UserData } from "../../interface";
 import { ln } from "../../localizations";
-import {removeEmoji, removeEmojiAccents, repostInThread, title } from "../../utils";
+import {removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
 import { createEmbedsList, ensureEmbed,parseEmbedFields } from "../../utils/parse";
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "..";
@@ -27,7 +27,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	const userFromField = interaction.fields.getTextInputValue("userID");
 	const user = interaction.guild?.members.cache.find(member => member.id.toLowerCase() === userFromField.toLowerCase() || member.user.username.toLowerCase() === userFromField.toLowerCase());
 	if (!user) {	
-		interaction.reply({ content: ul("error.user"), ephemeral: true });
+		reply(interaction,{ content: ul("error.user"), ephemeral: true });
 		return;
 	}
 	const charName = interaction.fields.getTextInputValue("charName");
@@ -42,11 +42,11 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 		);
 	//add continue button
 	if (template.statistics) {
-		await interaction.reply({ embeds: [embed], components: [continueCancelButtons(ul)] });
+		await reply(interaction,{ embeds: [embed], components: [continueCancelButtons(ul)] });
 		return;
 	}
 	const allButtons = registerDmgButton(ul);
-	await interaction.reply({ embeds: [embed], components: [allButtons] });	
+	await reply(interaction,{ embeds: [embed], components: [allButtons] });	
 }
 
 /**
@@ -63,7 +63,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	if (charName && charName === ul("common.noSet"))
 		charName = undefined;
 	if (!userID) {
-		await interaction.reply({ content: ul("error.user"), ephemeral: true });
+		await reply(interaction,{ content: ul("error.user"), ephemeral: true });
 		return;
 	}
 	userID = userID.replace("<@", "").replace(">", "");
@@ -162,7 +162,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	//await interaction?.message?.delete();
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
 	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: userDataEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false});
-	await interaction.reply({ content: ul("modals.finished"), ephemeral: true });
+	if (interaction.replied) await interaction.editReply({ content: ul("modals.finished") });
 	return;
 }
 
@@ -177,6 +177,6 @@ export async function button_validate_user(interaction: ButtonInteraction, inter
 	if (isModerator)
 		await validateUser(interaction, template);
 	else
-		await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
+		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 }
 

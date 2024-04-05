@@ -6,7 +6,7 @@ import path from "path";
 
 import { UserData } from "../../interface";
 import { cmdLn, ln } from "../../localizations";
-import { filterChoices, removeEmojiAccents, sendLogs, title } from "../../utils";
+import { filterChoices, removeEmojiAccents, reply, sendLogs, title } from "../../utils";
 import { getTemplateWithDB, getUserData, getUserFromMessage,guildInteractionData } from "../../utils/db";
 
 async function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string, min?: number, max?: number) {
@@ -174,12 +174,12 @@ export const graph = {
 		let max = options.getNumber(t("graph.max.name")) ?? undefined;
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
-			await interaction.reply(ul("error.noTemplate"));
+			await reply(interaction,ul("error.noTemplate"));
 			return;
 		}
 		const serverTemplate = await getTemplateWithDB(interaction);
 		if (!guildData.templateID.statsName || !serverTemplate?.statistics) {
-			await interaction.reply(ul("error.noStats"));
+			await reply(interaction,ul("error.noStats"));
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
@@ -208,7 +208,7 @@ export const graph = {
 			if (!findChara) {
 				const userName = user?.username ?? interaction.user.username;
 				if (charName) userName.concat(` (${charName})`);
-				await interaction.reply(ul("error.userNotRegistered", {user: userName}));
+				await reply(interaction,ul("error.userNotRegistered", {user: userName}));
 				return;
 			}
 			charData = {
@@ -222,7 +222,7 @@ export const graph = {
 			const userStatistique = await getUserFromMessage(guildData, userId, interaction.guild, interaction, charName, false);
 
 			if (!userStatistique || !userStatistique.stats) {
-				await interaction.reply(ul("error.notRegistered"));
+				await reply(interaction,ul("error.notRegistered"));
 				return;
 			}
 			const labels = guildData.templateID.statsName;
@@ -266,12 +266,12 @@ export const graph = {
 			}
 			const image = await imagePersonalized(userStatistique, filteredLabels, color.line, color.background, min, max);
 			if (!image) {
-				await interaction.reply(ul("error.noMessage"));
+				await reply(interaction,ul("error.noMessage"));
 				return;
 			}
-			await interaction.reply({ files: [image] });
+			await reply(interaction,{ files: [image] });
 		} catch (error) {
-			await interaction.reply(ul("error.generic", {e: (error as Error)}));
+			await reply(interaction,ul("error.generic", {e: (error as Error)}));
 			sendLogs(ul("error.generic", {e: (error as Error)}), interaction, interaction.guild);
 			console.log(error);
 		}

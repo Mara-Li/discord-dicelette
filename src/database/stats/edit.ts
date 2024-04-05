@@ -2,7 +2,7 @@ import { evalOneCombinaison } from "@dicelette/core";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
-import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, sendLogs, title } from "../../utils";
+import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, reply, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { getTemplateWithDB,guildInteractionData } from "../../utils/db";
 import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
@@ -101,13 +101,13 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		const toAdd = removeEmbedsFromList(list, "stats", ul);
 		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
-		await interaction.reply({ content: ul("modals.removed.stats"), ephemeral: true });
+		await reply(interaction,{ content: ul("modals.removed.stats"), ephemeral: true });
 		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
 	}
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 	await interaction.message.edit({ embeds: list });
-	await interaction.reply({ content: ul("embeds.edit.stats"), ephemeral: true });
+	await reply(interaction,{ content: ul("embeds.edit.stats"), ephemeral: true });
 	const compare = displayOldAndNewStats(statsEmbeds.toJSON().fields, fieldsToAppend);
 	const logMessage = ul("logs.stat.added", {
 		user: userMention(interaction.user.id), 
@@ -178,5 +178,5 @@ export async function start_edit_stats(interaction: ButtonInteraction, ul: TFunc
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
 		showEditorStats(interaction, ul);
-	else await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
+	else await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 }

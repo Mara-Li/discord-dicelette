@@ -3,7 +3,7 @@ import i18next from "i18next";
 
 import { createDiceEmbed, createStatsEmbed } from "../../database";
 import { cmdLn,ln } from "../../localizations";
-import { filterChoices, searchUserChannel, title } from "../../utils";
+import { filterChoices, reply, searchUserChannel, title } from "../../utils";
 import { getUserData,guildInteractionData } from "../../utils/db";
 import { getEmbeds } from "../../utils/parse";
 
@@ -58,7 +58,7 @@ export const displayUser = {
 		const guildData = guildInteractionData(interaction);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
-			await interaction.reply(ul("error.noTemplate"));
+			await reply(interaction, ul("error.noTemplate"));
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
@@ -90,7 +90,7 @@ export const displayUser = {
 			if (!findChara) {
 				let userName = `<@${user?.id ?? interaction.user.id}>`;
 				if (charName) userName += ` (${charName})` ;
-				await interaction.reply(ul("error.userNotRegistered", {user: userName}));
+				await reply(interaction, ul("error.userNotRegistered", {user: userName}));
 				return;
 			}
 			charData = {
@@ -106,7 +106,7 @@ export const displayUser = {
 			const diceFields = diceEmbed?.toJSON().fields;
 			const statsFields = statisticEmbed?.toJSON().fields;
 			if (!statisticEmbed || !diceEmbed || !diceFields || !statsFields) {
-				await interaction.reply(ul("error.user"));
+				await reply(interaction, ul("error.user"));
 				return;
 			}
 			const displayEmbed = new EmbedBuilder()
@@ -125,9 +125,9 @@ export const displayUser = {
 				});
 			const newStatEmbed = createStatsEmbed(ul).addFields(statsFields);
 			const newDiceEmbed = createDiceEmbed(ul).addFields(diceFields);
-			await interaction.reply({ embeds: [displayEmbed, newStatEmbed, newDiceEmbed] });	
+			await reply(interaction, { embeds: [displayEmbed, newStatEmbed, newDiceEmbed] });	
 		} catch (error) {
-			await interaction.reply(ul("error.noMessage"));
+			await reply(interaction, ul("error.noMessage"));
 			return;
 		}
 		

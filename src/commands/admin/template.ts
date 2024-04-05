@@ -5,7 +5,7 @@ import dedent from "ts-dedent";
 
 import { cmdLn, ln } from "../../localizations";
 import { default as i18next } from "../../localizations/i18next";
-import { downloadTutorialImages, title } from "../../utils";
+import { downloadTutorialImages, reply, title } from "../../utils";
 import { bulkEditTemplateUser } from "../../utils/parse";
 
 const t = i18next.getFixedT("en");
@@ -119,7 +119,7 @@ export const generateTemplate = {
 			damage: atqDice
 		};
 		const help = dedent(ul("generate.help"));
-		await interaction.reply({ content: help, files: [{ attachment: Buffer.from(JSON.stringify(statistiqueTemplate, null, 2), "utf-8"), name: "template.json" }]});
+		await reply(interaction, { content: help, files: [{ attachment: Buffer.from(JSON.stringify(statistiqueTemplate, null, 2), "utf-8"), name: "template.json" }]});
 	}
 };
 
@@ -158,6 +158,7 @@ export const registerTemplate = {
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
+		await interaction.deferReply({ ephemeral: true });
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const ul = ln(interaction.locale as Locale);
 		const template = options.getAttachment(t("register.options.template.name"), true);
@@ -171,7 +172,7 @@ export const registerTemplate = {
 			(!(channel instanceof TextChannel) && (!(channel instanceof ThreadChannel))) || 
 			(!userChan && !(channel instanceof TextChannel))
 		) {
-			await interaction.reply({ content: ul("error.userChan", {chan: channelMention(channel.id)}), ephemeral: true });
+			await reply(interaction, { content: ul("error.userChan", {chan: channelMention(channel.id)}), ephemeral: true });
 			return;
 		}
 		
@@ -187,7 +188,7 @@ export const registerTemplate = {
 			.setColor("Random");
 			
 		if (templateData.statistics && (Object.keys(templateData.statistics).length >= 20)) {
-			interaction.reply({ content: ul("error.tooMuchStats"), ephemeral: true });
+			await reply(interaction, { content: ul("error.tooMuchStats"), ephemeral: true });
 			return;
 		}
 		if (templateData.statistics) {	
@@ -234,9 +235,7 @@ export const registerTemplate = {
 		}
 		const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
 		msg.pin();
-		
-		await interaction.reply({ content: ul("register.embed.registered"), files: await downloadTutorialImages() });
-
+	
 		//save in database file
 		const data = fs.readFileSync("database.json", "utf-8");
 		const json = JSON.parse(data);
@@ -275,5 +274,6 @@ export const registerTemplate = {
 		}
 		await bulkEditTemplateUser(json[guildData], interaction, ul, templateData);
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
+		await reply(interaction, { content: ul("register.embed.registered"), files: await downloadTutorialImages() });
 	}	
 };

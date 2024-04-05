@@ -1,5 +1,5 @@
 import { roll } from "@dicelette/core";
-import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, MediaChannel,ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
+import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
 import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
@@ -32,12 +32,12 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	const rollDice = roll(dice);
 	if (!rollDice) {
 		console.error("no valid dice :", dice);
-		await interaction.reply({ content: ul("error.invalidDice.withDice", {dice}), ephemeral: true });
+		await reply(interaction,{ content: ul("error.invalidDice.withDice", {dice}), ephemeral: true });
 		return;
 	}
 	const parser = parseResult(rollDice, ul, critical);
 	if (channel.name.startsWith("🎲")) {
-		await interaction.reply({ content: parser });
+		await reply(interaction,{ content: parser });
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
@@ -48,7 +48,7 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
 	const idMessage = `↪ ${msgToEdit.url}`;
-	const inter = await interaction.reply({ content: `${parser}\n\n${idMessage}`});
+	const inter = await reply(interaction,{ content: `${parser}\n\n${idMessage}`});
 	deleteAfter(inter, 180000);
 	return;
 	
@@ -303,8 +303,10 @@ export async function searchUserChannel(guildData: GuildData, interaction: BaseI
 		registerManagerID(guildData, interaction, thread?.id);
 	}
 	if (!thread) {
-		if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction))
-			await interaction.reply(ul("error.noThread"));
+		if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction)) {
+			if (interaction.replied) await interaction.editReply(ul("error.noThread"));
+			else await reply(interaction,ul("error.noThread"));
+		}
 		else
 			await sendLogs(ul("error.noThread"), interaction, interaction.guild as Guild);
 		return;
@@ -321,4 +323,8 @@ export async function downloadTutorialImages() {
 		imageBufferAttachments.push(newMessageAttachment);
 	}
 	return imageBufferAttachments;
+}
+
+export async function reply(interaction: CommandInteraction | ModalSubmitInteraction | ButtonInteraction, options: string | InteractionReplyOptions | MessagePayload) {
+	return interaction.replied || interaction.deferred ? await interaction.editReply(options) : await interaction.reply(options);
 }

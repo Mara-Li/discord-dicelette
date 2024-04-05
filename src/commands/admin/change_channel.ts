@@ -3,6 +3,7 @@ import fs from "fs";
 import { t } from "i18next";
 
 import { cmdLn, ln } from "../../localizations";
+import { reply } from "../../utils";
 
 export const logs = {
 	data: new SlashCommandBuilder()
@@ -32,7 +33,7 @@ export const logs = {
 		const guildData = interaction.guild.id;
 		json[guildData].logs = channel.id;
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
-		await interaction.reply({ content: ul("logs.set", {channel: channel.name}), ephemeral: true });
+		await reply(interaction, { content: ul("logs.set", {channel: channel.name}), ephemeral: true });
 	}
 };
 
@@ -62,6 +63,6 @@ export const changeThread = {
 		const guildData = interaction.guild!.id;
 		json[guildData].rollChannel = channel.id;
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
-		await interaction.reply(ul("changeThread.set", {channel: channelMention(channel.id)}));
+		await reply(interaction, ul("changeThread.set", {channel: channelMention(channel.id)}));
 	}
 };

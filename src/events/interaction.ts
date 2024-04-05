@@ -9,6 +9,7 @@ import { continuePage,open_register_user,pageNumber, submit_firstPage } from "..
 import { button_validate_user } from "../database/register/validate";
 import { editStats,start_edit_stats } from "../database/stats/edit";
 import { lError,ln } from "../localizations";
+import { reply } from "../utils";
 import { getTemplate, getTemplateWithDB,readDB } from "../utils/db";
 import { ensureEmbed } from "../utils/parse";
 
@@ -36,7 +37,7 @@ export default (client: Client): void => {
 				let template = await getTemplate(interaction);
 				template = template ? template : await getTemplateWithDB(interaction);
 				if (!template) {
-					await interaction.reply({ content: ul("error.noTemplate")});
+					await interaction.channel?.send({ content: ul("error.noTemplate")});
 					return;
 				}
 				await buttonSubmit(interaction, ul, interactionUser, template);
@@ -48,7 +49,7 @@ export default (client: Client): void => {
 			if (!interaction.guild) return;
 			const msgError = lError(error as Error, interaction);
 			if (interaction.isButton() || interaction.isModalSubmit() || interaction.isCommand())
-				await interaction.reply({ content: msgError, ephemeral: true });
+				await reply(interaction, msgError);
 			const db = readDB(interaction.guild.id);
 			if (!db) return;
 			if (db.db.logs) {
@@ -116,6 +117,6 @@ async function cancel(interaction: ButtonInteraction, ul: TFunction<"translation
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
 		await interaction.message.edit({ components: [] });
-	else await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
+	else await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 }
 

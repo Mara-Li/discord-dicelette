@@ -2,7 +2,7 @@ import { evalCombinaison,StatisticalTemplate } from "@dicelette/core";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
 import { lError,ln } from "../../localizations";
-import { removeEmojiAccents, title } from "../../utils";
+import { removeEmojiAccents, reply, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
 import { ensureEmbed,getStatistiqueFields } from "../../utils/parse";
 
@@ -60,19 +60,19 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				}
 			} catch (error) {
 				const errorMsg = lError(error as Error, interaction);
-				await interaction.reply({ content: errorMsg, ephemeral: true });
+				await reply(interaction,{ content: errorMsg, ephemeral: true });
 				return;
 			}
 			await interaction.message.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
-			await interaction.reply({ content: ul("modals.added.stats"), ephemeral: true });
+			await reply(interaction,{ content: ul("modals.added.stats"), ephemeral: true });
 			return;
 		}
 		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
-		await interaction.reply({ content: ul("modals.added.stats"), ephemeral: true });
+		await reply(interaction,{ content: ul("modals.added.stats"), ephemeral: true });
 		return;
 	} catch (error) {
 		const errorMsg = lError(error as Error, interaction);
-		await interaction.reply({ content: errorMsg, ephemeral: true });
+		await reply(interaction,{ content: errorMsg, ephemeral: true });
 	}
 }
 
@@ -101,7 +101,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		if (statToDisplay.length === 0) {
 			//remove button
 			const button = registerDmgButton(ul);
-			await interaction.reply({ content: ul("modals.alreadySet"), ephemeral: true });
+			await reply(interaction,{ content: ul("modals.alreadySet"), ephemeral: true });
 			await interaction.message.edit({ components: [button] });
 		}
 	}

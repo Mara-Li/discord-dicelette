@@ -3,7 +3,7 @@ import removeAccents from "remove-accents";
 
 import { cmdLn, lError, ln } from "../../localizations";
 import { default as i18next } from "../../localizations/i18next";
-import {filterChoices, replaceFormulaInDice, rollWithInteraction, title } from "../../utils";
+import {filterChoices, replaceFormulaInDice, reply, rollWithInteraction, title } from "../../utils";
 import { getUserData, getUserFromMessage,guildInteractionData } from "../../utils/db";
 
 const t = i18next.getFixedT("en");
@@ -96,7 +96,7 @@ export const rollForUser = {
 			//find the first character registered
 				const userData = getUserData(guildData, interaction.user.id);
 				if (!userData) {
-					await interaction.reply({ content: ul("error.notRegistered"), ephemeral: true });
+					await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
@@ -104,11 +104,11 @@ export const rollForUser = {
 				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
-				await interaction.reply({ content: ul("error.notRegistered"), ephemeral: true });
+				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
 				return;
 			}
 			if (!userStatistique.stats) {
-				await interaction.reply({ content: ul("error.noStats"), ephemeral: true });
+				await reply(interaction,{ content: ul("error.noStats"), ephemeral: true });
 				return;
 			}
 			//create the string for roll
@@ -121,7 +121,7 @@ export const rollForUser = {
 			const template = userStatistique.template;
 			let dice = template.diceType?.replaceAll("$", userStat.toString());
 			if (!dice) {
-				await interaction.reply({ content: ul("error.noDice"), ephemeral: true });
+				await reply(interaction,{ content: ul("error.noDice"), ephemeral: true });
 				return;
 			}
 			if (override) {
@@ -150,7 +150,7 @@ export const rollForUser = {
 		catch (error) {
 			console.error(error);
 			const msgError = lError(error as Error, interaction);
-			await interaction.reply({ content: msgError, ephemeral: true });
+			await reply(interaction,{ content: msgError, ephemeral: true });
 		}
 	}
 };

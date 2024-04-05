@@ -3,7 +3,7 @@ import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBui
 import { TFunction } from "i18next";
 
 import { ln } from "../../localizations";
-import { removeEmojiAccents } from "../../utils";
+import { removeEmojiAccents, reply } from "../../utils";
 import { getTemplateWithDB } from "../../utils/db";
 import { parseEmbed } from "../../utils/parse";
 import { embedStatistiques, showStatistiqueModal } from "../stats/add";
@@ -21,7 +21,7 @@ import { createEmbedFirstPage } from "./validate";
 export async function continuePage(interaction: ButtonInteraction, dbTemplate: StatisticalTemplate, ul: TFunction<"translation", undefined>, interactionUser: User) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (!isModerator) {
-		await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
+		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 		return;
 	}
 	const embed = parseEmbed(interaction);
@@ -31,7 +31,7 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
 	const allTemplateStat = Object.keys(dbTemplate.statistics).map(stat => removeEmojiAccents(stat));
 	const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(removeEmojiAccents(stat))).map(stat => removeEmojiAccents(stat));
 	if (statsAlreadySet.length === allTemplateStat.length) {
-		await interaction.reply({ content: ul("modals.alreadySet"), ephemeral: true });
+		await reply(interaction,{ content: ul("modals.alreadySet"), ephemeral: true });
 		return;
 	}
 	const page = isNaN(parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : parseInt(interaction.customId.replace("page", ""), 10) + 1;
@@ -49,7 +49,7 @@ export async function pageNumber(interaction: ModalSubmitInteraction, ul: TFunct
 	if (isNaN(pageNumber)) return;
 	const template = await getTemplateWithDB(interaction);
 	if (!template) {
-		await interaction.reply({ content: ul("error.noTemplate") });
+		await reply(interaction,{ content: ul("error.noTemplate") });
 		return;
 	}
 	await embedStatistiques(interaction, template, pageNumber);
@@ -112,6 +112,6 @@ export async function open_register_user(interaction: ButtonInteraction, templat
 	if (isModerator)
 		await showFirstPageModal(interaction, template);
 	else
-		await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
+		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 }
 

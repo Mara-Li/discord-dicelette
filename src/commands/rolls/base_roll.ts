@@ -14,7 +14,7 @@ import dedent from "ts-dedent";
 
 import { cmdLn, ln } from "../../localizations";
 import { default as i18next } from "../../localizations/i18next";
-import { rollWithInteraction , setTagsForRoll } from "../../utils";
+import { reply, rollWithInteraction , setTagsForRoll } from "../../utils";
 
 const t = i18next.getFixedT("en");
 
@@ -49,7 +49,7 @@ export const diceRoll = {
 			await rollWithInteraction(interaction, dice, channel);
 		} catch (error) {
 			console.error("no valid dice :", dice, error);
-			await interaction.reply({ content: ul("error.invalidDice.withError", {error: (error as Error).message, dice}), ephemeral: true });
+			await reply(interaction,{ content: ul("error.invalidDice.withError", {error: (error as Error).message, dice}), ephemeral: true });
 			return;
 		}
 	},
@@ -88,7 +88,7 @@ export const newScene = {
 		const bubble = option.getBoolean(t("scene.time.name"));
 		const ul = ln(interaction.locale as Locale);
 		if (!scene && !bubble) {
-			await interaction.reply({ content: ul("scene.noScene"), ephemeral: true });
+			await reply(interaction,{ content: ul("scene.noScene"), ephemeral: true });
 			return;
 		}
 		//archive old threads
@@ -115,8 +115,8 @@ export const newScene = {
 			});
 
 			const threadMention = channelMention(newThread.id);
-			const reply = await interaction.reply({ content: ul("scene.interaction", {scene: threadMention}) });
-			deleteAfter(reply, 180000);
+			const msgReply = await reply(interaction,{ content: ul("scene.interaction", {scene: threadMention}) });
+			deleteAfter(msgReply, 180000);
 			const rollID = allCommands.findKey(command => command.name === "roll");
 			const msgToEdit = await newThread.send("_ _");
 			const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${ul("scene.underscore")} ${scene}\n*roll: </roll:${rollID}>*`;
@@ -139,8 +139,8 @@ export const help = {
 		const sceneID = commandsID.findKey(command => command.name === "scene");
 		const ul = ln(interaction.locale as Locale);
 		const message = ul("help.message", {rollId: rollID, sceneId: sceneID});
-		const reply = await interaction.reply({ content: dedent(message)});
-		deleteAfter(reply, 60000);
+		const replyMsg = await reply(interaction,{ content: dedent(message)});
+		deleteAfter(replyMsg, 60000);
 		return;
 	}
 };

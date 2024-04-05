@@ -2,7 +2,7 @@ import { evalStatsDice,roll } from "@dicelette/core";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
-import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, sendLogs, title } from "../../utils";
+import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, reply, sendLogs, title } from "../../utils";
 import { editUserButtons } from "../../utils/buttons";
 import { registerUser } from "../../utils/db";
 import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
@@ -120,12 +120,12 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		const toAdd = removeEmbedsFromList(embedsList.list, "damage", ul);
 		const components = editUserButtons(ul, embedsList.exists.stats, false);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
-		await interaction.reply({ content: ul("modals.removed.dice"), ephemeral: true });
+		await reply(interaction,{ content: ul("modals.removed.dice"), ephemeral: true });
 		registerUser(userID, interaction, interaction.message.id, thread, userName, undefined, false);
 		await sendLogs(ul("logs.dice.remove", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
 		return;
 	} else if (fieldsToAppend.length > 25) {
-		await interaction.reply({ content: ul("error.tooMuchDice"), ephemeral: true });
+		await reply(interaction,{ content: ul("error.tooMuchDice"), ephemeral: true });
 		return;
 	}
 	const skillDiceName = Object.keys(fieldsToAppend.reduce((acc, field) => {
@@ -135,7 +135,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	registerUser(userID, interaction, interaction.message.id, thread, userName, skillDiceName, false);
 	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
-	await interaction.reply({ content: ul("embeds.edit.dice"), ephemeral: true });
+	await reply(interaction,{ content: ul("embeds.edit.dice"), ephemeral: true });
 	const compare = displayOldAndNewStats(diceEmbeds.toJSON().fields, fieldsToAppend);
 	const logMessage = ul("logs.dice.edit", {
 		user: userMention(interaction.user.id), 
@@ -158,6 +158,6 @@ export async function start_edit_dice(interaction: ButtonInteraction, ul: TFunct
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
 		await showEditDice(interaction, ul);
-	else await interaction.reply({ content: ul("modals.noPermission"), ephemeral: true });
+	else await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 }
 
