@@ -11,6 +11,12 @@
     },
     "validate": "Valider"
   },
+  "changeThread": {
+    "description": "Enregistrer un channel pour envoyer les résultats des dés (désactiver la création automatique des threads) ",
+    "name": "result_channel",
+    "options": "Channel des résultats",
+    "set": "Le channel {{- channel}} a été enregistré pour y envoyer les résultats des dés."
+  },
   "common": {
     "channel": "channel",
     "charName": "Nom du personnage",

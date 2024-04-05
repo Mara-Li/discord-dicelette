@@ -312,24 +312,29 @@ export const logs = {
 
 export const changeThread = {
 	data: new SlashCommandBuilder()
-		.setName("set_channel")
-		.setDescription("Register a channel for roll (disabling auto thread creation and send all result here")
+		.setName(t("changeThread.name"))
+		.setNameLocalizations(cmdLn("changeThread.name"))
+		.setDescription(t("changeThread.description"))
+		.setDescriptionLocalizations(cmdLn("changeThread.description"))
 		.setDMPermission(false)
 		.addChannelOption(option =>
 			option
-				.setName("channel")
-				.setDescription("The channel to register")
+				.setName(t("common.channel"))
+				.setNameLocalizations(cmdLn("common.channel"))
+				.setDescription(t("changeThread.options"))
+				.setDescriptionLocalizations(cmdLn("changeThread.options"))
 				.setRequired(true)
 				.addChannelTypes(ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread)
 		),
 	async execute(interaction: CommandInteraction): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const channel = options.getChannel("channel", true);
+		const ul = ln(interaction.locale as Locale);
 		const data = fs.readFileSync("database.json", "utf-8");
 		const json = JSON.parse(data);
 		const guildData = interaction.guild!.id;
 		json[guildData].rollChannel = channel.id;
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
-		await interaction.reply(`Channel ${channelMention(channel.id)} registered for roll`);
+		await interaction.reply(ul("changeThread.set", {channel: channelMention(channel.id)}));
 	}
 };
