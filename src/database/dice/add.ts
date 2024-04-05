@@ -1,4 +1,4 @@
-import { evalStatsDice } from "@core/verify_template";
+import { evalStatsDice } from "@dicelette/core";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Guild, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 

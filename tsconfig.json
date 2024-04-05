@@ -24,9 +24,6 @@
         ],
         "sourceMap": false,
         "baseUrl": ".",
-        "paths": {
-            "@core/*" : ["./@core/core/*"],
-        }
     },
     "files": [
         "src/index.ts"
@@ -35,7 +32,7 @@
         "./**/*.ts",
     ],
     "exclude": [
-        "node_modules",
-        "dist"
+        "dist",
+        "node_modules"
     ],
 }

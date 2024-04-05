@@ -96,6 +96,7 @@ const t = i18next.getFixedT("en");
 export const graph = {
 	data: new SlashCommandBuilder()
 		.setName(t("graph.name"))
+		.setDefaultMemberPermissions(0)
 		.setNameLocalizations(cmdLn("graph.name"))
 		.setDescription(t("graph.description"))
 		.setDescriptionLocalizations(cmdLn("graph.description"))

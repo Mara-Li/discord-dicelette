@@ -1,12 +1,11 @@
-import { Critical, Statistic, StatisticalTemplate } from "@core/interface";
-import { verifyTemplateValue } from "@core/verify_template";
+import { Critical, Statistic, StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import fs from "fs";
 import dedent from "ts-dedent";
 
 import { cmdLn, ln } from "../localizations";
 import { default as i18next } from "../localizations/i18next";
-import { title } from "../utils";
+import { downloadTutorialImages, title } from "../utils";
 import { bulkEditTemplateUser } from "../utils/parse";
 
 const t = i18next.getFixedT("en");
@@ -15,6 +14,7 @@ export const generateTemplate = {
 	data: new SlashCommandBuilder()
 		.setName(t("generate.name"))
 		.setNameLocalizations(cmdLn("generate.name"))
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 		.setDescription(t("generate.description"))
 		.setDescriptionLocalizations(cmdLn("generate.description"))
 		.addStringOption(option =>
@@ -234,7 +234,9 @@ export const registerTemplate = {
 		}
 		const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
 		msg.pin();
-		await interaction.reply({ content: ul("register.embed.registered"), ephemeral: true });
+		
+		await interaction.reply({ content: ul("register.embed.registered"), files: await downloadTutorialImages() });
+
 		//save in database file
 		const data = fs.readFileSync("database.json", "utf-8");
 		const json = JSON.parse(data);

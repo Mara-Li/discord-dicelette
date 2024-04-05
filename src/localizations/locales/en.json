@@ -232,7 +232,7 @@
       "damage": "Damage dice",
       "description": "Click the button to register a character",
       "noValue": "No value",
-      "registered": "Model registered!",
+      "registered": "Registered model!\n\nBy default, the dice and display controls (as well as the graph) are disabled by default.\n\nTo authorize your players to use them, please follow the following tutorial:\n",
       "title": "Model"
     },
     "name": "register",

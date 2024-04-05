@@ -1,5 +1,4 @@
-import { StatisticalTemplate } from "@core/interface";
-import {evalCombinaison } from "@core/verify_template";
+import { evalCombinaison,StatisticalTemplate } from "@dicelette/core";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
 import { lError,ln } from "../../localizations";

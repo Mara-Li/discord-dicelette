@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {StatisticalTemplate} from "@core/interface";
+import {StatisticalTemplate} from "@dicelette/core";
 import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, PermissionsBitField, User, userMention } from "discord.js";
 import { TFunction } from "i18next";
 
