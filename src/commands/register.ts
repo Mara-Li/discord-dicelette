@@ -310,3 +310,26 @@ export const logs = {
 	}
 };
 
+export const changeThread = {
+	data: new SlashCommandBuilder()
+		.setName("set_channel")
+		.setDescription("Register a channel for roll (disabling auto thread creation and send all result here")
+		.setDMPermission(false)
+		.addChannelOption(option =>
+			option
+				.setName("channel")
+				.setDescription("The channel to register")
+				.setRequired(true)
+				.addChannelTypes(ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread)
+		),
+	async execute(interaction: CommandInteraction): Promise<void> {
+		const options = interaction.options as CommandInteractionOptionResolver;
+		const channel = options.getChannel("channel", true);
+		const data = fs.readFileSync("database.json", "utf-8");
+		const json = JSON.parse(data);
+		const guildData = interaction.guild!.id;
+		json[guildData].rollChannel = channel.id;
+		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
+		await interaction.reply(`Channel ${channelMention(channel.id)} registered for roll`);
+	}
+};

@@ -16,6 +16,7 @@ export const TUTORIAL_IMAGES = [
 
 export interface GuildData {
 	logs?: string,
+	rollChannel?: string,
 	managerId: string;
 	templateID: {
 		channelId: string;

@@ -40,7 +40,6 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 		await interaction.reply({ content: parser });
 		return;
 	}
-	//sort threads by date by most recent
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 	const thread = parentChannel instanceof TextChannel ? 
 		await findThread(parentChannel, ul("roll.reason")) : 

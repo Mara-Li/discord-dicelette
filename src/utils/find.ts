@@ -1,12 +1,21 @@
 import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
 
 import { setTagsForRoll } from ".";
+import { readDB } from "./db";
 /**
  * Find a thread by their data or create it
  * @param channel {TextChannel}
  * @param reason {string}
  */
 export async function findThread(channel: TextChannel, reason?: string) {
+	const guild = channel.guild.id;
+	const db = readDB(guild);
+	if (db?.db.rollChannel) {
+		const rollChannel = await channel.guild.channels.fetch(db.db.rollChannel);
+		if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
+			return rollChannel;
+		}
+	}
 	await channel.threads.fetch();
 	await channel.threads.fetchArchived();
 	const mostRecentThread = channel.threads.cache.sort((a, b) => {
@@ -50,6 +59,14 @@ export async function findThread(channel: TextChannel, reason?: string) {
  * @returns 
  */
 export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel) {
+	const guild = forum.guild.id;
+	const db = readDB(guild);
+	if (db?.db.rollChannel) {
+		const rollChannel = await forum.guild.channels.fetch(db.db.rollChannel);
+		if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
+			return rollChannel;
+		}
+	}
 	const allForumChannel = forum.threads.cache.sort((a, b) => {
 		const aDate = a.createdTimestamp;
 		const bDate = b.createdTimestamp;
