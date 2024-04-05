@@ -12,7 +12,7 @@
     "validate": "To validate"
   },
   "changeThread": {
-    "description": "Register a channel to send dice results (disable automatic thread creation)",
+    "description": "Register a channel to send dice results there",
     "name": "result_channel",
     "options": "Results channel",
     "set": "The channel {{- channel}} has been registered to send the dice results."

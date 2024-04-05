@@ -12,7 +12,7 @@
     "validate": "Valider"
   },
   "changeThread": {
-    "description": "Enregistrer un channel pour envoyer les résultats des dés (désactiver la création automatique des threads) ",
+    "description": "Enregistrer un channel pour y envoyer les résultats des dés ",
     "name": "result_channel",
     "options": "Channel des résultats",
     "set": "Le channel {{- channel}} a été enregistré pour y envoyer les résultats des dés."
