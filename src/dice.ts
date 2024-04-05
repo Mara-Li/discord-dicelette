@@ -8,7 +8,7 @@ import dedent from "ts-dedent";
  * Parse the result of the dice to be readable
  * @param {Resultat} output
  * @param {TFunction<"translation", undefined>} ul 
- * @param {failure: number | undefined, success: number | undefined}critical 
+ * @param {failure: number | undefined, success: number | undefined} critical 
  */
 export function parseResult(output: Resultat, ul: TFunction<"translation", undefined>, critical?: {failure?: number, success?: number}) {
 	//result is in the form of "d% //comment: [dice] = result"
