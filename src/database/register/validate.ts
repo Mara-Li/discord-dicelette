@@ -159,10 +159,10 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			});	
 		}
 	}
-	//await interaction?.message?.delete();
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
 	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: userDataEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false});
-	if (interaction.replied) await interaction.editReply({ content: ul("modals.finished") });
+	await interaction.message.delete();
+	await reply(interaction, { content: ul("modals.finished"), ephemeral: true});
 	return;
 }
 

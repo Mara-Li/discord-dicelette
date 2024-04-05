@@ -326,5 +326,6 @@ export async function downloadTutorialImages() {
 }
 
 export async function reply(interaction: CommandInteraction | ModalSubmitInteraction | ButtonInteraction, options: string | InteractionReplyOptions | MessagePayload) {
+	console.log(interaction.replied, interaction.deferred, interaction.isRepliable());
 	return interaction.replied || interaction.deferred ? await interaction.editReply(options) : await interaction.reply(options);
 }
