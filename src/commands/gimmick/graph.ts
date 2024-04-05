@@ -4,10 +4,10 @@ import i18next from "i18next";
 import parse from "parse-color";
 import path from "path";
 
-import { UserData } from "../interface";
-import { cmdLn, ln } from "../localizations";
-import { filterChoices, removeEmojiAccents, sendLogs, title } from "../utils";
-import { getTemplateWithDB, getUserData, getUserFromMessage,guildInteractionData } from "../utils/db";
+import { UserData } from "../../interface";
+import { cmdLn, ln } from "../../localizations";
+import { filterChoices, removeEmojiAccents, sendLogs, title } from "../../utils";
+import { getTemplateWithDB, getUserData, getUserFromMessage,guildInteractionData } from "../../utils/db";
 
 async function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string, min?: number, max?: number) {
 	if (!lineColor) lineColor = "#FF0000";

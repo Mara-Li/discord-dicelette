@@ -12,9 +12,9 @@ import {
 import moment from "moment";
 import dedent from "ts-dedent";
 
-import { cmdLn, ln } from "../localizations";
-import { default as i18next } from "../localizations/i18next";
-import { rollWithInteraction , setTagsForRoll } from "../utils";
+import { cmdLn, ln } from "../../localizations";
+import { default as i18next } from "../../localizations/i18next";
+import { rollWithInteraction , setTagsForRoll } from "../../utils";
 
 const t = i18next.getFixedT("en");
 

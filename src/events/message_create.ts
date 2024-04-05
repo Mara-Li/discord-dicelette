@@ -2,7 +2,7 @@
 import { COMMENT_REGEX, Resultat,roll } from "@dicelette/core";
 import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 
-import { deleteAfter } from "../commands/base";
+import { deleteAfter } from "../commands/rolls/base_roll";
 import { parseResult } from "../dice";
 import { lError, ln } from "../localizations";
 import { timestamp } from "../utils";

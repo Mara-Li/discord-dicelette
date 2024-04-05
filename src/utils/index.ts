@@ -5,7 +5,7 @@ import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
 
-import { deleteAfter } from "../commands/base";
+import { deleteAfter } from "../commands/rolls/base_roll";
 import { parseResult } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
 import { GuildData, TUTORIAL_IMAGES, UserData} from "../interface";

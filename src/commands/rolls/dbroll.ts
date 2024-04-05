@@ -1,10 +1,10 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import removeAccents from "remove-accents";
 
-import { cmdLn, lError, ln } from "../localizations";
-import { default as i18next } from "../localizations/i18next";
-import {filterChoices, replaceFormulaInDice, rollWithInteraction, title } from "../utils";
-import { getUserData, getUserFromMessage,guildInteractionData } from "../utils/db";
+import { cmdLn, lError, ln } from "../../localizations";
+import { default as i18next } from "../../localizations/i18next";
+import {filterChoices, replaceFormulaInDice, rollWithInteraction, title } from "../../utils";
+import { getUserData, getUserFromMessage,guildInteractionData } from "../../utils/db";
 
 const t = i18next.getFixedT("en");
 

@@ -1,11 +1,11 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
-import { createDiceEmbed, createStatsEmbed } from "../database";
-import { cmdLn,ln } from "../localizations";
-import { filterChoices, searchUserChannel, title } from "../utils";
-import { getUserData,guildInteractionData } from "../utils/db";
-import { getEmbeds } from "../utils/parse";
+import { createDiceEmbed, createStatsEmbed } from "../../database";
+import { cmdLn,ln } from "../../localizations";
+import { filterChoices, searchUserChannel, title } from "../../utils";
+import { getUserData,guildInteractionData } from "../../utils/db";
+import { getEmbeds } from "../../utils/parse";
 
 const t = i18next.getFixedT("en");
 
