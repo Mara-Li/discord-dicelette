@@ -5,6 +5,7 @@ import process from "process";
 
 import { commandsList } from "../commands";
 import { EClient , VERSION } from "../index";
+import { GuildData } from "../interface";
 
 
 
@@ -37,13 +38,13 @@ export default (client: EClient): void => {
 
 function convertJSONToEnmap(Client: EClient) {
 	if (!fs.existsSync("database.json")) {
-		console.log(JSON.stringify(Client.settings.get("453162143668371456"), null, 2));	
+		console.log(JSON.stringify(Client.settings.get("453162143668371456", "templateID"), null, 2));	
 		return;
 	}
 	const data = fs.readFileSync("database.json", "utf8");
-	const parsedData = JSON.parse(data);
-	for (const key in parsedData) {
-		Client.settings.set(key, parsedData[key]);
+	const parsedData = JSON.parse(data) as { [key: string]: GuildData };
+	for (const [guildId, guildData] of Object.entries(parsedData)) {
+		Client.settings.set(guildId, guildData);
 	}
 	//delete the file
 	fs.unlinkSync("database.json");
