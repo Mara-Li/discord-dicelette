@@ -104,7 +104,8 @@ export const displayUser = {
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
 			const diceFields = diceEmbed?.toJSON().fields;
 			const statsFields = statisticEmbed?.toJSON().fields;
-			if (!statisticEmbed || !diceEmbed || !diceFields || !statsFields) {
+			console.log(!statisticEmbed, !diceEmbed, !diceFields, !statsFields);
+			if (!statisticEmbed && !diceEmbed && !diceFields && !statsFields) {
 				await reply(interaction, ul("error.user"));
 				return;
 			}
@@ -122,9 +123,12 @@ export const displayUser = {
 					value: charData[user?.id ?? interaction.user.id].charName ?? ul("common.noSet"),
 					inline: true
 				});
-			const newStatEmbed = createStatsEmbed(ul).addFields(statsFields);
-			const newDiceEmbed = createDiceEmbed(ul).addFields(diceFields);
-			await reply(interaction, { embeds: [displayEmbed, newStatEmbed, newDiceEmbed] });	
+			const newStatEmbed: EmbedBuilder | undefined = statsFields ? createStatsEmbed(ul).addFields(statsFields) : undefined;	
+			const newDiceEmbed = diceFields ? createDiceEmbed(ul).addFields(diceFields) : undefined;
+			const displayEmbeds : EmbedBuilder[] = [displayEmbed];
+			if (newStatEmbed) displayEmbeds.push(newStatEmbed);
+			if (newDiceEmbed) displayEmbeds.push(newDiceEmbed);
+			await reply(interaction, { embeds: displayEmbeds });
 		} catch (error) {
 			await reply(interaction, ul("error.noMessage"));
 			return;

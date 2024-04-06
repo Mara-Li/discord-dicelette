@@ -46,7 +46,5 @@ function convertJSONToEnmap(Client: EClient) {
 	}
 	//delete the file
 	//fs.unlinkSync("database.json");
-	//print Enmap
-	//console.log(Client.settings);
-	
+		
 }

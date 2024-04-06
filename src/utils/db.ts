@@ -63,7 +63,7 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
 	if (!user) return;
 	const key = charName ? `${userId}.${charName}` : userId;
 	const userMessageId = guildData.get(guild.id, `user.${key}.messageId`) as unknown as string;
-	const thread = await searchUserChannel(guildData, interaction, ul, guildData);
+	const thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread) 
 		throw new Error(ul("error.noThread"));
 	try {
