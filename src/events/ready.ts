@@ -20,7 +20,7 @@ export default (client: EClient): void => {
 		}
 		console.info(`${client.user.username} is online; v.${VERSION}`);
 		const serializedCommands = commandsList.map(command => command.data.toJSON());
-		convertJSONToEnmap(client);
+		const wasconverted = convertJSONToEnmap(client);
 		for (const guild of client.guilds.cache.values()) {
 			console.log(`Registering commands for ${guild.name}`);
 			guild.client.application.commands.cache.forEach((command) => {
@@ -31,6 +31,13 @@ export default (client: EClient): void => {
 				Routes.applicationGuildCommands(process.env.CLIENT_ID, guild.id),
 				{ body: serializedCommands },
 			);
+			if (wasconverted) {
+				//send a message to the owner of the guild
+				const owner = await guild.members.fetch(guild.ownerId);
+				if (owner) {
+					owner.send("The database of this bot was updated into a new more secure format!\n Normally, all your data should be working but if you notice any data missing, please contact the bot owner! All old data was moved to a backup file, so don't worry!\n\nHave a nice day :)");
+				}
+			}
 		}
 
 	});
@@ -38,13 +45,14 @@ export default (client: EClient): void => {
 
 function convertJSONToEnmap(Client: EClient) {
 	if (!fs.existsSync("database.json")) {
-		return;
+		return false;
 	}
 	const data = fs.readFileSync("database.json", "utf8");
 	const parsedData = JSON.parse(data) as { [key: string]: GuildData };
 	for (const [guildId, guildData] of Object.entries(parsedData)) {
 		Client.settings.set(guildId, guildData);
 	}
-	//delete the file
-	fs.unlinkSync("database.json");
+	//move the file to a backup
+	fs.renameSync("database.json", `database_${Date.now()}.json`);
+	return true;
 }
