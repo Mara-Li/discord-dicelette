@@ -1,6 +1,5 @@
 import { StatisticalTemplate } from "@dicelette/core";
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
-import { TFunction } from "i18next";
 
 import { EClient } from "..";
 import { autCompleteCmd,commandsList } from "../commands";
@@ -9,6 +8,7 @@ import { start_edit_dice,validate_editDice } from "../database/dice/edit";
 import { continuePage,open_register_user,pageNumber, submit_firstPage } from "../database/register/start";
 import { button_validate_user } from "../database/register/validate";
 import { editStats,start_edit_stats } from "../database/stats/edit";
+import { Settings, Translation } from "../interface";
 import { lError,ln } from "../localizations";
 import { reply } from "../utils";
 import { getTemplate, getTemplateWithDB } from "../utils/db";
@@ -33,7 +33,7 @@ export default (client: EClient): void => {
 					(cmd) => cmd.data.name === interac.commandName
 				);
 				if (!command) return;
-				await command.autocomplete(interac);
+				await command.autocomplete(interac, client);
 			} else if (interaction.isButton()) {
 				let template = await getTemplate(interaction);
 				template = template ? template : await getTemplateWithDB(interaction, client.settings);
@@ -41,9 +41,9 @@ export default (client: EClient): void => {
 					await interaction.channel?.send({ content: ul("error.noTemplate")});
 					return;
 				}
-				await buttonSubmit(interaction, ul, interactionUser, template);
+				await buttonSubmit(interaction, ul, interactionUser, template, client.settings);
 			} else if (interaction.isModalSubmit()) {
-				await modalSubmit(interaction, ul, interactionUser);
+				await modalSubmit(interaction, ul, interactionUser, client.settings);
 			}
 		} catch (error) {
 			console.error(error);
@@ -66,31 +66,31 @@ export default (client: EClient): void => {
 /**
  * Switch for modal submission
  * @param interaction {ModalSubmitInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param interactionUser {User}
  */
-async function modalSubmit(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+async function modalSubmit(interaction: ModalSubmitInteraction, ul: Translation, interactionUser: User, db: Settings) {
 	if (interaction.customId.includes("damageDice")) {
-		await submit_damageDice(interaction, ul, interactionUser);
+		await submit_damageDice(interaction, ul, interactionUser, db);
 	} else if (interaction.customId.includes("page")) {
-		await pageNumber(interaction, ul);
+		await pageNumber(interaction, ul, db);
 	} else if (interaction.customId === "editStats") {
-		await editStats(interaction, ul);
+		await editStats(interaction, ul, db);
 	} else if (interaction.customId=="firstPage") {
-		await submit_firstPage(interaction);
+		await submit_firstPage(interaction, db);
 	} else if (interaction.customId === "editDice") {
-		await validate_editDice(interaction, ul);
+		await validate_editDice(interaction, ul, db);
 	} 
 }
 
 /**
  * Switch for button interaction
  * @param interaction {ButtonInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param interactionUser {User}
  * @param template {StatisticalTemplate}
  */
-async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User, template: StatisticalTemplate) {
+async function buttonSubmit(interaction: ButtonInteraction, ul: Translation, interactionUser: User, template: StatisticalTemplate, db: Settings) {
 	if (interaction.customId === "register")
 		await open_register_user(interaction, template, interactionUser, ul);
 	else if (interaction.customId=="continue") {
@@ -98,9 +98,9 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
 	} else if (interaction.customId.includes("add_dice")) {
 		await button_add_dice(interaction, ul, interactionUser);
 	} else if (interaction.customId === "edit_stats") {
-		await start_edit_stats(interaction, ul, interactionUser);
+		await start_edit_stats(interaction, ul, interactionUser,db);
 	} else if (interaction.customId === "validate") {
-		await button_validate_user(interaction, interactionUser, template, ul);
+		await button_validate_user(interaction, interactionUser, template, ul, db);
 	} else if (interaction.customId === "cancel") await cancel(interaction, ul, interactionUser);
 	else if (interaction.customId === "edit_dice") await start_edit_dice(interaction, ul, interactionUser);
 }
@@ -109,10 +109,10 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: TFunction<"trans
  * Interaction when the cancel button is pressed
  * Also prevent to cancel by user not autorized
  * @param interaction {ButtonInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param interactionUser {User}
  */
-async function cancel(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+async function cancel(interaction: ButtonInteraction, ul: Translation, interactionUser: User) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);

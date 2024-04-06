@@ -1,6 +1,5 @@
 import { roll } from "@dicelette/core";
 import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
-import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
@@ -8,10 +7,10 @@ import removeAccents from "remove-accents";
 import { deleteAfter } from "../commands/rolls/base_roll";
 import { parseResult } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
-import { Settings, TUTORIAL_IMAGES, UserData} from "../interface";
+import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "../interface";
 import { ln } from "../localizations";
 import { editUserButtons } from "./buttons";
-import { guildInteractionData, registerManagerID, registerUser } from "./db";
+import { registerManagerID, registerUser } from "./db";
 import { findForumChannel,findThread } from "./find";
 import { parseEmbedFields } from "./parse";
 
@@ -96,14 +95,22 @@ export function title(str?: string) {
  * @param interaction {BaseInteraction}
  * @param userTemplate {UserData}
  * @param userId {string}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param which {stats?: boolean, dice?: boolean, template?: boolean} (for adding button)
  */
-export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: UserData, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}, guildData: Settings) {
+export async function repostInThread(
+	embed: EmbedBuilder[], 
+	interaction: BaseInteraction,
+	userTemplate: UserData, 
+	userId: string, 
+	ul: Translation, 
+	which:{stats?: boolean, dice?: boolean, template?: boolean}, 
+	guildData: Settings
+) {
 	const channel = interaction.channel;
 	if (!channel ||(channel instanceof CategoryChannel)) return;
 	if (!guildData) throw new Error(ul("error.generic", {e: "No server data found in database for this server."}));
-	let thread = await searchUserChannel(guildData, interaction, ul);
+	let thread = await searchUserChannel(guildData, interaction, ul, guildData);
 	if (!thread && channel instanceof TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as AnyThreadChannel | undefined;
 		if (!thread) {
@@ -122,7 +129,7 @@ export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInt
 		embeds: embed,
 		components: [editUserButtons(ul, which.stats, which.dice)]},);
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
-	registerUser(userId, interaction, msg.id, thread, userTemplate.userName, damageName);
+	registerUser(userId, interaction, msg.id, thread, guildData, userTemplate.userName, damageName);
 }
 
 /**
@@ -247,8 +254,8 @@ export function parseStatsString(statsEmbed: EmbedBuilder) {
 	return parsedStats;
 }
 
-export async function sendLogs(message: string, interaction: BaseInteraction, guild: Guild) {
-	const guildData = guildInteractionData(interaction);
+export async function sendLogs(message: string, guild: Guild, db: Settings) {
+	const guildData = db.get(guild.id);
 	if (!guildData?.logs) return;
 	const channel = guildData.logs;
 	try {
@@ -283,7 +290,7 @@ export function displayOldAndNewStats(oldStats?: APIEmbedField[], newStats?: API
 	return stats;
 }
 
-export async function searchUserChannel(guildData: Settings, interaction: BaseInteraction, ul: TFunction<"translation", undefined> ) {
+export async function searchUserChannel(guildData: Settings, interaction: BaseInteraction, ul: Translation, db: Settings ) {
 	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
 	const managerID = guildData.get(interaction.guild!.id, "managerId");
 	if (managerID) {
@@ -292,7 +299,7 @@ export async function searchUserChannel(guildData: Settings, interaction: BaseIn
 			if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction))
 				await interaction?.channel?.send(ul("error.noThread"));
 			else 
-				await sendLogs(ul("error.noThread"), interaction, interaction.guild as Guild);
+				await sendLogs(ul("error.noThread"), interaction.guild as Guild, db);
 			return;
 		}
 		thread = channel;
@@ -309,7 +316,7 @@ export async function searchUserChannel(guildData: Settings, interaction: BaseIn
 			else await reply(interaction,ul("error.noThread"));
 		}
 		else
-			await sendLogs(ul("error.noThread"), interaction, interaction.guild as Guild);
+			await sendLogs(ul("error.noThread"), interaction.guild as Guild, db);
 		return;
 	}
 	return thread;
@@ -327,6 +334,6 @@ export async function downloadTutorialImages() {
 }
 
 export async function reply(interaction: CommandInteraction | ModalSubmitInteraction | ButtonInteraction, options: string | InteractionReplyOptions | MessagePayload) {
-	console.log(interaction.replied, interaction.deferred, interaction.isRepliable());
 	return interaction.replied || interaction.deferred ? await interaction.editReply(options) : await interaction.reply(options);
 }
+

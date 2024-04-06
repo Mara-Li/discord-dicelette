@@ -46,10 +46,10 @@ export function createEmbedsList(userDataEmbed: EmbedBuilder, statsEmbed?: Embed
 /**
  * Get the embeds from the message and replace based on the embed to replace
  * Also it returns if the embeds exists or not (useful for the buttons)
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param embedToReplace {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}
  */
-export function getEmbedsList(ul: TFunction<"translation", undefined>, embedToReplace: {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}, message?: Message) {
+export function getEmbedsList(ul: Translation, embedToReplace: {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}, message?: Message) {
 	const userDataEmbed = embedToReplace.which === "user" ? embedToReplace.embed : getEmbeds(ul, message, "user");
 	if (!userDataEmbed) throw new Error("[error.noEmbed]");
 	const statsEmbed = embedToReplace.which === "stats" ? embedToReplace.embed : getEmbeds(ul, message, "stats");
@@ -70,9 +70,9 @@ export function getEmbedsList(ul: TFunction<"translation", undefined>, embedToRe
  * Remove the embeds from the list
  * @param embeds {EmbedBuilder[]}
  * @param which {"user" | "stats" | "damage" | "template"}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
 */
-export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "stats" | "damage" | "template", ul: TFunction<"translation", undefined>) {
+export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "stats" | "damage" | "template", ul: Translation) {
 	return embeds.filter(embed => {
 		if (which === "user") return embed.toJSON().title !== ul("embed.user");
 		else if (which === "stats") return embed.toJSON().title !== ul("embed.stats");
@@ -100,7 +100,7 @@ export function parseEmbedFields(embed: Embed): {[name: string]: string} {
  * @param message {Message}
  * @param which {"user" | "stats" | "damage" | "template"}
  */
-export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Message, which?: "user" | "stats" | "damage" | "template") {
+export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "stats" | "damage" | "template") {
 	const allEmbeds = message?.embeds;
 	if (!allEmbeds) throw new Error(ul("error.noEmbed"));
 	for (const embed of allEmbeds) {
@@ -117,10 +117,10 @@ export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Mes
  * Update the template of existing user when the template is edited by moderation
  * @param guildData {GuildData}
  * @param interaction {CommandInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param template {StatisticalTemplate}
  */
-export async function bulkEditTemplateUser(guildData: Settings, interaction: CommandInteraction, ul: TFunction<"translation", undefined>, template: StatisticalTemplate) {
+export async function bulkEditTemplateUser(guildData: Settings, interaction: CommandInteraction, ul: Translation, template: StatisticalTemplate) {
 	const users = guildData.get(interaction.guild!.id, "user");
 	const thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread) return;

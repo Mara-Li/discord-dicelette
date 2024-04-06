@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {StatisticalTemplate} from "@dicelette/core";
 import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, PermissionsBitField, User, userMention } from "discord.js";
-import { TFunction } from "i18next";
 
-import { UserData } from "../../interface";
+import { Settings, Translation, UserData } from "../../interface";
 import { ln } from "../../localizations";
 import {removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "../../utils";
 import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
@@ -55,7 +54,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
  * @param {ButtonInteraction} interaction 
  * @param template {StatisticalTemplate}
  */
-export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate) {
+export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate, db: Settings) {
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = ensureEmbed(interaction.message);
 	let userID = oldEmbeds.fields.find(field => field.name === ul("common.user"))?.value;
@@ -160,7 +159,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		}
 	}
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
-	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: userDataEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false});
+	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: userDataEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false}, db);
 	await interaction.message.delete();
 	await reply(interaction, { content: ul("modals.finished"), ephemeral: true});
 	return;
@@ -172,10 +171,10 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
  * @param interactionUser {User}
  */
 
-export async function button_validate_user(interaction: ButtonInteraction, interactionUser: User, template: StatisticalTemplate, ul: TFunction<"translation", undefined>) {
+export async function button_validate_user(interaction: ButtonInteraction, interactionUser: User, template: StatisticalTemplate, ul: Translation, db: Settings) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (isModerator)
-		await validateUser(interaction, template);
+		await validateUser(interaction, template, db);
 	else
 		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 }

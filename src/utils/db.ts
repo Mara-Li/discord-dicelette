@@ -1,9 +1,8 @@
 import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
-import { TFunction } from "i18next";
 import removeAccents from "remove-accents";
 
-import { Settings, UserData } from "../interface";
+import { Settings, Translation, UserData } from "../interface";
 import { ln } from "../localizations";
 import {removeEmojiAccents, searchUserChannel } from ".";
 import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
@@ -139,10 +138,10 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 /**
  * Get the userData from the embed
  * @param message {Message}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
-export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>, first: boolean = false, integrateCombinaison: boolean = true) {
+export function getUserByEmbed(message: Message, ul: Translation, first: boolean = false, integrateCombinaison: boolean = true) {
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;

@@ -1,5 +1,6 @@
 import { Critical } from "@dicelette/core";
 import Enmap from "enmap";
+import { TFunction } from "i18next";
 
 export const enum THUMBNAIL {
 	DICE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/dice.png?raw=true",
@@ -16,6 +17,7 @@ export const TUTORIAL_IMAGES = [
 ];
 
 export type Settings = Enmap<string, GuildData, unknown>;
+export type Translation = TFunction<"translation", undefined>;
 
 export interface GuildData {
 	logs?: string,

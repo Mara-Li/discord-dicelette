@@ -1,7 +1,7 @@
 import { StatisticalTemplate } from "@dicelette/core";
 import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
-import { TFunction } from "i18next";
 
+import { Settings } from "../../interface";
 import { ln } from "../../localizations";
 import { removeEmojiAccents, reply } from "../../utils";
 import { getTemplateWithDB } from "../../utils/db";
@@ -14,11 +14,11 @@ import { createEmbedFirstPage } from "./validate";
  * Interaction to continue to the next page of the statistics when registering a new user
  * @param interaction {ButtonInteraction}
  * @param dbTemplate {StatisticalTemplate}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param interactionUser {User}
  * @returns 
  */
-export async function continuePage(interaction: ButtonInteraction, dbTemplate: StatisticalTemplate, ul: TFunction<"translation", undefined>, interactionUser: User) {
+export async function continuePage(interaction: ButtonInteraction, dbTemplate: StatisticalTemplate, ul: Translation, interactionUser: User) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (!isModerator) {
 		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
@@ -42,12 +42,12 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
  * Register the statistic in the embed when registering a new user and validate the modal
  * Also verify if the template is registered before embeding the statistics
  * @param interaction {ModalSubmitInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export async function pageNumber(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
+export async function pageNumber(interaction: ModalSubmitInteraction, ul: Translation, db: Settings) {
 	const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);
 	if (isNaN(pageNumber)) return;
-	const template = await getTemplateWithDB(interaction);
+	const template = await getTemplateWithDB(interaction, db);
 	if (!template) {
 		await reply(interaction,{ content: ul("error.noTemplate") });
 		return;
@@ -58,9 +58,9 @@ export async function pageNumber(interaction: ModalSubmitInteraction, ul: TFunct
  * Submit the first page when the modal is validated
  * @param interaction {ModalSubmitInteraction}
  */
-export async function submit_firstPage(interaction: ModalSubmitInteraction) {
+export async function submit_firstPage(interaction: ModalSubmitInteraction, db: Settings) {
 	if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
-	const template = await getTemplateWithDB(interaction);
+	const template = await getTemplateWithDB(interaction, db);
 	if (!template) return;
 	await createEmbedFirstPage(interaction, template);
 }
@@ -105,9 +105,9 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 /**
  * Open the showFirstPageModal function if the user is a moderator
  * @param interaction {ModalSubmitInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export async function open_register_user(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: TFunction<"translation", undefined>) {
+export async function open_register_user(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: Translation) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (isModerator)
 		await showFirstPageModal(interaction, template);

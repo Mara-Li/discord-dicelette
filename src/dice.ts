@@ -1,16 +1,17 @@
 /* eslint-disable no-useless-escape */
 import { calculator,Compare, Resultat, Sign } from "@dicelette/core";
-import { TFunction } from "i18next";
 import { evaluate } from "mathjs";
 import dedent from "ts-dedent";
+
+import { Translation } from "./interface";
 
 /**
  * Parse the result of the dice to be readable
  * @param {Resultat} output
- * @param {TFunction<"translation", undefined>} ul 
+ * @param {Translation} ul 
  * @param {failure: number | undefined, success: number | undefined} critical 
  */
-export function parseResult(output: Resultat, ul: TFunction<"translation", undefined>, critical?: {failure?: number, success?: number}) {
+export function parseResult(output: Resultat, ul: Translation, critical?: {failure?: number, success?: number}) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
 	let msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
