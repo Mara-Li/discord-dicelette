@@ -1,4 +1,4 @@
-import { ButtonInteraction, EmbedBuilder, ModalSubmitInteraction, ThreadChannel } from "discord.js";
+import { ButtonInteraction, EmbedBuilder, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
 
 import { Translation } from "../interface";
 import { ensureEmbed,getEmbeds } from "../utils/parse";
@@ -17,7 +17,7 @@ export async function getUserNameAndChar(interaction: ButtonInteraction | ModalS
 	if (!userEmbed) throw new Error(ul("error.noEmbed"));
 	const userID = userEmbed.toJSON().fields?.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "");
 	if (!userID) throw new Error(ul("error.user"));
-	if (!interaction.channel || !(interaction.channel instanceof ThreadChannel)) throw new Error(ul("error.noThread"));
+	if (!interaction.channel || !(interaction.channel instanceof ThreadChannel) && !(interaction.channel instanceof TextChannel)) throw new Error(ul("error.noThread"));
 	let userName = userEmbed.toJSON().fields?.find(field => field.name === ul("common.charName"))?.value;
 	if (userName === ul("common.noSet")) userName = undefined;
 	return { userID, userName, thread: interaction.channel };

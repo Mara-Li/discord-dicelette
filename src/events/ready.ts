@@ -46,5 +46,5 @@ function convertJSONToEnmap(Client: EClient) {
 	}
 	//delete the file
 	//fs.unlinkSync("database.json");
-	console.log(JSON.stringify(Client.settings.get("453162143668371456")));	
+	//console.log(JSON.stringify(Client.settings.get("453162143668371456"), null, 2));	
 }
