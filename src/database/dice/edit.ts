@@ -122,7 +122,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await reply(interaction,{ content: ul("modals.removed.dice"), ephemeral: true });
 		registerUser(userID, interaction, interaction.message.id, thread, db, userName, undefined, false);
-		await sendLogs(ul("logs.dice.remove", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+		await sendLogs(ul("logs.dice.remove", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 		return;
 	} else if (fieldsToAppend.length > 25) {
 		await reply(interaction,{ content: ul("error.tooMuchDice"), ephemeral: true });
@@ -142,7 +142,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		fiche: interaction.message.url, 
 		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}
 	);
-	await sendLogs(`${logMessage}\n${compare}`, interaction, interaction.guild as Guild);
+	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Guild, db);
 }
 
 /**

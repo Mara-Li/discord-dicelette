@@ -110,7 +110,7 @@ export async function repostInThread(
 	const channel = interaction.channel;
 	if (!channel ||(channel instanceof CategoryChannel)) return;
 	if (!guildData) throw new Error(ul("error.generic", {e: "No server data found in database for this server."}));
-	let thread = await searchUserChannel(guildData, interaction, ul, guildData);
+	let thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread && channel instanceof TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as AnyThreadChannel | undefined;
 		if (!thread) {
@@ -290,7 +290,7 @@ export function displayOldAndNewStats(oldStats?: APIEmbedField[], newStats?: API
 	return stats;
 }
 
-export async function searchUserChannel(guildData: Settings, interaction: BaseInteraction, ul: Translation, db: Settings ) {
+export async function searchUserChannel(guildData: Settings, interaction: BaseInteraction, ul: Translation ) {
 	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
 	const managerID = guildData.get(interaction.guild!.id, "managerId");
 	if (managerID) {
@@ -299,7 +299,7 @@ export async function searchUserChannel(guildData: Settings, interaction: BaseIn
 			if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction))
 				await interaction?.channel?.send(ul("error.noThread"));
 			else 
-				await sendLogs(ul("error.noThread"), interaction.guild as Guild, db);
+				await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
 			return;
 		}
 		thread = channel;
@@ -316,7 +316,7 @@ export async function searchUserChannel(guildData: Settings, interaction: BaseIn
 			else await reply(interaction,ul("error.noThread"));
 		}
 		else
-			await sendLogs(ul("error.noThread"), interaction.guild as Guild, db);
+			await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
 		return;
 	}
 	return thread;

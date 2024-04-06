@@ -144,7 +144,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		registerUser(userID, interaction, interaction.message.id, thread, db, userName, damageName ? Object.keys(damageName) : undefined, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await reply(interaction,{ content: ul("modals.added.dice"), ephemeral: true });
-		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 		return;
 	}
 	if (damageName && Object.keys(damageName).length > 25) {
@@ -157,6 +157,6 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
 	await reply(interaction,{ content: ul("modals.added.dice"), ephemeral: true });
 
-	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 	return;
 }

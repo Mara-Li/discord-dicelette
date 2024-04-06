@@ -1,7 +1,7 @@
 import { StatisticalTemplate } from "@dicelette/core";
 import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
 
-import { Settings } from "../../interface";
+import { Settings, Translation } from "../../interface";
 import { ln } from "../../localizations";
 import { removeEmojiAccents, reply } from "../../utils";
 import { getTemplateWithDB } from "../../utils/db";

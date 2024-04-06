@@ -102,7 +102,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await reply(interaction,{ content: ul("modals.removed.stats"), ephemeral: true });
-		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 	}
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
@@ -114,7 +114,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 		fiche: interaction.message.url, 
 		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`
 	});
-	await sendLogs(`${logMessage}\n${compare}`, interaction, interaction.guild as Guild);
+	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Guild, db);
 }
 
 

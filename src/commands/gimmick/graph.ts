@@ -273,7 +273,7 @@ export const graph = {
 			await reply(interaction,{ files: [image] });
 		} catch (error) {
 			await reply(interaction,ul("error.generic", {e: (error as Error)}));
-			sendLogs(ul("error.generic", {e: (error as Error)}), interaction, interaction.guild);
+			sendLogs(ul("error.generic", {e: (error as Error)}), interaction.guild, client.settings);
 			console.log(error);
 		}
 	}
