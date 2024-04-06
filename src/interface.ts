@@ -1,4 +1,5 @@
 import { Critical } from "@dicelette/core";
+import Enmap from "enmap";
 
 export const enum THUMBNAIL {
 	DICE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/dice.png?raw=true",
@@ -13,6 +14,8 @@ export const TUTORIAL_IMAGES = [
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_4.png?raw=true",
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_5.png?raw=true",
 ];
+
+export type Settings = Enmap<string, GuildData, unknown>;
 
 export interface GuildData {
 	logs?: string,
@@ -31,7 +34,7 @@ export interface GuildData {
 			damageName?: string[];
 		}[]
 	}
-	
+
 }
 
 /**

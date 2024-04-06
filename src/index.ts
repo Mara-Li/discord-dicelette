@@ -9,13 +9,13 @@ import join from "./events/join";
 import message_create from "./events/message_create";
 import { delete_channel,delete_message, delete_thread,on_kick } from "./events/on_delete";
 import ready from "./events/ready";
+import { GuildData } from "./interface";
 
 dotenv.config({ path: ".env" });
 
 export class EClient extends Client {
 	// Déclaration d'une propriété settings avec le type Enmap<string, any>
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public settings: Enmap<string, any>;
+	public settings: Enmap<string, GuildData>;
   
 	constructor(options: ClientOptions) {
 		super(options);

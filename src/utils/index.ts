@@ -8,7 +8,7 @@ import removeAccents from "remove-accents";
 import { deleteAfter } from "../commands/rolls/base_roll";
 import { parseResult } from "../dice";
 import { DETECT_DICE_MESSAGE } from "../events/message_create";
-import { GuildData, TUTORIAL_IMAGES, UserData} from "../interface";
+import { Settings, TUTORIAL_IMAGES, UserData} from "../interface";
 import { ln } from "../localizations";
 import { editUserButtons } from "./buttons";
 import { guildInteractionData, registerManagerID, registerUser } from "./db";
@@ -22,7 +22,7 @@ import { parseEmbedFields } from "./parse";
  * @param channel {TextBasedChannel}
  * @param critical {failure?: number, success?: number}
  */
-export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, critical?: {failure?: number, success?: number}) {
+export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, db: Settings,critical?: {failure?: number, success?: number}) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
 	const ul = ln(interaction.locale);
 	const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
@@ -42,8 +42,8 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 	const thread = parentChannel instanceof TextChannel ? 
-		await findThread(parentChannel, ul("roll.reason")) : 
-		await findForumChannel(channel.parent as ForumChannel, ul("roll.reason"), channel as ThreadChannel);
+		await findThread(db, parentChannel, ul("roll.reason")) : 
+		await findForumChannel(channel.parent as ForumChannel, ul("roll.reason"), channel as ThreadChannel, db);
 	const msg = `${userMention(interaction.user.id)} ${timestamp()}\n${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
@@ -99,10 +99,9 @@ export function title(str?: string) {
  * @param ul {TFunction<"translation", undefined>}
  * @param which {stats?: boolean, dice?: boolean, template?: boolean} (for adding button)
  */
-export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: UserData, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}) {
+export async function repostInThread(embed: EmbedBuilder[], interaction: BaseInteraction, userTemplate: UserData, userId: string, ul: TFunction<"translation", undefined>, which:{stats?: boolean, dice?: boolean, template?: boolean}, guildData: Settings) {
 	const channel = interaction.channel;
 	if (!channel ||(channel instanceof CategoryChannel)) return;
-	const guildData = guildInteractionData(interaction);
 	if (!guildData) throw new Error(ul("error.generic", {e: "No server data found in database for this server."}));
 	let thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread && channel instanceof TextChannel) {
@@ -284,10 +283,11 @@ export function displayOldAndNewStats(oldStats?: APIEmbedField[], newStats?: API
 	return stats;
 }
 
-export async function searchUserChannel(guildData: GuildData, interaction: BaseInteraction, ul: TFunction<"translation", undefined> ) {
+export async function searchUserChannel(guildData: Settings, interaction: BaseInteraction, ul: TFunction<"translation", undefined> ) {
 	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
-	if (guildData.managerId) {
-		const channel = await interaction.guild?.channels.fetch(guildData.managerId);
+	const managerID = guildData.get(interaction.guild!.id, "managerId");
+	if (managerID) {
+		const channel = await interaction.guild?.channels.fetch(managerID);
 		if (!channel || (channel instanceof CategoryChannel) || channel instanceof ForumChannel || channel instanceof MediaChannel || channel instanceof StageChannel || channel instanceof VoiceChannel) {
 			if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction))
 				await interaction?.channel?.send(ul("error.noThread"));
@@ -297,7 +297,8 @@ export async function searchUserChannel(guildData: GuildData, interaction: BaseI
 		}
 		thread = channel;
 	} else {
-		const channel = await interaction.guild?.channels.fetch(guildData.templateID.channelId);
+		const channelId = guildData.get(interaction.guild!.id, "templateID.channelId");
+		const channel = await interaction.guild?.channels.fetch(channelId);
 		if (!channel || !(channel instanceof TextChannel)) return;
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]");
 		registerManagerID(guildData, interaction, thread?.id);

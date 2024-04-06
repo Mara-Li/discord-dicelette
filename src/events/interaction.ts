@@ -11,7 +11,7 @@ import { button_validate_user } from "../database/register/validate";
 import { editStats,start_edit_stats } from "../database/stats/edit";
 import { lError,ln } from "../localizations";
 import { reply } from "../utils";
-import { getTemplate, getTemplateWithDB,readDB } from "../utils/db";
+import { getTemplate, getTemplateWithDB } from "../utils/db";
 import { ensureEmbed } from "../utils/parse";
 
 
@@ -36,7 +36,7 @@ export default (client: EClient): void => {
 				await command.autocomplete(interac);
 			} else if (interaction.isButton()) {
 				let template = await getTemplate(interaction);
-				template = template ? template : await getTemplateWithDB(interaction);
+				template = template ? template : await getTemplateWithDB(interaction, client.settings);
 				if (!template) {
 					await interaction.channel?.send({ content: ul("error.noTemplate")});
 					return;
@@ -51,10 +51,10 @@ export default (client: EClient): void => {
 			const msgError = lError(error as Error, interaction);
 			if (interaction.isButton() || interaction.isModalSubmit() || interaction.isCommand())
 				await reply(interaction, msgError);
-			const db = readDB(interaction.guild.id);
+			const db = client.settings.get(interaction.guild.id);
 			if (!db) return;
-			if (db.db.logs) {
-				const logs = await interaction.guild.channels.fetch(db.db.logs);
+			if (client.settings.has(interaction.guild.id, "logs")) {
+				const logs = await interaction.guild.channels.fetch(client.settings.get(interaction.guild.id, "logs") as string);
 				if (logs instanceof TextChannel) {
 					logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
 				}
