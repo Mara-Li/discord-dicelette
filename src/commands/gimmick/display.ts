@@ -1,10 +1,10 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
+import { EClient } from "../..";
 import { createDiceEmbed, createStatsEmbed } from "../../database";
 import { cmdLn,ln } from "../../localizations";
 import { filterChoices, reply, searchUserChannel, title } from "../../utils";
-import { getUserData,guildInteractionData } from "../../utils/db";
 import { getEmbeds } from "../../utils/parse";
 
 const t = i18next.getFixedT("en");
@@ -33,10 +33,10 @@ export const displayUser = {
 				.setRequired(false)
 				.setAutocomplete(true)
 		),	
-	async autocomplete(interaction: AutocompleteInteraction): Promise<void> {
+	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
-		const guildData = guildInteractionData(interaction);
+		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		let choices: string[] = [];
 		if (fixed.name === t("common.character")) {
@@ -53,9 +53,9 @@ export const displayUser = {
 			filter.map(result => ({ name: title(result) ?? result, value: result}))
 		);
 	}, 
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: CommandInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const guildData = guildInteractionData(interaction);
+		const guildData = client.settings.get(interaction.guildId as string);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
 			await reply(interaction, ul("error.noTemplate"));
@@ -82,8 +82,7 @@ export const displayUser = {
 				}
 			}
 		} else {
-			const userData = getUserData(guildData, user?.id ?? interaction.user.id);
-			console.log(userData);
+			const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
 			let findChara = userData?.find((char) => char.charName === charName);
 			//take the first in userData
 			findChara = userData?.[0];
@@ -97,7 +96,7 @@ export const displayUser = {
 				[(user?.id ?? interaction.user.id)]: findChara
 			};
 		} 
-		const thread = await searchUserChannel(guildData, interaction, ul);
+		const thread = await searchUserChannel(client.settings, interaction, ul);
 		const messageID = charData[user?.id ?? interaction.user.id].messageId;
 		try {
 			const userMessage = await thread?.messages.fetch(messageID);

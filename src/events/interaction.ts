@@ -25,7 +25,7 @@ export default (client: EClient): void => {
 					(cmd) => cmd.data.name === interaction.commandName
 				);
 				if (!command) return;
-				await command.execute(interaction);
+				await command.execute(interaction, client);
 			
 			} else if (interaction.isAutocomplete()) {
 				const interac = interaction as AutocompleteInteraction;

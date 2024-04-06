@@ -3,6 +3,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelTyp
 import fs from "fs";
 import dedent from "ts-dedent";
 
+import { EClient } from "../..";
 import { cmdLn, ln } from "../../localizations";
 import { default as i18next } from "../../localizations/i18next";
 import { downloadTutorialImages, reply, title } from "../../utils";
@@ -156,7 +157,7 @@ export const registerTemplate = {
 				.setRequired(false)
 				.addChannelTypes(ChannelType.PublicThread, ChannelType.GuildText, ChannelType.PrivateThread)
 		),
-	async execute(interaction: CommandInteraction): Promise<void> {
+	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
 		await interaction.deferReply({ ephemeral: true });
 		const options = interaction.options as CommandInteractionOptionResolver;
@@ -165,7 +166,7 @@ export const registerTemplate = {
 		//fetch the template
 		const res = await fetch(template.url).then(res => res.json());
 		const templateData = verifyTemplateValue(res);
-		const guildData = interaction.guild.id;
+		const guildId = interaction.guild.id;
 		const channel = options.getChannel(ul("common.channel"), true);
 		const userChan = options.getChannel(ul("register.options.userChan.name"), false);
 		if (
@@ -237,42 +238,40 @@ export const registerTemplate = {
 		msg.pin();
 	
 		//save in database file
-		const data = fs.readFileSync("database.json", "utf-8");
-		const json = JSON.parse(data);
+		const json = client.settings.get(guildId);
 		const statsName = templateData.statistics ? Object.keys(templateData.statistics) : undefined;
 		const damageName = templateData.damage ? Object.keys(templateData.damage) : undefined;
-		if (json[guildData]) {
-			if (json[guildData]?.templateID?.messageId && json?.[guildData]?.templateID?.channelId) {
+		if (json) {
+			if (json?.templateID?.messageId && json.templateID?.channelId) {
 				try {
-					const channel = await interaction.guild.channels.fetch(json[guildData].templateID.channelId);
-					const msg = await (channel as TextChannel).messages.fetch(json[guildData].templateID.messageId);
+					const channel = await interaction.guild.channels.fetch(json.templateID.channelId);
+					const msg = await (channel as TextChannel).messages.fetch(json.templateID.messageId);
 					await msg.delete();
 				} catch (e) {
 					console.error(e);
 				}
 			}
-			json[guildData].templateID = {
+			json.templateID = {
 				channelId: channel.id,
 				messageId: msg.id,
-				statsName,
-				damageName
+				statsName: statsName ?? [],
+				damageName: damageName ?? []
 			};
 			if (userChan) {
-				json[guildData].managerId = userChan.id;
+				json.managerId = userChan.id;
 			}
 		} else {
-			json[guildData] = {
+			client.settings.set(guildId, {
 				templateID: {
 					channelId: channel.id,
 					messageId: msg.id,
-					managerId: userChan?.id,
-					statsName,
-					damageName
+					statsName: statsName ?? [],
+					damageName: damageName ?? []
 				},
 				user: {}
-			};
+			});
 		}
-		await bulkEditTemplateUser(json[guildData], interaction, ul, templateData);
+		await bulkEditTemplateUser(client.settings, interaction, ul, templateData);
 		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		await reply(interaction, { content: ul("register.embed.registered"), files: await downloadTutorialImages() });
 	}	

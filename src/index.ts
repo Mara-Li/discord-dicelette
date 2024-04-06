@@ -28,6 +28,8 @@ export class EClient extends Client {
 	}
 }
 
+
+
 export const client = new EClient({
 	intents: [
 		GatewayIntentBits.GuildMessages,

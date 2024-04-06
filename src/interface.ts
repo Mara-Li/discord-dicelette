@@ -20,7 +20,7 @@ export type Settings = Enmap<string, GuildData, unknown>;
 export interface GuildData {
 	logs?: string,
 	rollChannel?: string,
-	managerId: string;
+	managerId?: string;
 	templateID: {
 		channelId: string;
 		messageId: string;

@@ -2,10 +2,11 @@
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 import removeAccents from "remove-accents";
 
+import { EClient } from "../..";
 import { cmdLn, ln } from "../../localizations";
 import { default as i18next } from "../../localizations/i18next";
 import { filterChoices, generateStatsDice, reply, rollWithInteraction, title } from "../../utils";
-import { getUserData, getUserFromMessage,guildInteractionData } from "../../utils/db";
+import {getUserFromMessage } from "../../utils/db";
 
 const t = i18next.getFixedT("en");
 
@@ -50,12 +51,12 @@ export const dmgRoll = {
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.comments.description"))
 				.setRequired(false)
 		),
-	async autocomplete(interaction: AutocompleteInteraction) {
+	async autocomplete(interaction: AutocompleteInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
-		const db = guildInteractionData(interaction);
+		const db = client.settings.get(interaction.guild!.id);
 		if (!db || !db.templateID) return;
-		const user = getUserData(db, interaction.user.id);
+		const user = client.settings.get(interaction.guild!.id, `user.${interaction.user.id}`);
 		if (!user) return;
 		let choices: string[] = [];
 		if (focused.name === t("rAtq.atq_name.name")) {
@@ -78,31 +79,29 @@ export const dmgRoll = {
 			filter.map(result => ({ name: title(result), value: result}))
 		);
 	},
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: CommandInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const db = guildInteractionData(interaction);
+		const db = client.settings.get(interaction.guild!.id);
 		if (!db || !interaction.guild || !interaction.channel) return;
-		const user = getUserData(db, interaction.user.id);
+		const user = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
 		if (!user) return;
 		const atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
-		const guildData = guildInteractionData(interaction);
-		if (!guildData) return;
 		let charOptions = options.getString(t("common.character"));
 		const charName = charOptions ? removeAccents(charOptions).toLowerCase() : undefined;
 		let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 		const ul = ln(interaction.locale as Locale);
 		try {
-			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
+			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
 			if (!userStatistique && !charName) {
 				//find the first character registered
-				const userData = getUserData(guildData, interaction.user.id);
+				const userData = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
 				if (!userData) {
 					await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
 				charOptions = title(firstChar.charName);
-				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
+				userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
 				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
@@ -130,7 +129,7 @@ export const dmgRoll = {
 				comparator = comparatorMatch[0];
 			}
 			const roll = `${dice}${modificatorString}${comparator} ${comments}`;
-			await rollWithInteraction(interaction, roll, interaction.channel);
+			await rollWithInteraction(interaction, roll, interaction.channel, client.settings);
 		} catch (error) {
 			console.error(error);
 			await reply(interaction,{ content: t("error.generic", {e: (error as Error)}), ephemeral: true });

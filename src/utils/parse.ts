@@ -4,7 +4,7 @@ import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Mes
 import { TFunction } from "i18next";
 
 import { createTemplateEmbed } from "../database";
-import { GuildData } from "../interface";
+import { Settings } from "../interface";
 import { ln } from "../localizations";
 import { removeEmojiAccents, searchUserChannel, title } from ".";
 
@@ -120,8 +120,8 @@ export function getEmbeds(ul: TFunction<"translation", undefined>, message?: Mes
  * @param ul {TFunction<"translation", undefined>}
  * @param template {StatisticalTemplate}
  */
-export async function bulkEditTemplateUser(guildData: GuildData, interaction: CommandInteraction, ul: TFunction<"translation", undefined>, template: StatisticalTemplate) {
-	const users = guildData.user;
+export async function bulkEditTemplateUser(guildData: Settings, interaction: CommandInteraction, ul: TFunction<"translation", undefined>, template: StatisticalTemplate) {
+	const users = guildData.get(interaction.guild!.id, "user");
 	const thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread) return;
 	for (const userID in users) {

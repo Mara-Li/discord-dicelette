@@ -4,10 +4,11 @@ import i18next from "i18next";
 import parse from "parse-color";
 import path from "path";
 
+import { EClient } from "../..";
 import { UserData } from "../../interface";
 import { cmdLn, ln } from "../../localizations";
 import { filterChoices, removeEmojiAccents, reply, sendLogs, title } from "../../utils";
-import { getTemplateWithDB, getUserData, getUserFromMessage,guildInteractionData } from "../../utils/db";
+import { getTemplateWithDB, getUserFromMessage } from "../../utils/db";
 
 async function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string, min?: number, max?: number) {
 	if (!lineColor) lineColor = "#FF0000";
@@ -145,10 +146,10 @@ export const graph = {
 			.setDescriptionLocalizations(cmdLn("graph.bg.description"))
 			.setRequired(false)
 		),	
-	async autocomplete(interaction: AutocompleteInteraction): Promise<void> {
+	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
-		const guildData = guildInteractionData(interaction);
+		const guildData = client.settings.get(interaction.guild!.id);
 		
 		if (!guildData) return;
 		let choices: string[] = [];
@@ -166,10 +167,10 @@ export const graph = {
 			filter.map(result => ({ name: title(result) ?? result, value: result}))
 		);
 	},
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: CommandInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const guildData = guildInteractionData(interaction);
 		if (!interaction.guild) return;
+		const guildData = client.settings.get(interaction.guild!.id);
 		let min = options.getNumber(t("graph.min.name")) ?? undefined;
 		let max = options.getNumber(t("graph.max.name")) ?? undefined;
 		const ul = ln(interaction.locale as Locale);
@@ -177,7 +178,7 @@ export const graph = {
 			await reply(interaction,ul("error.noTemplate"));
 			return;
 		}
-		const serverTemplate = await getTemplateWithDB(interaction);
+		const serverTemplate = await getTemplateWithDB(interaction, client.settings);
 		if (!guildData.templateID.statsName || !serverTemplate?.statistics) {
 			await reply(interaction,ul("error.noStats"));
 			return;
@@ -203,7 +204,7 @@ export const graph = {
 				}
 			}
 		} else {
-			const userData = getUserData(guildData, user?.id ?? interaction.user.id);
+			const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
 			const findChara = userData?.find((char) => char.charName === charName);
 			if (!findChara) {
 				const userName = user?.username ?? interaction.user.username;
@@ -219,7 +220,7 @@ export const graph = {
 			if (!interaction.guild || !interaction.channel) return;
 			const userId =  user?.id ?? interaction.user.id;
 			const charName = charData[userId].charName;
-			const userStatistique = await getUserFromMessage(guildData, userId, interaction.guild, interaction, charName, false);
+			const userStatistique = await getUserFromMessage(client.settings, userId, interaction.guild, interaction, charName, false);
 
 			if (!userStatistique || !userStatistique.stats) {
 				await reply(interaction,ul("error.notRegistered"));
