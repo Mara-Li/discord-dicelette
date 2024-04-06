@@ -134,4 +134,4 @@ pnpm-lock.yaml
 database.json
 enmap.*
 data/*
-data/*
+enmap.sqlite-*
