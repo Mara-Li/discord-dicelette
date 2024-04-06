@@ -1,9 +1,9 @@
 import { Critical, Statistic, StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
-import fs from "fs";
 import dedent from "ts-dedent";
 
 import { EClient } from "../..";
+import { GuildData } from "../../interface";
 import { cmdLn, ln } from "../../localizations";
 import { default as i18next } from "../../localizations/i18next";
 import { downloadTutorialImages, reply, title } from "../../utils";
@@ -260,8 +260,9 @@ export const registerTemplate = {
 			if (userChan) {
 				json.managerId = userChan.id;
 			}
+			client.settings.set(guildId, json);
 		} else {
-			client.settings.set(guildId, {
+			const newData: GuildData = {
 				templateID: {
 					channelId: channel.id,
 					messageId: msg.id,
@@ -269,10 +270,10 @@ export const registerTemplate = {
 					damageName: damageName ?? []
 				},
 				user: {}
-			});
+			};
+			client.settings.set(guildId, newData);
 		}
 		await bulkEditTemplateUser(client.settings, interaction, ul, templateData);
-		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
 		await reply(interaction, { content: ul("register.embed.registered"), files: await downloadTutorialImages() });
 	}	
 };

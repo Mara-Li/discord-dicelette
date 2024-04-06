@@ -37,6 +37,7 @@ export default (client: EClient): void => {
 
 function convertJSONToEnmap(Client: EClient) {
 	if (!fs.existsSync("database.json")) {
+		console.log(JSON.stringify(Client.settings.get("453162143668371456"), null, 2));	
 		return;
 	}
 	const data = fs.readFileSync("database.json", "utf8");
@@ -45,6 +46,5 @@ function convertJSONToEnmap(Client: EClient) {
 		Client.settings.set(key, parsedData[key]);
 	}
 	//delete the file
-	//fs.unlinkSync("database.json");
-	//console.log(JSON.stringify(Client.settings.get("453162143668371456"), null, 2));	
+	fs.unlinkSync("database.json");
 }

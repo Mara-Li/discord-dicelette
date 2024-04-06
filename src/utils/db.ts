@@ -94,7 +94,7 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
 export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: AnyThreadChannel | TextChannel | NewsChannel, enmap: Settings, charName?: string, damage?: string[], deleteMsg: boolean = true) {
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
-	if (charName) charName = charName.toLowerCase();
+	const uniCharName: string | undefined = charName ? removeAccents(charName.toLowerCase()) : undefined;
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
 	if (damage && guildData.templateID.damageName && guildData.templateID.damageName.length > 0) {
@@ -103,7 +103,14 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 	}
 	const user = enmap.get(interaction.guild.id, `user.${userID}`);
 	if (user) {
-		const char = user.find(char => char.charName === charName);
+		const char = user.find(char => {
+			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === charName;
+			return true;
+		});
+		const charIndx = user.findIndex(char => {
+			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
+			return true;
+		});
 		if (char){
 			//delete old message
 			if (deleteMsg) 
@@ -118,17 +125,15 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 			//overwrite the message id
 			char.messageId = msgId;
 			char.damageName = damage;
+			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndx}`);
 		}
-		else user.push({ charName, messageId: msgId, damageName: damage });	
-	} else {
-		guildData.user[userID] = [{
-			charName,
-			messageId: msgId, 
-			damageName: damage
-		}];
+		else {
+			const charData = { charName, messageId: msgId, damageName: damage };
+			enmap.push(interaction.guild.id, charData, `user.${userID}`, false);
+		}
+		return;
 	}
-	//update the database
-	enmap.set(interaction.guild.id, guildData);
+	enmap.set(interaction.guild.id, [{ charName, messageId: msgId, damageName: damage }], `user.${userID}`);
 }
 
 /**
