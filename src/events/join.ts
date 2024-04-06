@@ -1,8 +1,8 @@
-import { Client } from "discord.js";
 
+import { EClient } from "..";
 import { commandsList } from "../commands";
 
-export default (client: Client): void => {
+export default (client: EClient): void => {
 	client.on("guildCreate", async (guild) => {
 		try {
 			for (const command of commandsList) {

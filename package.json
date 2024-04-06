@@ -51,6 +51,7 @@
   "devDependencies": {
     "chartjs-node-canvas": "^4.1.6",
     "discord.js": "^14.14.1",
+    "enmap": "^5.9.10",
     "parse-color": "^1.0.0",
     "tsc-alias": "^1.8.8",
     "tsx": "^4.7.1",

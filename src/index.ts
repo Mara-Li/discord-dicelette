@@ -1,5 +1,6 @@
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { Client, ClientOptions, GatewayIntentBits, Partials } from "discord.js";
 import dotenv from "dotenv";
+import Enmap from "enmap";
 import * as process from "process";
 
 import * as pkg from "../package.json";
@@ -11,7 +12,23 @@ import ready from "./events/ready";
 
 dotenv.config({ path: ".env" });
 
-export const client = new Client({
+export class EClient extends Client {
+	// Déclaration d'une propriété settings avec le type Enmap<string, any>
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public settings: Enmap<string, any>;
+  
+	constructor(options: ClientOptions) {
+		super(options);
+  
+		// Initialisation de Enmap et attachement au client
+		this.settings = new Enmap({ name: "settings",
+			fetchAll: false,
+			autoFetch: true,
+			cloneLevel: "deep" });
+	}
+}
+
+export const client = new EClient({
 	intents: [
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.MessageContent,
@@ -41,6 +58,5 @@ try {
 catch (error) {
 	console.error(error);
 }
-
 
 client.login(process.env.DISCORD_TOKEN);

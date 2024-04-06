@@ -1,9 +1,10 @@
-import { Client } from "discord.js";
 import dotenv from "dotenv";
+
+import { EClient } from "..";
 
 dotenv.config({ path: ".env" });
 
-export const botError = (client	: Client): void => {
+export const botError = (client	: EClient): void => {
 	client.on("error", async (error) => {
 		console.error(error);
 		if (!process.env.OWNER_ID) return;

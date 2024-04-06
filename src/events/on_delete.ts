@@ -1,10 +1,11 @@
-import {Client, GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel} from "discord.js";
+import {GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel} from "discord.js";
 import fs from "fs";
 
+import { EClient } from "..";
 import { GuildData } from "../interface";
 import { readDB } from "../utils/db";
 
-export const delete_channel = (client	: Client): void => {
+export const delete_channel = (client	: EClient): void => {
 	client.on("channelDelete", async (channel) => {
 		try {
 			if (channel.isDMBased()) return;
@@ -40,7 +41,7 @@ export const delete_channel = (client	: Client): void => {
 	});
 };
 
-export const delete_thread = (client: Client): void => {
+export const delete_thread = (client: EClient): void => {
 	client.on("threadDelete", async (thread) => {
 		try {
 			//search channelID in database and delete it
@@ -71,7 +72,7 @@ export const delete_thread = (client: Client): void => {
 	});
 };
 
-export const delete_message = (client: Client): void => {
+export const delete_message = (client: EClient): void => {
 	client.on("messageDelete", async (message) => {
 		try {
 			if (!message.guild) return;
@@ -112,7 +113,7 @@ export const delete_message = (client: Client): void => {
 	});
 };
 
-export const on_kick = (client: Client): void => {
+export const on_kick = (client: EClient): void => {
 	client.on("guildDelete", async (guild) => {
 		//delete guild from database
 		try {

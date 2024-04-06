@@ -1,7 +1,8 @@
 /* eslint-disable no-useless-escape */
 import { COMMENT_REGEX, Resultat,roll } from "@dicelette/core";
-import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
+import {ChannelType, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 
+import { EClient } from "..";
 import { deleteAfter } from "../commands/rolls/base_roll";
 import { parseResult } from "../dice";
 import { lError, ln } from "../localizations";
@@ -13,7 +14,7 @@ import { findForumChannel, findThread } from "../utils/find";
 // eslint-disable-next-line no-useless-escape
 export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
 
-export default (client: Client): void => {
+export default (client: EClient): void => {
 	client.on("messageCreate", async (message) => {
 		try {
 			if (message.author.bot) return;

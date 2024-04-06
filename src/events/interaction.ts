@@ -1,7 +1,8 @@
 import { StatisticalTemplate } from "@dicelette/core";
-import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, Client, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
+import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
 import { TFunction } from "i18next";
 
+import { EClient } from "..";
 import { autCompleteCmd,commandsList } from "../commands";
 import { button_add_dice,submit_damageDice } from "../database/dice/add";
 import { start_edit_dice,validate_editDice } from "../database/dice/edit";
@@ -14,7 +15,7 @@ import { getTemplate, getTemplateWithDB,readDB } from "../utils/db";
 import { ensureEmbed } from "../utils/parse";
 
 
-export default (client: Client): void => {
+export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
 		const ul = ln(interaction.locale);
 		const interactionUser = interaction.user;
