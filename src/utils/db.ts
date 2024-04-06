@@ -57,12 +57,11 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
 	if (!userData) return;
 	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const user = guildData.get(guild.id, `user.${userId}`)?.find(char => {
-		if (char.charName) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
-		return char.charName === charName;
+		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
+		return true;
 	});
 	if (!user) return;
-	const key = charName ? `${userId}.${charName}` : userId;
-	const userMessageId = guildData.get(guild.id, `user.${key}.messageId`) as unknown as string;
+	const userMessageId = user.messageId;
 	const thread = await searchUserChannel(guildData, interaction, ul);
 	if (!thread) 
 		throw new Error(ul("error.noThread"));
@@ -80,9 +79,6 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
 		throw new Error(ul("error.user"));
 	}
 }
-
-/**
-
 
 /**
  * Register an user in the database
@@ -198,5 +194,5 @@ export function registerManagerID(guildData: Settings, interaction: BaseInteract
 	if (!channel) return;
 	const guildId = interaction.guild?.id;
 	if (!guildId) return;
-	guildData.set(interaction.guild.id, "managerId", channel);
+	guildData.set(interaction.guild.id, channel, "managerId");
 }

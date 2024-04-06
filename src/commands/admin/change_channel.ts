@@ -28,7 +28,7 @@ export const logs = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const channel = options.getChannel(ul("common.channel"), true);
 		if (!channel || !(channel instanceof TextChannel)) return;
-		client.settings.set(interaction.guild.id, "logs", channel.id);
+		client.settings.set(interaction.guild.id, channel.id, "logs",);
 		await reply(interaction, { content: ul("logs.set", {channel: channel.name}), ephemeral: true });
 	}
 };
@@ -55,7 +55,8 @@ export const changeThread = {
 		const channel = options.getChannel("channel", true);
 		const ul = ln(interaction.locale as Locale);
 		if (!channel || !interaction.guild?.id) return;
-		client.settings.set(interaction.guild.id, "channelID", channel.id);
+		client.settings.set(interaction.guild.id, channel.id, "rollChannel");
+		console.log(client.settings);
 		await reply(interaction, ul("changeThread.set", {channel: channelMention(channel.id)}));
 	}
 };
