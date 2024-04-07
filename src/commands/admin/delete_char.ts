@@ -33,6 +33,7 @@ export const deleteChar = {
 	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
+		const ul = ln(interaction.locale as Locale);
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		let choices: string[] = [];
@@ -42,6 +43,7 @@ export const deleteChar = {
 				.map((data) => data.map((char) => char.charName ?? ""))
 				.flat()
 				.filter((data) => data.length > 0);
+			allCharactersFromGuild.push(ul("common.default"));
 			choices = allCharactersFromGuild;
 		}
 		if (choices.length === 0) return;

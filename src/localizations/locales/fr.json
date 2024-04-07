@@ -21,6 +21,7 @@
     "channel": "channel",
     "charName": "Nom du personnage",
     "character": "personnage",
+    "default": "Défaut",
     "dice": "Dé",
     "noSet": "/",
     "page": "Page {{- nb}}",

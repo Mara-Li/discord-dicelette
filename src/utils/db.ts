@@ -27,8 +27,9 @@ export async function getChar(interaction: CommandInteraction, client: EClient, 
 		return;
 	}
 	const user = options.getUser(t("display.userLowercase"));
-	const charName = options.getString(t("common.character"))?.toLowerCase();
-	
+	let charName = options.getString(t("common.character"))?.toLowerCase();
+	if (charName === ul("common.default")) charName = undefined;
+
 	if (!user && charName) {
 		//get the character data in the database 
 		const allUsersData = guildData.user;
@@ -43,11 +44,13 @@ export async function getChar(interaction: CommandInteraction, client: EClient, 
 		}
 	}
 	const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
-	let findChara = userData?.find((char) => char.charName === charName);
-	//take the first in userData
-	findChara = userData?.[0];
+	let findChara = userData?.find((char) => {
+		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
+		return true;
+	});
+	if (!findChara)
+		findChara = userData?.[0];
 	if (!findChara) {
-		
 		return undefined;
 	}
 	return {
