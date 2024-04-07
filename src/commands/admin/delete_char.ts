@@ -64,7 +64,7 @@ export const deleteChar = {
 		const user = options.getUser(t("display.userLowercase"));
 		const charName = options.getString(t("common.character"))?.toLowerCase();
 		const thread = await searchUserChannel(client.settings, interaction, ul);
-
+		
 		if (!charName) {
 			//delete all characters from the user
 			const allDataUser = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
@@ -72,16 +72,10 @@ export const deleteChar = {
 				await reply(interaction, ul("deleteChar.noCharacters", {user: userMention(user?.id ?? interaction.user.id)}));
 				return;
 			}
-			for (const char of allDataUser) {
-				const mID = char.messageId;
-				if (thread) {
-					try {
-						const message = await thread.messages.fetch(mID);
-						await message.delete();
-					} catch (error) {
-						console.error(error);
-					}
-				}
+			//list of all IDs of the messages to delete
+			const idsToDelete: string[] = Object.values(allDataUser).map((char) => char.messageId);
+			if (thread) {
+				thread.bulkDelete(idsToDelete);
 			}
 			client.settings.delete(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
 			await reply(interaction, ul("deleteChar.allSuccess", {user: userMention(user?.id ?? interaction.user.id)}));
@@ -116,5 +110,5 @@ export const deleteChar = {
 			client.settings.set(interaction.guildId as string, newGuildData);
 			await reply(interaction, ul("deleteChar.success", {user: msg}));	
 		}
-	}
+	} 
 };

@@ -142,14 +142,21 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 		damage = damage.filter(damage => !guildData.templateID.damageName.includes(damage));
 	}
 	const user = enmap.get(interaction.guild.id, `user.${userID}`);
+	const newChar = {
+		charName,
+		messageId: msgId,
+		damageName: damage
+	}
+	if (!charName) delete newChar.charName;
+	if (!damage) delete newChar.damageName;
 	if (user) {
 		const char = user.find(char => {
 			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
-			return true;
+			return (char.charName === undefined && charName === undefined);
 		});
 		const charIndx = user.findIndex(char => {
 			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
-			return true;
+			return (char.charName === undefined && charName === undefined);
 		});
 		if (char){
 			//delete old message
@@ -164,16 +171,16 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 			}
 			//overwrite the message id
 			char.messageId = msgId;
-			char.damageName = damage;
+			if (damage) char.damageName = damage;
 			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndx}`);
 		}
 		else {
-			const charData = { charName, messageId: msgId, damageName: damage };
-			enmap.push(interaction.guild.id, charData, `user.${userID}`, false);
+			
+			enmap.push(interaction.guild.id, newChar, `user.${userID}`, false);
 		}
 		return;
 	}
-	enmap.set(interaction.guild.id, [{ charName, messageId: msgId, damageName: damage }], `user.${userID}`);
+	enmap.set(interaction.guild.id, [newChar], `user.${userID}`);
 	
 }
 

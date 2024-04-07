@@ -1,5 +1,5 @@
 {
-  "charName": true,
+  "charName": false,
   "statistics": {
     "Force": {
       "min": 3
