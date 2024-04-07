@@ -56,8 +56,6 @@ export const delete_thread = (client: EClient): void => {
 
 export const delete_message = (client: EClient): void => {
 	client.on("messageDelete", async (message) => {
-		console.log(`Message deleted: ${message.id} - ${message.author}`);
-		console.log(client.settings.get(message.guild!.id, "user.189390243676422144"));
 		try {
 			if (!message.guild) return;
 			const messageId = message.id;

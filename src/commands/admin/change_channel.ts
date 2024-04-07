@@ -55,7 +55,6 @@ export const changeThread = {
 		const ul = ln(interaction.locale as Locale);
 		if (!channel || !interaction.guild?.id) return;
 		client.settings.set(interaction.guild.id, channel.id, "rollChannel");
-		console.log(client.settings);
 		await reply(interaction, ul("changeThread.set", {channel: channelMention(channel.id)}));
 	}
 };
