@@ -24,6 +24,14 @@
         ],
         "sourceMap": false,
         "baseUrl": ".",
+        "paths": {
+            "@utils/*": ["src/utils/*"],
+            "@utils": ["src/utils/index"],
+            "@db/*": ["src/database/*"],
+            "@db": ["src/database/index"],
+            "@localization/*": ["src/localizations/*"],
+            "@localization": ["src/localizations/index"],
+        }
     },
     "files": [
         "src/index.ts"

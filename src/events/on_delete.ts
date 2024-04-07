@@ -1,5 +1,6 @@
-import {GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel} from "discord.js";
+import {CommandInteraction, GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel, User} from "discord.js";
 import Enmap from "enmap";
+import removeAccents from "remove-accents";
 
 import { EClient } from "..";
 import { GuildData } from "../interface";
@@ -56,6 +57,8 @@ export const delete_thread = (client: EClient): void => {
 
 export const delete_message = (client: EClient): void => {
 	client.on("messageDelete", async (message) => {
+		console.log(`Message deleted: ${message.id} - ${message.author}`);
+		console.log(client.settings.get(message.guild!.id, "user.189390243676422144"));
 		try {
 			if (!message.guild) return;
 			const messageId = message.id;
@@ -68,7 +71,6 @@ export const delete_message = (client: EClient): void => {
 			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0){
 				for (const [user, values] of Object.entries(dbUser)) {
-					if (values.length === 0) continue;
 					for (const [index, value] of values.entries()) {
 						if (value.messageId === messageId) {
 							values.splice(index, 1);
@@ -104,4 +106,22 @@ function cleanUserDB(guildDB: Enmap<string, GuildData, unknown>, thread: GuildTe
 		const oldMessage = thread.messages.cache.find(message => data.some(char => char.messageId === message.id));
 		if (oldMessage) guildDB.delete(thread.guild.id, `user.${user}`);
 	}
+}
+
+export function deleteUser(
+	interaction: CommandInteraction,
+	guildData: GuildData,
+	user?: User | null,
+	charName?: string,
+) {
+	//delete the character from the database
+	const userCharIndex = guildData.user[user?.id ?? interaction.user.id].findIndex((char) => {
+		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
+		return char.charName === charName;
+	});
+	if (userCharIndex === -1) {
+		return guildData;
+	}
+	guildData.user[user?.id ?? interaction.user.id].splice(userCharIndex, 1);
+	return guildData;
 }

@@ -1,10 +1,11 @@
 import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
-import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
+import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
 
+import { EClient } from "..";
 import { Settings, Translation, UserData } from "../interface";
 import { ln } from "../localizations";
-import {removeEmojiAccents, searchUserChannel } from ".";
+import {removeEmojiAccents, reply, searchUserChannel } from ".";
 import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
 
 /**
@@ -16,6 +17,43 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
 	if (!template) return;
 	const res = await fetch(template.url).then(res => res.json());
 	return verifyTemplateValue(res);
+}
+
+export async function getChar(interaction: CommandInteraction, client: EClient, t: Translation) {
+	const options = interaction.options as CommandInteractionOptionResolver;
+	const guildData = client.settings.get(interaction.guildId as string);
+	const ul = ln(interaction.locale as Locale);
+	if (!guildData) {
+		await reply(interaction, ul("error.noTemplate"));
+		return;
+	}
+	const user = options.getUser(t("display.userLowercase"));
+	const charName = options.getString(t("common.character"))?.toLowerCase();
+	
+	if (!user && charName) {
+		//get the character data in the database 
+		const allUsersData = guildData.user;
+		const allUsers = Object.entries(allUsersData);
+		for (const [user, data] of allUsers) {
+			const userChar = data.find((char) => char.charName === charName);
+			if (userChar) {
+				return {
+					[user as string]: userChar
+				};
+			}
+		}
+	}
+	const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
+	let findChara = userData?.find((char) => char.charName === charName);
+	//take the first in userData
+	findChara = userData?.[0];
+	if (!findChara) {
+		
+		return undefined;
+	}
+	return {
+		[(user?.id ?? interaction.user.id)]: findChara
+	};
 }
 
 

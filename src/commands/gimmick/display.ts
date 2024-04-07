@@ -5,6 +5,7 @@ import { EClient } from "../..";
 import { createDiceEmbed, createStatsEmbed } from "../../database";
 import { cmdLn,ln } from "../../localizations";
 import { filterChoices, reply, searchUserChannel, title } from "../../utils";
+import { getChar } from "../../utils/db";
 import { getEmbeds } from "../../utils/parse";
 
 const t = i18next.getFixedT("en");
@@ -62,40 +63,14 @@ export const displayUser = {
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
+		const charData = await getChar(interaction, client, t);
 		const charName = options.getString(t("common.character"))?.toLowerCase();
-		let charData: { [key: string]: {
-			charName?: string;
-			messageId: string;
-			damageName?: string[];
-		} } = {};
-		if (!user && charName) {
-			//get the character data in the database 
-			const allUsersData = guildData.user;
-			const allUsers = Object.entries(allUsersData);
-			for (const [user, data] of allUsers) {
-				const userChar = data.find((char) => char.charName === charName);
-				if (userChar) {
-					charData = {
-						[user as string]: userChar
-					};
-					break;
-				}
-			}
-		} else {
-			const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
-			let findChara = userData?.find((char) => char.charName === charName);
-			//take the first in userData
-			findChara = userData?.[0];
-			if (!findChara) {
-				let userName = `<@${user?.id ?? interaction.user.id}>`;
-				if (charName) userName += ` (${charName})` ;
-				await reply(interaction, ul("error.userNotRegistered", {user: userName}));
-				return;
-			}
-			charData = {
-				[(user?.id ?? interaction.user.id)]: findChara
-			};
-		} 
+		if (!charData) {
+			let userName = `<@${user?.id ?? interaction.user.id}>`;
+			if (charName) userName += ` (${charName})` ;
+			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
+			return;
+		}
 		const thread = await searchUserChannel(client.settings, interaction, ul);
 		const messageID = charData[user?.id ?? interaction.user.id].messageId;
 		try {

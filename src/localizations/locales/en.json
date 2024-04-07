@@ -49,6 +49,13 @@
       "statistic": "The statistic to use"
     }
   },
+  "deleteChar": {
+    "character": "The name of the character to delete",
+    "description": "Delete a character/user",
+    "name": "delete_char",
+    "success": "The {{- user}} character has been deleted!",
+    "user": "The player to delete"
+  },
   "display": {
     "character": "The character to display",
     "description": "Allows you to display the profile of a player/character",

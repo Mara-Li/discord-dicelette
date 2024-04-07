@@ -1,9 +1,9 @@
+import { cmdLn, ln } from "@localization";
+import { reply } from "@utils";
 import { channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import { t } from "i18next";
 
 import { EClient } from "../..";
-import { cmdLn, ln } from "../../localizations";
-import { reply } from "../../utils";
 
 export const logs = {
 	data: new SlashCommandBuilder()

@@ -49,6 +49,13 @@
       "statistic": "La statistique à utiliser"
     }
   },
+  "deleteChar": {
+    "character": "Le nom du personnage à supprimer",
+    "description": "Supprime un personnage / utilisateur",
+    "name": "supprimer_char",
+    "success": "Le personnage de {{- user}} a bien été supprimé !",
+    "user": "Le joueur à supprimer"
+  },
   "display": {
     "character": "Le personnage à afficher",
     "description": "Permet d'afficher la fiche d'un joueur/personnage",
