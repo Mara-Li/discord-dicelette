@@ -100,6 +100,7 @@
     "noDamage": "{{- atq}} is not saved in {{- charName}}.",
     "noDice": "You cannot issue this command without having a registered die type!",
     "noEmbed": "No embeds found",
+    "noGuildData": "No data found for server {{-server}}.",
     "noMessage": "No messages found.",
     "noStats": "This command cannot be used: no statistics have been recorded.",
     "noTemplate": "No template or channel configured",

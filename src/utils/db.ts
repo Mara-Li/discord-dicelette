@@ -68,16 +68,16 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 	if (!interaction.guild) return;
 	const guild = interaction.guild;
 	const templateID = enmap.get(interaction.guild.id, "templateID");
-
-	if (!enmap.has(interaction.guild.id)||!templateID) throw new Error("No guild data");
+	const ul = ln(interaction.locale);
+	if (!enmap.has(interaction.guild.id)||!templateID) throw new Error(ul("error.noGuildData", {server : interaction.guild.name}));
 
 	const {channelId, messageId} = templateID;
 	const channel = await guild.channels.fetch(channelId);
 	if (!channel || (channel instanceof CategoryChannel)) return;
 	const message = await channel.messages.fetch(messageId);
-	if (!message) throw new Error("No message found");
+	if (!message) throw new Error(ul("error.noTemplate"));
 	const template = message.attachments.first();
-	if (!template) throw new Error("No template found");
+	if (!template) throw new Error(ul("error.noTemplate"));
 	const res = await fetch(template.url).then(res => res.json());
 	return verifyTemplateValue(res);
 
@@ -236,8 +236,6 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
  * @param {string} channel 
  */
 export function registerManagerID(guildData: Settings, interaction: BaseInteraction, channel?: string) {
-	if (!channel) return;
-	const guildId = interaction.guild?.id;
-	if (!guildId) return;
+	if (!channel || !interaction.guild) return;
 	guildData.set(interaction.guild.id, channel, "managerId");
 }
