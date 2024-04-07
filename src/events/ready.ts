@@ -31,10 +31,13 @@ export default (client: EClient): void => {
 				{ body: serializedCommands },
 			);
 			if (wasconverted) {
-				//send a message to the owner of the guild
-				const owner = await guild.members.fetch(guild.ownerId);
-				if (owner) {
-					owner.send(`[MESSAGE FOR SERVER: ${guild.name}]\nThe database of Dicelette was updated into a new more secure format!\nNormally, all your data should be working but if you notice any missing data, please contact the bot owner! All old data was moved to a backup file, so don't worry!\n\nHave a nice day :)`);
+				try {
+					const owner = await guild.members.fetch(guild.ownerId);
+					if (owner) {
+						owner.send(`[MESSAGE FOR SERVER: ${guild.name}]\nThe database of Dicelette was updated into a new more secure format!\nNormally, all your data should be working but if you notice any missing data, please contact the bot owner! All old data was moved to a backup file, so don't worry!\n\nHave a nice day :)`);
+					}
+				} catch (e) {
+					//skip
 				}
 			}
 		}
