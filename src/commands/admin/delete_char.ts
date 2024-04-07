@@ -14,6 +14,7 @@ export const deleteChar = {
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 		.setNameLocalizations(cmdLn("deleteChar.name"))
 		.setDescription(t("deleteChar.description"))
+		.setDescriptionLocalizations(cmdLn("deleteChar.description"))
 		.addUserOption(option =>
 			option
 				.setName(t("display.userLowercase"))
