@@ -24,7 +24,7 @@ export async function getChar(interaction: CommandInteraction, client: EClient, 
 	const ul = ln(interaction.locale as Locale);
 	if (!guildData) {
 		await reply(interaction, ul("error.noTemplate"));
-		return;
+		return undefined;
 	}
 	const user = options.getUser(t("display.userLowercase"));
 	let charName = options.getString(t("common.character"))?.toLowerCase();
@@ -75,7 +75,7 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 	const channel = await guild.channels.fetch(channelId);
 	if (!channel || (channel instanceof CategoryChannel)) return;
 	const message = await channel.messages.fetch(messageId);
-	if (!message) throw new Error(ul("error.noTemplate"));
+	if (!message) throw new Error(ul("error.noTemplateId", {channel: channelId, message: messageId}));
 	const template = message.attachments.first();
 	if (!template) throw new Error(ul("error.noTemplate"));
 	const res = await fetch(template.url).then(res => res.json());

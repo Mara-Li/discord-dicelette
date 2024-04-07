@@ -105,6 +105,7 @@
     "noMessage": "Aucun message trouvé.",
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
     "noTemplate": "Aucun modèle ou channel configuré",
+    "noTemplateId": "Aucun message trouvé avec les données sauvegardée dans la base de données:\n- Channel : `{{- channelId}}`\n- ID du message : `{{- messageId}}`",
     "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
     "notRegistered": "Vous n'êtes pas enregistré",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
