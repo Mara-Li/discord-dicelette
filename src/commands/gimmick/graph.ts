@@ -1,14 +1,13 @@
+import { UserData } from "@interface";
+import { cmdLn, ln } from "@localization";
+import { EClient } from "@main";
+import { filterChoices, removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import { getTemplateWithDB, getUserFromMessage } from "@utils/db";
 import {ChartJSNodeCanvas} from "chartjs-node-canvas";
 import { AttachmentBuilder, AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
 import path from "path";
-
-import { EClient } from "../..";
-import { UserData } from "../../interface";
-import { cmdLn, ln } from "../../localizations";
-import { filterChoices, removeEmojiAccents, reply, sendLogs, title } from "../../utils";
-import { getTemplateWithDB, getUserFromMessage } from "../../utils/db";
 
 async function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string, min?: number, max?: number) {
 	if (!lineColor) lineColor = "#FF0000";

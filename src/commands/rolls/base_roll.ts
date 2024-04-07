@@ -1,3 +1,7 @@
+import { cmdLn, ln } from "@localization";
+import { default as i18next } from "@localization/i18next";
+import { EClient } from "@main";
+import { reply, rollWithInteraction , setTagsForRoll } from "@utils";
 import {
 	channelMention,
 	CommandInteraction,
@@ -11,11 +15,6 @@ import {
 	userMention} from "discord.js";
 import moment from "moment";
 import dedent from "ts-dedent";
-
-import { EClient } from "../..";
-import { cmdLn, ln } from "../../localizations";
-import { default as i18next } from "../../localizations/i18next";
-import { reply, rollWithInteraction , setTagsForRoll } from "../../utils";
 
 const t = i18next.getFixedT("en");
 

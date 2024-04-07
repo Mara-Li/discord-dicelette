@@ -1,13 +1,12 @@
 import { Critical, Statistic, StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
+import { GuildData } from "@interface";
+import { cmdLn, ln } from "@localization";
+import { default as i18next } from "@localization/i18next";
+import { EClient } from "@main";
+import { downloadTutorialImages, reply, title } from "@utils";
+import { bulkEditTemplateUser } from "@utils/parse";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import dedent from "ts-dedent";
-
-import { EClient } from "../..";
-import { GuildData } from "../../interface";
-import { cmdLn, ln } from "../../localizations";
-import { default as i18next } from "../../localizations/i18next";
-import { downloadTutorialImages, reply, title } from "../../utils";
-import { bulkEditTemplateUser } from "../../utils/parse";
 
 const t = i18next.getFixedT("en");
 

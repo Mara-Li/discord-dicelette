@@ -1,11 +1,10 @@
+import { deleteUser } from "@events/on_delete";
+import { cmdLn, ln } from "@localization";
+import { EClient } from "@main";
+import { filterChoices, reply, searchUserChannel, title } from "@utils";
+import { getChar } from "@utils/db";
 import { AutocompleteInteraction, CommandInteraction,CommandInteractionOptionResolver,Locale,SlashCommandBuilder, userMention } from "discord.js";
 import i18next from "i18next";
-
-import { EClient } from "../..";
-import { deleteUser } from "../../events/on_delete";
-import { cmdLn, ln } from "../../localizations";
-import { filterChoices, reply, searchUserChannel, title } from "../../utils";
-import { getChar } from "../../utils/db";
 
 const t = i18next.getFixedT("en");
 
