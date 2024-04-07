@@ -1,6 +1,5 @@
+import { EClient } from "@main";
 import dotenv from "dotenv";
-
-import { EClient } from "..";
 
 dotenv.config({ path: ".env" });
 

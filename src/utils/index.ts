@@ -1,18 +1,18 @@
+import { deleteAfter } from "@commands/rolls/base_roll";
 import { roll } from "@dicelette/core";
+import { DETECT_DICE_MESSAGE } from "@events/message_create";
+import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "@interface";
+import { ln } from "@localization";
+import { editUserButtons } from "@utils/buttons";
+import { registerManagerID, registerUser } from "@utils/db";
+import { findForumChannel,findThread } from "@utils/find";
+import { parseEmbedFields } from "@utils/parse";
 import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
 
-import { deleteAfter } from "../commands/rolls/base_roll";
 import { parseResult } from "../dice";
-import { DETECT_DICE_MESSAGE } from "../events/message_create";
-import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "../interface";
-import { ln } from "../localizations";
-import { editUserButtons } from "./buttons";
-import { registerManagerID, registerUser } from "./db";
-import { findForumChannel,findThread } from "./find";
-import { parseEmbedFields } from "./parse";
 
 /**
  * create the roll dice, parse interaction etc... When the slashcommands is used for dice

@@ -1,13 +1,12 @@
 import { StatisticalTemplate } from "@dicelette/core";
+import { Settings, Translation } from "@interface";
+import { ln } from "@localization";
+import { createEmbedFirstPage } from "@register/validate";
+import { embedStatistiques, showStatistiqueModal } from "@stats/add";
+import { removeEmojiAccents, reply } from "@utils";
+import { getTemplateWithDB } from "@utils/db";
+import { parseEmbed } from "@utils/parse";
 import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
-
-import { Settings, Translation } from "../../interface";
-import { ln } from "../../localizations";
-import { removeEmojiAccents, reply } from "../../utils";
-import { getTemplateWithDB } from "../../utils/db";
-import { parseEmbed } from "../../utils/parse";
-import { embedStatistiques, showStatistiqueModal } from "../stats/add";
-import { createEmbedFirstPage } from "./validate";
 
 
 /**

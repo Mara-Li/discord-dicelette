@@ -1,18 +1,17 @@
+import { autCompleteCmd,commandsList } from "@commands";
+import { button_add_dice,submit_damageDice } from "@dice/add";
+import { start_edit_dice,validate_editDice } from "@dice/edit";
 import { StatisticalTemplate } from "@dicelette/core";
+import { Settings, Translation } from "@interface";
+import { lError,ln } from "@localization";
+import { EClient } from "@main";
+import { continuePage,open_register_user,pageNumber, submit_firstPage } from "@register/start";
+import { button_validate_user } from "@register/validate";
+import { editStats,start_edit_stats } from "@stats/edit";
+import { reply } from "@utils";
+import { getTemplate, getTemplateWithDB } from "@utils/db";
+import { ensureEmbed } from "@utils/parse";
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
-
-import { EClient } from "..";
-import { autCompleteCmd,commandsList } from "../commands";
-import { button_add_dice,submit_damageDice } from "../database/dice/add";
-import { start_edit_dice,validate_editDice } from "../database/dice/edit";
-import { continuePage,open_register_user,pageNumber, submit_firstPage } from "../database/register/start";
-import { button_validate_user } from "../database/register/validate";
-import { editStats,start_edit_stats } from "../database/stats/edit";
-import { Settings, Translation } from "../interface";
-import { lError,ln } from "../localizations";
-import { reply } from "../utils";
-import { getTemplate, getTemplateWithDB } from "../utils/db";
-import { ensureEmbed } from "../utils/parse";
 
 
 export default (client: EClient): void => {

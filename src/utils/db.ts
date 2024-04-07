@@ -1,12 +1,11 @@
 import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
+import { Settings, Translation, UserData } from "@interface";
+import { ln } from "@localization";
+import { EClient } from "@main";
+import {removeEmojiAccents, reply, searchUserChannel } from "@utils";
+import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
-
-import { EClient } from "..";
-import { Settings, Translation, UserData } from "../interface";
-import { ln } from "../localizations";
-import {removeEmojiAccents, reply, searchUserChannel } from ".";
-import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
 
 /**
  * Get the guild template when clicking on the "registering user" button or when submiting

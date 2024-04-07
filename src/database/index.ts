@@ -1,7 +1,6 @@
+import { Translation } from "@interface";
+import { ensureEmbed,getEmbeds } from "@utils/parse";
 import { ButtonInteraction, EmbedBuilder, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
-
-import { Translation } from "../interface";
-import { ensureEmbed,getEmbeds } from "../utils/parse";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found

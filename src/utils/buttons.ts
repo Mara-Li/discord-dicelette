@@ -1,6 +1,5 @@
+import { Translation } from "@interface";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-
-import { Translation } from "../interface";
 
 /**
  * Button to edit the user embed character sheet

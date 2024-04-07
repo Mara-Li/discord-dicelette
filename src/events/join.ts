@@ -1,6 +1,6 @@
 
-import { EClient } from "..";
-import { commandsList } from "../commands";
+import { commandsList } from "@commands";
+import { EClient } from "@main";
 
 export default (client: EClient): void => {
 	client.on("guildCreate", async (guild) => {

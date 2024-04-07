@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
 import {StatisticalTemplate} from "@dicelette/core";
+import { Settings, Translation, UserData } from "@interface";
+import { ln } from "@localization";
+import {removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
+import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
+import { createEmbedsList, ensureEmbed,parseEmbedFields } from "@utils/parse";
 import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, PermissionsBitField, User, userMention } from "discord.js";
-
-import { Settings, Translation, UserData } from "../../interface";
-import { ln } from "../../localizations";
-import {removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "../../utils";
-import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
-import { createEmbedsList, ensureEmbed,parseEmbedFields } from "../../utils/parse";
-import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "..";
 
 /**
  * Create the embed after registering the user

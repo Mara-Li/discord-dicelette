@@ -1,9 +1,8 @@
 /* eslint-disable no-useless-escape */
 import { calculator,Compare, Resultat, Sign } from "@dicelette/core";
+import { Translation } from "@interface";
 import { evaluate } from "mathjs";
 import dedent from "ts-dedent";
-
-import { Translation } from "./interface";
 
 /**
  * Parse the result of the dice to be readable

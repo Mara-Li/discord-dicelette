@@ -29,12 +29,17 @@
             "@utils": ["src/utils/index"],
             "@database/*": ["src/database/*"],
             "@database": ["src/database/index"],
+            "@register/*" : ["src/database/register/*"],
+            "@dice/*" : ["src/database/dice/*"],
+            "@stats/*" : ["src/database/stats/*"],
             "@localization/*": ["src/localizations/*"],
             "@localization": ["src/localizations/index"],
             "@main" : ["src/index"],
             "@interface" : ["src/interface"],
             "@events/*" : ["src/events/*"],
             "@events" : ["src/events/index"],
+            "@commands/*" : ["src/commands/*"],
+            "@commands" : ["src/commands/index"],
         }
     },
     "files": [

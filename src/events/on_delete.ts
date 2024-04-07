@@ -1,10 +1,9 @@
+import { GuildData } from "@interface";
+import { EClient } from "@main";
+import { sendLogs } from "@utils";
 import {CommandInteraction, GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel, User} from "discord.js";
 import Enmap from "enmap";
 import removeAccents from "remove-accents";
-
-import { EClient } from "..";
-import { GuildData } from "../interface";
-import { sendLogs } from "../utils";
 
 export const delete_channel = (client	: EClient): void => {
 	client.on("channelDelete", async (channel) => {

@@ -1,12 +1,11 @@
+import { createStatsEmbed, getUserNameAndChar } from "@database";
 import { evalOneCombinaison } from "@dicelette/core";
+import { Settings, Translation } from "@interface";
+import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import { editUserButtons } from "@utils/buttons";
+import { getTemplateWithDB } from "@utils/db";
+import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
-
-import { Settings, Translation } from "../../interface";
-import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, reply, sendLogs, title } from "../../utils";
-import { editUserButtons } from "../../utils/buttons";
-import { getTemplateWithDB } from "../../utils/db";
-import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
-import { createStatsEmbed, getUserNameAndChar } from "..";
 
 /**
  * Validate the stats and edit the embed with the new stats for editing

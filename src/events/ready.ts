@@ -1,11 +1,10 @@
+import { commandsList } from "@commands";
+import { GuildData } from "@interface";
+import { EClient , VERSION } from "@main";
 import { REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 import * as fs from "fs";
 import process from "process";
-
-import { commandsList } from "../commands";
-import { EClient , VERSION } from "../index";
-import { GuildData } from "../interface";
 
 
 

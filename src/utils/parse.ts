@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { createTemplateEmbed } from "@database";
 import {StatisticalTemplate} from "@dicelette/core";
+import { Settings, Translation } from "@interface";
+import { ln } from "@localization";
+import { removeEmojiAccents, searchUserChannel, title } from "@utils";
 import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Message, ModalSubmitInteraction } from "discord.js";
-
-import { createTemplateEmbed } from "../database";
-import { Settings, Translation } from "../interface";
-import { ln } from "../localizations";
-import { removeEmojiAccents, searchUserChannel, title } from ".";
 
 /**
  * Ensure the embeds are present

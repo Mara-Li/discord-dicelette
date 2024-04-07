@@ -1,8 +1,7 @@
+import { GuildData } from "@interface";
+import { setTagsForRoll } from "@utils";
 import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
 import Enmap from "enmap";
-
-import { GuildData } from "../interface";
-import { setTagsForRoll } from ".";
 /**
  * Find a thread by their data or create it
  * @param channel {TextChannel}
