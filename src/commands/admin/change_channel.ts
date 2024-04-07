@@ -2,7 +2,10 @@ import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { reply } from "@utils";
 import { channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
-import { t } from "i18next";
+import i18next from "i18next";
+
+const t = i18next.getFixedT("en");
+
 
 export const logs = {
 	data: new SlashCommandBuilder()

@@ -1,4 +1,10 @@
 {
+  "autoRole": {
+    "description": "Ajoute automatiquement un rôle quand une fiche est validée.",
+    "name": "auto_role",
+    "options": "Rôle à ajouter",
+    "set": "Le rôle {{- role}} sera maintenant ajouté automatiquement aux joueurs enregistrés pour la première fois."
+  },
   "button": {
     "add": {
     },
@@ -25,6 +31,7 @@
     "dice": "Dé",
     "noSet": "/",
     "page": "Page {{- nb}}",
+    "role": "role",
     "space": " ",
     "statistic": "statistique",
     "total": "Total",

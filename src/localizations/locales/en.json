@@ -1,4 +1,10 @@
 {
+  "autoRole": {
+    "description": "Automatically adds a role when a record is validated.",
+    "name": "auto_role",
+    "options": "",
+    "set": ""
+  },
   "button": {
     "add": {
     },
@@ -25,6 +31,7 @@
     "dice": "Dé",
     "noSet": "/",
     "page": "Page {{- nb}}",
+    "role": "",
     "space": "",
     "statistic": "statistique",
     "total": "Total",
