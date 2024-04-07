@@ -1,7 +1,7 @@
 import { commandsList } from "@commands";
 import { GuildData } from "@interface";
 import { EClient , VERSION } from "@main";
-import { REST, Routes } from "discord.js";
+import { ActivityType, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 import * as fs from "fs";
 import process from "process";
@@ -20,6 +20,7 @@ export default (client: EClient): void => {
 		console.info(`${client.user.username} is online; v.${VERSION}`);
 		const serializedCommands = commandsList.map(command => command.data.toJSON());
 		const wasconverted = convertJSONToEnmap(client);
+		client.user.setActivity("Roll Dices 🎲 !", { type: ActivityType.Competing });
 		for (const guild of client.guilds.cache.values()) {
 			console.log(`Registering commands for ${guild.name}`);
 			guild.client.application.commands.cache.forEach((command) => {
