@@ -50,9 +50,11 @@
     }
   },
   "deleteChar": {
+    "allSuccess": "{{- user}}'s data has been deleted.",
     "character": "The name of the character to delete",
     "description": "Delete a character/user",
     "name": "delete_char",
+    "noCharacters": "The user {{- user}} is not registered in the database.",
     "success": "The {{- user}} character has been deleted!",
     "user": "The player to delete",
     "userLowercase": "player"

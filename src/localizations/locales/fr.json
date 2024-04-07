@@ -50,9 +50,11 @@
     }
   },
   "deleteChar": {
+    "allSuccess": "Les données de {{- user}} ont bien été supprimée.",
     "character": "Le nom du personnage à supprimer",
     "description": "Supprime un personnage / utilisateur",
     "name": "supprimer_char",
+    "noCharacters": "L'utilisateur {{- user}} n'est pas inscrit·e dans la base.",
     "success": "Le personnage de {{- user}} a bien été supprimé !",
     "user": "Le joueur à supprimer",
     "userLowercase": "joueur"
