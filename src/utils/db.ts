@@ -144,7 +144,7 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 	const user = enmap.get(interaction.guild.id, `user.${userID}`);
 	if (user) {
 		const char = user.find(char => {
-			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === charName;
+			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
 			return true;
 		});
 		const charIndx = user.findIndex(char => {
