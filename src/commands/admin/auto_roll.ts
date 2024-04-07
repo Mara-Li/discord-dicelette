@@ -3,6 +3,7 @@ import { EClient } from "@main";
 import { ln, cmdLn } from "@localization";
 import { reply } from "@utils";
 import i18next from "i18next";
+import { Translation } from "../../interface";
 
 const t = i18next.getFixedT("en");
 
@@ -13,19 +14,55 @@ export const autoRole = {
 		.setDescription(t("autoRole.description"))
 		.setDescriptionLocalizations(cmdLn("autoRole.description"))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-		.addRoleOption(option =>
-			option
-				.setName(t("common.role"))
-				.setDescription(t("autoRole.options"))
-				.setRequired(true)
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName(t("common.statistic"))
+				.setDescription(t("autoRole.stat.desc"))
+				.addRoleOption(option =>
+				option
+					.setName(t("common.role"))
+					.setDescription(t("autoRole.options"))
+					.setRequired(false)
+			)
+		)
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName(t("common.dice"))
+				.setDescription(t("autoRole.dice.desc"))	
+			.addRoleOption(option =>
+				option
+					.setName(t("common.role"))
+					.setDescription(t("autoRole.options"))
+					.setRequired(false)
+			)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
 		const ul = ln(interaction.locale);
+		//get commands used
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const role = options.getRole("role", true);
-		client.settings.set(interaction.guild.id, role.id, "autoRole");
-		await reply(interaction, ul("autoRole.set", {role: roleMention(role.id)}));
+		const subcommand = options.getSubcommand(true);
 	}
+}
 
+function stats(options: CommandInteractionOptionResolver, client: EClient, ul: Translation, interaction: CommandInteraction) {
+	const role = options.getRole(ul("common.role"));
+	if (!role) {
+		//remove the role from the db
+		client.settings.delete(interaction.guild!.id, "autoRole.stats");
+		return reply(interaction, { content: ul("autoRole.stat.remove"), ephemeral: true });
+	}
+	client.settings.set(interaction.guild!.id, role.id, "autoRole.stats");
+	return reply(interaction, { content: ul("autoRole.stat.set", { role: roleMention(role.id)}), ephemeral: true });
+}
+
+function dice(options: CommandInteractionOptionResolver, client: EClient, ul: Translation, interaction: CommandInteraction) {
+	const role = options.getRole(ul("common.role"));
+	if (!role) {
+		//remove the role from the db
+		client.settings.delete(interaction.guild!.id, "autoRole.dice");
+		return reply(interaction, { content: ul("autoRole.dice.remove"), ephemeral: true });
+	}
+	client.settings.set(interaction.guild!.id, role.id, "autoRole.dice");
+	return reply(interaction, { content: ul("autoRole.dice.set", { role: roleMention(role.id)}), ephemeral: true });
 }

@@ -1,9 +1,19 @@
 {
   "autoRole": {
     "description": "Ajoute automatiquement un rôle quand une fiche est validée.",
+    "dice": {
+      "desc": "Ajoute un rôle quand des dés sont ajoutés (dbd)",
+      "remove": "Aucun rôle ne sera ajouté aux joueurs quand leurs dés sont ajoutés.",
+      "set": "{{- role}} sera maintenant ajoutés aux joueurs quand leurs dés sont enregistrés."
+    },
     "name": "auto_role",
     "options": "Rôle à ajouter",
-    "set": "Le rôle {{- role}} sera maintenant ajouté automatiquement aux joueurs enregistrés pour la première fois."
+    "set": "Le rôle {{- role}} sera maintenant ajouté automatiquement aux joueurs enregistrés pour la première fois.",
+    "stat": {
+      "desc": "Ajoute un rôle quand les statistiques sont ajoutées (dbroll)",
+      "remove": "Aucun rôle ne sera ajouté aux joueurs quand leurs statistiques sont enregistrées.",
+      "set": "{{- role}} sera maintenant ajouté aux joueurs quand leurs statistiques seront validées."
+    }
   },
   "button": {
     "add": {
@@ -108,6 +118,7 @@
     "noDamage": "{{- atq}} n'est pas enregistré dans {{- charName}}.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
     "noEmbed": "Aucun embed trouvé",
+    "noGuild": "Une erreur qui ne devrait jamais arrivée : la commande est utilisée en dehors d'un serveur (???)",
     "noGuildData": "Aucune donnée trouvée pour le serveur {{- serveur }}.",
     "noMessage": "Aucun message trouvé.",
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",

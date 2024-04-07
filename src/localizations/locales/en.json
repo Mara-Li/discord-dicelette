@@ -1,9 +1,19 @@
 {
   "autoRole": {
     "description": "Automatically adds a role when a record is validated.",
+    "dice": {
+      "desc": "",
+      "remove": "No roles will be added to players when their dice are added.",
+      "set": "{{- role}} will now be added to players when their dice are saved."
+    },
     "name": "auto_role",
     "options": "",
-    "set": ""
+    "set": "",
+    "stat": {
+      "desc": "",
+      "remove": "No roles will be added to players when their stats are saved.",
+      "set": "{{- role}} will now be added to players when their stats are validated."
+    }
   },
   "button": {
     "add": {
@@ -108,6 +118,7 @@
     "noDamage": "{{- atq}} is not saved in {{- charName}}.",
     "noDice": "You cannot issue this command without having a registered die type!",
     "noEmbed": "No embeds found",
+    "noGuild": "An error that should never happen: the command is used outside of a server (???)",
     "noGuildData": "No data found for server {{-server}}.",
     "noMessage": "No messages found.",
     "noStats": "This command cannot be used: no statistics have been recorded.",

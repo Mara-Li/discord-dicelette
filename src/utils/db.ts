@@ -174,6 +174,7 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 		return;
 	}
 	enmap.set(interaction.guild.id, [{ charName, messageId: msgId, damageName: damage }], `user.${userID}`);
+	
 }
 
 /**

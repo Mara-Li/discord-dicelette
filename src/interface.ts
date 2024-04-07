@@ -23,7 +23,10 @@ export interface GuildData {
 	logs?: string,
 	rollChannel?: string,
 	managerId?: string;
-	rollToAdd?: string;
+	autoRole?: {
+		dice?: string;
+		stats?: string;
+	};
 	templateID: {
 		channelId: string;
 		messageId: string;

@@ -94,6 +94,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 	const ul = ln(interaction.locale as Locale);
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
+	if (!interaction.guild) throw new Error(ul("error.noGuild"));
 	if (!interaction.message) throw new Error(ul("error.noMessage"));
 	const oldDiceEmbeds = first ? ensureEmbed(interaction.message).toJSON() : getEmbeds(ul, interaction.message ?? undefined, "damage")?.toJSON();
 	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder(oldDiceEmbeds) : createDiceEmbed(ul);
@@ -125,7 +126,14 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		return acc;
 	}, {} as {[name: string]: string});
 	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul, first);
-
+	if (damageName && Object.keys(damageName).length > 0 && db.has(interaction.guild.id, "autoRole")) {
+		const role = db.get(interaction.guild.id, "autoRole.dice") as string;
+		if (role) {
+			const member = await interaction.guild.members.fetch(userID);
+			if (!member) return;
+			await member.roles.add(role);
+		}
+	}
 	if (!first) {
 		const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
 		if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed
