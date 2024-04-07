@@ -15,10 +15,10 @@ export const deleteChar = {
 		.setDescription(t("deleteChar.description"))
 		.addUserOption(option =>
 			option
-				.setName(t("common.user"))
-				.setNameLocalizations(cmdLn("common.user"))
+				.setName(t("display.userLowercase"))
+				.setNameLocalizations(cmdLn("display.userLowercase"))
 				.setDescription(t("deleteChar.user"))
-				.setDescriptionLocalizations(cmdLn("common.user"))
+				.setDescriptionLocalizations(cmdLn("deleteChar.user"))
 				.setRequired(true)
 		)
 		.addStringOption(option =>
@@ -80,14 +80,14 @@ export const deleteChar = {
 			await message.delete();
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			
-			await reply(interaction, ul("deleteChar.success", {msg}));
+			await reply(interaction, ul("deleteChar.success", {user: msg}));
 			client.settings.set(interaction.guildId as string, newGuildData);
 		} catch (error) {
 			console.error(error);
 			//no message found, delete the character from the database
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
-			await reply(interaction, ul("deleteChar.success", {msg}));	
+			await reply(interaction, ul("deleteChar.success", {user: msg}));	
 		}
 	}
 };

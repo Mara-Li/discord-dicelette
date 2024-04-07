@@ -54,7 +54,8 @@
     "description": "Delete a character/user",
     "name": "delete_char",
     "success": "The {{- user}} character has been deleted!",
-    "user": "The player to delete"
+    "user": "The player to delete",
+    "userLowercase": "player"
   },
   "display": {
     "character": "The character to display",

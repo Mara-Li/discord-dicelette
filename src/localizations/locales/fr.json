@@ -54,7 +54,8 @@
     "description": "Supprime un personnage / utilisateur",
     "name": "supprimer_char",
     "success": "Le personnage de {{- user}} a bien été supprimé !",
-    "user": "Le joueur à supprimer"
+    "user": "Le joueur à supprimer",
+    "userLowercase": "joueur"
   },
   "display": {
     "character": "Le personnage à afficher",
