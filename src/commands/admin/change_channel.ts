@@ -30,7 +30,7 @@ export const logs = {
 			await reply(interaction, { content: ul("error.invalidChannelType", {channel: channel ? `<#${channel.id}>` : ul("common.channel")}), ephemeral: true});
 			return;
 		}
-		client.settings.set(interaction.guild.id, channel.id, "logs",);
+		client.settings.set(interaction.guild.id, channel.id, "logs");
 		await reply(interaction, { content: ul("logs.set", {channel: channel.name}), ephemeral: true });
 	}
 };
