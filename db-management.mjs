@@ -22,6 +22,15 @@ color.theme({
 	error: color.red.bold,
 });
 
+//extends console to add console.error with color
+console.error = (message) => {
+	console.error("❌", color.error(message));
+};
+
+console.success = (message) => {
+	console.log("✅", color.success(message));
+};
+
 const program = new Command();
 program
 	.addOption(new Option("-g, --guild <id>", "Guild ID to manage"))
@@ -32,22 +41,19 @@ program.parse();
 
 const db = new Database("./data/enmap.sqlite", OPEN_READWRITE, (err) => {
 	if (err) {
-		console.error("❌", color.error(err.message));
+		console.error(err.message);
 	}
 	console.log("Connected to the enmap database.");
 });
 
-
-
 const options = program.opts();
-
 
 if (options.do === "get") {
 	if (!options.guild && !options.user) {
 		db.serialize(() => {
 			db.each("SELECT * FROM settings", (err, row) => {
 				if (err) {
-					console.error("❌", color.error(err.message));
+					console.error(err.message)
 				}
 				console.log(`${color.underline.green("Guild ID")} : ${row.key}`);
 				console.log(`${colorize(row.value, {pretty: true})}`);
@@ -58,7 +64,7 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
 				if (err) {
-					console.error("❌", color.error(err.message));
+					console.error(err.message)
 				}
 				console.log(`${colorize(row.value, {pretty: true})}`);
 			});
@@ -67,7 +73,7 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
 				if (err) {
-					console.error("❌", color.error(err.message));
+					console.error(err.message)
 				}
 				const guildData = JSON.parse(row.value);
 				console.log(`${colorize(guildData[options.user], {pretty: true})}`);
@@ -78,15 +84,15 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.each("SELECT * FROM settings", (err, row) => {
 				if (err) {
-					console.error("❌", color.error(err.message));
+					console.error(err.message)
 				}
 				const guildData = JSON.parse(row.value);
 				delete guildData[options.user];
 				db.run("UPDATE settings SET value = ? WHERE key = ?", [JSON.stringify(guildData), row.key], (err) => {
 					if (err) {
-						console.error("❌", color.error(err.message));
+						console.error(err.message)
 					}
-					console.log(color.success(`✅ Deleted user ${color.grey(options.user)} from guild ${color.grey(row.key)}`));
+					console.success(`Deleted user ${color.grey(options.user)} from guild ${color.grey(row.key)}`);
 				});
 			});
 		});
@@ -95,7 +101,7 @@ if (options.do === "get") {
 	//create a copy of the database before deleting, in case of accidental deletion
 	fs.copyFileSync("./data/enmap.sqlite", `./data/enmap.sqlite.${Date.now()}.bak`, (err) => {
 		if (err) {
-			console.error("❌", color.error(err.message));
+			console.error(err.message)
 			sys.exit(1);
 		}
 		console.log(color.green("💾 Created a backup of the database."));
@@ -104,7 +110,7 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.run("DELETE FROM settings WHERE key = ?", options.guild, (err) => {
 				if (err) {
-					console.error("❌", color.error(err.message));
+					console.error(err.message)
 				}
 				console.log(`Deleted guild ${options.guild}`);
 			});
@@ -113,15 +119,15 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
 				if (err) {
-					console.error("❌", color.error(err.message));
+					console.error(err.message)
 				}
 				const guildData = JSON.parse(row.value);
 				delete guildData[options.user];
 				db.run("UPDATE settings SET value = ? WHERE key = ?", [JSON.stringify(guildData), options.guild], (err) => {
 					if (err) {
-						console.error("❌", color.error(err.message));
+						console.error(err.message)
 					}
-					console.log(color.success(`✅ Deleted user ${options.user} from guild ${options.guild}`));
+					console.success(`Deleted user ${options.user} from guild ${options.guild}`);
 				});
 			});
 		});
