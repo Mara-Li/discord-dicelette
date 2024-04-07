@@ -1,9 +1,9 @@
-import color from "ansi-color";
+import color from "ansi-colors";
 import { Command, Option } from "commander";
 import colorize from "json-colorizer";
 import pkg from "sqlite3";
 import fs from "fs";
-import { sys } from "typescript";
+import { exit } from "process";
 const { Database, OPEN_READWRITE } = pkg;
 
 color.theme({
@@ -43,7 +43,7 @@ const db = new Database("./data/enmap.sqlite", OPEN_READWRITE, (err) => {
 	if (err) {
 		console.error(err.message);
 	}
-	console.log("Connected to the enmap database.");
+	console.success("Connected to the enmap database.");
 });
 
 const options = program.opts();
@@ -102,7 +102,7 @@ if (options.do === "get") {
 	fs.copyFileSync("./data/enmap.sqlite", `./data/enmap.sqlite.${Date.now()}.bak`, (err) => {
 		if (err) {
 			console.error(err.message)
-			sys.exit(1);
+			exit(1);
 		}
 		console.log(color.green("💾 Created a backup of the database."));
 	});
