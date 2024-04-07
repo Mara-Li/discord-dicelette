@@ -40,11 +40,16 @@ export const deleteChar = {
 		let choices: string[] = [];
 		if (fixed.name === t("common.character")) {
 			//get ALL characters from the guild
-			const allCharactersFromGuild = Object.values(guildData.user)
-				.map((data) => data.map((char) => char.charName ?? ""))
-				.flat()
-				.filter((data) => data.length > 0);
-			allCharactersFromGuild.push(ul("common.default"));
+			const allCharactersFromGuild: string[] = [];
+			for (const [user, char] of Object.entries(guildData.user)) {
+				for (const chara of char) {
+					if (chara.charName) allCharactersFromGuild.push(chara.charName);
+					else {
+						const member = await interaction.guild!.members.fetch(user);
+						allCharactersFromGuild.push(`${ul("common.default")} - ${member.displayName}`);
+					}
+				}
+			}
 			choices = allCharactersFromGuild;
 		}
 		if (choices.length === 0) return;
@@ -62,9 +67,8 @@ export const deleteChar = {
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
-		const charName = options.getString(t("common.character"))?.toLowerCase();
+		let charName = options.getString(t("common.character"))?.toLowerCase();
 		const thread = await searchUserChannel(client.settings, interaction, ul);
-		
 		if (!charName) {
 			//delete all characters from the user
 			const allDataUser = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
@@ -88,6 +92,7 @@ export const deleteChar = {
 			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
 			return;
 		}
+		charName = charName.includes(ul("common.default").toLowerCase()) ? undefined : charName;
 		if (!thread) {
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
