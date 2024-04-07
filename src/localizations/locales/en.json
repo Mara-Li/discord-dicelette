@@ -90,6 +90,7 @@
   "error": {
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
+    "invalidChannelType": "{{- channel}} is not a usable channel for this command.",
     "invalidDice": {
       "embeds": "No die embeds detected",
       "withDice": "Error: Invalid die {{- dice}}",

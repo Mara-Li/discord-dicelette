@@ -90,6 +90,7 @@
   "error": {
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
+    "invalidChannelType": "{{- channel}} n'est pas un channel utilisable pour cette commande.",
     "invalidDice": {
       "embeds": "Aucun embed de dé détecté",
       "withDice": "Erreur : Dé invalide {{- dice}}",

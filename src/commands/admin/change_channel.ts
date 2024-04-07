@@ -26,7 +26,10 @@ export const logs = {
 		const ul = ln(interaction.locale as Locale);
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const channel = options.getChannel(ul("common.channel"), true);
-		if (!channel || !(channel instanceof TextChannel)) return;
+		if (!channel || !(channel instanceof TextChannel)) {
+			await reply(interaction, { content: ul("error.invalidChannelType", {channel: channel ? `<#${channel.id}>` : ul("common.channel")}), ephemeral: true});
+			return;
+		}
 		client.settings.set(interaction.guild.id, channel.id, "logs",);
 		await reply(interaction, { content: ul("logs.set", {channel: channel.name}), ephemeral: true });
 	}
