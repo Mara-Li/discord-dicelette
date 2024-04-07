@@ -100,7 +100,7 @@ export const deleteChar = {
 			return;
 		}
 		const messageID = charData[user?.id ?? interaction.user.id].messageId;
-		const msg = `${userMention(user?.id ?? interaction.user.id)}: ${charName ? `(${charName})` : ""}`;
+		const msg = `${userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${title(charName)})*` : ""}`;
 		try {
 			//search for the message and delete it
 			const message = await thread.messages.fetch(messageID);

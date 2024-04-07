@@ -2,15 +2,15 @@
   "autoRole": {
     "description": "Automatically adds a role when a record is validated.",
     "dice": {
-      "desc": "",
+      "desc": "Adds a role when dice are added (dbd)",
       "remove": "No roles will be added to players when their dice are added.",
       "set": "{{- role}} will now be added to players when their dice are saved."
     },
     "name": "auto_role",
-    "options": "",
+    "options": "Role to add",
     "set": "",
     "stat": {
-      "desc": "",
+      "desc": "Add a role when statistics are added (dbroll)",
       "remove": "No roles will be added to players when their stats are saved.",
       "set": "{{- role}} will now be added to players when their stats are validated."
     }
@@ -38,10 +38,10 @@
     "charName": "character name",
     "character": "character",
     "default": "Default",
-    "dice": "Dé",
+    "dice": "dice",
     "noSet": "/",
     "page": "Page {{- nb}}",
-    "role": "",
+    "role": "role",
     "space": "",
     "statistic": "statistique",
     "total": "Total",

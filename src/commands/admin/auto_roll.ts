@@ -17,23 +17,30 @@ export const autoRole = {
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName(t("common.statistic"))
+				.setNameLocalizations(cmdLn("common.statistic"))
 				.setDescription(t("autoRole.stat.desc"))
+				.setDescriptionLocalizations(cmdLn("autoRole.stat.desc"))
 				.addRoleOption(option =>
 				option
 					.setName(t("common.role"))
+					.setNameLocalizations(cmdLn("common.role"))
 					.setDescription(t("autoRole.options"))
+					.setDescriptionLocalizations(cmdLn("autoRole.options"))
 					.setRequired(false)
 			)
 		)
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName(t("common.dice"))
+				.setNameLocalizations(cmdLn("common.dice"))
 				.setDescription(t("autoRole.dice.desc"))	
 			.addRoleOption(option =>
 				option
-					.setName(t("common.role"))
-					.setDescription(t("autoRole.options"))
-					.setRequired(false)
+				.setName(t("common.role"))
+				.setNameLocalizations(cmdLn("common.role"))
+				.setDescription(t("autoRole.options"))
+				.setDescriptionLocalizations(cmdLn("autoRole.options"))
+				.setRequired(false)
 			)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -42,11 +49,13 @@ export const autoRole = {
 		//get commands used
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const subcommand = options.getSubcommand(true);
+		if (subcommand === t("common.statistic")) return stats(options, client, ul, interaction);
+		else if (subcommand === t("common.dice")) return dice(options, client, ul, interaction);
 	}
 }
 
 function stats(options: CommandInteractionOptionResolver, client: EClient, ul: Translation, interaction: CommandInteraction) {
-	const role = options.getRole(ul("common.role"));
+	const role = options.getRole(t("common.role"));
 	if (!role) {
 		//remove the role from the db
 		client.settings.delete(interaction.guild!.id, "autoRole.stats");
@@ -57,7 +66,7 @@ function stats(options: CommandInteractionOptionResolver, client: EClient, ul: T
 }
 
 function dice(options: CommandInteractionOptionResolver, client: EClient, ul: Translation, interaction: CommandInteraction) {
-	const role = options.getRole(ul("common.role"));
+	const role = options.getRole(t("common.role"));
 	if (!role) {
 		//remove the role from the db
 		client.settings.delete(interaction.guild!.id, "autoRole.dice");
