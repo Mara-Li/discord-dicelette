@@ -1,11 +1,11 @@
+import { createDiceEmbed, createStatsEmbed } from "@database";
+import { cmdLn,ln } from "@localization";
+import { EClient } from "@main";
+import { filterChoices, reply, searchUserChannel, title } from "@utils";
+import { getChar } from "@utils/db";
+import { getEmbeds } from "@utils/parse";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
-
-import { createDiceEmbed, createStatsEmbed } from "../../database";
-import { cmdLn,ln } from "../../localizations";
-import { filterChoices, reply, searchUserChannel, title } from "../../utils";
-import { getUserData,guildInteractionData } from "../../utils/db";
-import { getEmbeds } from "../../utils/parse";
 
 const t = i18next.getFixedT("en");
 
@@ -33,10 +33,10 @@ export const displayUser = {
 				.setRequired(false)
 				.setAutocomplete(true)
 		),	
-	async autocomplete(interaction: AutocompleteInteraction): Promise<void> {
+	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
-		const guildData = guildInteractionData(interaction);
+		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		let choices: string[] = [];
 		if (fixed.name === t("common.character")) {
@@ -53,51 +53,24 @@ export const displayUser = {
 			filter.map(result => ({ name: title(result) ?? result, value: result}))
 		);
 	}, 
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: CommandInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const guildData = guildInteractionData(interaction);
+		const guildData = client.settings.get(interaction.guildId as string);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
 			await reply(interaction, ul("error.noTemplate"));
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
+		const charData = await getChar(interaction, client, t);
 		const charName = options.getString(t("common.character"))?.toLowerCase();
-		let charData: { [key: string]: {
-			charName?: string;
-			messageId: string;
-			damageName?: string[];
-		} } = {};
-		if (!user && charName) {
-			//get the character data in the database 
-			const allUsersData = guildData.user;
-			const allUsers = Object.entries(allUsersData);
-			for (const [user, data] of allUsers) {
-				const userChar = data.find((char) => char.charName === charName);
-				if (userChar) {
-					charData = {
-						[user as string]: userChar
-					};
-					break;
-				}
-			}
-		} else {
-			const userData = getUserData(guildData, user?.id ?? interaction.user.id);
-			console.log(userData);
-			let findChara = userData?.find((char) => char.charName === charName);
-			//take the first in userData
-			findChara = userData?.[0];
-			if (!findChara) {
-				let userName = `<@${user?.id ?? interaction.user.id}>`;
-				if (charName) userName += ` (${charName})` ;
-				await reply(interaction, ul("error.userNotRegistered", {user: userName}));
-				return;
-			}
-			charData = {
-				[(user?.id ?? interaction.user.id)]: findChara
-			};
-		} 
-		const thread = await searchUserChannel(guildData, interaction, ul);
+		if (!charData) {
+			let userName = `<@${user?.id ?? interaction.user.id}>`;
+			if (charName) userName += ` (${charName})` ;
+			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
+			return;
+		}
+		const thread = await searchUserChannel(client.settings, interaction, ul);
 		const messageID = charData[user?.id ?? interaction.user.id].messageId;
 		try {
 			const userMessage = await thread?.messages.fetch(messageID);
@@ -105,7 +78,8 @@ export const displayUser = {
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
 			const diceFields = diceEmbed?.toJSON().fields;
 			const statsFields = statisticEmbed?.toJSON().fields;
-			if (!statisticEmbed || !diceEmbed || !diceFields || !statsFields) {
+			console.log(!statisticEmbed, !diceEmbed, !diceFields, !statsFields);
+			if (!statisticEmbed && !diceEmbed && !diceFields && !statsFields) {
 				await reply(interaction, ul("error.user"));
 				return;
 			}
@@ -123,9 +97,12 @@ export const displayUser = {
 					value: charData[user?.id ?? interaction.user.id].charName ?? ul("common.noSet"),
 					inline: true
 				});
-			const newStatEmbed = createStatsEmbed(ul).addFields(statsFields);
-			const newDiceEmbed = createDiceEmbed(ul).addFields(diceFields);
-			await reply(interaction, { embeds: [displayEmbed, newStatEmbed, newDiceEmbed] });	
+			const newStatEmbed: EmbedBuilder | undefined = statsFields ? createStatsEmbed(ul).addFields(statsFields) : undefined;	
+			const newDiceEmbed = diceFields ? createDiceEmbed(ul).addFields(diceFields) : undefined;
+			const displayEmbeds : EmbedBuilder[] = [displayEmbed];
+			if (newStatEmbed) displayEmbeds.push(newStatEmbed);
+			if (newDiceEmbed) displayEmbeds.push(newDiceEmbed);
+			await reply(interaction, { embeds: displayEmbeds });
 		} catch (error) {
 			await reply(interaction, ul("error.noMessage"));
 			return;

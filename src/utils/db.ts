@@ -1,13 +1,11 @@
 import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
-import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, Guild, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
-import fs from "fs";
-import { TFunction } from "i18next";
+import { Settings, Translation, UserData } from "@interface";
+import { ln } from "@localization";
+import { EClient } from "@main";
+import {removeEmojiAccents, reply, searchUserChannel } from "@utils";
+import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
+import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
-
-import { GuildData, UserData } from "../interface";
-import { ln } from "../localizations";
-import {removeEmojiAccents, searchUserChannel } from ".";
-import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "./parse";
 
 /**
  * Get the guild template when clicking on the "registering user" button or when submiting
@@ -20,49 +18,69 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
 	return verifyTemplateValue(res);
 }
 
-/**
- * Get the guildDate from database when interacting with the bot
- * @param interaction {BaseInteraction}
- * @returns 
- */
-export function guildInteractionData(interaction: BaseInteraction): GuildData|undefined {
-	if (!interaction.guild) return;
-	const guildData = interaction.guild.id;
-	const data = fs.readFileSync("database.json", "utf-8");
-	const parsedData = JSON.parse(data);
-	if (!parsedData[guildData]) return;
-	return parsedData[guildData] as GuildData;
+export async function getChar(interaction: CommandInteraction, client: EClient, t: Translation) {
+	const options = interaction.options as CommandInteractionOptionResolver;
+	const guildData = client.settings.get(interaction.guildId as string);
+	const ul = ln(interaction.locale as Locale);
+	if (!guildData) {
+		await reply(interaction, ul("error.noTemplate"));
+		return undefined;
+	}
+	const user = options.getUser(t("display.userLowercase"));
+	let charName = options.getString(t("common.character"))?.toLowerCase();
+	if (charName === ul("common.default")) charName = undefined;
+
+	if (!user && charName) {
+		//get the character data in the database 
+		const allUsersData = guildData.user;
+		const allUsers = Object.entries(allUsersData);
+		for (const [user, data] of allUsers) {
+			const userChar = data.find((char) => char.charName === charName);
+			if (userChar) {
+				return {
+					[user as string]: userChar
+				};
+			}
+		}
+	}
+	const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
+	let findChara = userData?.find((char) => {
+		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
+		return true;
+	});
+	if (!findChara)
+		findChara = userData?.[0];
+	if (!findChara) {
+		return undefined;
+	}
+	return {
+		[(user?.id ?? interaction.user.id)]: findChara
+	};
 }
+
+
 
 /**
  * Get the statistical Template using the database templateID information
  * @param interaction {ButtonInteraction | ModalSubmitInteraction}
  */
-export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSubmitInteraction | CommandInteraction) {
+export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSubmitInteraction | CommandInteraction, enmap: Settings) {
 	if (!interaction.guild) return;
 	const guild = interaction.guild;
-	const guildData = guildInteractionData(interaction);
-	if (!guildData) throw new Error("No guild data");
-	const {channelId, messageId} = guildData.templateID;
+	const templateID = enmap.get(interaction.guild.id, "templateID");
+	const ul = ln(interaction.locale);
+	if (!enmap.has(interaction.guild.id)||!templateID) throw new Error(ul("error.noGuildData", {server : interaction.guild.name}));
+
+	const {channelId, messageId} = templateID;
 	const channel = await guild.channels.fetch(channelId);
 	if (!channel || (channel instanceof CategoryChannel)) return;
 	const message = await channel.messages.fetch(messageId);
-	if (!message) throw new Error("No message found");
+	if (!message) throw new Error(ul("error.noTemplateId", {channel: channelId, message: messageId}));
 	const template = message.attachments.first();
-	if (!template) throw new Error("No template found");
+	if (!template) throw new Error(ul("error.noTemplate"));
 	const res = await fetch(template.url).then(res => res.json());
 	return verifyTemplateValue(res);
 
-}
-
-/**
- * Get the userData from database
- * @param guildData {GuildData}
- * @param userId {string}
- */
-export function getUserData(guildData: GuildData, userId: string) {
-	if (!guildData.user) return undefined;
-	return guildData.user[userId];
 }
 
 /**
@@ -73,13 +91,14 @@ export function getUserData(guildData: GuildData, userId: string) {
  * @param interaction {BaseInteraction}
  * @param charName {string}
  */
-export async function getUserFromMessage(guildData: GuildData, userId: string, guild: Guild, interaction: BaseInteraction, charName?: string, integrateCombinaison: boolean = true) {
+export async function getUserFromMessage(guildData: Settings, userId: string, guild: Guild, interaction: BaseInteraction, charName?: string, integrateCombinaison: boolean = true) {
 	const ul = ln(interaction.locale);
-	const userData = getUserData(guildData, userId);
+	const userData = guildData.get(guild.id, `user.${userId}`);
 	if (!userData) return;
-	const user = userData.find(char => {
-		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName.toLowerCase());
-		return char.charName === charName;
+	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
+	const user = guildData.get(guild.id, `user.${userId}`)?.find(char => {
+		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
+		return true;
 	});
 	if (!user) return;
 	const userMessageId = user.messageId;
@@ -90,28 +109,15 @@ export async function getUserFromMessage(guildData: GuildData, userId: string, g
 		const message = await thread.messages.fetch(userMessageId);
 		return getUserByEmbed(message, ul, undefined, integrateCombinaison);
 	} catch (error) {
-		const index = userData.findIndex(char => char.messageId === userMessageId);
-		userData.splice(index, 1);
-		//update the database
-		const data = fs.readFileSync("database.json", "utf-8");
-		const json = JSON.parse(data);
-		guildData.user[userId] = userData;
-		json[guild.id] = guildData;
-		fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
+		//remove the user with faulty messageId from the database
+		const dbUser = guildData.get(guild.id, `user.${userId}`);
+		if (!dbUser) return;
+		const index = dbUser.findIndex(char => char.messageId === userMessageId);
+		if (index === -1) return;
+		dbUser.splice(index, 1);
+		guildData.set(guild.id, dbUser, `user.${userId}`);
 		throw new Error(ul("error.user"));
 	}
-}
-
-/**
- * Read and parse the database and return the database and parsedDb with guildID
- * @param guildID {string}
- */
-export function readDB(guildID: string) {
-	const database = fs.readFileSync("database.json", "utf-8");
-	const parsedDatabase = JSON.parse(database);
-	if (!parsedDatabase[guildID]) return;
-	const db = parsedDatabase[guildID] as Partial<GuildData>;
-	return {db, parsedDatabase};
 }
 
 /**
@@ -125,19 +131,26 @@ export function readDB(guildID: string) {
  * @param deleteMsg {boolean=true} delete the old message if needed (overwriting user)
  * @returns 
  */
-export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: AnyThreadChannel | TextChannel | NewsChannel, charName?: string, damage?: string[], deleteMsg: boolean = true) {
+export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: AnyThreadChannel | TextChannel | NewsChannel, enmap: Settings, charName?: string, damage?: string[], deleteMsg: boolean = true) {
 	if (!interaction.guild) return;
-	const guildData = guildInteractionData(interaction);
-	if (charName) charName = charName.toLowerCase();
+	const guildData = enmap.get(interaction.guild.id);
+	const uniCharName: string | undefined = charName ? removeAccents(charName.toLowerCase()) : undefined;
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
 	if (damage && guildData.templateID.damageName && guildData.templateID.damageName.length > 0) {
 		//filter the damage list and remove the guildData.templateID.damageName
 		damage = damage.filter(damage => !guildData.templateID.damageName.includes(damage));
 	}
-	const user = getUserData(guildData, userID);
+	const user = enmap.get(interaction.guild.id, `user.${userID}`);
 	if (user) {
-		const char = user.find(char => char.charName === charName);
+		const char = user.find(char => {
+			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === charName;
+			return true;
+		});
+		const charIndx = user.findIndex(char => {
+			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
+			return true;
+		});
 		if (char){
 			//delete old message
 			if (deleteMsg) 
@@ -152,29 +165,24 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 			//overwrite the message id
 			char.messageId = msgId;
 			char.damageName = damage;
+			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndx}`);
 		}
-		else user.push({ charName, messageId: msgId, damageName: damage });	
-	} else {
-		guildData.user[userID] = [{
-			charName,
-			messageId: msgId, 
-			damageName: damage
-		}];
+		else {
+			const charData = { charName, messageId: msgId, damageName: damage };
+			enmap.push(interaction.guild.id, charData, `user.${userID}`, false);
+		}
+		return;
 	}
-	//update the database
-	const data = fs.readFileSync("database.json", "utf-8");
-	const json = JSON.parse(data);
-	json[interaction.guild.id] = guildData;
-	fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
+	enmap.set(interaction.guild.id, [{ charName, messageId: msgId, damageName: damage }], `user.${userID}`);
 }
 
 /**
  * Get the userData from the embed
  * @param message {Message}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
-export function getUserByEmbed(message: Message, ul: TFunction<"translation", undefined>, first: boolean = false, integrateCombinaison: boolean = true) {
+export function getUserByEmbed(message: Message, ul: Translation, first: boolean = false, integrateCombinaison: boolean = true) {
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
@@ -227,12 +235,7 @@ export function getUserByEmbed(message: Message, ul: TFunction<"translation", un
  * @param {BaseInteraction} interaction 
  * @param {string} channel 
  */
-export function registerManagerID(guildData: GuildData, interaction: BaseInteraction, channel?: string) {
-	if (!channel) return;
-	guildData.managerId = channel;
-	const guildId = interaction.guild?.id;
-	if (!guildId) return;
-	const data = fs.readFileSync("database.json", "utf-8");
-	const json = JSON.parse(data);
-	json[interaction.guild.id] = guildData;
+export function registerManagerID(guildData: Settings, interaction: BaseInteraction, channel?: string) {
+	if (!channel || !interaction.guild) return;
+	guildData.set(interaction.guild.id, channel, "managerId");
 }

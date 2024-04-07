@@ -1,17 +1,17 @@
+import { GuildData } from "@interface";
+import { setTagsForRoll } from "@utils";
 import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
-
-import { setTagsForRoll } from ".";
-import { readDB } from "./db";
+import Enmap from "enmap";
 /**
  * Find a thread by their data or create it
  * @param channel {TextChannel}
  * @param reason {string}
  */
-export async function findThread(channel: TextChannel, reason?: string) {
+export async function findThread(db: Enmap<string, GuildData, unknown>, channel: TextChannel, reason?: string) {
 	const guild = channel.guild.id;
-	const db = readDB(guild);
-	if (db?.db.rollChannel) {
-		const rollChannel = await channel.guild.channels.fetch(db.db.rollChannel);
+	const rollChannelId = db.get(guild, "rollChannel");
+	if (rollChannelId) {
+		const rollChannel = await channel.guild.channels.fetch(rollChannelId);
 		if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
 			return rollChannel;
 		}
@@ -58,11 +58,11 @@ export async function findThread(channel: TextChannel, reason?: string) {
  * @param thread {ThreadChannel | TextChannel}
  * @returns 
  */
-export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel) {
+export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel, db: Enmap<string, GuildData, unknown>) {
 	const guild = forum.guild.id;
-	const db = readDB(guild);
-	if (db?.db.rollChannel) {
-		const rollChannel = await forum.guild.channels.fetch(db.db.rollChannel);
+	const rollChannelId = db.get(guild, "rollChannel");
+	if (rollChannelId) {
+		const rollChannel = await forum.guild.channels.fetch(rollChannelId);
 		if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
 			return rollChannel;
 		}

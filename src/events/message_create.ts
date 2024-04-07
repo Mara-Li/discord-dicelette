@@ -1,19 +1,19 @@
 /* eslint-disable no-useless-escape */
+import { deleteAfter } from "@commands/rolls/base_roll";
 import { COMMENT_REGEX, Resultat,roll } from "@dicelette/core";
-import {ChannelType, Client, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
+import { lError, ln } from "@localization";
+import { EClient } from "@main";
+import { timestamp } from "@utils";
+import { findForumChannel, findThread } from "@utils/find";
+import {ChannelType, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 
-import { deleteAfter } from "../commands/rolls/base_roll";
 import { parseResult } from "../dice";
-import { lError, ln } from "../localizations";
-import { timestamp } from "../utils";
-import { readDB } from "../utils/db";
-import { findForumChannel, findThread } from "../utils/find";
 
 
 // eslint-disable-next-line no-useless-escape
 export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
 
-export default (client: Client): void => {
+export default (client: EClient): void => {
 	client.on("messageCreate", async (message) => {
 		try {
 			if (message.author.bot) return;
@@ -57,8 +57,8 @@ export default (client: Client): void => {
 			}
 			const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 			const thread = parentChannel instanceof TextChannel ? 
-				await findThread(parentChannel, ul("roll.reason")) : 
-				await findForumChannel(parentChannel as ForumChannel, ul("roll.reason"), channel as ThreadChannel);
+				await findThread(client.settings, parentChannel, ul("roll.reason")) : 
+				await findForumChannel(parentChannel as ForumChannel, ul("roll.reason"), channel as ThreadChannel, client.settings);
 			const msgToEdit = await thread.send("_ _");
 			const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
@@ -75,10 +75,9 @@ export default (client: Client): void => {
 			if (!message.guild) return;
 			const msgError = lError(error as Error, undefined, message?.guild?.preferredLocale);
 			await message.reply({ content: msgError});
-			const db = readDB(message.guild.id);
-			if (!db) return;
-			if (db.db.logs) {
-				const logs = await message.guild.channels.fetch(db.db.logs);
+			const logsId = client.settings.get(message.guild.id, "logs");
+			if (logsId) {
+				const logs = await message.guild.channels.fetch(logsId);
 				if (logs instanceof TextChannel) {
 					logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
 				}

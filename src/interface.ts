@@ -1,4 +1,6 @@
 import { Critical } from "@dicelette/core";
+import Enmap from "enmap";
+import { TFunction } from "i18next";
 
 export const enum THUMBNAIL {
 	DICE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/dice.png?raw=true",
@@ -14,10 +16,13 @@ export const TUTORIAL_IMAGES = [
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_5.png?raw=true",
 ];
 
+export type Settings = Enmap<string, GuildData, unknown>;
+export type Translation = TFunction<"translation", undefined>;
+
 export interface GuildData {
 	logs?: string,
 	rollChannel?: string,
-	managerId: string;
+	managerId?: string;
 	templateID: {
 		channelId: string;
 		messageId: string;
@@ -31,7 +36,7 @@ export interface GuildData {
 			damageName?: string[];
 		}[]
 	}
-	
+
 }
 
 /**

@@ -21,6 +21,7 @@
     "channel": "channel",
     "charName": "Nom du personnage",
     "character": "personnage",
+    "default": "Défaut",
     "dice": "Dé",
     "noSet": "/",
     "page": "Page {{- nb}}",
@@ -48,6 +49,16 @@
       },
       "statistic": "La statistique à utiliser"
     }
+  },
+  "deleteChar": {
+    "allSuccess": "Les données de {{- user}} ont bien été supprimée.",
+    "character": "Le nom du personnage à supprimer",
+    "description": "Supprime un personnage / utilisateur",
+    "name": "supprimer_char",
+    "noCharacters": "L'utilisateur {{- user}} n'est pas inscrit·e dans la base.",
+    "success": "Le personnage de {{- user}} a bien été supprimé !",
+    "user": "Le joueur à supprimer",
+    "userLowercase": "joueur"
   },
   "display": {
     "character": "Le personnage à afficher",
@@ -79,6 +90,7 @@
   "error": {
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
+    "invalidChannelType": "{{- channel}} n'est pas un channel utilisable pour cette commande.",
     "invalidDice": {
       "embeds": "Aucun embed de dé détecté",
       "withDice": "Erreur : Dé invalide {{- dice}}",
@@ -89,9 +101,11 @@
     "noDamage": "{{- atq}} n'est pas enregistré dans {{- charName}}.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
     "noEmbed": "Aucun embed trouvé",
+    "noGuildData": "Aucune donnée trouvée pour le serveur {{- serveur }}.",
     "noMessage": "Aucun message trouvé.",
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
     "noTemplate": "Aucun modèle ou channel configuré",
+    "noTemplateId": "Aucun message trouvé avec les données sauvegardée dans la base de données:\n- Channel : `{{- channelId}}`\n- ID du message : `{{- messageId}}`",
     "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
     "notRegistered": "Vous n'êtes pas enregistré",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",

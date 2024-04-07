@@ -1,24 +1,23 @@
+import { createStatsEmbed, getUserNameAndChar } from "@database";
 import { evalOneCombinaison } from "@dicelette/core";
+import { Settings, Translation } from "@interface";
+import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import { editUserButtons } from "@utils/buttons";
+import { getTemplateWithDB } from "@utils/db";
+import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
-import { TFunction } from "i18next";
-
-import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, reply, sendLogs, title } from "../../utils";
-import { editUserButtons } from "../../utils/buttons";
-import { getTemplateWithDB,guildInteractionData } from "../../utils/db";
-import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
-import { createStatsEmbed, getUserNameAndChar } from "..";
 
 /**
  * Validate the stats and edit the embed with the new stats for editing
  * @param interaction {ModalSubmitInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export async function editStats(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
+export async function editStats(interaction: ModalSubmitInteraction, ul: Translation, db: Settings) {
 	if (!interaction.message) return;
 	const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
 	if (!statsEmbeds) return;
 	const values  = interaction.fields.getTextInputValue("allStats");
-	const templateStats = await getTemplateWithDB(interaction);
+	const templateStats = await getTemplateWithDB(interaction, db);
 	if (!templateStats || !templateStats.statistics) return;
 	const valuesAsStats = values.split("\n- ").map(stat => {
 		const [name, value] = stat.split(/ ?: ?/);
@@ -102,7 +101,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await reply(interaction,{ content: ul("modals.removed.stats"), ephemeral: true });
-		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 	}
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
@@ -114,7 +113,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 		fiche: interaction.message.url, 
 		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`
 	});
-	await sendLogs(`${logMessage}\n${compare}`, interaction, interaction.guild as Guild);
+	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Guild, db);
 }
 
 
@@ -122,13 +121,13 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: TFuncti
 /**
  * Show the stats editor
  * @param interaction {ButtonInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export async function showEditorStats(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
+export async function showEditorStats(interaction: ButtonInteraction, ul: Translation, db: Settings) {
 	const statistics = getEmbeds(ul, interaction.message, "stats");
 	if (!statistics) throw new Error(ul("error.statNotFound"));
 	const stats = parseEmbedFields(statistics.toJSON() as Embed);
-	const originalGuildData = guildInteractionData(interaction)?.templateID.statsName;
+	const originalGuildData = db.get(interaction.guild!.id, "templateID.statsName");
 	const registeredStats = originalGuildData?.map(stat => removeEmojiAccents(stat));
 	const userStats = Object.keys(stats).map(stat => removeEmojiAccents(stat.toLowerCase()));
 	let statsStrings = "";
@@ -169,14 +168,14 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: TFunct
 /**
  * The button that trigger the stats editor
  * @param interaction {ButtonInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param interactionUser {User}
  */
-export async function start_edit_stats(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+export async function start_edit_stats(interaction: ButtonInteraction, ul: Translation, interactionUser: User, db: Settings) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
-		showEditorStats(interaction, ul);
+		showEditorStats(interaction, ul, db);
 	else await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 }

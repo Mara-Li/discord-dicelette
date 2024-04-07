@@ -1,10 +1,10 @@
+import { cmdLn, lError, ln } from "@localization";
+import { default as i18next } from "@localization/i18next";
+import { EClient } from "@main";
+import {filterChoices, replaceFormulaInDice, reply, rollWithInteraction, title } from "@utils";
+import { getUserFromMessage } from "@utils/db";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import removeAccents from "remove-accents";
-
-import { cmdLn, lError, ln } from "../../localizations";
-import { default as i18next } from "../../localizations/i18next";
-import {filterChoices, replaceFormulaInDice, reply, rollWithInteraction, title } from "../../utils";
-import { getUserData, getUserFromMessage,guildInteractionData } from "../../utils/db";
 
 const t = i18next.getFixedT("en");
 
@@ -57,17 +57,17 @@ export const rollForUser = {
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.modificator.description"))
 				.setRequired(false)
 		),
-	async autocomplete(interaction: AutocompleteInteraction) {
+	async autocomplete(interaction: AutocompleteInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
-		const guildData = guildInteractionData(interaction);
+		const guildData = client.settings.get(interaction.guild!.id);
 		if (!guildData) return;
 		let choices: string[] = [];
 		if (focused.name === t("common.statistic")) {
 			choices = guildData.templateID.statsName;
 		} else if (focused.name === t("common.character")) {
 			//get user characters 
-			const userData = getUserData(guildData, interaction.user.id);
+			const userData = client.settings.get(interaction.guild!.id, `user.${interaction.user.id}`);
 			if (!userData) return;
 			const allCharactersFromUser = userData
 				.map((data) => data.charName ?? "")
@@ -81,27 +81,27 @@ export const rollForUser = {
 			filter.map(result => ({ name: title(result), value: result}))
 		);
 	},
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild || !interaction.channel) return;
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const guildData = guildInteractionData(interaction);
+		const guildData = client.settings.get(interaction.guild.id);
 		const ul = ln(interaction.locale);
 		if (!guildData) return;
 		let optionChar = options.getString(t("common.character"));
 		const charName = optionChar ? removeAccents(optionChar.toLowerCase()) : undefined;
 		
 		try {
-			let userStatistique = await getUserFromMessage(guildData, interaction.user.id,  interaction.guild, interaction, charName);
+			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
 			if (!userStatistique && !charName){
 			//find the first character registered
-				const userData = getUserData(guildData, interaction.user.id);
+				const userData = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
 				if (!userData) {
 					await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
 					return;
 				}
 				const firstChar = userData[0];
 				optionChar = title(firstChar.charName);
-				userStatistique = await getUserFromMessage(guildData, interaction.user.id, interaction.guild, interaction, firstChar.charName);
+				userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction.guild, interaction, firstChar.charName);
 			}
 			if (!userStatistique) {
 				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
@@ -145,7 +145,7 @@ export const rollForUser = {
 				comparator = comparatorMatch[0];
 			}
 			const roll = `${replaceFormulaInDice(dice)}${modificatorString}${comparator} ${comments}`;
-			await rollWithInteraction(interaction, roll, interaction.channel, template.critical);
+			await rollWithInteraction(interaction, roll, interaction.channel, client.settings, template.critical);
 		}
 		catch (error) {
 			console.error(error);

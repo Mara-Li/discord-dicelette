@@ -1,9 +1,8 @@
+import { cmdLn, ln } from "@localization";
+import { EClient } from "@main";
+import { reply } from "@utils";
 import { channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
-import fs from "fs";
 import { t } from "i18next";
-
-import { cmdLn, ln } from "../../localizations";
-import { reply } from "../../utils";
 
 export const logs = {
 	data: new SlashCommandBuilder()
@@ -22,17 +21,16 @@ export const logs = {
 				.setRequired(true)
 				.addChannelTypes(ChannelType.GuildText, ChannelType.PrivateThread, ChannelType.PublicThread)
 		),
-	async execute(interaction: CommandInteraction): Promise<void> {
+	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
 		const ul = ln(interaction.locale as Locale);
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const channel = options.getChannel(ul("common.channel"), true);
-		if (!channel || !(channel instanceof TextChannel)) return;
-		const data = fs.readFileSync("database.json", "utf-8");
-		const json = JSON.parse(data);
-		const guildData = interaction.guild.id;
-		json[guildData].logs = channel.id;
-		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
+		if (!channel || !(channel instanceof TextChannel)) {
+			await reply(interaction, { content: ul("error.invalidChannelType", {channel: channel ? `<#${channel.id}>` : ul("common.channel")}), ephemeral: true});
+			return;
+		}
+		client.settings.set(interaction.guild.id, channel.id, "logs");
 		await reply(interaction, { content: ul("logs.set", {channel: channel.name}), ephemeral: true });
 	}
 };
@@ -54,15 +52,12 @@ export const changeThread = {
 				.setRequired(true)
 				.addChannelTypes(ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread)
 		),
-	async execute(interaction: CommandInteraction): Promise<void> {
+	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const channel = options.getChannel("channel", true);
 		const ul = ln(interaction.locale as Locale);
-		const data = fs.readFileSync("database.json", "utf-8");
-		const json = JSON.parse(data);
-		const guildData = interaction.guild!.id;
-		json[guildData].rollChannel = channel.id;
-		fs.writeFileSync("database.json", JSON.stringify(json, null, 2), "utf-8");
+		if (!channel || !interaction.guild?.id) return;
+		client.settings.set(interaction.guild.id, channel.id, "rollChannel");
 		await reply(interaction, ul("changeThread.set", {channel: channelMention(channel.id)}));
 	}
 };

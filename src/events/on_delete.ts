@@ -1,94 +1,73 @@
-import {Client, GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel} from "discord.js";
-import fs from "fs";
+import { GuildData } from "@interface";
+import { EClient } from "@main";
+import { sendLogs } from "@utils";
+import {CommandInteraction, GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel, User} from "discord.js";
+import Enmap from "enmap";
+import removeAccents from "remove-accents";
 
-import { GuildData } from "../interface";
-import { readDB } from "../utils/db";
-
-export const delete_channel = (client	: Client): void => {
+export const delete_channel = (client	: EClient): void => {
 	client.on("channelDelete", async (channel) => {
 		try {
 			if (channel.isDMBased()) return;
 			const channelID = channel.id;
 			//search channelID in database and delete it
 			const guildID = channel.guild.id;
-			const database = fs.readFileSync("database.json", "utf-8");
-			const parsedDatabase = JSON.parse(database);
-			if (!parsedDatabase[guildID]) return;
-			const guildDb = parsedDatabase[guildID] as Partial<GuildData>;
-			if (guildDb?.templateID?.channelId === channelID) {
-				delete guildDb.templateID;
+			const db = client.settings;
+			if (db.get(guildID, "templateID.channelId") === channelID) {
+				db.delete(guildID, "templateID");
 			}
-			if (guildDb.logs === channelID) delete guildDb.logs;
-			if (guildDb.managerId === channelID) {
-				delete guildDb.managerId;
-				cleanUserDB(guildDb, channel);
+			if (db.get(guildID, "logs") === channelID) {
+				db.delete(guildID, "logs");
 			}
-			fs.writeFileSync("database.json", JSON.stringify(parsedDatabase, null, 2), "utf-8");
+			if (db.get(guildID, "managerId") === channelID) {
+				db.delete(guildID, "managerId");
+			}
+			if (db.get(guildID, "rollChannel") === channelID) {
+				db.delete(guildID, "rollChannel");
+			}
 		} catch (error) {
 			console.error(error);
 			if (channel.isDMBased()) return;
-			const db = readDB(channel.guild.id);
-			if (!db) return;
-			if (db.db.logs) {
-				const logs = await channel.guild.channels.fetch(db.db.logs);
-				if (logs instanceof TextChannel) {
-					logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
-				}
-			}
+			sendLogs((error as Error).message, channel.guild, client.settings);
 		}
 		
 	});
 };
 
-export const delete_thread = (client: Client): void => {
+export const delete_thread = (client: EClient): void => {
 	client.on("threadDelete", async (thread) => {
 		try {
 			//search channelID in database and delete it
 			const guildID = thread.guild.id;
-			const database = fs.readFileSync("database.json", "utf-8");
-			const parsedDatabase = JSON.parse(database);
-			if (!parsedDatabase[guildID]) return;
-			const guildDB = parsedDatabase[guildID] as Partial<GuildData>;
-			if ((thread.name === "📝 • [STATS]" && thread.parentId === guildDB.templateID?.channelId) || thread.id === guildDB.managerId) {
+			const db = client.settings;
+			if ((thread.name === "📝 • [STATS]" && thread.parentId === db.get(guildID, "templateID.channelId")) || thread.id === db.get(guildID, "templateID.managerId")) {
 				//verify if the user message was in the thread
-				cleanUserDB(guildDB, thread);
+				cleanUserDB(db, thread);
 			}
-			if (guildDB.logs === thread.id) delete guildDB.logs;
-			if (guildDB.templateID?.channelId === thread.id) delete guildDB.templateID;
-			fs.writeFileSync("database.json", JSON.stringify(parsedDatabase, null, 2), "utf-8");
+			if (db.get(guildID, "logs") === thread.id) db.delete(guildID, "logs");
+			if (db.get(guildID, "templateID.channelId") === thread.id) db.delete(guildID, "templateID");
 		} catch (error) {
 			console.error(error);
 			if (thread.isDMBased()) return;
-			const db = readDB(thread.guild.id);
-			if (!db) return;
-			if (db.db.logs) {
-				const logs = await thread.guild.channels.fetch(db.db.logs);
-				if (logs instanceof TextChannel) {
-					logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
-				}
-			}
+			sendLogs((error as Error).message, thread.guild, client.settings);
 		}
 	});
 };
 
-export const delete_message = (client: Client): void => {
+export const delete_message = (client: EClient): void => {
 	client.on("messageDelete", async (message) => {
 		try {
 			if (!message.guild) return;
 			const messageId = message.id;
 			//search channelID in database and delete it
 			const guildID = message.guild.id;
-			const database = fs.readFileSync("database.json", "utf-8");
-			const parsedDatabase = JSON.parse(database);
-			if (!parsedDatabase[guildID]) return;
-			const guildData = parsedDatabase[guildID] as Partial<GuildData>;
-			if (guildData?.templateID?.messageId === messageId) {
-				delete guildData.templateID;
+			
+			if (client.settings.get(guildID, "templateID.messageId") === messageId) {
+				client.settings.delete(guildID, "templateID");
 			}
-			const dbUser = guildData?.user;
+			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0){
 				for (const [user, values] of Object.entries(dbUser)) {
-					if (values.length === 0) continue;
 					for (const [index, value] of values.entries()) {
 						if (value.messageId === messageId) {
 							values.splice(index, 1);
@@ -97,42 +76,49 @@ export const delete_message = (client: Client): void => {
 					if (values.length === 0) delete dbUser[user];
 				}
 			}
-			fs.writeFileSync("database.json", JSON.stringify(parsedDatabase, null, 2), "utf-8");
+			client.settings.set(guildID, dbUser, "user");
 		} catch (error) {
 			if (!message.guild) return;
-			const db = readDB(message.guild.id);
-			if (!db) return;
-			if (db.db.logs) {
-				const logs = await message.guild.channels.fetch(db.db.logs);
-				if (logs instanceof TextChannel) {
-					logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
-				}
-			}
+			sendLogs((error as Error).message, message.guild, client.settings);
 		}
 	});
 };
 
-export const on_kick = (client: Client): void => {
+export const on_kick = (client: EClient): void => {
 	client.on("guildDelete", async (guild) => {
 		//delete guild from database
 		try {
-			const guildID = guild.id;
-			const data = fs.readFileSync("database.json", "utf-8");
-			const json = JSON.parse(data);
-			if (json[guildID]) delete json[guildID];
-			fs.writeFileSync("database.json", JSON.stringify(json, null, 2));
+			client.settings.delete(guild.id);
 		} catch (error) {
 			console.error(error);
 		}
 	});
 };
 
-function cleanUserDB(guildDB: Partial<GuildData>, thread: GuildTextBasedChannel | ThreadChannel | NonThreadGuildBasedChannel) {
-	const dbUser = guildDB?.user;
+function cleanUserDB(guildDB: Enmap<string, GuildData, unknown>, thread: GuildTextBasedChannel | ThreadChannel | NonThreadGuildBasedChannel) {
+	const dbUser = guildDB.get(thread.guild.id, "user");
 	if (!dbUser) return;
 	if (!(thread instanceof TextChannel)) return;
 	for (const [user, data] of Object.entries(dbUser)) {
 		const oldMessage = thread.messages.cache.find(message => data.some(char => char.messageId === message.id));
-		if (oldMessage) delete dbUser[user];
+		if (oldMessage) guildDB.delete(thread.guild.id, `user.${user}`);
 	}
+}
+
+export function deleteUser(
+	interaction: CommandInteraction,
+	guildData: GuildData,
+	user?: User | null,
+	charName?: string,
+) {
+	//delete the character from the database
+	const userCharIndex = guildData.user[user?.id ?? interaction.user.id].findIndex((char) => {
+		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
+		return char.charName === charName;
+	});
+	if (userCharIndex === -1) {
+		return guildData;
+	}
+	guildData.user[user?.id ?? interaction.user.id].splice(userCharIndex, 1);
+	return guildData;
 }

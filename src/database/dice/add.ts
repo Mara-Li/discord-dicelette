@@ -1,21 +1,20 @@
+import { createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
+import { Settings, Translation } from "@interface";
+import { lError, ln } from "@localization";
+import { removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import { editUserButtons, registerDmgButton, validateCancelButton } from "@utils/buttons";
+import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
+import { ensureEmbed,getEmbeds } from "@utils/parse";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Guild, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User, userMention } from "discord.js";
-import { TFunction } from "i18next";
-
-import { lError, ln } from "../../localizations";
-import { removeEmojiAccents, reply, sendLogs, title } from "../../utils";
-import { editUserButtons, registerDmgButton, validateCancelButton } from "../../utils/buttons";
-import { getTemplateWithDB, getUserByEmbed, registerUser } from "../../utils/db";
-import { ensureEmbed,getEmbeds } from "../../utils/parse";
-import { createDiceEmbed, getUserNameAndChar } from "..";
 
 /**
  * Interaction to add a new skill dice
  * @param interaction {ButtonInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param interactionUser {User}
  */
-export async function button_add_dice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User
+export async function button_add_dice(interaction: ButtonInteraction, ul: Translation, interactionUser: User
 ) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
@@ -66,11 +65,11 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
  * Interaction to submit the new skill dice
  * Only works if the user is the owner of the user registered in the embed or if the user is a moderator
  * @param interaction {ModalSubmitInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param interactionUser {User}
  */
-export async function submit_damageDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
-	const template = await getTemplateWithDB(interaction);
+export async function submit_damageDice(interaction: ModalSubmitInteraction, ul: Translation, interactionUser: User, db: Settings) {
+	const template = await getTemplateWithDB(interaction, db);
 	if (!template) {
 		await reply(interaction,{ content: ul("error.noTemplate") });
 		return;
@@ -79,7 +78,7 @@ export async function submit_damageDice(interaction: ModalSubmitInteraction, ul:
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
-		await registerDamageDice(interaction, interaction.customId.includes("first"));
+		await registerDamageDice(interaction, db, interaction.customId.includes("first"));
 	else
 		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 
@@ -91,7 +90,7 @@ export async function submit_damageDice(interaction: ModalSubmitInteraction, ul:
  * - true: It's the modal when the user is registered
  * - false: It's the modal when the user is already registered and a new dice is added to edit the user
  */
-export async function registerDamageDice(interaction: ModalSubmitInteraction, first?: boolean) {
+export async function registerDamageDice(interaction: ModalSubmitInteraction, db: Settings, first?: boolean) {
 	const ul = ln(interaction.locale as Locale);
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
@@ -141,10 +140,10 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 			await reply(interaction,{ content: ul("error.tooMuchDice"), ephemeral: true });
 			return;
 		}
-		registerUser(userID, interaction, interaction.message.id, thread, userName, damageName ? Object.keys(damageName) : undefined, false);
+		registerUser(userID, interaction, interaction.message.id, thread, db, userName, damageName ? Object.keys(damageName) : undefined, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await reply(interaction,{ content: ul("modals.added.dice"), ephemeral: true });
-		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 		return;
 	}
 	if (damageName && Object.keys(damageName).length > 25) {
@@ -157,6 +156,6 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, fi
 	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
 	await reply(interaction,{ content: ul("modals.added.dice"), ephemeral: true });
 
-	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 	return;
 }

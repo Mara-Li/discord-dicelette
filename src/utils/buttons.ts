@@ -1,14 +1,14 @@
+import { Translation } from "@interface";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import { TFunction } from "i18next";
 
 /**
  * Button to edit the user embed character sheet
  * By default, only add the "add dice" button
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param stats {boolean} Only add it if true
  * @param dice {boolean} Only add the edit dice button it if true
  */
-export function editUserButtons(ul: TFunction<"translation", undefined>, stats?: boolean, dice?: boolean) {
+export function editUserButtons(ul: Translation, stats?: boolean, dice?: boolean) {
 	const addDice = new ButtonBuilder()
 		.setCustomId("add_dice")
 		.setLabel(ul("button.dice"))
@@ -35,9 +35,9 @@ export function editUserButtons(ul: TFunction<"translation", undefined>, stats?:
 
 /**
  * Add the cancel and continue button when registering user and their are multiple page
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export function continueCancelButtons(ul: TFunction<"translation", undefined>) {
+export function continueCancelButtons(ul: Translation) {
 	const continueButton = new ButtonBuilder()
 		.setCustomId("continue")
 		.setLabel(ul("button.continue"))
@@ -51,9 +51,9 @@ export function continueCancelButtons(ul: TFunction<"translation", undefined>) {
 
 /**
  * Add the button for validating an user
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export function validateCancelButton(ul: TFunction<"translation", undefined>) {
+export function validateCancelButton(ul: Translation) {
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
 		.setLabel(ul("button.validate"))
@@ -67,9 +67,9 @@ export function validateCancelButton(ul: TFunction<"translation", undefined>) {
 
 /**
  * Button when registering the user, adding the "add dice" button
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export function registerDmgButton(ul: TFunction<"translation", undefined>) {
+export function registerDmgButton(ul: Translation) {
 	const validateButton = new ButtonBuilder()
 		.setCustomId("validate")
 		.setLabel(ul("button.validate"))

@@ -1,20 +1,19 @@
+import { createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice,roll } from "@dicelette/core";
+import { Settings, Translation } from "@interface";
+import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import { editUserButtons } from "@utils/buttons";
+import { registerUser } from "@utils/db";
+import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
-import { TFunction } from "i18next";
-
-import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, reply, sendLogs, title } from "../../utils";
-import { editUserButtons } from "../../utils/buttons";
-import { registerUser } from "../../utils/db";
-import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "../../utils/parse";
-import { createDiceEmbed, getUserNameAndChar } from "..";
 
 /**
  * Show the modal to **edit** the registered dice
  * Will parse registered dice and show them in the modal as `- Skill : Dice`
  * @param interaction {ButtonInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export async function showEditDice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>) {
+export async function showEditDice(interaction: ButtonInteraction, ul: Translation) {
 	const diceEmbed = getEmbeds(ul, interaction.message, "damage");
 	if (!diceEmbed) throw new Error(ul("error.invalidDice.embeds"));
 	const diceFields = parseEmbedFields(diceEmbed.toJSON() as Embed);
@@ -42,9 +41,9 @@ export async function showEditDice(interaction: ButtonInteraction, ul: TFunction
  * Will parse the dice and validate if they are correct
  * Edit the embed with the new dice or remove it if it's empty
  * @param interaction {ModalSubmitInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  */
-export async function validate_editDice(interaction: ModalSubmitInteraction, ul: TFunction<"translation", undefined>) {
+export async function validate_editDice(interaction: ModalSubmitInteraction, ul: Translation, db: Settings) {
 	if (!interaction.message) return;
 	const diceEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "damage");
 	if (!diceEmbeds) return;
@@ -121,8 +120,8 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		const components = editUserButtons(ul, embedsList.exists.stats, false);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await reply(interaction,{ content: ul("modals.removed.dice"), ephemeral: true });
-		registerUser(userID, interaction, interaction.message.id, thread, userName, undefined, false);
-		await sendLogs(ul("logs.dice.remove", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction, interaction.guild as Guild);
+		registerUser(userID, interaction, interaction.message.id, thread, db, userName, undefined, false);
+		await sendLogs(ul("logs.dice.remove", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 		return;
 	} else if (fieldsToAppend.length > 25) {
 		await reply(interaction,{ content: ul("error.tooMuchDice"), ephemeral: true });
@@ -132,7 +131,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		acc[field.name] = field.value;
 		return acc;
 	}, {} as {[name: string]: string}));
-	registerUser(userID, interaction, interaction.message.id, thread, userName, skillDiceName, false);
+	registerUser(userID, interaction, interaction.message.id, thread, db, userName, skillDiceName, false);
 	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
 	await reply(interaction,{ content: ul("embeds.edit.dice"), ephemeral: true });
@@ -142,17 +141,17 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		fiche: interaction.message.url, 
 		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}
 	);
-	await sendLogs(`${logMessage}\n${compare}`, interaction, interaction.guild as Guild);
+	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Guild, db);
 }
 
 /**
  * Start the showEditDice when the button is interacted
  * It will also verify if the user can edit their dice 
  * @param interaction {ButtonInteraction}
- * @param ul {TFunction<"translation", undefined>}
+ * @param ul {Translation}
  * @param interactionUser {User}
  */
-export async function start_edit_dice(interaction: ButtonInteraction, ul: TFunction<"translation", undefined>, interactionUser: User) {
+export async function start_edit_dice(interaction: ButtonInteraction, ul: Translation, interactionUser: User) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);

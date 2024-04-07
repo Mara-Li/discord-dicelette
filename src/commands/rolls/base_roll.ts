@@ -1,3 +1,7 @@
+import { cmdLn, ln } from "@localization";
+import { default as i18next } from "@localization/i18next";
+import { EClient } from "@main";
+import { reply, rollWithInteraction , setTagsForRoll } from "@utils";
 import {
 	channelMention,
 	CommandInteraction,
@@ -11,10 +15,6 @@ import {
 	userMention} from "discord.js";
 import moment from "moment";
 import dedent from "ts-dedent";
-
-import { cmdLn, ln } from "../../localizations";
-import { default as i18next } from "../../localizations/i18next";
-import { reply, rollWithInteraction , setTagsForRoll } from "../../utils";
 
 const t = i18next.getFixedT("en");
 
@@ -38,7 +38,7 @@ export const diceRoll = {
 				.setDescriptionLocalizations(cmdLn("roll.option.description"))
 				.setRequired(true)
 		),
-	async execute(interaction: CommandInteraction): Promise<void> {
+	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
 		const channel = interaction.channel;
 		if (!channel || !channel.isTextBased()) return;
@@ -46,7 +46,7 @@ export const diceRoll = {
 		const ul = ln(interaction.locale as Locale);
 		const dice = option.getString(t("roll.option.name"), true);
 		try {
-			await rollWithInteraction(interaction, dice, channel);
+			await rollWithInteraction(interaction, dice, channel, client.settings);
 		} catch (error) {
 			console.error("no valid dice :", dice, error);
 			await reply(interaction,{ content: ul("error.invalidDice.withError", {error: (error as Error).message, dice}), ephemeral: true });

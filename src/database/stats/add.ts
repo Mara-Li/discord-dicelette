@@ -1,10 +1,9 @@
 import { evalCombinaison,StatisticalTemplate } from "@dicelette/core";
+import { lError,ln } from "@localization";
+import { removeEmojiAccents, reply, title } from "@utils";
+import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
+import { ensureEmbed,getStatistiqueFields } from "@utils/parse";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
-
-import { lError,ln } from "../../localizations";
-import { removeEmojiAccents, reply, title } from "../../utils";
-import { continueCancelButtons,registerDmgButton } from "../../utils/buttons";
-import { ensureEmbed,getStatistiqueFields } from "../../utils/parse";
 
 /**
  * Embed to display the statistics when adding a new user
