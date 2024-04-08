@@ -1,7 +1,7 @@
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { reply } from "@utils";
-import { channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
+import { channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
@@ -21,7 +21,7 @@ export const logs = {
 				.setDescription(t("logs.options"))
 				.setDescriptionLocalizations(cmdLn("logs.options"))
 				.setNameLocalizations(cmdLn("common.channel"))
-				.setRequired(true)
+				.setRequired(false)
 				.addChannelTypes(ChannelType.GuildText, ChannelType.PrivateThread, ChannelType.PublicThread)
 		),
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
@@ -29,8 +29,11 @@ export const logs = {
 		const ul = ln(interaction.locale as Locale);
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const channel = options.getChannel(ul("common.channel"), true);
-		if (!channel || !(channel instanceof TextChannel)) {
-			await reply(interaction, { content: ul("error.invalidChannelType", {channel: channel ? `<#${channel.id}>` : ul("common.channel")}), ephemeral: true});
+		if (!channel || !(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) {
+			const oldChan = client.settings.get(interaction.guild.id, "logs");
+			client.settings.delete(interaction.guild.id, "logs");
+			const msg = oldChan ? ` ${ul("logs.inChan", {chan: channelMention(oldChan)})}` : ".";
+			await reply(interaction, { content: `${ul("logs.delete")}${msg}`, ephemeral: true });
 			return;
 		}
 		client.settings.set(interaction.guild.id, channel.id, "logs");

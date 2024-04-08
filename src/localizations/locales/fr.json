@@ -195,6 +195,7 @@
     "name": "aide"
   },
   "logs": {
+    "delete": "Les logs ne seront plus envoyés",
     "description": "Choisir un channel où envoyer les logs d'erreurs",
     "dice": {
       "add": "{{- user}} a ajouté les dés pour {{- char}} (dans {{- fiche}})",
@@ -203,6 +204,7 @@
     },
     "edit": {
     },
+    "inChan": "dans {{- chan}}.",
     "name": "logs",
     "options": "Le channel où envoyer les logs",
     "removed": {

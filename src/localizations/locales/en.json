@@ -195,6 +195,7 @@
     "name": "help"
   },
   "logs": {
+    "delete": "Logs will no longer be sent",
     "description": "Choose a channel where to send error logs",
     "dice": {
       "add": "{{- user}} added the dice for {{- user}} (in {{- fiche}})",
@@ -203,6 +204,7 @@
     },
     "edit": {
     },
+    "inChan": "to {{- chan}}.",
     "name": "logs",
     "options": "The channel to send logs to",
     "removed": {
