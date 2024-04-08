@@ -28,6 +28,7 @@
     "validate": "Valider"
   },
   "changeThread": {
+    "delete": "Les résultats des dés ne seront plus envoyés",
     "description": "Enregistrer un channel pour y envoyer les résultats des dés ",
     "name": "result_channel",
     "options": "Channel des résultats",

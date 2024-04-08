@@ -55,15 +55,23 @@ export const changeThread = {
 				.setNameLocalizations(cmdLn("common.channel"))
 				.setDescription(t("changeThread.options"))
 				.setDescriptionLocalizations(cmdLn("changeThread.options"))
-				.setRequired(true)
+				.setRequired(false)
 				.addChannelTypes(ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread)
 		),
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const channel = options.getChannel("channel", true);
 		const ul = ln(interaction.locale as Locale);
-		if (!channel || !interaction.guild?.id) return;
+		if (!interaction.guild) return;
+		if (!channel || !(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) {
+			const oldChan = client.settings.get(interaction.guild.id, "rollChannel");
+			const msg = oldChan ? ` ${ul("logs.inChan", {chan: channelMention(oldChan)})}` : ".";
+			client.settings.delete(interaction.guild.id, "rollChannel");
+			await reply(interaction, {content: `${ul("changeThread.delete")}${msg}`, ephemeral: true});
+			return;
+		}
 		client.settings.set(interaction.guild.id, channel.id, "rollChannel");
 		await reply(interaction, ul("changeThread.set", {channel: channelMention(channel.id)}));
+		return;
 	}
 };

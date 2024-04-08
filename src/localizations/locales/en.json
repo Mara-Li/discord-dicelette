@@ -28,6 +28,7 @@
     "validate": "To validate"
   },
   "changeThread": {
+    "delete": "",
     "description": "Register a channel to send dice results there",
     "name": "result_channel",
     "options": "Results channel",
