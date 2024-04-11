@@ -167,6 +167,8 @@ export const mjRoll = {
 		const subcommand = options.getSubcommand(true);
 		if (subcommand === ul("dbRoll.name")) {
 			return await rollStatistique(interaction, client, charData, options, ul, optionChar);
+		} else if (subcommand === ul("rAtq.name")) {
+			return await rollStatistique(interaction, client, charData, options, ul, optionChar);
 		}
 	}
 };

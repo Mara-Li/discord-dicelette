@@ -1,5 +1,5 @@
 import { deleteAfter } from "@commands/rolls/base_roll";
-import { replaceFormulaInDice, roll } from "@dicelette/core";
+import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
 import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
@@ -90,5 +90,34 @@ export async function rollStatistique(interaction: CommandInteraction, client: E
 	}
 	const roll = `${replaceFormulaInDice(dice)}${modificatorString}${comparator} ${comments}`;
 	await rollWithInteraction(interaction, roll, interaction!.channel as TextBasedChannel, client.settings, template.critical);
-	
+}
+
+export async function rollDice(
+	interaction: CommandInteraction, 
+	client: EClient, 
+	userStatistique: UserData, 
+	options: CommandInteractionOptionResolver, 
+	ul: Translation, 
+	charOptions?: string ) {
+	const charNameComments = charOptions ? ` • **@${title(charOptions)}**` : "";
+	const atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
+	let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
+	comments += ` __[${title(atq)}]__${charNameComments}`;
+	//search dice
+	let dice = userStatistique.damage?.[atq.toLowerCase()];
+	if (!dice) {
+		await reply(interaction,{ content: ul("error.noDamage", {atq: title(atq), charName: charOptions ?? ""}), ephemeral: true });
+		return;
+	}
+	dice = generateStatsDice(dice, userStatistique.stats);
+	const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
+	const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
+	const comparatorMatch = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(dice);
+	let comparator = "";
+	if (comparatorMatch) {
+		dice = dice.replace(comparatorMatch[0], "");
+		comparator = comparatorMatch[0];
+	}
+	const roll = `${dice}${modificatorString}${comparator} ${comments}`;
+	await rollWithInteraction(interaction, roll, interaction.channel as TextBasedChannel, client.settings);
 }
