@@ -34,7 +34,7 @@ export const displayUser = {
 				.setAutocomplete(true)
 		),	
 	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
-		const options = interaction.options;
+		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
