@@ -31,15 +31,6 @@ export const mjRoll = {
 				)
 				.addStringOption(option =>
 					option
-						.setName(t("common.character"))
-						.setNameLocalizations(cmdLn("common.character"))
-						.setDescription(t("display.character"))
-						.setDescriptionLocalizations(cmdLn("display.character"))
-						.setRequired(false)
-						.setAutocomplete(true)
-				)
-				.addStringOption(option =>
-					option
 						.setName(t("common.statistic"))
 						.setNameLocalizations(cmdLn("common.statistic"))
 						.setDescription(t("dbRoll.options.statistic"))
@@ -47,6 +38,16 @@ export const mjRoll = {
 						.setRequired(true)
 						.setAutocomplete(true)				
 				)
+				.addStringOption(option =>
+					option
+						.setName(t("common.character"))
+						.setNameLocalizations(cmdLn("common.character"))
+						.setDescription(t("display.character"))
+						.setDescriptionLocalizations(cmdLn("display.character"))
+						.setRequired(false)
+						.setAutocomplete(true)
+				)
+
 				.addStringOption(option =>
 					option
 						.setName(t("dbRoll.options.comments.name"))
@@ -88,20 +89,20 @@ export const mjRoll = {
 				)
 				.addStringOption(option =>
 					option
+						.setName(t("rAtq.atq_name.name"))
+						.setNameLocalizations(cmdLn("rAtq.atq_name.name"))
+						.setDescription(t("rAtq.atq_name.description"))
+						.setDescriptionLocalizations(cmdLn("rAtq.atq_name.description"))
+						.setRequired(true)
+				)
+				.addStringOption(option =>
+					option
 						.setName(t("common.character"))
 						.setNameLocalizations(cmdLn("common.character"))
 						.setDescription(t("display.character"))
 						.setDescriptionLocalizations(cmdLn("display.character"))
 						.setRequired(false)
 						.setAutocomplete(true)
-				)
-				.addStringOption(option =>
-					option
-						.setName(t("rAtq.atq_name.name"))
-						.setNameLocalizations(cmdLn("rAtq.atq_name.name"))
-						.setDescription(t("rAtq.atq_name.description"))
-						.setDescriptionLocalizations(cmdLn("rAtq.atq_name.description"))
-						.setRequired(true)
 				)
 				.addNumberOption(option =>
 					option
