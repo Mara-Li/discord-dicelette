@@ -2,7 +2,7 @@ import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import { EClient } from "@main";
-import {removeEmojiAccents, reply, searchUserChannel } from "@utils";
+import {removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
 import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
@@ -149,7 +149,7 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 		charName,
 		messageId: msgId,
 		damageName: damage
-	}
+	};
 	if (!charName) delete newChar.charName;
 	if (!damage) delete newChar.damageName;
 	if (user) {
@@ -249,4 +249,17 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 export function registerManagerID(guildData: Settings, interaction: BaseInteraction, channel?: string) {
 	if (!channel || !interaction.guild) return;
 	guildData.set(interaction.guild.id, channel, "managerId");
+}
+
+export async function getFirstRegisteredChar(client: EClient, interaction: CommandInteraction, ul: Translation) {
+	const userData = client.settings.get(interaction.guild!.id, `user.${interaction.user.id}`);
+	if (!userData) {
+		await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
+		return;
+	}
+	const firstChar = userData[0];
+	const optionChar = title(firstChar.charName);
+	const userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction!.guild as Guild, interaction, firstChar.charName);
+
+	return {optionChar, userStatistique};
 }

@@ -2,8 +2,9 @@
 import { cmdLn, ln } from "@localization";
 import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
-import { filterChoices, generateStatsDice, reply, rollWithInteraction, title } from "@utils";
-import {getUserFromMessage } from "@utils/db";
+import { filterChoices, generateStatsDice, reply, title } from "@utils";
+import {getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
+import { rollWithInteraction } from "@utils/roll";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 import removeAccents from "remove-accents";
 
@@ -92,15 +93,9 @@ export const dmgRoll = {
 		try {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
 			if (!userStatistique && !charName) {
-				//find the first character registered
-				const userData = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
-				if (!userData) {
-					await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
-					return;
-				}
-				const firstChar = userData[0];
-				charOptions = title(firstChar.charName);
-				userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction.guild, interaction, firstChar.charName);
+				const char = await getFirstRegisteredChar(client, interaction, ul);
+				userStatistique = char?.userStatistique;
+				charOptions = char?.optionChar || "";
 			}
 			if (!userStatistique) {
 				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });

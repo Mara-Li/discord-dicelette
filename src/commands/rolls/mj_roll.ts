@@ -1,11 +1,12 @@
+import { cmdLn,ln } from "@localization";
+import { EClient } from "@main";
+import { filterChoices, reply, title } from "@utils";
+import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
+import { rollStatistique } from "@utils/roll";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
+
 const t = i18next.getFixedT("en");
-import { ln, cmdLn } from "@localization";
-import { EClient } from "@main";
-import { filterChoices, reply, searchUserChannel, title } from "@utils";
-import removeAccents from "remove-accents";
-import { getChar } from "@utils/db";
 
 export const mjRoll = {
 	data: new SlashCommandBuilder()
@@ -149,19 +150,24 @@ export const mjRoll = {
 		const ul = ln(interaction.locale);
 		if (!guildData) return;
 		
-		const user = options.getUser(t("display.userLowercase"));
-		const charData = await getChar(interaction, client, t);
-		const charName = options.getString(t("common.character"))?.toLowerCase();
+		const user = options.getUser(t("display.userLowercase"), true);
+		const charName = options.getString(t("common.character"), false)?.toLowerCase();
+		let optionChar = options.getString(t("common.character")) ?? undefined;
+		let charData = await getUserFromMessage(client.settings, user.id, interaction.guild, interaction, charName);
+		
+		if (!charData && !charName) {
+			const char = await getFirstRegisteredChar(client, interaction, ul);
+			charData = char?.userStatistique;
+			optionChar = char?.optionChar || "";
+		}
 		if (!charData) {
-			let userName = `<@${user?.id ?? interaction.user.id}>`;
-			if (charName) userName += ` (${charName})` ;
-			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
+			await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
 			return;
 		}
-		
-
-
-
+		const subcommand = options.getSubcommand(true);
+		if (subcommand === ul("dbRoll.name")) {
+			return await rollStatistique(interaction, client, charData, options, ul, optionChar);
+		}
 	}
+};
 
-}
