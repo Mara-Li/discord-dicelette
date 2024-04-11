@@ -88,7 +88,7 @@ async function chart(userData : UserData, labels: string[], lineColor?: string, 
 }
 
 function fontPath(fontName: string) {
-	return path.resolve(__dirname, `../../assets/fonts/${fontName}.ttf`).replace("dist/", "");
+	return path.resolve(__dirname, `assets/fonts/${fontName}.ttf`).replace("dist/", "");
 }
 
 const t = i18next.getFixedT("en");
