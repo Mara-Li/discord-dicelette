@@ -45,7 +45,7 @@ export default (client: EClient): void => {
 			const channel = message.channel;
 			if (!result) return;
 			const parser = parseResult(result, ul);
-			if (channel.name.startsWith("🎲")) {
+			if (channel.name.startsWith("🎲") || client.settings.get(message.guild.id, "disableThread") === true) {
 				await message.reply({content: parser, allowedMentions: { repliedUser: false }});
 				return;
 			}

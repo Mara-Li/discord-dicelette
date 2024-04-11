@@ -78,6 +78,11 @@
     "user": "The player to delete",
     "userLowercase": "player"
   },
+  "disableThread": {
+    "description": "Disable automatic thread creation and use the current channel for logs",
+    "name": "disable_thread",
+    "reply": "Automatic thread creation has been disabled: dice results will now be kept in the channel where the command was used."
+  },
   "display": {
     "character": "The character to display",
     "description": "Allows you to display the profile of a player/character",

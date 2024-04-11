@@ -78,6 +78,11 @@
     "user": "Le joueur à supprimer",
     "userLowercase": "joueur"
   },
+  "disableThread": {
+    "description": "Désactive la création automatique des threads et utilise le channel actuel pour les logs",
+    "name": "désactiver_thread",
+    "reply": "La création automatique des threads a été désactivée : les résultats des dés seront maintenant conservés dans le channel où la commande a été utilisée."
+  },
   "display": {
     "character": "Le personnage à afficher",
     "description": "Permet d'afficher la fiche d'un joueur/personnage",

@@ -75,3 +75,20 @@ export const changeThread = {
 		return;
 	}
 };
+
+export const disableThread = {
+	data: new SlashCommandBuilder()
+		.setName(t("disableThread.name"))
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setNameLocalizations(cmdLn("disableThread.name"))
+		.setDescription(t("disableThread.description"))
+		.setDescriptionLocalizations(cmdLn("disableThread.description"))
+		.setDMPermission(false),
+	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
+		const ul = ln(interaction.locale as Locale);
+		if (!interaction.guild) return;
+		client.settings.delete(interaction.guild.id, "rollChannel");
+		client.settings.set(interaction.guild.id, true, "disableThread");
+		await reply(interaction, ul("disableThread.reply"));
+	}
+};

@@ -22,7 +22,7 @@ import { parseResult } from "../dice";
  * @param critical {failure?: number, success?: number}
  */
 export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, db: Settings,critical?: {failure?: number, success?: number}) {
-	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
+	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild) return;
 	const ul = ln(interaction.locale);
 	const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
 	if (rollWithMessage) {
@@ -35,7 +35,7 @@ export async function rollWithInteraction(interaction: CommandInteraction, dice:
 		return;
 	}
 	const parser = parseResult(rollDice, ul, critical);
-	if (channel.name.startsWith("🎲")) {
+	if (channel.name.startsWith("🎲") || db.get(interaction.guild.id, "disableThread") === true) {
 		await reply(interaction,{ content: parser });
 		return;
 	}
