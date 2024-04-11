@@ -11,9 +11,14 @@ export async function findThread(db: Enmap<string, GuildData, unknown>, channel:
 	const guild = channel.guild.id;
 	const rollChannelId = db.get(guild, "rollChannel");
 	if (rollChannelId) {
-		const rollChannel = await channel.guild.channels.fetch(rollChannelId);
-		if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
-			return rollChannel;
+		try {
+			const rollChannel = await channel.guild.channels.fetch(rollChannelId);
+			if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
+				return rollChannel;
+			}
+		} catch (e) {
+		//channel not found
+		//do nothing
 		}
 	}
 	await channel.threads.fetch();
