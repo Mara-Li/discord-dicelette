@@ -128,7 +128,8 @@ export const mjRoll = {
 		const guildData = client.settings.get(interaction.guild!.id);
 		if (!guildData || !guildData.templateID) return;
 		let choices: string[] = [];
-		const user = options.get(t("display.userLowercase"), true).value as string;
+		let user = options.get(t("display.userLowercase"))?.value;
+		if (typeof user !== "string") user = interaction.user.id;
 		if (fixed.name === t("common.character")) {
 			//get ALL characters from the user
 			const guildChars = guildData.user[user];
