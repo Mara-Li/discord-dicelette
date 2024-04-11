@@ -41,7 +41,6 @@ export const deleteChar = {
 		let user = options.get(t("display.userLowercase"))?.value;
 		if (typeof user !== "string") user = interaction.user.id;
 		if (fixed.name === t("common.character")) {
-			//get ALL characters from the guild
 			const guildChars = guildData.user[user];
 			if (!guildChars) return;
 			for (const data of guildChars) {
