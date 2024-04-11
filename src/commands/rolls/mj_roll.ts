@@ -94,6 +94,7 @@ export const mjRoll = {
 						.setDescription(t("rAtq.atq_name.description"))
 						.setDescriptionLocalizations(cmdLn("rAtq.atq_name.description"))
 						.setRequired(true)
+						.setAutocomplete(true)
 				)
 				.addStringOption(option =>
 					option
@@ -127,16 +128,35 @@ export const mjRoll = {
 		const guildData = client.settings.get(interaction.guild!.id);
 		if (!guildData || !guildData.templateID) return;
 		let choices: string[] = [];
+		const user = options.get(t("display.userLowercase"), true).value as string;
 		if (fixed.name === t("common.character")) {
-			//get ALL characters from the guild
-			const allCharactersFromGuild = Object.values(guildData.user)
-				.map((data) => data.map((char) => char.charName ?? ""))
-				.flat()
-				.filter((data) => data.length > 0);
-			choices = allCharactersFromGuild;
+			//get ALL characters from the user
+			const guildChars = guildData.user[user];
+			if (!guildChars) return;
+			for (const data of guildChars) {
+				if (data.charName)
+					choices.push(data.charName);
+			}
 		}
 		else if (fixed.name === t("common.statistic")) {
 			choices = guildData.templateID.statsName;
+		} else if (fixed.name === t("rAtq.atq_name.name")) {
+			const defaultDice = guildData.templateID.damageName;
+			const guildChars = guildData.user[user];
+			if (!guildChars) return;
+			const character = options.getString(t("common.character"), false);
+			if (character) {
+				const char = guildChars.find(c => c.charName === character);
+				if (char?.damageName) {
+					choices = char.damageName;
+				}
+			} else {
+				for (const data of guildChars) {
+					if (data.damageName)
+						choices.push(...data.damageName);
+				}
+			}
+			choices.push(...defaultDice);
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
@@ -162,7 +182,9 @@ export const mjRoll = {
 			optionChar = char?.optionChar;
 		}
 		if (!charData) {
-			await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
+			let userName = `<@${user.id}>`;
+			if (charName) userName += ` (${charName})` ;
+			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
 			return;
 		}
 		const subcommand = options.getSubcommand(true);

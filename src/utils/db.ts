@@ -18,7 +18,7 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
 	return verifyTemplateValue(res);
 }
 
-export async function getChar(interaction: CommandInteraction, client: EClient, t: Translation) {
+export async function getDatabaseChar(interaction: CommandInteraction, client: EClient, t: Translation) {
 	const options = interaction.options as CommandInteractionOptionResolver;
 	const guildData = client.settings.get(interaction.guildId as string);
 	const ul = ln(interaction.locale as Locale);

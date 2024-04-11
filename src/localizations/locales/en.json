@@ -224,6 +224,7 @@
     }
   },
   "mjRoll": {
+    "character": "The character on which the die was thrown",
     "dbroll": {
       "name": ""
     },

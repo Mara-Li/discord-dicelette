@@ -224,6 +224,7 @@
     }
   },
   "mjRoll": {
+    "character": "Le personnage sur lequel lancé le dé",
     "dbroll": {
       "name": "dbroll"
     },

@@ -151,14 +151,19 @@ export const graph = {
 		const guildData = client.settings.get(interaction.guild!.id);
 		
 		if (!guildData) return;
-		let choices: string[] = [];
+		const choices: string[] = [];
+		let user = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
+		if (typeof user !== "string") {
+			user = interaction.user.id;
+		}
 		if (fixed.name === t("common.character")) {
 			//get ALL characters from the guild
-			const allCharactersFromGuild = Object.values(guildData.user)
-				.map((data) => data.map((char) => char.charName ?? ""))
-				.flat()
-				.filter((data) => data.length > 0);
-			choices = allCharactersFromGuild;
+			const guildChars = guildData.user[user as string];
+			if (!guildChars) return;
+			for (const data of guildChars) {
+				if (data.charName)
+					choices.push(data.charName);
+			}
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
