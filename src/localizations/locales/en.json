@@ -223,6 +223,14 @@
       "removed": "{{- user}} deleted the statistics of the sheet {{- user}} (in {{- fiche}})"
     }
   },
+  "mjRoll": {
+    "dbroll": {
+      "name": ""
+    },
+    "description": "Allows you to roll dice for other players",
+    "name": "gm",
+    "user": "Player to roll the die on"
+  },
   "modals": {
     "added": {
       "dice": "Dice added",

@@ -3,7 +3,7 @@ import { EClient } from "@main";
 import { ln, cmdLn } from "@localization";
 import { reply } from "@utils";
 import i18next from "i18next";
-import { Translation } from "../../interface";
+import { Translation } from "@interface";
 
 const t = i18next.getFixedT("en");
 

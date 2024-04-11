@@ -223,6 +223,14 @@
       "removed": "{{- user}} a supprimé les statistiques de {{- char}} (dans {{- fiche}})"
     }
   },
+  "mjRoll": {
+    "dbroll": {
+      "name": "dbroll"
+    },
+    "description": "Permet de lancer des dés pour d'autres joueurs",
+    "name": "mj",
+    "user": "Joueur sur lequel lancer le dé"
+  },
   "modals": {
     "added": {
       "dice": "Dés ajoutés",
