@@ -97,7 +97,7 @@ export const rollForUser = {
 			//find the first character registered
 				const char = await getFirstRegisteredChar(client, interaction, ul);
 				userStatistique = char?.userStatistique;
-				optionChar = char?.optionChar || "";
+				optionChar = char?.optionChar;
 			}
 			if (!userStatistique) {
 				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });

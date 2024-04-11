@@ -78,7 +78,6 @@ export const displayUser = {
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
 			const diceFields = diceEmbed?.toJSON().fields;
 			const statsFields = statisticEmbed?.toJSON().fields;
-			console.log(!statisticEmbed, !diceEmbed, !diceFields, !statsFields);
 			if (!statisticEmbed && !diceEmbed && !diceFields && !statsFields) {
 				await reply(interaction, ul("error.user"));
 				return;

@@ -77,13 +77,16 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 	const {channelId, messageId} = templateID;
 	const channel = await guild.channels.fetch(channelId);
 	if (!channel || (channel instanceof CategoryChannel)) return;
-	const message = await channel.messages.fetch(messageId);
-	if (!message) throw new Error(ul("error.noTemplateId", {channel: channelId, message: messageId}));
-	const template = message.attachments.first();
-	if (!template) throw new Error(ul("error.noTemplate"));
-	const res = await fetch(template.url).then(res => res.json());
-	return verifyTemplateValue(res);
-
+	try {
+		const message = await channel.messages.fetch(messageId);
+		const template = message.attachments.first();
+		if (!template) throw new Error(ul("error.noTemplate"));
+		const res = await fetch(template.url).then(res => res.json());
+		return verifyTemplateValue(res);
+	} catch (error) {
+		if ((error as Error).message === "Unknown Message") throw new Error(ul("error.noTemplateId", {channelId, messageId}));
+		throw error;
+	}
 }
 
 /**

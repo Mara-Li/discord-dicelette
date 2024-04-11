@@ -3,7 +3,7 @@ import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { filterChoices, reply, searchUserChannel, title } from "@utils";
 import { getChar } from "@utils/db";
-import { AutocompleteInteraction, CommandInteraction,CommandInteractionOptionResolver,Locale,PermissionFlagsBits,SlashCommandBuilder, userMention } from "discord.js";
+import { AutocompleteInteraction, CommandInteraction,CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, userMention } from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");

@@ -2,7 +2,7 @@ import { cmdLn,ln } from "@localization";
 import { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
-import { rollStatistique } from "@utils/roll";
+import { rollDice, rollStatistique } from "@utils/roll";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
@@ -159,7 +159,7 @@ export const mjRoll = {
 		if (!charData && !charName) {
 			const char = await getFirstRegisteredChar(client, interaction, ul);
 			charData = char?.userStatistique;
-			optionChar = char?.optionChar || "";
+			optionChar = char?.optionChar;
 		}
 		if (!charData) {
 			await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
@@ -167,9 +167,9 @@ export const mjRoll = {
 		}
 		const subcommand = options.getSubcommand(true);
 		if (subcommand === ul("dbRoll.name")) {
-			return await rollStatistique(interaction, client, charData, options, ul, optionChar);
+			return await rollStatistique(interaction, client, charData, options, ul, optionChar, user);
 		} else if (subcommand === ul("rAtq.name")) {
-			return await rollStatistique(interaction, client, charData, options, ul, optionChar);
+			return await rollDice(interaction, client, charData, options, ul, optionChar, user);
 		}
 	}
 };

@@ -20,10 +20,9 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	const channel = interaction.channel;
 	if (!channel) {
 		throw new Error("No channel found");
-		return;
 	}
 	const userFromField = interaction.fields.getTextInputValue("userID");
-	const user = interaction.guild?.members.cache.find(member => member.id.toLowerCase() === userFromField.toLowerCase() || member.user.username.toLowerCase() === userFromField.toLowerCase());
+	const user = (await interaction!.guild!.members.fetch({query: userFromField})).first();
 	if (!user) {	
 		reply(interaction,{ content: ul("error.user"), ephemeral: true });
 		return;
