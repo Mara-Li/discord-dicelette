@@ -79,9 +79,16 @@
     "userLowercase": "joueur"
   },
   "disableThread": {
-    "description": "Désactive la création automatique des threads et utilise le channel actuel pour les logs",
+    "description": "Désactive/active la création automatique des threads et utilise le channel actuel pour les logs",
     "name": "désactiver_thread",
-    "reply": "La création automatique des threads a été désactivée : les résultats des dés seront maintenant conservés dans le channel où la commande a été utilisée."
+    "options": {
+      "desc": "Permet d'activer/désactiver la création auto des fils de résultats",
+      "name": "basculer"
+    },
+    "reply": {
+      "disable": "La création automatique des threads a été désactivée : les résultats des dés seront maintenant conservés dans le channel où la commande a été utilisée.\n\nLes channels préfixés par `🎲` ne recevront plus les logs non plus.",
+      "enable": "Les résultats dés seront automatiquement envoyés dans un thread automatiquement créé.\n\nLes channels préfixés par `🎲` recevront de nouveau les résultats des dés."
+    }
   },
   "display": {
     "character": "Le personnage à afficher",

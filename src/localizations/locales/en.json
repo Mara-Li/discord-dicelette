@@ -79,9 +79,16 @@
     "userLowercase": "player"
   },
   "disableThread": {
-    "description": "Disable automatic thread creation and use the current channel for logs",
+    "description": "Disable/enable automatic thread creation and use the current channel for logs",
     "name": "disable_thread",
-    "reply": "Automatic thread creation has been disabled: dice results will now be kept in the channel where the command was used."
+    "options": {
+      "desc": "Allows you to activate/deactivate the automatic creation of result feeds",
+      "name": "toggle"
+    },
+    "reply": {
+      "disable": "Automatic thread creation has been disabled: dice results will now be kept in the channel where the command was used.\n\n\nChannels prefixed with `🎲` will no longer receive logs either.",
+      "enable": "The dice results will be automatically sent to an automatically created thread.\n\n\nChannels prefixed with `🎲` will again receive dice results."
+    }
   },
   "display": {
     "character": "The character to display",

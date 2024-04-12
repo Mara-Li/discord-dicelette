@@ -83,12 +83,30 @@ export const disableThread = {
 		.setNameLocalizations(cmdLn("disableThread.name"))
 		.setDescription(t("disableThread.description"))
 		.setDescriptionLocalizations(cmdLn("disableThread.description"))
-		.setDMPermission(false),
+		.setDMPermission(false)
+		.addBooleanOption(option =>
+			option
+				.setName(t("disableThread.options.name"))
+				.setNameLocalizations(cmdLn("disableThread.options.name"))
+				.setDescription(t("disableThread.options.desc"))
+				.setDescriptionLocalizations(cmdLn("disableThread.options.desc"))
+				.setRequired(true)
+		),
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		const ul = ln(interaction.locale as Locale);
 		if (!interaction.guild) return;
-		client.settings.delete(interaction.guild.id, "rollChannel");
-		client.settings.set(interaction.guild.id, true, "disableThread");
-		await reply(interaction, ul("disableThread.reply"));
+		const options = interaction.options as CommandInteractionOptionResolver;
+		const toggle = options.getBoolean(t("disableThread.options.name"), true);
+		//toggle TRUE = disable thread creation
+		//toggle FALSE = enable thread creation
+		if (toggle) {
+			client.settings.delete(interaction.guild.id, "rollChannel");
+			client.settings.set(interaction.guild.id, true, "disableThread");
+			await reply(interaction, ul("disableThread.reply.disable"));
+			return;
+		}
+		client.settings.delete(interaction.guild.id, "disableThread");
+		await reply(interaction, ul("disableThread.reply.enable"));
+		return;
 	}
 };
