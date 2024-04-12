@@ -48,8 +48,8 @@ export async function rollWithInteraction(
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 	const thread = parentChannel instanceof TextChannel ? 
-		await findThread(db, parentChannel, ul("error.rollChannelNotFound"), ul("roll.reason")) : 
-		await findForumChannel(channel.parent as ForumChannel, ul("roll.reason"), channel as ThreadChannel, db, ul("error.rollChannelNotFound"));
+		await findThread(db, parentChannel, ul) : 
+		await findForumChannel(channel.parent as ForumChannel, channel as ThreadChannel, db, ul);
 	const msg = `${userMention(user?.id ?? interaction.user.id)} ${timestamp()}\n${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
