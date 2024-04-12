@@ -176,7 +176,10 @@ export const mjRoll = {
 		const charName = options.getString(t("common.character"), false)?.toLowerCase();
 		let optionChar = options.getString(t("common.character")) ?? undefined;
 		let charData = await getUserFromMessage(client.settings, user.id, interaction.guild, interaction, charName);
-		
+		if (charName && charData?.userName !== charName) {
+			await reply(interaction,{ content: ul("error.charName", {charName: title(charName)}), ephemeral: true });
+			return;
+		}
 		if (!charData && !charName) {
 			const char = await getFirstRegisteredChar(client, interaction, ul);
 			charData = char?.userStatistique;

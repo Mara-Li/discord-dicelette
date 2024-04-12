@@ -93,6 +93,10 @@ export const rollForUser = {
 		
 		try {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
+			if (optionChar && userStatistique?.userName !== charName) {
+				await reply(interaction,{ content: ul("error.charName", {charName: title(optionChar)}), ephemeral: true });
+				return;
+			}
 			if (!userStatistique && !charName){
 			//find the first character registered
 				const char = await getFirstRegisteredChar(client, interaction, ul);

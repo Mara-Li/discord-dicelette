@@ -60,8 +60,18 @@ export const dmgRoll = {
 		if (!user) return;
 		let choices: string[] = [];
 		if (focused.name === t("rAtq.atq_name.name")) {
-			for (const [, value] of Object.entries(user)) {
-				if (value.damageName) choices = choices.concat(value.damageName);
+			const char = options.getString(t("common.character"));
+			
+			if (char){
+				const values =  user.find((data) => {
+					if (data.charName) return removeAccents(data.charName).toLowerCase() === removeAccents(char).toLowerCase();
+					return false;
+				});
+				if (values?.damageName) choices = values.damageName;
+			} else {
+				for (const [, value] of Object.entries(user)) {
+					if (value.damageName) choices = choices.concat(value.damageName);
+				}
 			}
 			if (db.templateID.damageName && db.templateID.damageName.length > 0)
 				choices = choices.concat(db.templateID.damageName);
@@ -90,10 +100,14 @@ export const dmgRoll = {
 		const ul = ln(interaction.locale as Locale);
 		try {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
+			if (charOptions && userStatistique?.userName !== charName) {
+				await reply(interaction,{ content: ul("error.charName", {charName: title(charOptions)}), ephemeral: true });
+				return;
+			}
 			if (!userStatistique && !charName) {
 				const char = await getFirstRegisteredChar(client, interaction, ul);
 				userStatistique = char?.userStatistique;
-				charOptions = char?.optionChar || "";
+				charOptions = char?.optionChar ?? null;
 			}
 			if (!userStatistique) {
 				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });

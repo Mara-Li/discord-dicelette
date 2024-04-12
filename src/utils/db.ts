@@ -104,7 +104,7 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
 	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const user = guildData.get(guild.id, `user.${userId}`)?.find(char => {
 		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
-		return true;
+		return (charName === undefined && char.charName === undefined);
 	});
 	if (!user) return;
 	const userMessageId = user.messageId;

@@ -111,6 +111,7 @@
     }
   },
   "error": {
+    "charName": "Le personnage {{- charName}} n'est pas enregistré.",
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
     "invalidChannelType": "{{- channel}} n'est pas un channel utilisable pour cette commande.",
