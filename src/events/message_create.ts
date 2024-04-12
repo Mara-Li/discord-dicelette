@@ -57,8 +57,8 @@ export default (client: EClient): void => {
 			}
 			const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 			const thread = parentChannel instanceof TextChannel ? 
-				await findThread(client.settings, parentChannel, ul("roll.reason")) : 
-				await findForumChannel(parentChannel as ForumChannel, ul("roll.reason"), channel as ThreadChannel, client.settings);
+				await findThread(client.settings, parentChannel, ul("error.rollChannelNotFound"), ul("roll.reason")) : 
+				await findForumChannel(parentChannel as ForumChannel, ul("roll.reason"), channel as ThreadChannel, client.settings, ul("error.rollChannelNotFound"));
 			const msgToEdit = await thread.send("_ _");
 			const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
@@ -83,6 +83,5 @@ export default (client: EClient): void => {
 				}
 			}
 		}
-		
 	});
 };

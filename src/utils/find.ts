@@ -1,13 +1,12 @@
-import { GuildData } from "@interface";
-import { setTagsForRoll } from "@utils";
+import { Settings } from "@interface";
+import { sendLogs, setTagsForRoll } from "@utils";
 import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
-import Enmap from "enmap";
 /**
  * Find a thread by their data or create it
  * @param channel {TextChannel}
  * @param reason {string}
  */
-export async function findThread(db: Enmap<string, GuildData, unknown>, channel: TextChannel, reason?: string) {
+export async function findThread(db: Settings, channel: TextChannel,  error: string, reason?: string,) {
 	const guild = channel.guild.id;
 	const rollChannelId = db.get(guild, "rollChannel");
 	if (rollChannelId) {
@@ -17,8 +16,8 @@ export async function findThread(db: Enmap<string, GuildData, unknown>, channel:
 				return rollChannel;
 			}
 		} catch (e) {
-		//channel not found
-		//do nothing
+			db.delete(guild, "rollChannel");
+			sendLogs(error, channel.guild, db);
 		}
 	}
 	await channel.threads.fetch();
@@ -63,13 +62,18 @@ export async function findThread(db: Enmap<string, GuildData, unknown>, channel:
  * @param thread {ThreadChannel | TextChannel}
  * @returns 
  */
-export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel, db: Enmap<string, GuildData, unknown>) {
+export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel, db: Settings, error: string) {
 	const guild = forum.guild.id;
 	const rollChannelId = db.get(guild, "rollChannel");
 	if (rollChannelId) {
-		const rollChannel = await forum.guild.channels.fetch(rollChannelId);
-		if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
-			return rollChannel;
+		try {
+			const rollChannel = await forum.guild.channels.fetch(rollChannelId);
+			if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
+				return rollChannel;
+			}
+		} catch (e) {
+			db.delete(guild, "rollChannel");
+			sendLogs(error, forum.guild, db);
 		}
 	}
 	const allForumChannel = forum.threads.cache.sort((a, b) => {
