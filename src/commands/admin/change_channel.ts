@@ -100,7 +100,6 @@ export const disableThread = {
 		//toggle TRUE = disable thread creation
 		//toggle FALSE = enable thread creation
 		if (toggle) {
-			client.settings.delete(interaction.guild.id, "rollChannel");
 			client.settings.set(interaction.guild.id, true, "disableThread");
 			await reply(interaction, ul("disableThread.reply.disable"));
 			return;
