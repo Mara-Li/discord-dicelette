@@ -1,19 +1,23 @@
-import { GuildData } from "@interface";
-import { setTagsForRoll } from "@utils";
+import { Settings, Translation } from "@interface";
+import { sendLogs, setTagsForRoll } from "@utils";
 import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
-import Enmap from "enmap";
 /**
  * Find a thread by their data or create it
  * @param channel {TextChannel}
  * @param reason {string}
  */
-export async function findThread(db: Enmap<string, GuildData, unknown>, channel: TextChannel, reason?: string) {
+export async function findThread(db: Settings, channel: TextChannel, ul: Translation) {
 	const guild = channel.guild.id;
 	const rollChannelId = db.get(guild, "rollChannel");
 	if (rollChannelId) {
-		const rollChannel = await channel.guild.channels.fetch(rollChannelId);
-		if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
-			return rollChannel;
+		try {
+			const rollChannel = await channel.guild.channels.fetch(rollChannelId);
+			if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
+				return rollChannel;
+			}
+		} catch (e) {
+			db.delete(guild, "rollChannel");
+			sendLogs(ul("error.rollChannelNotFound"), channel.guild, db);
 		}
 	}
 	await channel.threads.fetch();
@@ -44,7 +48,7 @@ export async function findThread(db: Enmap<string, GuildData, unknown>, channel:
 	//create thread
 	const newThread = await channel.threads.create({
 		name: threadName,
-		reason,
+		reason: ul("roll.reason"),
 	});
 	//delete the message about thread creation
 	await channel.lastMessage?.delete();
@@ -58,13 +62,18 @@ export async function findThread(db: Enmap<string, GuildData, unknown>, channel:
  * @param thread {ThreadChannel | TextChannel}
  * @returns 
  */
-export async function findForumChannel(forum: ForumChannel, reason: string, thread: ThreadChannel | TextChannel, db: Enmap<string, GuildData, unknown>) {
+export async function findForumChannel(forum: ForumChannel, thread: ThreadChannel | TextChannel, db: Settings, ul: Translation) {
 	const guild = forum.guild.id;
 	const rollChannelId = db.get(guild, "rollChannel");
 	if (rollChannelId) {
-		const rollChannel = await forum.guild.channels.fetch(rollChannelId);
-		if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
-			return rollChannel;
+		try {
+			const rollChannel = await forum.guild.channels.fetch(rollChannelId);
+			if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
+				return rollChannel;
+			}
+		} catch (e) {
+			db.delete(guild, "rollChannel");
+			sendLogs(ul("error.rollChannelNotFound"), forum.guild, db);
 		}
 	}
 	const allForumChannel = forum.threads.cache.sort((a, b) => {
@@ -87,7 +96,7 @@ export async function findForumChannel(forum: ForumChannel, reason: string, thre
 	//create new forum thread
 	return await forum.threads.create({
 		name: `🎲 ${topic}`,
-		message: {content: reason},
+		message: {content: ul("roll.reason")},
 		appliedTags: [tags.id as string],
 	});
 }

@@ -1,57 +1,13 @@
-import { deleteAfter } from "@commands/rolls/base_roll";
-import { roll } from "@dicelette/core";
-import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "@interface";
-import { ln } from "@localization";
 import { editUserButtons } from "@utils/buttons";
 import { registerManagerID, registerUser } from "@utils/db";
-import { findForumChannel,findThread } from "@utils/find";
 import { parseEmbedFields } from "@utils/parse";
-import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, StageChannel, TextBasedChannel, TextChannel, ThreadChannel, userMention,VoiceChannel } from "discord.js";
+import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, StageChannel, TextChannel,VoiceChannel } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
 
-import { parseResult } from "../dice";
 
-/**
- * create the roll dice, parse interaction etc... When the slashcommands is used for dice
- * @param interaction {CommandInteraction}
- * @param dice {string}
- * @param channel {TextBasedChannel}
- * @param critical {failure?: number, success?: number}
- */
-export async function rollWithInteraction(interaction: CommandInteraction, dice: string, channel: TextBasedChannel, db: Settings,critical?: {failure?: number, success?: number}) {
-	if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
-	const ul = ln(interaction.locale);
-	const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
-	if (rollWithMessage) {
-		dice = dice.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
-	}
-	const rollDice = roll(dice);
-	if (!rollDice) {
-		console.error("no valid dice :", dice);
-		await reply(interaction,{ content: ul("error.invalidDice.withDice", {dice}), ephemeral: true });
-		return;
-	}
-	const parser = parseResult(rollDice, ul, critical);
-	if (channel.name.startsWith("🎲")) {
-		await reply(interaction,{ content: parser });
-		return;
-	}
-	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
-	const thread = parentChannel instanceof TextChannel ? 
-		await findThread(db, parentChannel, ul("roll.reason")) : 
-		await findForumChannel(channel.parent as ForumChannel, ul("roll.reason"), channel as ThreadChannel, db);
-	const msg = `${userMention(interaction.user.id)} ${timestamp()}\n${parser}`;
-	const msgToEdit = await thread.send("_ _");
-	await msgToEdit.edit(msg);
-	const idMessage = `↪ ${msgToEdit.url}`;
-	const inter = await reply(interaction,{ content: `${parser}\n\n${idMessage}`});
-	deleteAfter(inter, 180000);
-	return;
-	
-}
 
 /**
  * Set the tags for thread channel in forum
@@ -336,4 +292,3 @@ export async function downloadTutorialImages() {
 export async function reply(interaction: CommandInteraction | ModalSubmitInteraction | ButtonInteraction, options: string | InteractionReplyOptions | MessagePayload) {
 	return interaction.replied || interaction.deferred ? await interaction.editReply(options) : await interaction.reply(options);
 }
-

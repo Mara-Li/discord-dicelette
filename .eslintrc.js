@@ -7,6 +7,7 @@ module.exports = {
 	root: true,
 	extends: [
 		"@lisandra-dev/eslint-config",
+		"plugin:json/recommended",
 	],
 	rules: {
 		"@typescript-eslint/ban-ts-comment": "off",

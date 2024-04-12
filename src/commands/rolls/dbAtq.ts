@@ -2,8 +2,9 @@
 import { cmdLn, ln } from "@localization";
 import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
-import { filterChoices, generateStatsDice, reply, rollWithInteraction, title } from "@utils";
-import {getUserFromMessage } from "@utils/db";
+import { filterChoices, reply, title } from "@utils";
+import {getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
+import { rollDice } from "@utils/roll";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 import removeAccents from "remove-accents";
 
@@ -59,8 +60,18 @@ export const dmgRoll = {
 		if (!user) return;
 		let choices: string[] = [];
 		if (focused.name === t("rAtq.atq_name.name")) {
-			for (const [, value] of Object.entries(user)) {
-				if (value.damageName) choices = choices.concat(value.damageName);
+			const char = options.getString(t("common.character"));
+			
+			if (char){
+				const values =  user.find((data) => {
+					if (data.charName) return removeAccents(data.charName).toLowerCase() === removeAccents(char).toLowerCase();
+					return false;
+				});
+				if (values?.damageName) choices = values.damageName;
+			} else {
+				for (const [, value] of Object.entries(user)) {
+					if (value.damageName) choices = choices.concat(value.damageName);
+				}
 			}
 			if (db.templateID.damageName && db.templateID.damageName.length > 0)
 				choices = choices.concat(db.templateID.damageName);
@@ -84,23 +95,19 @@ export const dmgRoll = {
 		if (!db || !interaction.guild || !interaction.channel) return;
 		const user = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
 		if (!user) return;
-		const atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
 		let charOptions = options.getString(t("common.character"));
 		const charName = charOptions ? removeAccents(charOptions).toLowerCase() : undefined;
-		let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 		const ul = ln(interaction.locale as Locale);
 		try {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
+			if (charOptions && userStatistique?.userName !== charName) {
+				await reply(interaction,{ content: ul("error.charName", {charName: title(charOptions)}), ephemeral: true });
+				return;
+			}
 			if (!userStatistique && !charName) {
-				//find the first character registered
-				const userData = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
-				if (!userData) {
-					await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
-					return;
-				}
-				const firstChar = userData[0];
-				charOptions = title(firstChar.charName);
-				userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction.guild, interaction, firstChar.charName);
+				const char = await getFirstRegisteredChar(client, interaction, ul);
+				userStatistique = char?.userStatistique;
+				charOptions = char?.optionChar ?? null;
 			}
 			if (!userStatistique) {
 				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
@@ -110,25 +117,7 @@ export const dmgRoll = {
 				await reply(interaction,{ content: ul("error.emptyDamage"), ephemeral: true });
 				return;
 			}
-			const charNameComments = charOptions ? ` • **@${title(charOptions)}**` : "";
-			comments += ` __[${title(atq)}]__${charNameComments}`;
-			//search dice
-			let dice = userStatistique.damage?.[atq.toLowerCase()];
-			if (!dice) {
-				await reply(interaction,{ content: ul("error.noDamage", {atq: title(atq), charName: charName ?? ""}), ephemeral: true });
-				return;
-			}
-			dice = generateStatsDice(dice, userStatistique.stats);
-			const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
-			const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
-			const comparatorMatch = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(dice);
-			let comparator = "";
-			if (comparatorMatch) {
-				dice = dice.replace(comparatorMatch[0], "");
-				comparator = comparatorMatch[0];
-			}
-			const roll = `${dice}${modificatorString}${comparator} ${comments}`;
-			await rollWithInteraction(interaction, roll, interaction.channel, client.settings);
+			return await rollDice(interaction, client, userStatistique, options, ul, charName);
 		} catch (error) {
 			console.error(error);
 			await reply(interaction,{ content: t("error.generic", {e: (error as Error)}), ephemeral: true });

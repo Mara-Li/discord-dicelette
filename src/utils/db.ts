@@ -2,7 +2,7 @@ import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import { EClient } from "@main";
-import {removeEmojiAccents, reply, searchUserChannel } from "@utils";
+import {removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
 import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
@@ -18,7 +18,7 @@ export async function getTemplate(interaction: ButtonInteraction | ModalSubmitIn
 	return verifyTemplateValue(res);
 }
 
-export async function getChar(interaction: CommandInteraction, client: EClient, t: Translation) {
+export async function getDatabaseChar(interaction: CommandInteraction, client: EClient, t: Translation) {
 	const options = interaction.options as CommandInteractionOptionResolver;
 	const guildData = client.settings.get(interaction.guildId as string);
 	const ul = ln(interaction.locale as Locale);
@@ -77,13 +77,16 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 	const {channelId, messageId} = templateID;
 	const channel = await guild.channels.fetch(channelId);
 	if (!channel || (channel instanceof CategoryChannel)) return;
-	const message = await channel.messages.fetch(messageId);
-	if (!message) throw new Error(ul("error.noTemplateId", {channel: channelId, message: messageId}));
-	const template = message.attachments.first();
-	if (!template) throw new Error(ul("error.noTemplate"));
-	const res = await fetch(template.url).then(res => res.json());
-	return verifyTemplateValue(res);
-
+	try {
+		const message = await channel.messages.fetch(messageId);
+		const template = message.attachments.first();
+		if (!template) throw new Error(ul("error.noTemplate"));
+		const res = await fetch(template.url).then(res => res.json());
+		return verifyTemplateValue(res);
+	} catch (error) {
+		if ((error as Error).message === "Unknown Message") throw new Error(ul("error.noTemplateId", {channelId, messageId}));
+		throw error;
+	}
 }
 
 /**
@@ -101,7 +104,7 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
 	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const user = guildData.get(guild.id, `user.${userId}`)?.find(char => {
 		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
-		return true;
+		return (charName === undefined && char.charName === undefined);
 	});
 	if (!user) return;
 	const userMessageId = user.messageId;
@@ -149,7 +152,7 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 		charName,
 		messageId: msgId,
 		damageName: damage
-	}
+	};
 	if (!charName) delete newChar.charName;
 	if (!damage) delete newChar.damageName;
 	if (user) {
@@ -249,4 +252,17 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 export function registerManagerID(guildData: Settings, interaction: BaseInteraction, channel?: string) {
 	if (!channel || !interaction.guild) return;
 	guildData.set(interaction.guild.id, channel, "managerId");
+}
+
+export async function getFirstRegisteredChar(client: EClient, interaction: CommandInteraction, ul: Translation) {
+	const userData = client.settings.get(interaction.guild!.id, `user.${interaction.user.id}`);
+	if (!userData) {
+		await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
+		return;
+	}
+	const firstChar = userData[0];
+	const optionChar = title(firstChar.charName);
+	const userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction!.guild as Guild, interaction, firstChar.charName);
+
+	return {optionChar, userStatistique};
 }

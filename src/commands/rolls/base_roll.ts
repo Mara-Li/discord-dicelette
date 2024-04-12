@@ -1,7 +1,8 @@
 import { cmdLn, ln } from "@localization";
 import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
-import { reply, rollWithInteraction , setTagsForRoll } from "@utils";
+import { reply, setTagsForRoll } from "@utils";
+import { rollWithInteraction } from "@utils/roll";
 import {
 	channelMention,
 	CommandInteraction,

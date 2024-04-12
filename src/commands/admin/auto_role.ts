@@ -1,9 +1,9 @@
-import { CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder, roleMention } from "discord.js";
+import { Translation } from "@interface";
+import { cmdLn,ln } from "@localization";
 import { EClient } from "@main";
-import { ln, cmdLn } from "@localization";
 import { reply } from "@utils";
+import { CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, roleMention,SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
-import { Translation } from "../../interface";
 
 const t = i18next.getFixedT("en");
 
@@ -21,27 +21,27 @@ export const autoRole = {
 				.setDescription(t("autoRole.stat.desc"))
 				.setDescriptionLocalizations(cmdLn("autoRole.stat.desc"))
 				.addRoleOption(option =>
-				option
-					.setName(t("common.role"))
-					.setNameLocalizations(cmdLn("common.role"))
-					.setDescription(t("autoRole.options"))
-					.setDescriptionLocalizations(cmdLn("autoRole.options"))
-					.setRequired(false)
-			)
+					option
+						.setName(t("common.role"))
+						.setNameLocalizations(cmdLn("common.role"))
+						.setDescription(t("autoRole.options"))
+						.setDescriptionLocalizations(cmdLn("autoRole.options"))
+						.setRequired(false)
+				)
 		)
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName(t("common.dice"))
 				.setNameLocalizations(cmdLn("common.dice"))
 				.setDescription(t("autoRole.dice.desc"))	
-			.addRoleOption(option =>
-				option
-				.setName(t("common.role"))
-				.setNameLocalizations(cmdLn("common.role"))
-				.setDescription(t("autoRole.options"))
-				.setDescriptionLocalizations(cmdLn("autoRole.options"))
-				.setRequired(false)
-			)
+				.addRoleOption(option =>
+					option
+						.setName(t("common.role"))
+						.setNameLocalizations(cmdLn("common.role"))
+						.setDescription(t("autoRole.options"))
+						.setDescriptionLocalizations(cmdLn("autoRole.options"))
+						.setRequired(false)
+				)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
@@ -52,7 +52,7 @@ export const autoRole = {
 		if (subcommand === t("common.statistic")) return stats(options, client, ul, interaction);
 		else if (subcommand === t("common.dice")) return dice(options, client, ul, interaction);
 	}
-}
+};
 
 function stats(options: CommandInteractionOptionResolver, client: EClient, ul: Translation, interaction: CommandInteraction) {
 	const role = options.getRole(t("common.role"));

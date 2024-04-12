@@ -2,7 +2,7 @@ import { createDiceEmbed, createStatsEmbed } from "@database";
 import { cmdLn,ln } from "@localization";
 import { EClient } from "@main";
 import { filterChoices, reply, searchUserChannel, title } from "@utils";
-import { getChar } from "@utils/db";
+import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
@@ -38,14 +38,16 @@ export const displayUser = {
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
-		let choices: string[] = [];
+		const choices: string[] = [];
+		let userID = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
+		if (typeof userID !== "string") userID = interaction.user.id;
 		if (fixed.name === t("common.character")) {
-			//get ALL characters from the guild
-			const allCharactersFromGuild = Object.values(guildData.user)
-				.map((data) => data.map((char) => char.charName ?? ""))
-				.flat()
-				.filter((data) => data.length > 0);
-			choices = allCharactersFromGuild;
+			const guildChars = guildData.user[userID];
+			if (!guildChars) return;
+			for (const data of guildChars) {
+				if (data.charName)
+					choices.push(data.charName);
+			}
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
@@ -62,7 +64,7 @@ export const displayUser = {
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
-		const charData = await getChar(interaction, client, t);
+		const charData = await getDatabaseChar(interaction, client, t);
 		const charName = options.getString(t("common.character"))?.toLowerCase();
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
@@ -78,7 +80,6 @@ export const displayUser = {
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
 			const diceFields = diceEmbed?.toJSON().fields;
 			const statsFields = statisticEmbed?.toJSON().fields;
-			console.log(!statisticEmbed, !diceEmbed, !diceFields, !statsFields);
 			if (!statisticEmbed && !diceEmbed && !diceFields && !statsFields) {
 				await reply(interaction, ul("error.user"));
 				return;

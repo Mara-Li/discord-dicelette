@@ -2,8 +2,8 @@ import { deleteUser } from "@events/on_delete";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { filterChoices, reply, searchUserChannel, title } from "@utils";
-import { getChar } from "@utils/db";
-import { AutocompleteInteraction, CommandInteraction,CommandInteractionOptionResolver,Locale,PermissionFlagsBits,SlashCommandBuilder, userMention } from "discord.js";
+import { getDatabaseChar } from "@utils/db";
+import { AutocompleteInteraction, CommandInteraction,CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, userMention } from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
@@ -34,23 +34,19 @@ export const deleteChar = {
 	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
-		const ul = ln(interaction.locale as Locale);
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
-		let choices: string[] = [];
+		const choices: string[] = [];
+		const ul = ln(interaction.locale as Locale);
+		let user = options.get(t("display.userLowercase"))?.value;
+		if (typeof user !== "string") user = interaction.user.id;
 		if (fixed.name === t("common.character")) {
-			//get ALL characters from the guild
-			const allCharactersFromGuild: string[] = [];
-			for (const [user, char] of Object.entries(guildData.user)) {
-				for (const chara of char) {
-					if (chara.charName) allCharactersFromGuild.push(chara.charName);
-					else {
-						const member = await interaction.guild!.members.fetch(user);
-						allCharactersFromGuild.push(`${ul("common.default")} - ${member.displayName}`);
-					}
-				}
+			const guildChars = guildData.user[user];
+			if (!guildChars) return;
+			for (const data of guildChars) {
+				if (data.charName) choices.push(data.charName);
 			}
-			choices = allCharactersFromGuild;
+			choices.push(`${ul("common.default")}`);
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
@@ -85,7 +81,7 @@ export const deleteChar = {
 			await reply(interaction, ul("deleteChar.allSuccess", {user: userMention(user?.id ?? interaction.user.id)}));
 			return;
 		}
-		const charData = await getChar(interaction, client, t);
+		const charData = await getDatabaseChar(interaction, client, t);
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
 			if (charName) userName += ` (${charName})` ;

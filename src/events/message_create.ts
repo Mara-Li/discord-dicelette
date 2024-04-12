@@ -45,7 +45,7 @@ export default (client: EClient): void => {
 			const channel = message.channel;
 			if (!result) return;
 			const parser = parseResult(result, ul);
-			if (channel.name.startsWith("🎲")) {
+			if (channel.name.startsWith("🎲") || client.settings.get(message.guild.id, "disableThread") === true) {
 				await message.reply({content: parser, allowedMentions: { repliedUser: false }});
 				return;
 			}
@@ -57,8 +57,8 @@ export default (client: EClient): void => {
 			}
 			const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 			const thread = parentChannel instanceof TextChannel ? 
-				await findThread(client.settings, parentChannel, ul("roll.reason")) : 
-				await findForumChannel(parentChannel as ForumChannel, ul("roll.reason"), channel as ThreadChannel, client.settings);
+				await findThread(client.settings, parentChannel, ul) : 
+				await findForumChannel(parentChannel as ForumChannel, channel as ThreadChannel, client.settings, ul);
 			const msgToEdit = await thread.send("_ _");
 			const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
@@ -83,6 +83,5 @@ export default (client: EClient): void => {
 				}
 			}
 		}
-		
 	});
 };

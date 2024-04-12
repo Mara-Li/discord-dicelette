@@ -75,3 +75,50 @@ export const changeThread = {
 		return;
 	}
 };
+
+export const disableThread = {
+	data: new SlashCommandBuilder()
+		.setName(t("disableThread.name"))
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setNameLocalizations(cmdLn("disableThread.name"))
+		.setDescription(t("disableThread.description"))
+		.setDescriptionLocalizations(cmdLn("disableThread.description"))
+		.setDMPermission(false)
+		.addBooleanOption(option =>
+			option
+				.setName(t("disableThread.options.name"))
+				.setNameLocalizations(cmdLn("disableThread.options.name"))
+				.setDescription(t("disableThread.options.desc"))
+				.setDescriptionLocalizations(cmdLn("disableThread.options.desc"))
+				.setRequired(true)
+		),
+	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
+		const ul = ln(interaction.locale as Locale);
+		if (!interaction.guild) return;
+		const options = interaction.options as CommandInteractionOptionResolver;
+		const toggle = options.getBoolean(t("disableThread.options.name"), true);
+		//toggle TRUE = disable thread creation
+		//toggle FALSE = enable thread creation
+		const rollChannel = client.settings.get(interaction.guild.id, "rollChannel");
+		if (toggle) {
+			client.settings.set(interaction.guild.id, true, "disableThread");
+			if (rollChannel) {
+				const mention = `<#${rollChannel}>`;
+				const msg = ul("disableThread.disable.reply") + ul("disableThread.disable.mention", {mention});
+				await reply(interaction, msg);
+				return;
+			}
+			await reply(interaction, ul("disableThread.disable.reply"));
+			return;
+		}
+		client.settings.delete(interaction.guild.id, "disableThread");
+		if (rollChannel) {
+			const mention = `<#${rollChannel}>`;
+			const msg = ul("disableThread.enable.reply") + ul("disableThread.enable.mention", {mention});
+			await reply(interaction, msg);
+			return;
+		}
+		await reply(interaction, ul("disableThread.enable.reply"));
+		return;
+	}
+};

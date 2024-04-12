@@ -22,6 +22,7 @@ export type Translation = TFunction<"translation", undefined>;
 export interface GuildData {
 	logs?: string,
 	rollChannel?: string,
+	disableThread?: boolean,
 	managerId?: string;
 	autoRole?: {
 		dice?: string;

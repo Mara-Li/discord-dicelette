@@ -136,3 +136,4 @@ enmap.*
 data/*
 enmap.sqlite-*
 database*
+._*
