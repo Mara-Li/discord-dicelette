@@ -15,8 +15,7 @@
     }
   },
   "button": {
-    "add": {
-    },
+    "add": {},
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -89,14 +88,6 @@
     "options": {
       "desc": "Allows you to activate/deactivate the automatic creation of result feeds",
       "name": "toggle"
-    },
-    "reply": {
-      "disable": {
-      },
-      "enable": {
-      },
-      "mention": {
-      }
     }
   },
   "display": {
@@ -107,11 +98,7 @@
     "userLowercase": "player"
   },
   "embed": {
-    "add": {
-    },
     "dice": "Skill Dice",
-    "edit": {
-    },
     "stats": "Statistics",
     "template": "Model",
     "user": "Registered player"
@@ -119,8 +106,6 @@
   "embeds": {
     "display": {
       "title": "Personnage"
-    },
-    "edit": {
     }
   },
   "error": {
@@ -213,46 +198,18 @@
   "logs": {
     "delete": "Logs will no longer be sent",
     "description": "Choose a channel where to send error logs",
-    "dice": {
-    },
-    "edit": {
-    },
     "inChan": "to {{- chan}}.",
     "name": "logs",
     "options": "The channel to send logs to",
-    "removed": {
-    },
-    "set": "Logs configured in channel {{- channel}}",
-    "stat": {
-    },
-    "stats": {
-    }
+    "set": "Logs configured in channel {{- channel}}"
   },
   "mjRoll": {
-    "dbroll": {
-    },
     "description": "Allows you to roll dice for other players",
     "name": "gm",
     "user": "Player to roll the die on"
   },
   "modals": {
-    "added": {
-    },
-    "charName": {
-    },
-    "dice": {
-    },
-    "edit": {
-    },
-    "enterValue": {
-    },
-    "noPermission": "You do not have permissions to do this",
-    "removed": {
-    },
-    "template": {
-    },
-    "user": {
-    }
+    "noPermission": "You do not have permissions to do this"
   },
   "rAtq": {
     "atq_name": {

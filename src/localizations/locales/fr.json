@@ -15,8 +15,6 @@
     }
   },
   "button": {
-    "add": {
-    },
     "cancel": "Annuler",
     "continue": "Continuer",
     "dice": "Enregistrer un dé",
@@ -89,14 +87,6 @@
     "options": {
       "desc": "Permet d'activer/désactiver la création auto des fils de résultats",
       "name": "basculer"
-    },
-    "reply": {
-      "disable": {
-      },
-      "enable": {
-      },
-      "mention": {
-      }
     }
   },
   "display": {
@@ -107,11 +97,7 @@
     "userLowercase": "joueur"
   },
   "embed": {
-    "add": {
-    },
     "dice": "Dés de compétences",
-    "edit": {
-    },
     "stats": "Statistiques",
     "template": "Modèle",
     "user": "Joueur enregistré"
@@ -119,8 +105,6 @@
   "embeds": {
     "display": {
       "title": "Personnage"
-    },
-    "edit": {
     }
   },
   "error": {
@@ -213,44 +197,18 @@
   "logs": {
     "delete": "Les logs ne seront plus envoyés",
     "description": "Choisir un channel où envoyer les logs d'erreurs",
-    "dice": {
-    },
-    "edit": {
-    },
     "inChan": "dans {{- chan}}.",
     "name": "logs",
     "options": "Le channel où envoyer les logs",
-    "removed": {
-    },
-    "set": "Logs configurés dans le channel {{- channel}}",
-    "stat": {
-    },
-    "stats": {
-    }
+    "set": "Logs configurés dans le channel {{- channel}}"
   },
   "mjRoll": {
-    "dbroll": {
-    },
     "description": "Permet de lancer des dés pour d'autres joueurs",
     "name": "mj",
     "user": "Joueur sur lequel lancer le dé"
   },
   "modals": {
-    "added": {
-    },
-    "charName": {
-    },
-    "dice": {
-    },
-    "edit": {
-    },
-    "enterValue": {
-    },
-    "noPermission": "Vous n'avez pas les autorisations pour faire cela",
-    "removed": {
-    },
-    "user": {
-    }
+    "noPermission": "Vous n'avez pas les autorisations pour faire cela"
   },
   "rAtq": {
     "atq_name": {
