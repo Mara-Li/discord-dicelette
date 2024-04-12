@@ -8,7 +8,6 @@
     },
     "name": "auto_role",
     "options": "Role to add",
-    "set": "",
     "stat": {
       "desc": "Add a role when statistics are added (dbroll)",
       "remove": "No roles will be added to players when their stats are saved.",
@@ -41,7 +40,6 @@
     "default": "Default",
     "dice": "dice",
     "noSet": "/",
-    "page": "Page {{- nb}}",
     "role": "role",
     "space": "",
     "statistic": "statistique",
@@ -75,19 +73,30 @@
     "name": "delete_char",
     "noCharacters": "The user {{- user}} is not registered in the database.",
     "success": "The {{- user}} character has been deleted!",
-    "user": "The player to delete",
-    "userLowercase": "player"
+    "user": "The player to delete"
   },
   "disableThread": {
     "description": "Disable/enable automatic thread creation and use the current channel for logs",
+    "disable": {
+      "mention": "The {{- mention}} channel will no longer receive dice logs.",
+      "reply": "Automatic thread creation has been disabled: dice results will now be kept in the channel where the command was used.\n\n\nChannels prefixed with `🎲` will no longer receive logs either."
+    },
+    "enable": {
+      "mention": "The {{- mention}} channel will receive new dice logs.",
+      "reply": "The dice results will be automatically sent to an automatically created thread.\n\n\nChannels prefixed with `🎲` will again receive dice results."
+    },
     "name": "disable_thread",
     "options": {
       "desc": "Allows you to activate/deactivate the automatic creation of result feeds",
       "name": "toggle"
     },
     "reply": {
-      "disable": "Automatic thread creation has been disabled: dice results will now be kept in the channel where the command was used.\n\n\nChannels prefixed with `🎲` will no longer receive logs either.",
-      "enable": "The dice results will be automatically sent to an automatically created thread.\n\n\nChannels prefixed with `🎲` will again receive dice results."
+      "disable": {
+      },
+      "enable": {
+      },
+      "mention": {
+      }
     }
   },
   "display": {
@@ -99,7 +108,6 @@
   },
   "embed": {
     "add": {
-      "title": "User registration"
     },
     "dice": "Skill Dice",
     "edit": {
@@ -113,17 +121,13 @@
       "title": "Personnage"
     },
     "edit": {
-      "dice": "Modified dice",
-      "stats": "Stats changed!"
     }
   },
   "error": {
     "charName": "",
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
-    "invalidChannelType": "{{- channel}} is not a usable channel for this command.",
     "invalidDice": {
-      "embeds": "No die embeds detected",
       "withDice": "Error: Invalid die {{- dice}}",
       "withError": "Error: Invalid die {{- dice}}\n\n```{{- error}}```"
     },
@@ -132,7 +136,6 @@
     "noDamage": "{{- atq}} is not saved in {{- charName}}.",
     "noDice": "You cannot issue this command without having a registered die type!",
     "noEmbed": "No embeds found",
-    "noGuild": "An error that should never happen: the command is used outside of a server (???)",
     "noGuildData": "No data found for server {{-server}}.",
     "noMessage": "No messages found.",
     "noStats": "This command cannot be used: no statistics have been recorded.",
@@ -141,8 +144,6 @@
     "noThread": "No valid channel found - Please re-register the template if the channel was deleted",
     "notRegistered": "You are not registered",
     "rollChannelNotFound": "The channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
-    "statNotFound": "Statistics not found! \nDid you make a typing error?",
-    "tooMuchDice": "Too many dice have been saved! \nYou cannot have more than 25 dice saved.",
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
     "user": "User not found",
@@ -213,9 +214,6 @@
     "delete": "Logs will no longer be sent",
     "description": "Choose a channel where to send error logs",
     "dice": {
-      "add": "{{- user}} added the dice for {{- user}} (in {{- fiche}})",
-      "edit": "{{- user}} modified the dice of {{- user}} (in {{- fiche}})",
-      "remove": "{{- user}} deleted the dice from {{-char}} (in {{- fiche}})"
     },
     "edit": {
     },
@@ -226,16 +224,12 @@
     },
     "set": "Logs configured in channel {{- channel}}",
     "stat": {
-      "added": "{{- user}} modified the statistics of {{- user}} (in {{- fiche}})"
     },
     "stats": {
-      "removed": "{{- user}} deleted the statistics of the sheet {{- user}} (in {{- fiche}})"
     }
   },
   "mjRoll": {
-    "character": "The character on which the die was thrown",
     "dbroll": {
-      "name": ""
     },
     "description": "Allows you to roll dice for other players",
     "name": "gm",
@@ -243,41 +237,21 @@
   },
   "modals": {
     "added": {
-      "dice": "Dice added",
-      "stats": "Added statistiques"
     },
-    "alreadySet": "All statistics already set",
     "charName": {
-      "description": "Enter your character's name",
-      "name": "Character name"
     },
     "dice": {
-      "name": "Name",
-      "placeholder": "Enter a valid die",
-      "value": "Value"
     },
     "edit": {
-      "dice": "⚠ Respect the syntax. Delete with X or 0.",
-      "stats": "⚠ Suivez la syntaxe. Supprimer avec X."
     },
     "enterValue": {
-      "maxOnly": "Enter a value smaller than {{- max}}",
-      "minAndMax": "Enter a value between {{- min}} and {{- max}}",
-      "minOnly": "Enter a value greater than {{- min}}."
     },
-    "finished": "Statistics finished",
-    "firstPage": "User Registration - Page 1/{{- page}}",
     "noPermission": "You do not have permissions to do this",
     "removed": {
-      "dice": "The dice have been removed from the user",
-      "stats": "The statistics have been deleted"
     },
-    "steps": "User Registration - Page {{- page}}/{{- max}}",
     "template": {
     },
     "user": {
-      "description": "Enter the user attached to the character (id or global username)",
-      "name": "user"
     }
   },
   "rAtq": {

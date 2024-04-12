@@ -8,7 +8,6 @@
     },
     "name": "auto_role",
     "options": "Rôle à ajouter",
-    "set": "Le rôle {{- role}} sera maintenant ajouté automatiquement aux joueurs enregistrés pour la première fois.",
     "stat": {
       "desc": "Ajoute un rôle quand les statistiques sont ajoutées (dbroll)",
       "remove": "Aucun rôle ne sera ajouté aux joueurs quand leurs statistiques sont enregistrées.",
@@ -41,7 +40,6 @@
     "default": "Défaut",
     "dice": "dé",
     "noSet": "/",
-    "page": "Page {{- nb}}",
     "role": "rôle",
     "space": " ",
     "statistic": "statistique",
@@ -75,19 +73,30 @@
     "name": "supprimer_char",
     "noCharacters": "L'utilisateur {{- user}} n'est pas inscrit·e dans la base.",
     "success": "Le personnage de {{- user}} a bien été supprimé !",
-    "user": "Le joueur à supprimer",
-    "userLowercase": "joueur"
+    "user": "Le joueur à supprimer"
   },
   "disableThread": {
     "description": "Désactive/active la création automatique des threads et utilise le channel actuel pour les logs",
+    "disable": {
+      "mention": "Le channel {{- mention}} ne recevra plus les logs des dés.",
+      "reply": "La création automatique des threads a été désactivée : les résultats des dés seront maintenant conservés dans le channel où la commande a été utilisée.\n\nLes channels préfixés par `🎲` ne recevront plus les logs non plus."
+    },
+    "enable": {
+      "mention": "Le channel {{- mention}} recevra de nouveaux les logs des dés.",
+      "reply": "Les résultats dés seront automatiquement envoyés dans un thread automatiquement créé.\n\nLes channels préfixés par `🎲` recevront de nouveau les résultats des dés."
+    },
     "name": "désactiver_thread",
     "options": {
       "desc": "Permet d'activer/désactiver la création auto des fils de résultats",
       "name": "basculer"
     },
     "reply": {
-      "disable": "La création automatique des threads a été désactivée : les résultats des dés seront maintenant conservés dans le channel où la commande a été utilisée.\n\nLes channels préfixés par `🎲` ne recevront plus les logs non plus.",
-      "enable": "Les résultats dés seront automatiquement envoyés dans un thread automatiquement créé.\n\nLes channels préfixés par `🎲` recevront de nouveau les résultats des dés."
+      "disable": {
+      },
+      "enable": {
+      },
+      "mention": {
+      }
     }
   },
   "display": {
@@ -99,7 +108,6 @@
   },
   "embed": {
     "add": {
-      "title": "Enregistrement de l'utilisateur"
     },
     "dice": "Dés de compétences",
     "edit": {
@@ -113,17 +121,13 @@
       "title": "Personnage"
     },
     "edit": {
-      "dice": "Dés modifiés",
-      "stats": "Statistiques modifiées !"
     }
   },
   "error": {
     "charName": "Le personnage {{- charName}} n'est pas enregistré.",
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
-    "invalidChannelType": "{{- channel}} n'est pas un channel utilisable pour cette commande.",
     "invalidDice": {
-      "embeds": "Aucun embed de dé détecté",
       "withDice": "Erreur : Dé invalide {{- dice}}",
       "withError": "Erreur : Dé invalide {{- dice}}\n```{{- error}}```"
     },
@@ -132,7 +136,6 @@
     "noDamage": "{{- atq}} n'est pas enregistré dans {{- charName}}.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
     "noEmbed": "Aucun embed trouvé",
-    "noGuild": "Une erreur qui ne devrait jamais arrivée : la commande est utilisée en dehors d'un serveur (???)",
     "noGuildData": "Aucune donnée trouvée pour le serveur {{- serveur }}.",
     "noMessage": "Aucun message trouvé.",
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
@@ -141,8 +144,6 @@
     "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
     "notRegistered": "Vous n'êtes pas enregistré",
     "rollChannelNotFound": "Le channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
-    "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
-    "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
     "totalExceededBy": "Le total de {{- value}} est dépassé de {{- max}}",
     "user": "Utilisateur introuvable",
@@ -213,9 +214,6 @@
     "delete": "Les logs ne seront plus envoyés",
     "description": "Choisir un channel où envoyer les logs d'erreurs",
     "dice": {
-      "add": "{{- user}} a ajouté les dés pour {{- char}} (dans {{- fiche}})",
-      "edit": "{{- user}} a modifié les dés de {{- char}} (dans {{- fiche}})",
-      "remove": "{{- user}} a supprimé les dés de {{-char}} (dans {{- fiche}})"
     },
     "edit": {
     },
@@ -226,16 +224,12 @@
     },
     "set": "Logs configurés dans le channel {{- channel}}",
     "stat": {
-      "added": "{{- user}} a modifié les statistiques de {{- char}} (dans {{- fiche}})"
     },
     "stats": {
-      "removed": "{{- user}} a supprimé les statistiques de {{- char}} (dans {{- fiche}})"
     }
   },
   "mjRoll": {
-    "character": "Le personnage sur lequel lancé le dé",
     "dbroll": {
-      "name": "dbroll"
     },
     "description": "Permet de lancer des dés pour d'autres joueurs",
     "name": "mj",
@@ -243,39 +237,19 @@
   },
   "modals": {
     "added": {
-      "dice": "Dés ajoutés",
-      "stats": "Statistiques ajoutés"
     },
-    "alreadySet": "Toutes les statistiques sont déjà définies",
     "charName": {
-      "description": "Entrez le nom de votre personnage",
-      "name": "Nom du personnage"
     },
     "dice": {
-      "name": "Nom",
-      "placeholder": "Entrer un dé valide",
-      "value": "Valeur"
     },
     "edit": {
-      "dice": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
-      "stats": "⚠ Suivez la syntaxe. Supprimer avec X."
     },
     "enterValue": {
-      "maxOnly": "Entrez une valeur plus petite que {{- max}}",
-      "minAndMax": "Entrez une valeur entre {{- min}} et {{- max}}",
-      "minOnly": "Entrez une valeur plus grande que {{- min}}"
     },
-    "finished": "Statistiques terminées",
-    "firstPage": "Enregistrement de l'utilisateur - Page 1/{{- page}}",
     "noPermission": "Vous n'avez pas les autorisations pour faire cela",
     "removed": {
-      "dice": "Les dés ont été supprimés de l'utilisateur",
-      "stats": "Les statistiques ont bien été supprimés"
     },
-    "steps": "Enregistrement de l'utilisateur - Page {{- page}}/{{- max}}",
     "user": {
-      "description": "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)",
-      "name": "utilisateur"
     }
   },
   "rAtq": {

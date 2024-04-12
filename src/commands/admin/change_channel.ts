@@ -99,13 +99,26 @@ export const disableThread = {
 		const toggle = options.getBoolean(t("disableThread.options.name"), true);
 		//toggle TRUE = disable thread creation
 		//toggle FALSE = enable thread creation
+		const rollChannel = client.settings.get(interaction.guild.id, "rollChannel");
 		if (toggle) {
 			client.settings.set(interaction.guild.id, true, "disableThread");
-			await reply(interaction, ul("disableThread.reply.disable"));
+			if (rollChannel) {
+				const mention = `<#${rollChannel}>`;
+				const msg = ul("disableThread.disable.reply") + ul("disableThread.disable.mention", {mention});
+				await reply(interaction, msg);
+				return;
+			}
+			await reply(interaction, ul("disableThread.disable.reply"));
 			return;
 		}
 		client.settings.delete(interaction.guild.id, "disableThread");
-		await reply(interaction, ul("disableThread.reply.enable"));
+		if (rollChannel) {
+			const mention = `<#${rollChannel}>`;
+			const msg = ul("disableThread.enable.reply") + ul("disableThread.enable.mention", {mention});
+			await reply(interaction, msg);
+			return;
+		}
+		await reply(interaction, ul("disableThread.enable.reply"));
 		return;
 	}
 };
