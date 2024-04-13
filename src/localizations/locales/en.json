@@ -15,7 +15,8 @@
     }
   },
   "button": {
-    "add": {},
+    "add": {
+    },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -191,7 +192,17 @@
     "name": "graph"
   },
   "help": {
+    "bug": {
+      "description": "Report a bug",
+      "message": "Please file your bug report [here]({{-link}}). \nBefore reporting, please check that there is not already a report on your bug.\n\n\nDon't forget to read the [documentation](https://dicelette.github.io/en/) because you can find answers to your questions there.",
+      "name": "bug"
+    },
     "description": "Display help",
+    "fr": {
+      "description": "Make a feature request",
+      "message": "Do you have an idea to improve the bot? \nIn this case, you can suggest it [here]({{- link}})!\n\n\nPlease check the other issues before doing yours to avoid duplicates. \nAdditionally, check the [documentation](https://dicelette.github.io/en/).",
+      "name": "feature_request"
+    },
     "message": ":game_die: **Dicelette** :game_die:\n-> Find the *bot* on [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.md>)\n -> [Documentation](<https://dicelette.github.io/en>)\n\n## Usage\n- </roll:{{- rollId}}> : Roll a die\n- </scene:{{- sceneId}}> : Creates a new thread for dice. This will archive all previous threads.\n\nYou can also create a \"time bubble\" with the parameters `/scene tempo:True`. By default, the thread name will be the current date.\n\nYou can use the bot directly in a message (**without using slash commands**), with :\n- __A direct die__ : `des`, like `d6` or `2d6`.\n- __An indirect die__ : `my message [dice]`, like `*Phibi jumps on Wumpus and inflicts [2d6] damage*`.\n- __A semi-direct die__: `1d100 my message`, as `1d100 Phibi jumps on Wumpus and inflicts damage`.\n\n## Dice notation\n[See documentation for dice notation](<https://dice-roller.github.io/documentation/guide/notation/dice.html>).\n\nThe bot also supports:\n- [Dice groups](<https://dice-roller.github.io/documentation/guide/notation/group-rolls.html>)\n- [Modifiers](<https://dice-roller.github.io/documentation/guide/notation/modifiers.html>)\n- [Comments](<https://dice-roller.github.io/documentation/guide/notation/roll-descriptions.html>)\n- [Math](<https://dice-roller.github.io/documentation/guide/notation/maths.html>)\n- As well as \"bulk rolls\" (throwing several dice at the same time) with the following notation: `[number of dice]#[dice]`, for example `2#d6` to throw 2 6-sided dice.of dice]#",
     "name": "help"
   },

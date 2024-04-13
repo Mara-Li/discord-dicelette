@@ -15,7 +15,6 @@ import {
 	TextChannel,
 	userMention} from "discord.js";
 import moment from "moment";
-import dedent from "ts-dedent";
 
 const t = i18next.getFixedT("en");
 
@@ -127,23 +126,5 @@ export const newScene = {
 	}
 };
 
-export const help = {
-	data: new SlashCommandBuilder()
-		.setName(t("help.name"))
-		.setNameLocalizations(cmdLn("help.name"))
-		.setDescription(t("help.description"))
-		.setDescriptionLocalizations(cmdLn("help.description")),
-	async execute(interaction: CommandInteraction): Promise<void> {
-		const commandsID = await interaction.guild?.commands.fetch();
-		if (!commandsID) return;
-		const rollID = commandsID.findKey(command => command.name === "roll");
-		const sceneID = commandsID.findKey(command => command.name === "scene");
-		const ul = ln(interaction.locale as Locale);
-		const message = ul("help.message", {rollId: rollID, sceneId: sceneID});
-		const replyMsg = await reply(interaction,{ content: dedent(message)});
-		deleteAfter(replyMsg, 60000);
-		return;
-	}
-};
 
 

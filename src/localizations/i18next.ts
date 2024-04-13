@@ -12,6 +12,7 @@ export const resources = {
 	},
 };
 
+
 i18next.init({
 	lng: "en",
 	fallbackLng: "en",
