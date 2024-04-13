@@ -190,6 +190,12 @@
     "name": "graph"
   },
   "help": {
+    "admin": {
+      "description": "Affiche les commandes administrative du bot",
+      "messageDB": "## Gestion des personnages et du modèle\n\n- </delete_char:{{-deleteChar}}> : Permet de supprimer un personnage de la base de données. Supprimera le message de la fiche s'il est toujours présent sur le serveur.\n\n### Rôle automatiques\n\nSes deux commandes permettent d'ajouter automatiquement un rôle à la validation des fiches :\n- </auto_role statistic:{{-stat}}> : Permet d'ajouter un rôle quand des statistiques sont validées (permet d'activer </dbroll:{{- dbroll}}>)\n- </auto_role dice:{{-dice}}> : Permet d'ajouter un rôle quand un dé est enregistré (active </dbd:{{- dbd}}>).\n\n### Lancer de dé \"maître de jeu\"\n\nLes deux commandes suivantes permettent aux maîtres de jeu de lancer des dés pour tous les joueurs enregistrés.\n\n- </gm dbroll:{{-gm_dbroll}}> : Lance un dé de statistique, similaire à </dbroll:{{- dbroll}}>.\n- </gm dbd:{{-gm_dbd}}>: Lance un dé enregistré, similaire à </dbd:{{- dbd}}>.",
+      "messageNoDB": "Le bot possède différentes commandes d'administration qui permet de personnaliser votre expérience.\n\nVous trouverez [ici](<https://dicelette.github.io/docs/commands/administration>) des explications détaillées des commandes montrées ici :\n- </logs:{{- logs}}> : Enregistre un channel pour afficher les erreurs et les modifications apportées aux fiches.\n- </result_channel:{{- result}}> : Permet de définir un channel pour recevoir les résultats de tous les jets de dés du serveur.\n- </disable_thread:{{- disable}}> : Permet de désactiver la création automatique des threads et les résultats seront envoyés directement dans le channel où a été lancer le dé. Désactive *de facto* le channel configuré par la commande précédente.\n",
+      "name": "admin"
+    },
     "bug": {
       "description": "Signaler un bug",
       "message": "Merci de faire votre rapport de bug [ici](<{{-link}}>). Avant de faire votre rapport, merci de vérifier qu'il n'existe pas déjà un rapport sur votre bug.\n\nN'oubliez pas d'aller lire la [documentation](<https://dicelette.github.io/>) car vous pourrez y trouver des réponses à vos questions.",
@@ -208,7 +214,12 @@
     },
     "message": ":game_die: **Dice Roller** :game_die:\n→ Retrouvez le *bot* sur [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.fr.md>)\n→ [Documentation](<https://dicelette.github.io/en>)\n\n## Usage\n- </roll:{{- rollId}}> : Lance un dé\n- </scene:{{- sceneId}}> : Crée un nouveau thread pour les dés. Cela archivera tous les threads précédents.\n\nVous pouvez aussi créer une \"bulle temporelle\" avec les paramètres `/scene tempo:True`. Par défaut, le nom du thread sera la date du jour.\n\nVous pouvez utiliser le bot directement dans un message (**sans utiliser de slash commands**), avec :\n- __Un dé direct__ : `dés`, comme `d6` ou `2d6`\n- __Un dé indirect__ : `mon message [dés]`, comme `*Phibi saute sur Wumpus et lui inflige [2d6] dégâts*`.\n- __Un dé semi-direct__ : `1d100 mon message`, comme `1d100 Phibi saute sur Wumpus et lui inflige des dégâts`.\n\n{{- dbCMD}}\n\n",
     "messageDB": "## Commandes liées aux fiches de personnages\n\n- </dbroll:{{- dbroll}}> : Lance un dés de statistiques, à partir d'une fiche de personnage.\n- </dbd:{{- dbd}}> : Lance un dé enregistré dans votre fiche de personnage.\n- </graph:{{- graph}}> : Permet de générer un graphique à partir des statistiques d'un personnage.\n- </display:{{- display}}> : Permet de consulter les statistiques et les dés d'un personnage.",
-    "name": "aide"
+    "name": "aide",
+    "register": {
+      "description": "Affiche l'aide général pour activer la fonction de sauvegarde de fiche.",
+      "message": "Le bot permet de configurer un modèle (\"modèle de serveur\") qui permet ensuite de créer des fiches de personnages ainsi que de retenir des dés. \n\nLes données restent intégralement sur votre serveur, et le modèle est pensé pour être adaptable à l'infini (ou presque !).\n\nVous trouverez [ici](<https://dicelette.github.io/docs/model/register>) toutes les informations afin de configurer le modèle et enregistrer les fiches, afin de pouvoir utiliser les commandes </dbroll:{{- dbroll}}>, </dbd:{{- dbd}}>, ou encore </graph:{{- graph}}>.",
+      "name": "enregistrer"
+    }
   },
   "logs": {
     "delete": "Les logs ne seront plus envoyés",

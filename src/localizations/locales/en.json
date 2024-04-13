@@ -42,7 +42,7 @@
     "noSet": "/",
     "role": "role",
     "space": "",
-    "statistic": "statistique",
+    "statistic": "statistic",
     "total": "Total",
     "user": "Player"
   },
@@ -192,6 +192,12 @@
     "name": "graph"
   },
   "help": {
+    "admin": {
+      "description": "Displays the bot's administrative commands",
+      "messageDB": "## Character and model management\n\n- </delete_char:{{-deleteChar}}> : Allows you to delete a character from the database. Will delete the message of the character sheet if it's still present on the server.\n\n### Automatic roles\n\nThese two commands allow you to automatically add a role when validating files:\n- </auto_role statistic:{{-stat}}>: Adds a role when statistics are validated (enables </dbroll:{{- dbroll}}>).\n- </auto_role dice:{{-dice}}> : Allows a role to be added when a die is registered (enables </dbd:{{- dbd}}>).\n\n### \"Game master\" die roll\n\nThe following two commands allow game masters to roll dice for all registered players.\n\n- </gm dbroll:{{-gm_dbroll}}> : Rolls a statistics die, similar to </dbroll:{{- dbroll}}>.\n- </gm dbd:{{-gm_dbd}}>: Rolls a registered die, similar to </dbd:{{- dbd}}>.",
+      "messageNoDB": "The bot has different administration commands that allow you to personalize your experience.\n\nYou will find [here](<https://dicelette.github.io/docs/commands/administration>) detailed explanations of the commands shown here:\n- </logs:{{- logs}}>: Records a channel to display errors and modifications made to records.\n- </result_channel:{{- result}}>: Allows you to define a channel to receive the results of all dice rolls from the server.\n- </disable_thread:{{- disable}}>: Allows you to deactivate the automatic creation of threads and the results will be sent directly to the channel where the die was thrown. \n*De facto* disables the channel configured by the previous command.",
+      "name": "admin"
+    },
     "bug": {
       "description": "Report a bug",
       "message": "Please file your bug report [here](<{{-link}}>). \nBefore reporting, please check that there is not already a report on your bug.\n\n\nDon't forget to read the [documentation](<https://dicelette.github.io/en/>) because you can find answers to your questions there.",
@@ -210,7 +216,12 @@
     },
     "message": ":game_die: **Dicelette** :game_die:\n→ Find the *bot* on [GitHub](<https://github.com/Lisandra-dev/dice-thread/blob/main/README.md>)\n→ [Documentation](<https://dicelette.github.io/en>)\n\n## Usage\n- </roll:{{- rollId}}> : Roll a die\n- </scene:{{- sceneId}}> : Creates a new thread for dice. This will archive all previous threads.\n\nYou can also create a \"time bubble\" with the parameters `/scene tempo:True`. By default, the thread name will be the current date.\n\nYou can use the bot directly in a message (**without using slash commands**), with :\n- __A direct die__ : `des`, like `d6` or `2d6`.\n- __An indirect die__ : `my message [dice]`, like `*Phibi jumps on Wumpus and inflicts [2d6] damage*`.\n- __A semi-direct die__: `1d100 my message`, as `1d100 Phibi jumps on Wumpus and inflicts damage`.\n\n{{- dbCMD}}",
     "messageDB": "## Commands linked to character sheet\n\n- </dbroll:{{- dbroll}}>: Rolls a statistics dice, from a character sheet.\n- </dbd:{{- dbd}}>: Rolls a die recorded in your character sheet.\n- </graph:{{- graph}}>: Allows you to generate a graph from a character's statistics.\n- </display:{{- display}}>: Allows you to consult the statistics and dice of a character.",
-    "name": "help"
+    "name": "help",
+    "register": {
+      "description": "Displays general help for activating the record save function.",
+      "message": "The bot allows you to configure a model (\"server model\") which then allows you to create character sheets as well as retain dice.\n\nThe data remains entirely on your server, and the model is designed to be infinitely adaptable (or almost!).\n\nYou will find [here](<https://dicelette.github.io/docs/model/register/en/>) all the information to configure the model and save the forms, in order to be able to use the commands </dbd:{{- \ndbd}}>, </dbroll:{{-dbroll}}>, or </graph:{{-graph}}>.",
+      "name": "register"
+    }
   },
   "logs": {
     "delete": "Logs will no longer be sent",
