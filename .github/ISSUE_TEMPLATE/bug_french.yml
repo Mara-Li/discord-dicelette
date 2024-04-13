@@ -1,0 +1,55 @@
+name: Rapport de bug
+description: Remplir un rapport de bug (en français).
+title: "[Bug]: "
+labels: ["bug", "triage", "french"]
+assignees:
+  - lisandra-dev
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps de remplir ce rapport de bug ! N'oubliez pas de lire la [documentation](https://dicelette.github.io/) car vous pourrez trouver la réponse à vos questions !
+  - type: checkboxes
+    id: validation-read
+    attributes:
+      label: Code de conduite
+      options:
+        - label: J'ai bien lut la [documentation](https://dicelette.github.io/)
+          required: true
+        - label: J'ai déjà regardé les autres issues pour éviter de créer un doublon.
+          required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Commande utilisée
+      description: Quelle est la commande que vous avez utilisé ainsi que leur argument ? Si cela est arrivé avec la commande `/enregistrer` merci de fournir le fichier aussi.
+      value: "/help"
+    validations:
+      required: true
+  - type: textarea
+    id: arrive
+    attributes:
+      label: Que c'est-il passé ?
+      description: Qu'avez vous observé chez le bot ?
+  - type: textarea
+    id: template
+    attributes:
+      label: Merci de poster le modèle du serveur si le bug découvert est en rapport avec la base de donnée/modèle.
+      render: json
+    validations:
+      required: false
+  - type: textarea
+    id: screen
+    attributes:
+      label: Screenshot
+      description: Merci d'envoyer les screenshot de tout ce qui peut être en rapport avec le bug, comme les fiches du personnage ayant le problème, le résultat de l'erreur, ou encore la commande qui été lancée.
+      placeholder: Vous pouvez glisser et déposer les images ici.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs de sortie
+      description: Si le bot a bien sorti un log d'erreur, merci de le poster ici.
+      render: shell
+  

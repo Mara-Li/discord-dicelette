@@ -1,0 +1,54 @@
+name: Bug Report
+description: File a bug report (English).
+title: "[Bug]: "
+labels: ["bug", "triage", "english"]
+assignees:
+  - lisandra-dev
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to fill out this bug report! Don't forget to read the [documentation](https://dicelette.github.io/en/) as you may find the answer to your questions there!
+  - type: checkboxes
+    id: validation-read
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I have read the [documentation](https://dicelette.github.io/en/) thoroughly.
+          required: true
+        - label: I have checked existing issues to avoid creating duplicates.
+          required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Used Command
+      description: What command did you use and its arguments? If this happened with the `/register` command, please provide the file as well.
+      value: "/help"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you observe from the bot?
+  - type: textarea
+    id: template
+    attributes:
+      label: Please post the server template if the discovered bug is related to the database/template.
+      render: json
+    validations:
+      required: false
+  - type: textarea
+    id: screen
+    attributes:
+      label: Screenshot
+      description: Please upload screenshots of anything related to the bug, such as character sheets experiencing the issue, the error output, or the command that was executed.
+      placeholder: You can drag and drop images here.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Output Logs
+      description: If the bot has produced an error log, please post it here.
+      render: shell

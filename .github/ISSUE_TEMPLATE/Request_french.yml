@@ -1,0 +1,47 @@
+name: Demande de fonctionnalité
+description: Faites une demande de fonctionnalité (en français).
+title: "[FR]: "
+labels: ["enhancement", "triage", "french"]
+assignees:
+  - lisandra-dev
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps de soumettre cette demande de fonctionnalité ! Avant de commencer, assurez-vous de consulter la [documentation](https://dicelette.github.io/) pour voir si votre demande est déjà couverte ou si vous pouvez trouver une solution existante.
+  - type: checkboxes
+    id: validation-read
+    attributes:
+      label: Code de conduite
+      options:
+        - label: J'ai bien lut la [documentation](https://dicelette.github.io/)
+          required: true
+        - label: J'ai déjà regardé les autres issues pour éviter de créer un doublon.
+          required: true      
+  - type: textarea
+    id: description
+    attributes:
+      label: Description de la fonctionnalité
+      description: Expliquez en détail la fonctionnalité que vous souhaitez voir implémentée.
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Cas d'utilisation
+      description: Dans quel contexte prévoyez-vous d'utiliser cette fonctionnalité ? Quel problème cela résoudrait-il pour vous ?
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Avantages
+      description: Quels seraient les avantages de l'ajout de cette fonctionnalité pour la communauté ou l'utilisateur ?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives envisagées
+      description: Avez-vous envisagé d'autres solutions ou alternatives à cette fonctionnalité ?
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Informations supplémentaires
+      description: Y a-t-il d'autres informations que vous souhaitez partager concernant cette demande ?

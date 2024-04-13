@@ -1,0 +1,47 @@
+name: Feature Request
+description: Submit a feature request.
+title: "[FR]: "
+labels: ["enhancement", "triage", "english"]
+assignees:
+  - lisandra-dev
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to submit this feature request! Before you begin, please make sure to check the [documentation](https://dicelette.github.io/en/) to see if your request is already covered or if you can find an existing solution.
+  - type: checkboxes
+    id: validation-read
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I have read the [documentation](https://dicelette.github.io/en/) thoroughly.
+          required: true
+        - label: I have checked existing issues to avoid creating duplicates.
+          required: true        
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: Explain in detail the feature you would like to see implemented.
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: In what context do you foresee using this feature? What problem would it solve for you?
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: What would be the benefits of adding this feature for the community or the user?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Considered Alternatives
+      description: Have you considered any other solutions or alternatives to this feature?
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Are there any other details you would like to share regarding this request?
