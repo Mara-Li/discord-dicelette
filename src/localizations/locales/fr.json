@@ -206,7 +206,7 @@
     "fr": {
       "description": "Faire une demande de fonctionnalité",
       "message": "Vous avez une idée pour améliorer le bot ? Dans ce cas, vous pouvez la suggérer [ici](<{{- link}}>) !\n\nMerci d'éviter les doublons en vérifiant les autres issues ainsi que de lire la [documentation](<https://dicelette.github.io/>) !",
-      "name": "demande_fonction"
+      "name": "suggestion"
     },
     "info": {
       "description": "Affiche les infos générales du bot",
