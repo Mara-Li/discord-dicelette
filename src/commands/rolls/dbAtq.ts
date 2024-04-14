@@ -100,7 +100,8 @@ export const dmgRoll = {
 		const ul = ln(interaction.locale as Locale);
 		try {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
-			if (charOptions && userStatistique?.userName !== charName) {
+			const userStatistiqueName = userStatistique?.userName ? removeAccents(userStatistique.userName).toLowerCase() : undefined;
+			if (charOptions && userStatistiqueName !== charName) {
 				await reply(interaction,{ content: ul("error.charName", {charName: title(charOptions)}), ephemeral: true });
 				return;
 			}

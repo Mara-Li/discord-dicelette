@@ -93,7 +93,8 @@ export const rollForUser = {
 		
 		try {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
-			if (optionChar && userStatistique?.userName !== charName) {
+			const userStatistiqueName = userStatistique?.userName ? removeAccents(userStatistique.userName.toLowerCase()) : undefined;
+			if (optionChar && userStatistiqueName !== charName) {
 				await reply(interaction,{ content: ul("error.charName", {charName: title(optionChar)}), ephemeral: true });
 				return;
 			}
