@@ -67,6 +67,7 @@
     "statsName": "Name of statistics",
     "templateID": "Link to template",
     "timer": "Time before deletion",
+    "timestamp": "Displaying timestamps",
     "title": "{{- guild}} configuration"
   },
   "dbRoll": {
@@ -226,8 +227,8 @@
   "help": {
     "admin": {
       "description": "Displays the bot's administrative commands",
-      "messageDB": "## Character and model management\n\n- </delete_char:{{-deleteChar}}> : Allows you to delete a character from the database. Will delete the message of the character sheet if it's still present on the server.\n\n### Automatic roles\n\nThese two commands allow you to automatically add a role when validating files:\n- </auto_role statistic:{{-stat}}>: Adds a role when statistics are validated (enables </dbroll:{{- dbroll}}>).\n- </auto_role dice:{{-dice}}> : Allows a role to be added when a die is registered (enables </dbd:{{- dbd}}>).\n\n### \"Game master\" die roll\n\nThe following two commands allow game masters to roll dice for all registered players.\n\n- </gm dbroll:{{-gm_dbroll}}> : Rolls a statistics die, similar to </dbroll:{{- dbroll}}>.\n- </gm dbd:{{-gm_dbd}}>: Rolls a registered die, similar to </dbd:{{- dbd}}>.",
-      "messageNoDB": "The bot has different administration commands that allow you to personalize your experience.\n\nYou will find [here](<https://dicelette.github.io/docs/commands/administration>) detailed explanations of the commands shown here:\n- </config:{{-config}}>: Display the server configuration\n- </logs:{{- logs}}>: Records a channel to display errors and modifications made to records.\n- </result_channel:{{- result}}>: Allows you to define a channel to receive the results of all dice rolls from the server.\n- </disable_thread:{{- disable}}>: Allows you to deactivate the automatic creation of threads and the results will be sent directly to the channel where the die was thrown. \n*De facto* disables the channel configured by the previous command.\n- </delete_after:{{-delete}}>: Allow to change the timer before result message deletion (only if </disable_thread:{{- disable}}> is disabled). If set to `0`, messages won't be deleted. By default, message will be deleted after 3 minutes.",
+      "messageDB": "## Character and model management\n\n- </delete_char:{{- deleteChar}}> : Allows you to delete a character from the database. Will delete the message of the character sheet if it's still present on the server.\n\n### Automatic roles\n\nThese two commands allow you to automatically add a role when validating files:\n- </config auto_role statistic:{{-stat}}>: Adds a role when statistics are validated (enables </dbroll:{{- dbroll}}>).\n- </config auto_role dice:{{-dice}}> : Allows a role to be added when a die is registered (enables </dbd:{{- dbd}}>).\n\n### \"Game master\" die roll\n\nThe following two commands allow game masters to roll dice for all registered players.\n\n- </gm dbroll:{{-gm_dbroll}}> : Rolls a statistics die, similar to </dbroll:{{- dbroll}}>.\n- </gm dbd:{{-gm_dbd}}>: Rolls a registered die, similar to </dbd:{{- dbd}}>.",
+      "messageNoDB": "The bot has different administration commands that allow you to personalize your experience.\n\nYou will find [here](<https://dicelette.github.io/docs/commands/administration>) detailed explanations of the commands shown here:\n- </config display:{{-display}}>: Display the server configuration\n- </config logs:{{- logs}}>: Records a channel to display errors and modifications made to records.\n- </config result_channel:{{- result}}>: Allows you to define a channel to receive the results of all dice rolls from the server.\n- </config disable_thread:{{- disable}}>: Allows you to deactivate the automatic creation of threads and the results will be sent directly to the channel where the die was thrown. \n*De facto* disables the channel configured by the previous command.\n- </config delete_after:{{-delete}}>: Allow to change the timer before result message deletion (only if </config disable_thread:{{- disable}}> is disabled). If set to `0`, messages won't be deleted. By default, message will be deleted after 3 minutes.\n- </config timestamp:{{-timestamp}}> : Display (or not) the timestamp in the dice roll logs.",
       "name": "admin"
     },
     "bug": {
@@ -386,5 +387,12 @@
       "name": "time"
     },
     "success": "Messages will now be deleted after {{- time}} seconds."
+  },
+  "timestamp": {
+    "description": "Display or name the time in the die roll log",
+    "disabled": "Timestamps are no longer displayed.",
+    "enabled": "Timestamps are now displayed",
+    "name": "timestamp",
+    "options": "Enables or disables the timestamp"
   }
 }

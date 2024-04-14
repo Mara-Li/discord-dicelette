@@ -56,7 +56,7 @@ export async function rollWithInteraction(
 		await findForumChannel(channel.parent as ForumChannel, channel as ThreadChannel, db, ul);
 	let mention : string = userMention(user?.id ?? interaction.user.id);
 	mention = charName ? `__**${title(charName)}**__ (${mention})` : mention;
-	const msg = `${mention} ${timestamp()}\n  ${infoRoll ? `[__${title(infoRoll)}__] ` : ""}${parser}`;
+	const msg = `${mention} ${timestamp(db, interaction.guild.id)}\n  ${infoRoll ? `[__${title(infoRoll)}__] ` : ""}${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
 	const idMessage = `↪ ${msgToEdit.url}`;

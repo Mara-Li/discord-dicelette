@@ -63,7 +63,7 @@ export default (client: EClient): void => {
 			const msgToEdit = await thread.send("_ _");
 			const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
-			const msg = `${authorMention} ${timestamp()}${linkToOriginal}\n${parser}`;
+			const msg = `${authorMention} ${timestamp(client.settings, message.guild.id)}${linkToOriginal}\n${parser}`;
 			await msgToEdit.edit(msg);
 			const idMessage = `↪ ${msgToEdit.url}`;
 			const reply = deleteInput ?

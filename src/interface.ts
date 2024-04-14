@@ -38,6 +38,7 @@ export interface GuildData {
 	disableThread?: boolean,
 	managerId?: string;
 	deleteAfter?: number;
+	timestamp?: boolean;
 	autoRole?: {
 		dice?: string;
 		stats?: string;

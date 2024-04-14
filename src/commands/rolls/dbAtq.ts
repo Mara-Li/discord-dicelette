@@ -11,7 +11,7 @@ import removeAccents from "remove-accents";
 
 const t = i18next.getFixedT("en");
 
-export const dmgRoll = {
+export const dbd = {
 	data: new SlashCommandBuilder()
 		.setName(t("rAtq.name"))
 		.setDescription(t("rAtq.description"))

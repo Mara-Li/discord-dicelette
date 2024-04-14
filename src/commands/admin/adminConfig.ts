@@ -134,15 +134,28 @@ export const adminConfig = {
 						)
 				) 
 		)
-	,
+
+		/* TIMESTAMP */
+		.addSubcommand(sub => 
+			sub
+				.setName(t("timestamp.name"))
+				.setDescription(t("timestamp.description"))
+				.setDescriptionLocalizations(cmdLn("timestamp.description"))
+				.setNameLocalizations(cmdLn("timestamp.name"))
+				.addBooleanOption(option => 
+					option
+						.setName(t("disableThread.options.name"))
+						.setDescription(t("timestamp.options"))
+						.setRequired(true)
+				)
+		
+		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
 		const ul = i18next.getFixedT(interaction.locale);
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const subcommand = options.getSubcommand(true);
 		const subcommandGroup = options.getSubcommandGroup();
-		console.log(subcommand, subcommandGroup);
-		await interaction.reply({ content: "This command is not implemented yet", ephemeral: true });
 		if (subcommandGroup && subcommandGroup === t("autoRole.name")) {
 			if (subcommand === t("common.statistic")) return stats(options, client, ul, interaction);
 			else if (subcommand === t("common.dice")) return dice(options, client, ul, interaction);
@@ -157,7 +170,9 @@ export const adminConfig = {
 		case t("timer.name"):
 			return await timer(interaction, client, ul, options);
 		case t("config.display.name"):
-			return await display(interaction, client, ul);	
+			return await display(interaction, client, ul);
+		case t("timestamp.name"):
+			return await timestamp(interaction, client, ul, options);
 		}
 	},
 };
@@ -258,6 +273,7 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	const disableThread = client.settings.get(interaction.guild!.id, "disableThread");
 	const autoRole = client.settings.get(interaction.guild!.id, "autoRole");
 	const managerId = client.settings.get(interaction.guild!.id, "managerId");
+	const timestamp = client.settings.get(interaction.guild!.id, "timestamp");
 	const baseEmbed = new EmbedBuilder()
 		.setTitle(t("config.title",{ guild: interaction.guild!.name}))
 		.setColor("Random");
@@ -265,6 +281,12 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 		baseEmbed.addFields({
 			name: ul("config.timer"),
 			value: `${timer / 1000}s`,
+		});
+	}
+	if (timestamp) {
+		baseEmbed.addFields({
+			name: ul("config.timestamp"),
+			value: ul("common.yes"),
 		});
 	}
 	if (logs) {
@@ -330,4 +352,14 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	}
 
 	await interaction.reply({ embeds: [baseEmbed] });
+}
+
+async function timestamp(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
+	const toggle = options.getBoolean(t("disableThread.options.name"), true);
+	client.settings.set(interaction.guild!.id, toggle, "timestamp");
+	if (toggle) {
+		await reply(interaction, { content: ul("timestamp.enabled"), ephemeral: true });
+	} else {
+		await reply(interaction, { content: ul("timestamp.disabled"), ephemeral: true });
+	}
 }

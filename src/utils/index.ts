@@ -9,6 +9,7 @@ import removeAccents from "remove-accents";
 
 
 
+
 /**
  * Set the tags for thread channel in forum
  * @param forum {ForumChannel}
@@ -107,8 +108,10 @@ export function removeEmojiAccents(dice: string) {
 /**
  * Create a neat timestamp in the discord format
  */
-export function timestamp() {
-	return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
+export function timestamp(settings: Settings, guildID: string) {
+	if (settings.get(guildID, "timestamp"))
+		return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
+	return "";
 }
 
 /**

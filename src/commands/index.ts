@@ -5,11 +5,11 @@ import {generateTemplate, registerTemplate } from "./admin/template";
 import { displayUser } from "./gimmick/display";
 import { graph } from "./gimmick/graph";
 import { help } from "./help";
-import { diceRoll,newScene } from "./rolls/base_roll";
-import { dmgRoll } from "./rolls/dbAtq";
-import { rollForUser } from "./rolls/dbroll";
+import { diceRoll, newScene } from "./rolls/base_roll";
+import { dbd } from "./rolls/dbAtq";
+import { dbRoll } from "./rolls/dbroll";
 import { mjRoll } from "./rolls/mj_roll";
 
-export const autCompleteCmd = [rollForUser, dmgRoll, displayUser, graph, deleteChar, mjRoll];
-export const commandsList = [diceRoll, newScene, help, generateTemplate, registerTemplate, rollForUser, dmgRoll, displayUser, graph, mjRoll, adminConfig
+export const autCompleteCmd = [dbRoll, dbd, displayUser, graph, deleteChar, mjRoll];
+export const commandsList = [diceRoll, newScene, help, generateTemplate, registerTemplate, dbRoll, dbd, displayUser, graph, mjRoll, adminConfig, deleteChar
 ];

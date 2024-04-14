@@ -10,7 +10,7 @@ import removeAccents from "remove-accents";
 
 const t = i18next.getFixedT("en");
 
-export const rollForUser = {
+export const dbRoll = {
 	data: new SlashCommandBuilder()
 		.setName(t("dbRoll.name"))
 		.setNameLocalizations(cmdLn("dbRoll.name"))

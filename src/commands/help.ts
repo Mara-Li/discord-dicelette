@@ -88,7 +88,8 @@ export const help = {
 				disable: idsAdmin?.[t("disableThread.name")],
 				result: idsAdmin?.[t("changeThread.name")],
 				delete: idsAdmin?.[t("timer.name")],
-				config: idsAdmin?.[t("config.name")],
+				display: idsAdmin?.[t("config.display.name")],
+				timestamp: idsAdmin?.[t("timestamp.name")],
 			}))});
 			const idsAdminDB = getIDForAdminDB(commandsID, client.settings, interaction.guild!.id);
 			if (!idsAdminDB) return;
@@ -139,17 +140,17 @@ function createHelpMessageDB(
 }
 
 function getIDForAdminNoDB(commandsID: Collection<string, ApplicationCommand<unknown>>) {
-	const commandToFind = [
-		t("logs.name"),
-		t("changeThread.name"),
-		t("disableThread.name"),
-		t("timer.name"),
-		t("config.name")
-	];
 	const ids: {[key: string]: string | undefined} = {};
-	for (const cmd of commandToFind) {
-		ids[cmd] = commandsID.findKey(command => command.name === cmd);
+	const idConfig = commandsID.findKey(command => command.name === t("config.name"));
+	if (!idConfig) {
+		return;
 	}
+	ids[t("logs.name")] = idConfig;
+	ids[t("changeThread.name")] = idConfig;
+	ids[t("timer.name")] = idConfig;
+	ids[t("disableThread.name")] = idConfig;
+	ids[t("config.display.name")] = idConfig;
+	ids[t("timestamp.name")] = idConfig;
 	return ids;
 }
 
@@ -157,7 +158,7 @@ function getIDForAdminDB(commandsID: Collection<string, ApplicationCommand<unkno
 	if (!db.has(guildID, "templateID")) return;
 	const commandToFind = [
 		t("deleteChar.name"),
-		t("autoRole.name"),
+		t("config.name"),
 		t("mjRoll.name"),
 		t("dbRoll.name"),
 		t("rAtq.name")
@@ -170,7 +171,7 @@ function getIDForAdminDB(commandsID: Collection<string, ApplicationCommand<unkno
 				ids["gm dbd"] = id;
 				ids["gm dbroll"] = id;
 			}
-		} else if (cmd === t("autoRole.name")) {
+		} else if (cmd === t("config.name")) {
 			const id = commandsID.findKey(command => command.name === cmd);
 			if (id) {
 				ids["auto_role statistic"] = id;
