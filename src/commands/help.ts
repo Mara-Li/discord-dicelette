@@ -88,6 +88,7 @@ export const help = {
 				disable: idsAdmin?.[t("disableThread.name")],
 				result: idsAdmin?.[t("changeThread.name")],
 				delete: idsAdmin?.[t("timer.name")],
+				config: idsAdmin?.[t("config.name")],
 			}))});
 			const idsAdminDB = getIDForAdminDB(commandsID, client.settings, interaction.guild!.id);
 			if (!idsAdminDB) return;
@@ -142,7 +143,8 @@ function getIDForAdminNoDB(commandsID: Collection<string, ApplicationCommand<unk
 		t("logs.name"),
 		t("changeThread.name"),
 		t("disableThread.name"),
-		t("timer.name")
+		t("timer.name"),
+		t("config.name")
 	];
 	const ids: {[key: string]: string | undefined} = {};
 	for (const cmd of commandToFind) {
