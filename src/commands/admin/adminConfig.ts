@@ -275,7 +275,8 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	const managerId = client.settings.get(interaction.guild!.id, "managerId");
 	const timestamp = client.settings.get(interaction.guild!.id, "timestamp");
 	const baseEmbed = new EmbedBuilder()
-		.setTitle(t("config.title",{ guild: interaction.guild!.name}))
+		.setTitle(ul("config.title",{ guild: interaction.guild!.name}))
+		.setThumbnail(interaction.guild!.iconURL() ?? "")
 		.setColor("Random");
 	if (timer) {
 		baseEmbed.addFields({
@@ -286,7 +287,7 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	if (timestamp) {
 		baseEmbed.addFields({
 			name: ul("config.timestamp"),
-			value: ul("common.yes"),
+			value: "_ _",
 		});
 	}
 	if (logs) {
@@ -304,7 +305,7 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	if (disableThread) {
 		baseEmbed.addFields({
 			name: ul("config.disableThread"),
-			value: ul("common.yes"),
+			value: "_ _",
 		});
 	}
 	if (autoRole?.dice) {

@@ -65,7 +65,7 @@
     "statsName": "Nom des statistiques",
     "templateID": "Lien vers la template",
     "timer": "Délais avant suppression",
-    "timestamp": "Affichage des timestamps",
+    "timestamp": "[Affichage des timestamps]",
     "title": "Configuration de {{- guild}}"
   },
   "dbRoll": {

@@ -67,7 +67,7 @@
     "statsName": "Name of statistics",
     "templateID": "Link to template",
     "timer": "Time before deletion",
-    "timestamp": "Displaying timestamps",
+    "timestamp": "[Displaying timestamps]",
     "title": "{{- guild}} configuration"
   },
   "dbRoll": {
