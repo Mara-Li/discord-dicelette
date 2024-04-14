@@ -41,6 +41,7 @@ export const displayConfig = {
 		.setName(t("config.name"))
 		.setNameLocalizations(cmdLn("config.name"))
 		.setDescription(t("config.description"))
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 		.setDescriptionLocalizations(cmdLn("config.description")),
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
