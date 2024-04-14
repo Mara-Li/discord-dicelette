@@ -354,5 +354,15 @@
       "name": "tempo"
     },
     "underscore": "__New scene__:"
+  },
+  "timer": {
+    "delete": "Dice rolling messages will no longer be deleted.",
+    "description": "Allows you to change the message deletion time",
+    "name": "delete_after",
+    "option": {
+      "description": "Time (in seconds) before deletion, set to 0 to disable.",
+      "name": "time"
+    },
+    "success": "Messages will now be deleted after {{- time}} seconds."
   }
 }

@@ -37,6 +37,7 @@ export interface GuildData {
 	rollChannel?: string,
 	disableThread?: boolean,
 	managerId?: string;
+	deleteAfter?: number;
 	autoRole?: {
 		dice?: string;
 		stats?: string;

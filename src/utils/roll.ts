@@ -45,9 +45,9 @@ export async function rollWithInteraction(
 		return;
 	}
 	const parser = parseResult(rollDice, ul, critical);
-	
+	const infoRollTotal = `${charName ? `__**${title(charName)}**__${ul("common.space")}:\n  `:"  "}${infoRoll ? `[__${title(infoRoll)}__] `:""}`;
 	if (channel.name.startsWith("🎲") || db.get(interaction.guild.id, "disableThread") === true) {
-		await reply(interaction,{ content: `${charName ? `__**${title(charName)}**__\n  `:"  "}${infoRoll ? `[__${title(infoRoll)}__] `:""}${parser}` });
+		await reply(interaction,{ content: `${infoRollTotal}${parser}` });
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
@@ -56,12 +56,13 @@ export async function rollWithInteraction(
 		await findForumChannel(channel.parent as ForumChannel, channel as ThreadChannel, db, ul);
 	let mention : string = userMention(user?.id ?? interaction.user.id);
 	mention = charName ? `__**${title(charName)}**__ (${mention})` : mention;
-	const msg = `${mention} ${timestamp()}\n  ${infoRoll ? `[__${infoRoll}__] ` : ""}${parser}`;
+	const msg = `${mention} ${timestamp()}\n  ${infoRoll ? `[__${title(infoRoll)}__] ` : ""}${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
 	const idMessage = `↪ ${msgToEdit.url}`;
-	const inter = await reply(interaction,{ content: `${parser}\n\n${idMessage}`});
-	deleteAfter(inter, 180000);
+	const inter = await reply(interaction,{ content: `${infoRollTotal}${parser}\n\n${idMessage}`});
+	const timer = db.get(interaction.guild.id, "deleteAfter") ?? 180000;
+	deleteAfter(inter, timer);
 	return;
 	
 }

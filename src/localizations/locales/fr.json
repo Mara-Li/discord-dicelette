@@ -352,5 +352,15 @@
       "name": "tempo"
     },
     "underscore": "__Nouvelle scène__ :"
+  },
+  "timer": {
+    "delete": "Les messages de lancer de dés ne seront plus supprimés.",
+    "description": "Permet de changer le délai de suppression des messages",
+    "name": "supprimer_après",
+    "option": {
+      "description": "Temps (en seconde) avant suppression, mettez à 0 pour désactiver.",
+      "name": "temps"
+    },
+    "success": "Les messages seront maintenant supprimés après {{- time}} secondes."
   }
 }

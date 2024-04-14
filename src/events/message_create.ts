@@ -69,7 +69,8 @@ export default (client: EClient): void => {
 			const reply = deleteInput ?
 				await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` })
 				: await message.reply({ content: `${parser}\n\n${idMessage}` , allowedMentions: { repliedUser: false }});
-			deleteAfter(reply, 180000);
+			const timer = client.settings.get(message.guild.id, "deleteAfter") ?? 180000;
+			deleteAfter(reply, timer);
 			return;
 		} catch (e) {
 			error(e);
