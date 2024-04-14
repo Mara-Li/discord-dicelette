@@ -1,3 +1,4 @@
+import { error } from "@console";
 import { cmdLn, lError, ln } from "@localization";
 import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
@@ -115,9 +116,9 @@ export const rollForUser = {
 			}
 			return await rollStatistique(interaction, client, userStatistique, options, ul, optionChar);
 		}
-		catch (error) {
-			console.error(error);
-			const msgError = lError(error as Error, interaction);
+		catch (e) {
+			error(e);
+			const msgError = lError(e as Error, interaction);
 			await reply(interaction,{ content: msgError, ephemeral: true });
 		}
 	}

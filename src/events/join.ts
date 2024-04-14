@@ -1,5 +1,6 @@
 
 import { commandsList } from "@commands";
+import { error,log } from "@console";
 import { EClient } from "@main";
 
 export default (client: EClient): void => {
@@ -7,10 +8,10 @@ export default (client: EClient): void => {
 		try {
 			for (const command of commandsList) {
 				await guild.commands.create(command.data);
-				console.log(`Command ${command.data.name} created in ${guild.name}`);
+				log(`Command ${command.data.name} created in ${guild.name}`);
 			}
-		} catch (error) {
-			console.error(error);
+		} catch (e) {
+			error(e);
 		}
 	});
 };

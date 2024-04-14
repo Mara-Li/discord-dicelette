@@ -1,3 +1,4 @@
+import {error} from "@console";
 import { Critical, Statistic, StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { GuildData } from "@interface";
 import { cmdLn, ln } from "@localization";
@@ -247,7 +248,7 @@ export const registerTemplate = {
 					const msg = await (channel as TextChannel).messages.fetch(json.templateID.messageId);
 					await msg.delete();
 				} catch (e) {
-					console.error(e);
+					error(e);
 				}
 			}
 			json.templateID = {

@@ -135,7 +135,6 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
  * @param charName {string|undefined}
  * @param damage {string[]|undefined}
  * @param deleteMsg {boolean=true} delete the old message if needed (overwriting user)
- * @param urlMessage {string|undefined} the url of the message, if any, maybe better to fetch message
  * @returns 
  */
 export async function registerUser(
@@ -147,7 +146,6 @@ export async function registerUser(
 	charName?: string, 
 	damage?: string[], 
 	deleteMsg: boolean = true,
-	urlMessage?: string,
 ) {
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
@@ -163,7 +161,6 @@ export async function registerUser(
 		charName,
 		messageId: msgId,
 		damageName: damage,
-		url: urlMessage
 	};
 	if (!charName) delete newChar.charName;
 	if (!damage) delete newChar.damageName;
@@ -189,7 +186,6 @@ export async function registerUser(
 			}
 			//overwrite the message id
 			char.messageId = msgId;
-			if (urlMessage) char.url = urlMessage;
 			if (damage) char.damageName = damage;
 			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndx}`);
 		}

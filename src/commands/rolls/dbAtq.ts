@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import {error} from "@console";
 import { cmdLn, ln } from "@localization";
 import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
@@ -119,9 +120,9 @@ export const dmgRoll = {
 				return;
 			}
 			return await rollDice(interaction, client, userStatistique, options, ul, charName);
-		} catch (error) {
-			console.error(error);
-			await reply(interaction,{ content: t("error.generic", {e: (error as Error)}), ephemeral: true });
+		} catch (e) {
+			error(e);
+			await reply(interaction,{ content: t("error.generic", {e: (e as Error)}), ephemeral: true });
 			return;
 		}
 	},

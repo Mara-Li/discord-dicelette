@@ -10,8 +10,11 @@ import Enmap from "enmap";
 import * as process from "process";
 
 import * as pkg from "../package.json";
+import { log } from "./console";
 
 dotenv.config({ path: ".env" });
+
+log("Starting bot...");
 
 export class EClient extends Client {
 	// Déclaration d'une propriété settings avec le type Enmap<string, any>

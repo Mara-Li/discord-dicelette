@@ -52,7 +52,6 @@ export interface GuildData {
 			charName?: string;
 			messageId: string;
 			damageName?: string[];
-			url?: string;
 		}[]
 	}
 

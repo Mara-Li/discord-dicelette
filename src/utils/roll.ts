@@ -1,4 +1,5 @@
 import { deleteAfter } from "@commands/rolls/base_roll";
+import {error} from "@console";
 import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
 import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import { Settings, Translation, UserData } from "@interface";
@@ -37,7 +38,7 @@ export async function rollWithInteraction(
 	}
 	const rollDice = roll(dice);
 	if (!rollDice) {
-		console.error("no valid dice :", dice);
+		error("no valid dice :", dice);
 		await reply(interaction,{ content: ul("error.invalidDice.withDice", {dice}), ephemeral: true });
 		return;
 	}

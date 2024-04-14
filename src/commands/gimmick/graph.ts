@@ -1,3 +1,4 @@
+import {log} from "@console";
 import { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
@@ -278,7 +279,7 @@ export const graph = {
 		} catch (error) {
 			await reply(interaction,ul("error.generic", {e: (error as Error)}));
 			sendLogs(ul("error.generic", {e: (error as Error)}), interaction.guild, client.settings);
-			console.log(error);
+			log(error);
 		}
 	}
 		

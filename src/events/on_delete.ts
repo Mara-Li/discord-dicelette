@@ -1,3 +1,4 @@
+import { error as err } from "@console";
 import { GuildData } from "@interface";
 import { EClient } from "@main";
 import { sendLogs } from "@utils";
@@ -26,7 +27,7 @@ export const delete_channel = (client	: EClient): void => {
 				db.delete(guildID, "rollChannel");
 			}
 		} catch (error) {
-			console.error(error);
+			err(error);
 			if (channel.isDMBased()) return;
 			sendLogs((error as Error).message, channel.guild, client.settings);
 		}
@@ -47,7 +48,7 @@ export const delete_thread = (client: EClient): void => {
 			if (db.get(guildID, "logs") === thread.id) db.delete(guildID, "logs");
 			if (db.get(guildID, "templateID.channelId") === thread.id) db.delete(guildID, "templateID");
 		} catch (error) {
-			console.error(error);
+			err(error);
 			if (thread.isDMBased()) return;
 			sendLogs((error as Error).message, thread.guild, client.settings);
 		}
@@ -90,7 +91,7 @@ export const on_kick = (client: EClient): void => {
 		try {
 			client.settings.delete(guild.id);
 		} catch (error) {
-			console.error(error);
+			err(error);
 		}
 	});
 };

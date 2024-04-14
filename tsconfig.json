@@ -40,6 +40,7 @@
             "@events" : ["src/events/index"],
             "@commands/*" : ["src/commands/*"],
             "@commands" : ["src/commands/index"],
+            "@console" : ["src/console"],
         }
     },
     "files": [

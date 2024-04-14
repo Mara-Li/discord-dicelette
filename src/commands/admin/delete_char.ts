@@ -1,3 +1,4 @@
+import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
@@ -104,8 +105,8 @@ export const deleteChar = {
 			
 			await reply(interaction, ul("deleteChar.success", {user: msg}));
 			client.settings.set(interaction.guildId as string, newGuildData);
-		} catch (error) {
-			console.error(error);
+		} catch (e) {
+			error(e);
 			//no message found, delete the character from the database
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);

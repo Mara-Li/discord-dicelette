@@ -1,4 +1,5 @@
 import { autCompleteCmd,commandsList } from "@commands";
+import { error } from "@console";
 import { button_add_dice,submit_damageDice } from "@dice/add";
 import { start_edit_dice,validate_editDice } from "@dice/edit";
 import { StatisticalTemplate } from "@dicelette/core";
@@ -12,7 +13,6 @@ import { reply } from "@utils";
 import { getTemplate, getTemplateWithDB } from "@utils/db";
 import { ensureEmbed } from "@utils/parse";
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
-
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
@@ -44,10 +44,10 @@ export default (client: EClient): void => {
 			} else if (interaction.isModalSubmit()) {
 				await modalSubmit(interaction, ul, interactionUser, client.settings);
 			}
-		} catch (error) {
-			console.error(error);
+		} catch (e) {
+			error(e);
 			if (!interaction.guild) return;
-			const msgError = lError(error as Error, interaction);
+			const msgError = lError(e as Error, interaction);
 			if (interaction.isButton() || interaction.isModalSubmit() || interaction.isCommand())
 				await reply(interaction, msgError);
 			const db = client.settings.get(interaction.guild.id);
@@ -55,7 +55,7 @@ export default (client: EClient): void => {
 			if (client.settings.has(interaction.guild.id, "logs")) {
 				const logs = await interaction.guild.channels.fetch(client.settings.get(interaction.guild.id, "logs") as string);
 				if (logs instanceof TextChannel) {
-					logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
+					logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
 				}
 			}
 		}

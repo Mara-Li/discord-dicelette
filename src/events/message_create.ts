@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-escape */
 import { deleteAfter } from "@commands/rolls/base_roll";
+import {error} from "@console";
 import { COMMENT_REGEX, Resultat,roll } from "@dicelette/core";
 import { lError, ln } from "@localization";
 import { EClient } from "@main";
@@ -70,16 +71,16 @@ export default (client: EClient): void => {
 				: await message.reply({ content: `${parser}\n\n${idMessage}` , allowedMentions: { repliedUser: false }});
 			deleteAfter(reply, 180000);
 			return;
-		} catch (error) {
-			console.error(error);
+		} catch (e) {
+			error(e);
 			if (!message.guild) return;
-			const msgError = lError(error as Error, undefined, message?.guild?.preferredLocale);
+			const msgError = lError(e as Error, undefined, message?.guild?.preferredLocale);
 			await message.reply({ content: msgError});
 			const logsId = client.settings.get(message.guild.id, "logs");
 			if (logsId) {
 				const logs = await message.guild.channels.fetch(logsId);
 				if (logs instanceof TextChannel) {
-					logs.send(`\`\`\`\n${(error as Error).message}\n\`\`\``);
+					logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
 				}
 			}
 		}

@@ -1,4 +1,5 @@
 import { commandsList } from "@commands";
+import {log, success } from "@console";
 import { GuildData } from "@interface";
 import { EClient , VERSION } from "@main";
 import { ActivityType, REST, Routes } from "discord.js";
@@ -17,14 +18,14 @@ export default (client: EClient): void => {
 		if (!client.user || !client.application || !process.env.CLIENT_ID) {
 			return;
 		}
-		console.info(`${client.user.username} is online; v.${VERSION}`);
+		success(`${client.user.username} is online; v.${VERSION}`);
 		const serializedCommands = commandsList.map(command => command.data.toJSON());
 		const wasconverted = convertJSONToEnmap(client);
 		client.user.setActivity("Roll Dices 🎲 !", { type: ActivityType.Competing });
 		for (const guild of client.guilds.cache.values()) {
-			console.log(`Registering commands for ${guild.name}`);
+			log(`Registering commands for ${guild.name}`);
 			guild.client.application.commands.cache.forEach((command) => {
-				console.log(`Deleting ${command.name}`);
+				log(`Deleting ${command.name}`);
 				command.delete();
 			});
 			await rest.put(
