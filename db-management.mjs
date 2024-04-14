@@ -1,9 +1,10 @@
 import color from "ansi-colors";
 import { Command, Option } from "commander";
-import colorize from "json-colorizer";
-import pkg from "sqlite3";
 import fs from "fs";
+import colorize from "json-colorizer";
 import { exit } from "process";
+import pkg from "sqlite3";
+
 const { Database, OPEN_READWRITE } = pkg;
 
 color.theme({
@@ -53,7 +54,7 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.each("SELECT * FROM settings", (err, row) => {
 				if (err) {
-					console.error(err.message)
+					console.error(err.message);
 				}
 				console.log(`${color.underline.green("Guild ID")} : ${row.key}`);
 				console.log(`${colorize(row.value, {pretty: true})}`);
@@ -64,7 +65,7 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
 				if (err) {
-					console.error(err.message)
+					console.error(err.message);
 				}
 				console.log(`${colorize(row.value, {pretty: true})}`);
 			});
@@ -73,7 +74,7 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
 				if (err) {
-					console.error(err.message)
+					console.error(err.message);
 				}
 				const guildData = JSON.parse(row.value);
 				console.log(`${colorize(guildData[options.user], {pretty: true})}`);
@@ -84,13 +85,13 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.each("SELECT * FROM settings", (err, row) => {
 				if (err) {
-					console.error(err.message)
+					console.error(err.message);
 				}
 				const guildData = JSON.parse(row.value);
 				delete guildData[options.user];
 				db.run("UPDATE settings SET value = ? WHERE key = ?", [JSON.stringify(guildData), row.key], (err) => {
 					if (err) {
-						console.error(err.message)
+						console.error(err.message);
 					}
 					console.success(`Deleted user ${color.grey(options.user)} from guild ${color.grey(row.key)}`);
 				});
@@ -101,7 +102,7 @@ if (options.do === "get") {
 	//create a copy of the database before deleting, in case of accidental deletion
 	fs.copyFileSync("./data/enmap.sqlite", `./data/enmap.sqlite.${Date.now()}.bak`, (err) => {
 		if (err) {
-			console.error(err.message)
+			console.error(err.message);
 			exit(1);
 		}
 		console.log(color.green("💾 Created a backup of the database."));
@@ -110,7 +111,7 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.run("DELETE FROM settings WHERE key = ?", options.guild, (err) => {
 				if (err) {
-					console.error(err.message)
+					console.error(err.message);
 				}
 				console.log(`Deleted guild ${options.guild}`);
 			});
@@ -119,13 +120,13 @@ if (options.do === "get") {
 		db.serialize(() => {
 			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
 				if (err) {
-					console.error(err.message)
+					console.error(err.message);
 				}
 				const guildData = JSON.parse(row.value);
 				delete guildData[options.user];
 				db.run("UPDATE settings SET value = ? WHERE key = ?", [JSON.stringify(guildData), options.guild], (err) => {
 					if (err) {
-						console.error(err.message)
+						console.error(err.message);
 					}
 					console.success(`Deleted user ${options.user} from guild ${options.guild}`);
 				});
