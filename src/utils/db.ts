@@ -135,9 +135,20 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
  * @param charName {string|undefined}
  * @param damage {string[]|undefined}
  * @param deleteMsg {boolean=true} delete the old message if needed (overwriting user)
+ * @param urlMessage {string|undefined} the url of the message, if any, maybe better to fetch message
  * @returns 
  */
-export async function registerUser(userID: string, interaction: BaseInteraction, msgId: string, thread: AnyThreadChannel | TextChannel | NewsChannel, enmap: Settings, charName?: string, damage?: string[], deleteMsg: boolean = true) {
+export async function registerUser(
+	userID: string, 
+	interaction: BaseInteraction, 
+	msgId: string, 
+	thread: AnyThreadChannel | TextChannel | NewsChannel, 
+	enmap: Settings, 
+	charName?: string, 
+	damage?: string[], 
+	deleteMsg: boolean = true,
+	urlMessage?: string,
+) {
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
 	const uniCharName: string | undefined = charName ? removeAccents(charName.toLowerCase()) : undefined;
@@ -151,7 +162,8 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 	const newChar = {
 		charName,
 		messageId: msgId,
-		damageName: damage
+		damageName: damage,
+		url: urlMessage
 	};
 	if (!charName) delete newChar.charName;
 	if (!damage) delete newChar.damageName;
@@ -177,6 +189,7 @@ export async function registerUser(userID: string, interaction: BaseInteraction,
 			}
 			//overwrite the message id
 			char.messageId = msgId;
+			if (urlMessage) char.url = urlMessage;
 			if (damage) char.damageName = damage;
 			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndx}`);
 		}
@@ -233,7 +246,7 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 	const templateFields = parseEmbedFields(templateEmbed?.toJSON() as Embed);
 	user.damage = templateDamage;
 	user.template = {
-		diceType: templateFields?.[ul("common.dice")] || undefined,
+		diceType: templateFields?.[title(ul("common.dice"))] || undefined,
 		critical: {
 			success: templateFields?.[ul("roll.critical.success")] ? parseInt(parsedFields[ul("roll.critical.success")], 10) : undefined,
 			failure: templateFields?.[ul("roll.critical.failure")] ? parseInt(parsedFields[ul("roll.critical.failure")], 10) : undefined,
