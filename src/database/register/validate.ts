@@ -29,7 +29,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	}
 	const charName = interaction.fields.getTextInputValue("charName");
 	const embed = new EmbedBuilder()
-		.setTitle(ul("embed.add.title"))
+		.setTitle(ul("embed.add"))
 		.setThumbnail(user.user.displayAvatarURL())
 		.setFooter({ text: ul("common.page", {nb: 1})})
 		.addFields(

@@ -85,7 +85,7 @@ export const displayUser = {
 				return;
 			}
 			const displayEmbed = new EmbedBuilder()
-				.setTitle(ul("embeds.display.title"))
+				.setTitle(ul("embed.display"))
 				.setThumbnail(user?.displayAvatarURL() ?? interaction.user.displayAvatarURL())
 				.setColor("Gold")
 				.addFields({

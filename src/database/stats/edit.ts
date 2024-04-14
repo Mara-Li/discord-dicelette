@@ -106,9 +106,9 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 	//get the other embeds
 	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
 	await interaction.message.edit({ embeds: list });
-	await reply(interaction,{ content: ul("embeds.edit.stats"), ephemeral: true });
+	await reply(interaction,{ content: ul("embed.edit.stats"), ephemeral: true });
 	const compare = displayOldAndNewStats(statsEmbeds.toJSON().fields, fieldsToAppend);
-	const logMessage = ul("logs.stat.added", {
+	const logMessage = ul("logs.stats.added", {
 		user: userMention(interaction.user.id), 
 		fiche: interaction.message.url, 
 		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`

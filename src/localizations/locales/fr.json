@@ -38,6 +38,7 @@
     "default": "Défaut",
     "dice": "dé",
     "noSet": "/",
+    "page": "Page {{- nb}}",
     "role": "rôle",
     "space": " ",
     "statistic": "statistique",
@@ -97,14 +98,20 @@
     "userLowercase": "joueur"
   },
   "embed": {
+    "add": "Enregistrement de l'utilisateur",
     "dice": "Dés de compétences",
+    "display": "Personnage",
+    "edit": {
+      "dice": "Dés modifiés",
+      "stats": "Statistiques modifiées"
+    },
     "stats": "Statistiques",
     "template": "Modèle",
     "user": "Joueur enregistré"
   },
   "embeds": {
     "display": {
-      "title": "Personnage"
+      "title": ""
     }
   },
   "error": {
@@ -112,6 +119,7 @@
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
     "invalidDice": {
+      "embeds": "Aucun embed de dé détecté",
       "withDice": "Erreur : Dé invalide {{- dice}}",
       "withError": "Erreur : Dé invalide {{- dice}}\n```{{- error}}```"
     },
@@ -128,6 +136,8 @@
     "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
     "notRegistered": "Vous n'êtes pas enregistré",
     "rollChannelNotFound": "Le channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
+    "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
+    "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
     "totalExceededBy": "Le total de {{- value}} est dépassé de {{- max}}",
     "user": "Utilisateur introuvable",
@@ -224,10 +234,19 @@
   "logs": {
     "delete": "Les logs ne seront plus envoyés",
     "description": "Choisir un channel où envoyer les logs d'erreurs",
+    "dice": {
+      "add": "{{- user}} a ajouté les dés pour {{- char}} (dans {{- fiche}})",
+      "edit": "{{- user}} a modifié les dés de {{- char}} (dans {{- fiche}})",
+      "remove": "{{- user}} a supprimé les dés de {{-char}} (dans {{- fiche}})"
+    },
     "inChan": "dans {{- chan}}.",
     "name": "logs",
     "options": "Le channel où envoyer les logs",
-    "set": "Logs configurés dans le channel {{- channel}}"
+    "set": "Logs configurés dans le channel {{- channel}}",
+    "stats": {
+      "added": "{{- user}} a modifié les statistiques de {{- char}} (dans {{- fiche}})",
+      "removed": "{{- user}} a supprimé les statistiques de {{- char}} (dans {{- fiche}})"
+    }
   },
   "mjRoll": {
     "description": "Permet de lancer des dés pour d'autres joueurs",

@@ -27,7 +27,7 @@
     "validate": "To validate"
   },
   "changeThread": {
-    "delete": "",
+    "delete": "Dice results will no longer be sent",
     "description": "Register a channel to send dice results there",
     "name": "result_channel",
     "options": "Results channel",
@@ -40,6 +40,7 @@
     "default": "Default",
     "dice": "dice",
     "noSet": "/",
+    "page": "Page {{- nb}}",
     "role": "role",
     "space": "",
     "statistic": "statistic",
@@ -99,7 +100,13 @@
     "userLowercase": "player"
   },
   "embed": {
+    "add": "User registration",
     "dice": "Skill Dice",
+    "display": "Character",
+    "edit": {
+      "dice": "Modified dice",
+      "stats": "Modified statistics"
+    },
     "stats": "Statistics",
     "template": "Model",
     "user": "Registered player"
@@ -110,10 +117,11 @@
     }
   },
   "error": {
-    "charName": "",
+    "charName": "The character {{- charName}} is not registered.",
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
     "invalidDice": {
+      "embeds": "No die embeds detected",
       "withDice": "Error: Invalid die {{- dice}}",
       "withError": "Error: Invalid die {{- dice}}\n\n```{{- error}}```"
     },
@@ -130,6 +138,8 @@
     "noThread": "No valid channel found - Please re-register the template if the channel was deleted",
     "notRegistered": "You are not registered",
     "rollChannelNotFound": "The channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
+    "statNotFound": "Statistics not found! Did you make a typing error?",
+    "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",
     "tooMuchStats": "You cannot have more than 20 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
     "user": "User not found",
@@ -226,10 +236,19 @@
   "logs": {
     "delete": "Logs will no longer be sent",
     "description": "Choose a channel where to send error logs",
+    "dice": {
+      "add": "{{- user}} added the dice for {{- char}} (in {{- file}})",
+      "edit": "{{- user}} modified the dice of {{- char}} (in {{- file}})",
+      "remove": "{{- user}} deleted the dice from {{-char}} (in {{- file}})"
+    },
     "inChan": "to {{- chan}}.",
     "name": "logs",
     "options": "The channel to send logs to",
-    "set": "Logs configured in channel {{- channel}}"
+    "set": "Logs configured in channel {{- channel}}",
+    "stats": {
+      "added": "{{- user}} modified the statistics of {{- char}} (in {{- file}})",
+      "removed": "{{- user}} deleted the statistics of {{- char}} (in {{- file}})"
+    }
   },
   "mjRoll": {
     "description": "Allows you to roll dice for other players",
