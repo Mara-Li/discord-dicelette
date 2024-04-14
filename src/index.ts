@@ -18,7 +18,7 @@ log("Starting bot...");
 
 export class EClient extends Client {
 	// Déclaration d'une propriété settings avec le type Enmap<string, any>
-	public settings: Enmap<string, GuildData>;
+	public settings: Enmap<string, GuildData, unknown>;
   
 	constructor(options: ClientOptions) {
 		super(options);

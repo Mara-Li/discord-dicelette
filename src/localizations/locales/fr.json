@@ -43,7 +43,25 @@
     "space": " ",
     "statistic": "statistique",
     "total": "Total",
-    "user": "Joueur"
+    "user": "Joueur",
+    "yes": "Oui"
+  },
+  "config": {
+    "autoRole": {
+      "dice": "[Rôle automatique] Dés",
+      "stats": "[Rôle automatique] Statistiques"
+    },
+    "damageName": "Liste des dés sauvegardés (global)",
+    "description": "Affiche la configuration actuelle du serveur",
+    "disableThread": "[Désactivation des threads]",
+    "logs": "Channel des logs d'administration",
+    "managerId": "Channel où seront envoyés les fiches",
+    "name": "config",
+    "rollChannel": "Log global des résultats de dés",
+    "statsName": "Nom des statistiques",
+    "templateID": "Lien vers la template",
+    "timer": "Délais avant suppression",
+    "title": "Configuration de {{- guild}}"
   },
   "dbRoll": {
     "description": "Lance un dé avec une statistique enregistrée",
@@ -203,7 +221,7 @@
     "admin": {
       "description": "Affiche les commandes administrative du bot",
       "messageDB": "## Gestion des personnages et du modèle\n\n- </delete_char:{{-deleteChar}}> : Permet de supprimer un personnage de la base de données. Supprimera le message de la fiche s'il est toujours présent sur le serveur.\n\n### Rôle automatiques\n\nSes deux commandes permettent d'ajouter automatiquement un rôle à la validation des fiches :\n- </auto_role statistic:{{-stat}}> : Permet d'ajouter un rôle quand des statistiques sont validées (permet d'activer </dbroll:{{- dbroll}}>)\n- </auto_role dice:{{-dice}}> : Permet d'ajouter un rôle quand un dé est enregistré (active </dbd:{{- dbd}}>).\n\n### Lancer de dé \"maître de jeu\"\n\nLes deux commandes suivantes permettent aux maîtres de jeu de lancer des dés pour tous les joueurs enregistrés.\n\n- </gm dbroll:{{-gm_dbroll}}> : Lance un dé de statistique, similaire à </dbroll:{{- dbroll}}>.\n- </gm dbd:{{-gm_dbd}}>: Lance un dé enregistré, similaire à </dbd:{{- dbd}}>.",
-      "messageNoDB": "Le bot possède différentes commandes d'administration qui permet de personnaliser votre expérience.\n\nVous trouverez [ici](<https://dicelette.github.io/docs/commands/administration>) des explications détaillées des commandes montrées ici :\n- </logs:{{- logs}}> : Enregistre un channel pour afficher les erreurs et les modifications apportées aux fiches.\n- </result_channel:{{- result}}> : Permet de définir un channel pour recevoir les résultats de tous les jets de dés du serveur.\n- </disable_thread:{{- disable}}> : Permet de désactiver la création automatique des threads et les résultats seront envoyés directement dans le channel où a été lancer le dé. Désactive *de facto* le channel configuré par la commande précédente.\n",
+      "messageNoDB": "Le bot possède différentes commandes d'administration qui permet de personnaliser votre expérience.\n\nVous trouverez [ici](<https://dicelette.github.io/docs/commands/administration>) des explications détaillées des commandes montrées ici :\n- </logs:{{- logs}}> : Enregistre un channel pour afficher les erreurs et les modifications apportées aux fiches.\n- </result_channel:{{- result}}> : Permet de définir un channel pour recevoir les résultats de tous les jets de dés du serveur.\n- </disable_thread:{{- disable}}> : Permet de désactiver la création automatique des threads et les résultats seront envoyés directement dans le channel où a été lancer le dé. Désactive *de facto* le channel configuré par la commande précédente.\n- </delete_after:{{-delete}}> : Permet de changer le temps avant suppression du résultat du dé (si </disable_thread:{{- disable}}> n'est pas activé). Si mis à `0`, les messages de résultats ne seront plus supprimés. Par défaut, les messages sont supprimés après 3 minutes.",
       "name": "admin"
     },
     "bug": {
