@@ -76,6 +76,7 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 	}
 
 	const ul = ln(interaction.locale as Locale);
+	
 	const modal = new ModalBuilder()
 		.setCustomId("firstPage")
 		.setTitle(ul("modals.firstPage", { page: nbOfPages + 1 }));

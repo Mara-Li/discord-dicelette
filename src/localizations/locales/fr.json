@@ -235,7 +235,41 @@
     "user": "Joueur sur lequel lancer le dé"
   },
   "modals": {
-    "noPermission": "Vous n'avez pas les autorisations pour faire cela"
+    "added": {
+      "dice": "Dés ajoutés",
+      "stats": "Statistiques ajoutés"
+    },
+    "alreadySet": "Toutes les statistiques sont déjà définies",
+    "charName": {
+      "description": "Entrez le nom de votre personnage",
+      "name": "Nom du personnage"
+    },
+    "dice": {
+      "name": "Nom",
+      "placeholder": "Entrer un dé valide",
+      "value": "Valeur"
+    },
+    "edit": {
+      "dice": "⚠ Suivez la syntaxe. Supprimer avec X ou 0.",
+      "stats": "⚠ Suivez la syntaxe. Supprimer avec X."
+    },
+    "enterValue": {
+      "maxOnly": "Entrez une valeur plus petite que {{- max}}",
+      "minAndMax": "Entrez une valeur entre {{- min}} et {{- max}}",
+      "minOnly": "Entrez une valeur plus grande que {{- min}}"
+    },
+    "finished": "Statistiques terminées",
+    "firstPage": "Enregistrement de l'utilisateur - Page 1/{{- page}}",
+    "noPermission": "Vous n'avez pas les autorisations pour faire cela",
+    "removed": {
+      "dice": "Les dés ont été supprimés de l'utilisateur",
+      "stats": "Les statistiques ont bien été supprimés"
+    },
+    "steps": "Enregistrement de l'utilisateur - Page {{- page}}/{{- max}}",
+    "user": {
+      "description": "Entrez l'utilisateur attaché au personnage (id ou nom d'utilisateur global)",
+      "name": "utilisateur"
+    }
   },
   "rAtq": {
     "atq_name": {

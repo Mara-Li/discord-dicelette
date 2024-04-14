@@ -237,7 +237,41 @@
     "user": "Player to roll the die on"
   },
   "modals": {
-    "noPermission": "You do not have permissions to do this"
+    "added": {
+      "dice": "Dice added",
+      "stats": "Statistics added"
+    },
+    "alreadySet": "All statistics are already defined",
+    "charName": {
+      "description": "Enter your character's name",
+      "name": "Character name"
+    },
+    "dice": {
+      "name": "Name",
+      "placeholder": "Enter a valid die",
+      "value": "Value"
+    },
+    "edit": {
+      "dice": "⚠ Follow the syntax. \nDelete with X or 0.",
+      "stats": "⚠ Follow the syntax. \nDelete with X."
+    },
+    "enterValue": {
+      "maxOnly": "Enter a value smaller than {{- max}}",
+      "minAndMax": "Enter a value between {{- min}} and {{- max}}",
+      "minOnly": "Enter a value greater than {{- min}}"
+    },
+    "finished": "Completed statistics",
+    "firstPage": "User Registration - Page 1/{{- page}}",
+    "noPermission": "You do not have permissions to do this",
+    "removed": {
+      "dice": "The dice have been removed from the user",
+      "stats": "The statistics have been deleted"
+    },
+    "steps": "User Registration - Page {{- page}}/{{- max}}",
+    "user": {
+      "description": "Enter the user attached to the character (id or global username)",
+      "name": "user"
+    }
   },
   "rAtq": {
     "atq_name": {
