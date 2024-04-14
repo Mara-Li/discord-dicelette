@@ -242,7 +242,7 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 	const templateFields = parseEmbedFields(templateEmbed?.toJSON() as Embed);
 	user.damage = templateDamage;
 	user.template = {
-		diceType: templateFields?.[title(ul("common.dice"))] || undefined,
+		diceType: templateFields?.[title(ul("common.dice"))] || templateFields?.[(ul("common.dice"))] || undefined,
 		critical: {
 			success: templateFields?.[ul("roll.critical.success")] ? parseInt(parsedFields[ul("roll.critical.success")], 10) : undefined,
 			failure: templateFields?.[ul("roll.critical.failure")] ? parseInt(parsedFields[ul("roll.critical.failure")], 10) : undefined,

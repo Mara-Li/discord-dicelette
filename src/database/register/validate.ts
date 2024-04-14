@@ -137,7 +137,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			.setColor("DarkerGrey");
 		if (template.diceType)
 			templateEmbed.addFields({
-				name: ul("common.dice"),
+				name: title(ul("common.dice")),
 				value: `\`${template.diceType}\``,
 				inline: true,
 			});

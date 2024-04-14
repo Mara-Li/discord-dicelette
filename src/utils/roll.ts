@@ -29,7 +29,8 @@ export async function rollWithInteraction(
 	db: Settings,
 	critical?: {failure?: number, success?: number},
 	user?: User,
-	charName?: string
+	charName?: string,
+	infoRoll?: string,
 ) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild) return;
 	const ul = ln(interaction.locale);
@@ -43,12 +44,10 @@ export async function rollWithInteraction(
 		await reply(interaction,{ content: ul("error.invalidDice.withDice", {dice}), ephemeral: true });
 		return;
 	}
-	let parser = parseResult(rollDice, ul, critical);
-	const stat = parser.match(/__\[(.*)\]__/);
-	parser = parser.replace(/__\[(.*)\]__/, "");
-	parser = `${stat ?? ""} ${parser}`;
+	const parser = parseResult(rollDice, ul, critical);
+	
 	if (channel.name.startsWith("🎲") || db.get(interaction.guild.id, "disableThread") === true) {
-		await reply(interaction,{ content: parser });
+		await reply(interaction,{ content: `${charName ? `__**${title(charName)}**__\n  `:"  "}${infoRoll ? `[__${title(infoRoll)}__] `:""}${parser}` });
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
@@ -57,7 +56,7 @@ export async function rollWithInteraction(
 		await findForumChannel(channel.parent as ForumChannel, channel as ThreadChannel, db, ul);
 	let mention : string = userMention(user?.id ?? interaction.user.id);
 	mention = charName ? `__**${title(charName)}**__ (${mention})` : mention;
-	const msg = `${mention} ${timestamp()}\n  ${parser}`;
+	const msg = `${mention} ${timestamp()}\n  ${infoRoll ? `[__${infoRoll}__] ` : ""}${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
 	const idMessage = `↪ ${msgToEdit.url}`;
@@ -79,7 +78,7 @@ export async function rollStatistique(
 ) {
 	const statistique = options.getString(t("common.statistic"), true).toLowerCase();
 	//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
-	let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
+	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	const override = options.getString(t("dbRoll.options.override.name"));
 	const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 	const userStat = userStatistique.stats?.[removeAccents(statistique)];
@@ -99,7 +98,6 @@ export async function rollStatistique(
 			dice += overrideMatch[0];
 		}
 	}
-	comments += ` __[${title(statistique)}]__`;
 	const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
 	const comparatorMatch = (/(?<sign>[><=!]+)(?<comparator>(\d+))/).exec(dice);
 	let comparator = "";
@@ -115,7 +113,8 @@ export async function rollStatistique(
 		client.settings, 
 		template.critical, 
 		user,
-		optionChar
+		optionChar,
+		statistique
 	);
 }
 
@@ -128,8 +127,7 @@ export async function rollDice(
 	charOptions?: string,
 	user?: User ) {
 	const atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
-	let comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
-	comments += ` __[${title(atq)}]__`;
+	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	//search dice
 	let dice = userStatistique.damage?.[atq.toLowerCase()];
 	if (!dice) {
@@ -146,5 +144,5 @@ export async function rollDice(
 		comparator = comparatorMatch[0];
 	}
 	const roll = `${dice}${modificatorString}${comparator} ${comments}`;
-	await rollWithInteraction(interaction, roll, interaction.channel as TextBasedChannel, client.settings, undefined, user, charOptions);
+	await rollWithInteraction(interaction, roll, interaction.channel as TextBasedChannel, client.settings, undefined, user, charOptions, atq);
 }
