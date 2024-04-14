@@ -20,7 +20,7 @@
       "min": 1
     }
   },
-  "diceType": "1d20+{{ceil(($-10)/2)}}>20",
+  "diceType": "1d20+{{ceil(($-10)/2)}}>=20",
   "critical": {
     "failure": 1,
     "success": 20
