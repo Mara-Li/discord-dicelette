@@ -1,15 +1,8 @@
-
-import { adminConfig } from "./admin/adminConfig";
+import { admin } from "./admin";
 import { deleteChar } from "./admin/delete_char";
-import {generateTemplate, registerTemplate } from "./admin/template";
-import { displayUser } from "./gimmick/display";
-import { graph } from "./gimmick/graph";
-import { help } from "./help";
-import { diceRoll, newScene } from "./rolls/base_roll";
-import { dbd } from "./rolls/dbAtq";
-import { dbRoll } from "./rolls/dbroll";
-import { mjRoll } from "./rolls/mj_roll";
+import { gimmick } from "./gimmick";
+import { roll_auto, roll_cmdList } from "./rolls";
 
-export const autCompleteCmd = [dbRoll, dbd, displayUser, graph, deleteChar, mjRoll];
-export const commandsList = [diceRoll, newScene, help, generateTemplate, registerTemplate, dbRoll, dbd, displayUser, graph, mjRoll, adminConfig, deleteChar
+export const autCompleteCmd = [...roll_auto, ...gimmick, deleteChar];
+export const commandsList = [...roll_auto, ...roll_cmdList, ...gimmick, ...admin, deleteChar
 ];
