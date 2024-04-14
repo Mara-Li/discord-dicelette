@@ -54,8 +54,12 @@
       "stats": "[Automatic Role] Statistics"
     },
     "damageName": "Saved dice list (global)",
-    "description": "Shows the current server configuration",
+    "description": "Allows you to configure the bot for the server",
     "disableThread": "[Disable threads]",
+    "display": {
+      "description": "Shows server configuration",
+      "name": "display"
+    },
     "logs": "Administration logs channel",
     "managerId": "Character sheet channel",
     "name": "config",

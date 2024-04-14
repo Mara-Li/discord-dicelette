@@ -52,8 +52,12 @@
       "stats": "[Rôle automatique] Statistiques"
     },
     "damageName": "Liste des dés sauvegardés (global)",
-    "description": "Affiche la configuration actuelle du serveur",
+    "description": "Permet de configurer le bot pour le serveur",
     "disableThread": "[Désactivation des threads]",
+    "display": {
+      "description": "Affiche la configuration du serveur",
+      "name": "afficher"
+    },
     "logs": "Channel des logs d'administration",
     "managerId": "Channel où seront envoyés les fiches",
     "name": "config",
