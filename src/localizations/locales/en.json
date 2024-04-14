@@ -236,7 +236,7 @@
     "fr": {
       "description": "Make a feature request",
       "message": "Do you have an idea to improve the bot? \nIn this case, you can suggest it [here](<{{- link}}>)!\n\n\nPlease check the other issues before doing yours to avoid duplicates. \n\nAdditionally, check the [documentation](<https://dicelette.github.io/en/>).",
-      "name": "suggestion"
+      "name": "request"
     },
     "info": {
       "description": "Displays general bot information",
