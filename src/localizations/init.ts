@@ -20,4 +20,4 @@ i18next.init({
 	resources,
 });
 
-export default i18next;
+

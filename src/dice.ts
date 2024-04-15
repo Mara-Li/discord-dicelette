@@ -59,7 +59,7 @@ export function parseResult(output: Resultat, ul: Translation, critical?: {failu
 function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "≤" | "=" | "!=" | "==" | "" {
 	//as the comparaison value is AFTER the total, we need to invert the sign to have a good comparaison string
 	const {sign, value} = compare;
-	const success = eval(`${total} ${sign} ${value}`);
+	const success = evaluate(`${total} ${sign} ${value}`);
 	if (success) {
 		return sign.replace(">=", "≥").replace("<=", "≤") as "<" | ">" | "≥" | "≤" | "=" | "" | "!=" | "==";
 	}

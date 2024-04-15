@@ -3,12 +3,12 @@
         "require": ["tsconfig-paths/register"]
     },
     "tsc-alias" : {
-        "resolveFullPath": true,
-        
+        "resolveFullPaths": true,
     },
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
+        "lib": ["ESNext"],
         "rootDir": "./",
         "outDir": "./dist/",
         "strict": true,

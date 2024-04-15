@@ -10,7 +10,7 @@ import dotenv from "dotenv";
 import Enmap from "enmap";
 import * as process from "process";
 
-import pkg from "../package.json" assert { type: "json" };
+import * as pkg from "../package.json" assert { type: "json" };
 
 dotenv.config({ path: ".env" });
 
