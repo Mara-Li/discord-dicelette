@@ -1,4 +1,3 @@
-import { error } from "@console";
 import { cmdLn, ln } from "@localization";
 import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
@@ -45,15 +44,8 @@ export const diceRoll = {
 		const channel = interaction.channel;
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
-		const ul = ln(interaction.locale as Locale);
 		const dice = option.getString(t("roll.option.name"), true);
-		try {
-			await rollWithInteraction(interaction, dice, channel, client.settings);
-		} catch (e) {
-			error("no valid dice :", dice, e);
-			await reply(interaction,{ content: ul("error.invalidDice.withError", {error: (e as Error).message, dice}), ephemeral: true });
-			return;
-		}
+		await rollWithInteraction(interaction, dice, channel, client.settings);
 	},
 };
 

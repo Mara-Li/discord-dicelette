@@ -50,10 +50,10 @@ export default (client: EClient): void => {
 			const msgError = lError(e as Error, interaction);
 			if (interaction.isButton() || interaction.isModalSubmit() || interaction.isCommand())
 				await reply(interaction, msgError);
-			const db = client.settings.get(interaction.guild.id);
-			if (!db) return;
-			if (client.settings.has(interaction.guild.id, "logs")) {
-				const logs = await interaction.guild.channels.fetch(client.settings.get(interaction.guild.id, "logs") as string);
+			if (client.settings.has(interaction.guild.id)) {
+				const db = client.settings.get(interaction.guild.id, "logs");
+				if (!db) return;
+				const logs = await interaction.guild.channels.fetch(db);
 				if (logs instanceof TextChannel) {
 					logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
 				}
