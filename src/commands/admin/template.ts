@@ -7,7 +7,7 @@ import { EClient } from "@main";
 import { downloadTutorialImages, reply, title } from "@utils";
 import { bulkEditTemplateUser } from "@utils/parse";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
-import dedent from "ts-dedent";
+import {dedent} from "ts-dedent";
 
 const t = i18next.getFixedT("en");
 

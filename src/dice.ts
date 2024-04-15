@@ -1,8 +1,9 @@
 /* eslint-disable no-useless-escape */
-import { calculator,Compare, Resultat, Sign } from "@dicelette/core";
+import { calculator,Compare, Critical, Resultat, Sign } from "@dicelette/core";
 import { Translation } from "@interface";
 import { evaluate } from "mathjs";
-import dedent from "ts-dedent";
+import {error, log, warn} from "@console"
+import {dedent} from "ts-dedent";
 
 /**
  * Parse the result of the dice to be readable
@@ -19,25 +20,22 @@ export function parseResult(output: Resultat, ul: Translation, critical?: {failu
 	if (output.compare) {
 		msgSuccess = "";
 		let total = 0;
+		const natural: number[] = [];
 		for (const r of messageResult) {
-			const tot = r.match(/\[(.*)\]/);
+			const tot = r.match(/ = (\d+)/);
 			if (tot) {
-				//detect all number in the tot
-				const totalValue = tot[1].replaceAll("*", "").split(",");
-				for (const t of totalValue) {
-					total += parseInt(t, 10);
-				}
+				total = parseInt(tot[1], 10);
 			}
-			if (output.modifier) {
-				const {sign, value} = output.modifier;
-				total = calculator(sign as Sign, value, total);
-
-			}
+			
 			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${ul("roll.success")}**` : `**${ul("roll.failure")}**`;
+			const naturalDice = r.matchAll(/\[(\d+)\]/gi);
+			for (const dice of naturalDice) {
+				natural.push(parseInt(dice[1], 10));
+			}
 			if (critical) {
-				if (critical.failure && total === critical.failure) {
+				if (critical.failure && natural.includes(critical.failure)) {
 					succ = `**${ul("roll.critical.failure")}**`;
-				} else if (critical.success && total === critical.success) {
+				} else if (critical.success && natural.includes(critical.success)) {
 					succ = `**${ul("roll.critical.success")}**`;
 				}
 			}
@@ -85,3 +83,4 @@ function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "
 		return "";
 	}
 }
+
