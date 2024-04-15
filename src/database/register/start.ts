@@ -1,11 +1,11 @@
 import { StatisticalTemplate } from "@dicelette/core";
 import { Settings, Translation } from "@interface";
 import { ln } from "@localization";
-import { createEmbedFirstPage } from "@register/validate.js";
-import { embedStatistiques, showStatistiqueModal } from "@stats/add.js";
+import { createEmbedFirstPage } from "@register/validate";
+import { embedStatistiques, showStatistiqueModal } from "@stats/add";
 import { removeEmojiAccents, reply } from "@utils";
-import { getTemplateWithDB } from "@utils/db.js";
-import { parseEmbed } from "@utils/parse.js";
+import { getTemplateWithDB } from "@utils/db";
+import { parseEmbed } from "@utils/parse";
 import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
 
 

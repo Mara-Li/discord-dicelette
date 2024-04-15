@@ -3,7 +3,7 @@ import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import { EClient } from "@main";
 import {removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
-import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse.js";
+import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
 

@@ -1,5 +1,5 @@
 import { Translation } from "@interface";
-import { ensureEmbed,getEmbeds } from "@utils/parse.js";
+import { ensureEmbed,getEmbeds } from "@utils/parse";
 import { ButtonInteraction, EmbedBuilder, ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
 
 /**

@@ -4,7 +4,7 @@ import { GuildData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { downloadTutorialImages, reply, title } from "@utils";
-import { bulkEditTemplateUser } from "@utils/parse.js";
+import { bulkEditTemplateUser } from "@utils/parse";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import i18next from "i18next";
 import {dedent} from "ts-dedent";

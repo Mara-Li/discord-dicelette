@@ -3,7 +3,7 @@ import { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { filterChoices, removeEmojiAccents, reply, sendLogs, title } from "@utils";
-import { getTemplateWithDB, getUserFromMessage } from "@utils/db.js";
+import { getTemplateWithDB, getUserFromMessage } from "@utils/db";
 import {ChartJSNodeCanvas} from "chartjs-node-canvas";
 import { AttachmentBuilder, AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";

@@ -1,9 +1,9 @@
 import { log } from "@console";
-import interaction from "@events/interaction.js";
-import join from "@events/join.js";
-import message_create from "@events/message_create.js";
-import { delete_channel,delete_message, delete_thread,on_kick } from "@events/on_delete.js";
-import ready from "@events/ready.js";
+import interaction from "@events/interaction";
+import join from "@events/join";
+import message_create from "@events/message_create";
+import { delete_channel,delete_message, delete_thread,on_kick } from "@events/on_delete";
+import ready from "@events/ready";
 import { GuildData } from "@interface";
 import { Client, ClientOptions, GatewayIntentBits, Partials } from "discord.js";
 import dotenv from "dotenv";

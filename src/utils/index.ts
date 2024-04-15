@@ -1,7 +1,7 @@
 import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "@interface";
-import { editUserButtons } from "@utils/buttons.js";
-import { registerManagerID, registerUser } from "@utils/db.js";
-import { parseEmbedFields } from "@utils/parse.js";
+import { editUserButtons } from "@utils/buttons";
+import { registerManagerID, registerUser } from "@utils/db";
+import { parseEmbedFields } from "@utils/parse";
 import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, StageChannel, TextChannel,VoiceChannel } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";

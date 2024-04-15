@@ -2,8 +2,8 @@ import { createDiceEmbed, createStatsEmbed } from "@database";
 import { cmdLn,ln } from "@localization";
 import { EClient } from "@main";
 import { filterChoices, reply, searchUserChannel, title } from "@utils";
-import { getDatabaseChar } from "@utils/db.js";
-import { getEmbeds } from "@utils/parse.js";
+import { getDatabaseChar } from "@utils/db";
+import { getEmbeds } from "@utils/parse";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 

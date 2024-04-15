@@ -1,9 +1,9 @@
 import { error } from "@console";
-import { deleteUser } from "@events/on_delete.js";
+import { deleteUser } from "@events/on_delete";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { filterChoices, reply, searchUserChannel, title } from "@utils";
-import { getDatabaseChar } from "@utils/db.js";
+import { getDatabaseChar } from "@utils/db";
 import { AutocompleteInteraction, CommandInteraction,CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, userMention } from "discord.js";
 import i18next from "i18next";
 

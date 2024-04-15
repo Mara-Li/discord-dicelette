@@ -1,7 +1,7 @@
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { reply, setTagsForRoll } from "@utils";
-import { rollWithInteraction } from "@utils/roll.js";
+import { rollWithInteraction } from "@utils/roll";
 import {
 	channelMention,
 	CommandInteraction,

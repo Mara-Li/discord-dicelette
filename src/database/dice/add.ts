@@ -3,9 +3,9 @@ import { evalStatsDice } from "@dicelette/core";
 import { Settings, Translation } from "@interface";
 import { lError, ln } from "@localization";
 import { removeEmojiAccents, reply, sendLogs, title } from "@utils";
-import { editUserButtons, registerDmgButton, validateCancelButton } from "@utils/buttons.js";
-import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db.js";
-import { ensureEmbed,getEmbeds } from "@utils/parse.js";
+import { editUserButtons, registerDmgButton, validateCancelButton } from "@utils/buttons";
+import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
+import { ensureEmbed,getEmbeds } from "@utils/parse";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, Guild, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,User, userMention } from "discord.js";
 
 /**

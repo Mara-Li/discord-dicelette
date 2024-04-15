@@ -2,9 +2,9 @@ import { createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice,roll } from "@dicelette/core";
 import { Settings, Translation } from "@interface";
 import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, reply, sendLogs, title } from "@utils";
-import { editUserButtons } from "@utils/buttons.js";
-import { registerUser } from "@utils/db.js";
-import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse.js";
+import { editUserButtons } from "@utils/buttons";
+import { registerUser } from "@utils/db";
+import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse";
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
 
 /**
