@@ -46,7 +46,7 @@ export async function rollWithInteraction(
 	}
 	const parser = parseResult(rollDice, ul, critical);
 	const infoRollTotal = `${charName ? `__**${title(charName)}**__${ul("common.space")}:\n  `:"  "}${infoRoll ? `[__${title(infoRoll)}__] `:""}`;
-	const hasDB = db.get(interaction.guild.id);
+	const hasDB = db.has(interaction.guild.id);
 	if (channel.name.startsWith("🎲") || hasDB && (db.get(interaction.guild.id, "disableThread") === true || (db.get(interaction.guild.id, "rollChannel") === channel.id))) {
 		await reply(interaction,{ content: `${infoRollTotal}${parser}` });
 		return;
