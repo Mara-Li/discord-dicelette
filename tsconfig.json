@@ -4,11 +4,11 @@
     },
     "compilerOptions": {
         "target": "ESNext",
-        "module": "commonjs",
+        "module": "ES2015",
         "rootDir": "./",
         "outDir": "./dist/",
         "strict": true,
-        "moduleResolution": "node",
+        "moduleResolution": "Bundler",
         "importHelpers": true,
         "experimentalDecorators": true,
         "esModuleInterop": true,
