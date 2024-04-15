@@ -7,6 +7,7 @@ import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
 
+
 /**
  * Get the guild template when clicking on the "registering user" button or when submiting
  * @param interaction {ButtonInteraction}
@@ -244,8 +245,8 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 	user.template = {
 		diceType: templateFields?.[title(ul("common.dice"))] || templateFields?.[(ul("common.dice"))] || undefined,
 		critical: {
-			success: templateFields?.[ul("roll.critical.success")] ? parseInt(parsedFields[ul("roll.critical.success")], 10) : undefined,
-			failure: templateFields?.[ul("roll.critical.failure")] ? parseInt(parsedFields[ul("roll.critical.failure")], 10) : undefined,
+			success: parseInt(templateFields?.[ul("roll.critical.success")], 10),
+			failure: parseInt(templateFields[ul("roll.critical.failure")], 10),
 		}
 	};
 	return user as UserData;
