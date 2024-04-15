@@ -1,0 +1,42 @@
+{
+  "name": "settings",
+  "version": "5.9.10",
+  "exportDate": 1713186569639,
+  "keys": [
+    {
+      "key": "453162143668371456",
+      "value": {
+        "managerId": "1226300856106881104",
+        "rollChannel": "1226302151475724309",
+        "templateID": {
+          "channelId": "1226300738599256165",
+          "damageName": [],
+          "messageId": "1229385726861381652",
+          "statsName": [
+            "Force",
+            "Endurance",
+            "Agilité",
+            "Constitution",
+            "Éducation",
+            "Intelligence",
+            "Charisme",
+            "Pouvoir",
+            "PV"
+          ]
+        },
+        "user": {
+          "189390243676422144": [
+            {
+              "charName": "Blaïka",
+              "damageName": ["corps-a-corps"],
+              "messageId": "1229081870231404635"
+            },
+            {
+              "messageId": "1227980678256263198"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,17 +1,17 @@
 import { autCompleteCmd,commandsList } from "@commands";
 import { error } from "@console";
-import { button_add_dice,submit_damageDice } from "@dice/add";
-import { start_edit_dice,validate_editDice } from "@dice/edit";
+import { button_add_dice,submit_damageDice } from "@dice/add.js";
+import { start_edit_dice,validate_editDice } from "@dice/edit.js";
 import { StatisticalTemplate } from "@dicelette/core";
 import { Settings, Translation } from "@interface";
 import { lError,ln } from "@localization";
 import { EClient } from "@main";
-import { continuePage,open_register_user,pageNumber, submit_firstPage } from "@register/start";
-import { button_validate_user } from "@register/validate";
-import { editStats,start_edit_stats } from "@stats/edit";
+import { continuePage,open_register_user,pageNumber, submit_firstPage } from "@register/start.js";
+import { button_validate_user } from "@register/validate.js";
+import { editStats,start_edit_stats } from "@stats/edit.js";
 import { reply } from "@utils";
-import { getTemplate, getTemplateWithDB } from "@utils/db";
-import { ensureEmbed } from "@utils/parse";
+import { getTemplate, getTemplateWithDB } from "@utils/db.js";
+import { ensureEmbed } from "@utils/parse.js";
 import { AutocompleteInteraction, BaseInteraction, ButtonInteraction, ModalSubmitInteraction, PermissionsBitField, TextChannel, User } from "discord.js";
 
 export default (client: EClient): void => {

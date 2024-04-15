@@ -1,7 +1,7 @@
 import { BaseInteraction, Locale, LocalizationMap } from "discord.js";
 import {default as i18next} from "i18next";
 
-import { resources } from "./i18next";
+import { resources } from "./i18next.js";
 
 
 export function ln(userLang: Locale) {

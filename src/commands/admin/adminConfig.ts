@@ -1,10 +1,9 @@
+import { Translation } from "@interface";
 import { cmdLn } from "@localization";
 import { EClient } from "@main";
+import { reply } from "@utils";
 import { channelMention, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits,roleMention,SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import i18next from "i18next";
-
-import { Translation } from "../../interface";
-import { reply } from "../../utils";
 
 
 const t = i18next.getFixedT("en");

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {error} from "@console";
 import { cmdLn, ln } from "@localization";
-import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
-import {getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
-import { rollDice } from "@utils/roll";
+import {getFirstRegisteredChar, getUserFromMessage } from "@utils/db.js";
+import { rollDice } from "@utils/roll.js";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
+import i18next from "i18next";
 import removeAccents from "remove-accents";
 
 const t = i18next.getFixedT("en");

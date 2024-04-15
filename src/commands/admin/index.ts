@@ -1,4 +1,4 @@
-import { adminConfig } from "./adminConfig";
-import {generateTemplate, registerTemplate } from "./template";
+import { adminConfig } from "./adminConfig.js";
+import {generateTemplate, registerTemplate } from "./template.js";
 
 export const admin = [adminConfig, generateTemplate, registerTemplate];

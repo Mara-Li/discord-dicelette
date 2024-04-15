@@ -1,11 +1,11 @@
 import { error } from "@console";
 import { cmdLn, lError, ln } from "@localization";
-import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
 import {filterChoices, reply, title } from "@utils";
-import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
-import { rollStatistique } from "@utils/roll";
+import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db.js";
+import { rollStatistique } from "@utils/roll.js";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
+import i18next from "i18next";
 import removeAccents from "remove-accents";
 
 const t = i18next.getFixedT("en");

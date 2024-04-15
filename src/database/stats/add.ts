@@ -1,8 +1,8 @@
 import { evalCombinaison,StatisticalTemplate } from "@dicelette/core";
 import { lError,ln } from "@localization";
 import { removeEmojiAccents, reply, title } from "@utils";
-import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
-import { ensureEmbed,getStatistiqueFields } from "@utils/parse";
+import { continueCancelButtons,registerDmgButton } from "@utils/buttons.js";
+import { ensureEmbed,getStatistiqueFields } from "@utils/parse.js";
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
 /**

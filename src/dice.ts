@@ -1,8 +1,7 @@
 /* eslint-disable no-useless-escape */
-import { calculator,Compare, Critical, Resultat, Sign } from "@dicelette/core";
+import {Compare, Resultat } from "@dicelette/core";
 import { Translation } from "@interface";
 import { evaluate } from "mathjs";
-import {error, log, warn} from "@console"
 import {dedent} from "ts-dedent";
 
 /**

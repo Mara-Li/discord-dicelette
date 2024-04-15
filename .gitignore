@@ -131,9 +131,7 @@ dist
 .pnp.*
 pnpm-lock.yaml
 .vscode
-database.json
 enmap.*
 data/*
 enmap.sqlite-*
-database*
 ._*

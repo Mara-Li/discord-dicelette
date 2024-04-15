@@ -4,8 +4,8 @@ import {StatisticalTemplate} from "@dicelette/core";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import {removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
-import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
-import { createEmbedsList, ensureEmbed,parseEmbedFields } from "@utils/parse";
+import { continueCancelButtons,registerDmgButton } from "@utils/buttons.js";
+import { createEmbedsList, ensureEmbed,parseEmbedFields } from "@utils/parse.js";
 import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, PermissionsBitField, User, userMention } from "discord.js";
 
 /**

@@ -1,8 +1,7 @@
 import { cmdLn, ln } from "@localization";
-import { default as i18next } from "@localization/i18next";
 import { EClient } from "@main";
 import { reply, setTagsForRoll } from "@utils";
-import { rollWithInteraction } from "@utils/roll";
+import { rollWithInteraction } from "@utils/roll.js";
 import {
 	channelMention,
 	CommandInteraction,
@@ -14,6 +13,7 @@ import {
 	SlashCommandBuilder,
 	TextChannel,
 	userMention} from "discord.js";
+import i18next from "i18next";
 import moment from "moment";
 
 const t = i18next.getFixedT("en");

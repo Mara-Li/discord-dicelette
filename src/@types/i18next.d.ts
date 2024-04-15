@@ -1,4 +1,4 @@
-import { resources } from "../localizations/index";
+import { resources } from "@localization";
 
 declare module "i18next" {
     interface CustomTypeOptions {

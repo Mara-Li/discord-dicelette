@@ -1,14 +1,14 @@
 /* eslint-disable no-useless-escape */
-import { deleteAfter } from "@commands/rolls/base_roll";
+import { deleteAfter } from "@commands/rolls/base_roll.js";
 import {error} from "@console";
 import { COMMENT_REGEX, Resultat,roll } from "@dicelette/core";
 import { lError, ln } from "@localization";
 import { EClient } from "@main";
 import { timestamp } from "@utils";
-import { findForumChannel, findThread } from "@utils/find";
+import { findForumChannel, findThread } from "@utils/find.js";
 import {ChannelType, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 
-import { parseResult } from "../dice";
+import { parseResult } from "../dice.js";
 
 
 // eslint-disable-next-line no-useless-escape

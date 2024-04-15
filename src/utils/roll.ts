@@ -1,17 +1,17 @@
-import { deleteAfter } from "@commands/rolls/base_roll";
+import { deleteAfter } from "@commands/rolls/base_roll.js";
 import { error} from "@console";
 import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
-import { DETECT_DICE_MESSAGE } from "@events/message_create";
+import { DETECT_DICE_MESSAGE } from "@events/message_create.js";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import { EClient } from "@main";
 import { reply, timestamp, title } from "@utils";
-import { findForumChannel,findThread } from "@utils/find";
+import { findForumChannel,findThread } from "@utils/find.js";
 import { CommandInteraction, CommandInteractionOptionResolver, ForumChannel, TextBasedChannel, TextChannel, ThreadChannel, User, userMention } from "discord.js";
 import i18next from "i18next";
 import removeAccents from "remove-accents";
 
-import { parseResult } from "../dice";
+import { parseResult } from "../dice.js";
 
 const t= i18next.getFixedT("en");
 

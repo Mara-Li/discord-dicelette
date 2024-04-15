@@ -1,8 +1,8 @@
 import { cmdLn,ln } from "@localization";
 import { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
-import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
-import { rollDice, rollStatistique } from "@utils/roll";
+import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db.js";
+import { rollDice, rollStatistique } from "@utils/roll.js";
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
