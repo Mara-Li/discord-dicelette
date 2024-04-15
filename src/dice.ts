@@ -33,7 +33,9 @@ export function parseResult(output: Resultat, ul: Translation, critical?: {failu
 				total = calculator(sign as Sign, value, total);
 
 			}
+			
 			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${ul("roll.success")}**` : `**${ul("roll.failure")}**`;
+			console.log(critical);
 			if (critical) {
 				if (critical.failure && total === critical.failure) {
 					succ = `**${ul("roll.critical.failure")}**`;

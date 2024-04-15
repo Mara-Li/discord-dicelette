@@ -1,5 +1,5 @@
 import { deleteAfter } from "@commands/rolls/base_roll";
-import {error} from "@console";
+import { error} from "@console";
 import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
 import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import { Settings, Translation, UserData } from "@interface";

@@ -30,3 +30,8 @@ export const log = (message?: unknown, ...optionalParams: unknown[]) => {
 export const success = (message?: unknown, ...optionalParams: unknown[]) => {
 	console.log(chalk.bgGreen(message, ...optionalParams));
 };
+
+export const dev = (message?: unknown, ...optionalParams: unknown[]) => {
+	if (process.env.NODE_ENV !== "development") return;
+	console.log(message, ...optionalParams);
+};
