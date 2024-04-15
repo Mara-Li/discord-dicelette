@@ -15,4 +15,6 @@ if (pck.devDependencies.enmap.includes("5")) {
 	readFile('./export.json', (err, data) => {
 		enmap.import(data);
 	});
+} else {
+	console.error("No export file found. Please run the script with the Enmap v5 version first.");
 }
