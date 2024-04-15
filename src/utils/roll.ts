@@ -46,7 +46,8 @@ export async function rollWithInteraction(
 	}
 	const parser = parseResult(rollDice, ul, critical);
 	const infoRollTotal = `${charName ? `__**${title(charName)}**__${ul("common.space")}:\n  `:"  "}${infoRoll ? `[__${title(infoRoll)}__] `:""}`;
-	if (channel.name.startsWith("🎲") || db.get(interaction.guild.id, "disableThread") === true || (db.get(interaction.guild.id, "rollChannel") === channel.id)) {
+	const hasDB = db.get(interaction.guild.id);
+	if (channel.name.startsWith("🎲") || hasDB && (db.get(interaction.guild.id, "disableThread") === true || (db.get(interaction.guild.id, "rollChannel") === channel.id))) {
 		await reply(interaction,{ content: `${infoRollTotal}${parser}` });
 		return;
 	}
@@ -61,7 +62,7 @@ export async function rollWithInteraction(
 	await msgToEdit.edit(msg);
 	const idMessage = `↪ ${msgToEdit.url}`;
 	const inter = await reply(interaction,{ content: `${infoRollTotal}${parser}\n\n${idMessage}`});
-	const timer = db.get(interaction.guild.id, "deleteAfter") ?? 180000;
+	const timer = hasDB && db.get(interaction.guild.id, "deleteAfter") ? db.get(interaction.guild.id, "deleteAfter") as number : 180000;
 	deleteAfter(inter, timer);
 	return;
 	
