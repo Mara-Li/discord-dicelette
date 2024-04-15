@@ -94,8 +94,8 @@ export const displayUser = {
 					inline: true
 				})
 				.addFields({
-					name: ul("common.character"),
-					value: charData[user?.id ?? interaction.user.id].charName ?? ul("common.noSet"),
+					name: title(ul("common.character")),
+					value: title(charData[user?.id ?? interaction.user.id].charName) ?? ul("common.noSet"),
 					inline: true
 				});
 			const newStatEmbed: EmbedBuilder | undefined = statsFields ? createStatsEmbed(ul).addFields(statsFields) : undefined;	
