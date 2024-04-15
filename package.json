@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "repository": "",
+  "type": "module",
   "scripts": {
     "init": "pnpm i && node install.js",
     "prebuild": "rm -rf dist",
@@ -15,7 +16,7 @@
     "prerestart": "pnpm run build",
     "restart": "pm2 restart dicelette",
     "delete": "pm2 delete dicelette",
-    "dev": "ts-node-dev -r tsconfig-paths/register --respawn -- src/index.ts",
+    "dev": "tsx src/index.ts",
     "dev:prod": "cross-env ENV=production ts-node-dev -r tsconfig-paths/register --respawn -- src/index.ts",
     "lint:fix": "eslint --fix --ext .ts src/"
   },
@@ -48,7 +49,7 @@
     "commander": "^12.0.0",
     "cross-env": "^7.0.3",
     "discord.js": "^14.14.1",
-    "enmap": "^5.9.10",
+    "enmap": "^6.0.1",
     "json-colorizer": "^2.2.2",
     "parse-color": "^1.0.0",
     "sqlite3": "^5.1.7",

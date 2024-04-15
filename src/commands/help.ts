@@ -5,7 +5,7 @@ import { EClient } from "@main";
 import { reply } from "@utils";
 import { ApplicationCommand, Collection, CommandInteraction, CommandInteractionOptionResolver, Locale,SlashCommandBuilder, Snowflake } from "discord.js";
 import i18next from "i18next";
-import dedent from "ts-dedent";
+import {dedent} from "ts-dedent";
 
 const t = i18next.getFixedT("en");
 
