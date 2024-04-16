@@ -1,4 +1,5 @@
 import color from "ansi-colors";
+import {parse} from "better-serialize";
 import { Command, Option } from "commander";
 import fs from "fs";
 import colorize from "json-colorizer";
@@ -56,8 +57,9 @@ if (options.do === "get") {
 				if (err) {
 					console.error(err.message);
 				}
+				const json = parse(row.value);
 				console.log(`${color.underline.green("Guild ID")} : ${row.key}`);
-				console.log(`${colorize(row.value, {pretty: true})}`);
+				console.log(`${colorize(json, {pretty: true})}`);
 			});
 		});
 	}
@@ -67,7 +69,7 @@ if (options.do === "get") {
 				if (err) {
 					console.error(err.message);
 				}
-				console.log(`${colorize(row.value, {pretty: true})}`);
+				console.log(`${colorize(parse(row.value), {pretty: true})}`);
 			});
 		});
 	} else if (options.guild && options.user) {
@@ -76,8 +78,8 @@ if (options.do === "get") {
 				if (err) {
 					console.error(err.message);
 				}
-				const guildData = JSON.parse(row.value);
-				console.log(`${colorize(guildData[options.user], {pretty: true})}`);
+				const guildData = parse(row.value);
+				console.log(`${colorize(parse(guildData[options.user]), {pretty: true})}`);
 			});
 		});
 	} else if (!options.guild && options.user) {
