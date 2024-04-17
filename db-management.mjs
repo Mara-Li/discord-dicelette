@@ -1,12 +1,8 @@
 import color from "ansi-colors";
-import {parse} from "better-serialize";
 import { Command, Option } from "commander";
-import fs from "fs";
-import colorize from "json-colorizer";
-import { exit } from "process";
-import pkg from "sqlite3";
-
-const { Database, OPEN_READWRITE } = pkg;
+import Enmap from "enmap";
+import {writeFileSync} from "fs";
+import colorizeJson from "json-colorizer";
 
 color.theme({
 	danger: color.red,
@@ -25,11 +21,11 @@ color.theme({
 });
 
 //extends console to add console.error with color
-console.error = (message) => {
+const error = (message) => {
 	console.error("❌", color.error(message));
 };
 
-console.success = (message) => {
+const success = (message) => {
 	console.log("✅", color.success(message));
 };
 
@@ -41,98 +37,78 @@ program
 
 program.parse();
 
-const db = new Database("./data/enmap.sqlite", OPEN_READWRITE, (err) => {
-	if (err) {
-		console.error(err.message);
-	}
-	console.success("Connected to the enmap database.");
+const db = new Enmap({
+	name: "settings",
 });
 
 const options = program.opts();
 
+function readAll() {
+	const entries = db.entries();
+	if (entries.length === 0) {
+		error("No data found.");
+		return;
+	}
+	for (const [key, value] of entries) {
+		console.log(`Guild id: ${color.heading(key)}`);
+		console.log(colorizeJson(JSON.stringify(value, null, 2)));
+	}
+}
+
+function getGuild(guildId) {
+	const guild = db.get(guildId);
+	console.log("Guild data for :", color.heading(guildId));
+	if (!guild) {
+		error(`No data found for guild ${guildId}`);
+		return;
+	}
+	console.log(colorizeJson(JSON.stringify(guild, null, 2)));
+}
+
+function getDataUser(guildId, userId) {
+	const user = db.get(guildId, userId);
+	console.log("User data for :", color.heading(userId));
+	if (!user) {
+		error(`No data found for user ${userId}`);
+		return;
+	}
+	console.log(colorizeJson(JSON.stringify(user, null, 2)));
+}
+
+function getAllDataForUser(userId) {
+	//search the user in the entire database
+	const entries = db.entries();
+	if (entries.length === 0) {
+		error("No data found.");
+		return;
+	}
+	for (const [key, value] of entries) {
+		console.log(`User ${color.heading(userId)} in guild_id ${color.heading(key)}:`);
+		if (value?.user?.[userId]) {
+			console.log(colorizeJson(JSON.stringify(value.user[userId], null, 2)));
+		}
+	}
+}
+
 if (options.do === "get") {
 	if (!options.guild && !options.user) {
-		db.serialize(() => {
-			db.each("SELECT * FROM settings", (err, row) => {
-				if (err) {
-					console.error(err.message);
-				}
-				const json = parse(row.value);
-				console.log(`${color.underline.green("Guild ID")} : ${row.key}`);
-				console.log(`${colorize(json, {pretty: true})}`);
-			});
-		});
+		readAll();
 	}
 	else if (options.guild && !options.user) {
-		db.serialize(() => {
-			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
-				if (err) {
-					console.error(err.message);
-				}
-				console.log(`${colorize(parse(row.value), {pretty: true})}`);
-			});
-		});
+		getGuild(options.guild);
 	} else if (options.guild && options.user) {
-		db.serialize(() => {
-			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
-				if (err) {
-					console.error(err.message);
-				}
-				const guildData = parse(row.value);
-				console.log(`${colorize(parse(guildData[options.user]), {pretty: true})}`);
-			});
-		});
+		getDataUser(options.guild, options.user);
 	} else if (!options.guild && options.user) {
-		//delete all user data in all guilds
-		db.serialize(() => {
-			db.each("SELECT * FROM settings", (err, row) => {
-				if (err) {
-					console.error(err.message);
-				}
-				const guildData = JSON.parse(row.value);
-				delete guildData[options.user];
-				db.run("UPDATE settings SET value = ? WHERE key = ?", [JSON.stringify(guildData), row.key], (err) => {
-					if (err) {
-						console.error(err.message);
-					}
-					console.success(`Deleted user ${color.grey(options.user)} from guild ${color.grey(row.key)}`);
-				});
-			});
-		});
+		getAllDataForUser(options.user);
+		
 	}
 } else if (options.do === "delete") {
 	//create a copy of the database before deleting, in case of accidental deletion
-	fs.copyFileSync("./data/enmap.sqlite", `./data/enmap.sqlite.${Date.now()}.bak`, (err) => {
-		if (err) {
-			console.error(err.message);
-			exit(1);
-		}
-		console.log(color.green("💾 Created a backup of the database."));
-	});
+	writeFileSync("./export.json", db.export());
+	
 	if (options.guild && !options.user) {
-		db.serialize(() => {
-			db.run("DELETE FROM settings WHERE key = ?", options.guild, (err) => {
-				if (err) {
-					console.error(err.message);
-				}
-				console.log(`Deleted guild ${options.guild}`);
-			});
-		});
+		//pass
 	} else if (options.guild && options.user) {
-		db.serialize(() => {
-			db.get("SELECT * FROM settings WHERE key = ?", options.guild, (err, row) => {
-				if (err) {
-					console.error(err.message);
-				}
-				const guildData = JSON.parse(row.value);
-				delete guildData[options.user];
-				db.run("UPDATE settings SET value = ? WHERE key = ?", [JSON.stringify(guildData), options.guild], (err) => {
-					if (err) {
-						console.error(err.message);
-					}
-					console.success(`Deleted user ${options.user} from guild ${options.guild}`);
-				});
-			});
-		});
+		//pass
 	}
 }	
