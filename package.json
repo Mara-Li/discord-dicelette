@@ -18,7 +18,8 @@
     "restart": "pm2 restart dicelette",
     "delete": "pm2 delete dicelette",
     "dev": "tsx src/index.ts",
-    "lint:fix": "eslint --fix --ext .ts src/"
+    "lint:fix": "eslint --fix --ext .ts src/",
+    "db": "tsx db-management.ts"
   },
   "cross-os": {
     "clean": {
