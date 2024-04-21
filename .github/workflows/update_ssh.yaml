@@ -1,0 +1,21 @@
+name: Update VPS
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  update_vps:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connect to vps
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd dicelette/
+            git pull
+            pnpm i
+            pnpm run restart
