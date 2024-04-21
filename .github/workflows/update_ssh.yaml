@@ -2,7 +2,7 @@ name: Update VPS
 on:
   push:
     tags:
-      - "v*"
+      - "*"
 
 jobs:
   update_vps:
