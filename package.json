@@ -19,7 +19,8 @@
     "delete": "pm2 delete dicelette",
     "dev": "tsx src/index.ts",
     "lint:fix": "eslint --fix --ext .ts src/",
-    "db": "tsx db-management.ts"
+    "db": "tsx db-management.ts",
+    "release": "commit-and-tag-version"
   },
   "cross-os": {
     "clean": {
@@ -27,17 +28,21 @@
       "win32": "rmdir /s /q dist"
     }
   },
+  "commit-and-tag-version": {
+    "t": ""
+  },
   "keywords": [],
   "author": "",
   "license": "GNU GPLv3",
   "dependencies": {
     "@dice-roller/rpg-dice-roller": "^5.5.0",
-    "@dicelette/core": "^1.1.1",
+    "@dicelette/core": "^1.1.2",
     "@discordjs/rest": "^2.2.0",
     "@types/parse-color": "^1.0.3",
     "better-serialize": "^1.0.0",
     "chalk": "^4",
     "color-parse": "^2.0.2",
+    "commit-and-tag-version": "^12.4.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.0.0",
     "eslint-plugin-json": "^3.1.0",
