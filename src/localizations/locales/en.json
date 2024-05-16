@@ -15,6 +15,7 @@
     }
   },
   "bulk_add": {
+    "all_success": "",
     "description": "",
     "errors": {
       "headers": "",
@@ -27,7 +28,10 @@
       "description": "The CSV file to import",
       "name": "csv"
     },
-    "success": ""
+    "success": "",
+    "user": {
+      "success": "{{- user}} has been added."
+    }
   },
   "button": {
     "add": {

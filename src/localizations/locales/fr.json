@@ -15,6 +15,7 @@
     }
   },
   "bulk_add": {
+    "all_success": "Tous les utilisateurs ont été enregistrés.",
     "description": "Ajouter plusieurs personnages d'un coup",
     "errors": {
       "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.",
@@ -27,7 +28,10 @@
       "description": "Le fichier CSV à importer",
       "name": "csv"
     },
-    "success": "Le fichier a été parsé correctement. Maintenant, vérification des données et ajout des utilisateurs. Merci de patienter."
+    "success": "Le fichier a été parsé correctement. Maintenant, vérification des données et ajout des utilisateurs. Merci de patienter.",
+    "user": {
+      "success": "{{- user}} a bien été ajouté."
+    }
   },
   "button": {
     "cancel": "Annuler",

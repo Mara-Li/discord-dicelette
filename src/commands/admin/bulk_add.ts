@@ -5,18 +5,16 @@
 
 
 
-import { StatisticalTemplate } from "@dicelette/core";
-import { Translation, UserData } from "@interface";
+import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
+import { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
-import { removeEmojiAccents, reply, title } from "@utils";
-import { channelMention, ChannelType, CommandInteraction, CommandInteractionOptionResolver, Embed, EmbedBuilder, PermissionFlagsBits,roleMention,SlashCommandBuilder, TextChannel, ThreadChannel, userMention } from "discord.js";
+import { removeEmojiAccents, reply, repostInThread, title } from "@utils";
+import { getTemplateWithDB } from "@utils/db";
+import { createEmbedsList } from "@utils/parse";
+import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits,roleMention,SlashCommandBuilder,  userMention } from "discord.js";
 import i18next from "i18next";
 import { parse } from "papaparse";
-
-import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "../../database";
-import { getTemplateWithDB } from "../../utils/db";
-import { createEmbedsList } from "../../utils/parse";
 
 const t = i18next.getFixedT("en");
 
@@ -204,8 +202,21 @@ export const command = {
 					}
 				}
 				const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
-				
+				await repostInThread(allEmbeds, interaction, char, member.id, ul, {stats: statsEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false}, client.settings);
+				if (client.settings.has(interaction.guild!.id, "autoRole")) {
+					if (diceEmbed) {
+						const role = client.settings.get(interaction.guild!.id, "autoRole.dice") as string;
+						if (role) await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(role));
+					}
+					if (statsEmbed) {
+						const role = client.settings.get(interaction.guild!.id, "autoRole.stats") as string;
+						if (role) await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(role));
+					}
+				}
+				await reply(interaction, {content: ul("bulk_add.user.success", {user: userMention(member.id)})});
 			}
 		}
+		await reply(interaction, {content: ul("bulk_add.all_success")});
+		return;
 	}
 };
