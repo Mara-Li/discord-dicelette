@@ -53,7 +53,8 @@ export const bulkAdd = {
 		}
 		const members = await parseCSV(csvFile.url, guildTemplate, interaction);
 		for (const [user, data] of Object.entries(members)) {
-			const member = (await interaction!.guild!.members.fetch({query: user})).first();
+			//we already parsed the user, so the cache should be up to date
+			const member = interaction.guild?.members.cache.get(user);
 			if (!member || !member.user) {
 				continue;
 			}
