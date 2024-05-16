@@ -6,15 +6,17 @@
 
 
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
+import { StatisticalTemplate } from "@dicelette/core";
 import { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits,roleMention,SlashCommandBuilder,  userMention } from "discord.js";
+import { createObjectCsvStringifier } from "csv-writer";
+import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,roleMention,SlashCommandBuilder,  SnowflakeUtil,  userMention } from "discord.js";
 import i18next from "i18next";
-import { parse } from "papaparse";
+import Papa from "papaparse";
 
 const t = i18next.getFixedT("en");
 
@@ -22,7 +24,7 @@ const t = i18next.getFixedT("en");
  *! Note: Bulk data doesn't allow to register dice-per-user, as each user can have different dice
  * I don't want to think about a specific way to handle this, so I will just ignore it for now.
  */
-export const command = {
+export const bulkAdd = {
 	data: new SlashCommandBuilder()
 		.setName(t("bulk_add.name"))
 		.setDMPermission(false)
@@ -47,91 +49,11 @@ export const command = {
 			return reply(interaction, {content: ul("bulk_add.errors.invalid_file", { ext })});
 		}
 		/** download the file using paparse */
-		const members: {
-			[id: string]: UserData[];
-		} = {};
 		const guildTemplate = await getTemplateWithDB(interaction, client.settings);
 		if (!guildTemplate) {
 			return reply(interaction, {content: ul("error.noTemplate")});
 		}
-		
-		let header = [
-			"user",
-			"charName",
-		];
-		if (guildTemplate.statistics) {
-			header = header.concat(Object.keys(guildTemplate.statistics));
-		}
-		if (guildTemplate.damage) {
-			header = header.concat(Object.keys(guildTemplate.damage));
-		}
-		header = header.map(key => removeEmojiAccents(key));
-		const templateStats = Object.keys(guildTemplate.statistics ?? {}) ;
-		const damageDice = Object.keys(guildTemplate.damage ?? {});
-		/**
-		 * Should be:
-		 * - user (ID/global name)
-		 * - charName
-		 * - statistics name (if any)
-		 * - damage name (if any)
-		 */
-		type CSVRow = {
-			user: string;
-			charName: string | undefined;
-			[key: string]: string | number | undefined;
-		};
-		parse(csvFile.url, {
-			download: true,
-			header: true,
-			dynamicTyping: true,
-			skipEmptyLines: true,
-			async step(row) {
-				//get the result row by row
-				const data = row.data as CSVRow;
-				const metaHeader = row.meta.fields?.map(key => removeEmojiAccents(key));
-				if (!metaHeader) {
-					return;
-				}
-				//verify that the header is correct
-				if (header.some(key => !metaHeader.includes(key))) {
-					return;
-				}
-				
-				//get the user id from the guild
-				const user = data.user;
-				const charName = data.charName;
-				//get user from the guild
-				const member = (await interaction!.guild!.members.fetch({query: user})).first();
-				if (!member || !member.user) {
-					return;
-				}
-				
-				//prevent duplicate with verify the charName
-				if (members.user.find(char => char.userName === charName)) {
-					return;
-				}
-				const stats: {[name: string]: number} = {};
-				//get the stats
-				if (guildTemplate.statistics) {
-					Object.keys(guildTemplate.statistics).forEach(key => {
-						stats[key] = data[key] as number;
-					});
-				}
-				
-				//add the data to the user
-				members.user.push({
-					userName: charName,
-					stats,
-					template: {
-						diceType: guildTemplate.diceType,
-						critical: guildTemplate.critical,
-					},
-				});
-			},
-			async complete(results) {
-				await reply(interaction, {content: ul("bulk_add.success")});
-			}
-		});
+		const members = parseCSV(csvFile.url, guildTemplate, interaction);
 		for (const [user, data] of Object.entries(members)) {
 			const member = (await interaction!.guild!.members.fetch({query: user})).first();
 			if (!member || !member.user) {
@@ -220,3 +142,126 @@ export const command = {
 		return;
 	}
 };
+
+/** Allow to create a CSV file for easy edition
+ * Need to be opened by excel or google sheet because CSV is not the best in notepad
+ */
+
+export const bulkAddTemplate = {
+	data: new SlashCommandBuilder()
+		.setName(t("bulk_add_template.name"))
+		.setDMPermission(false)
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setNameLocalizations(cmdLn("bulk_add_template.name"))
+		.setDescription(t("bulk_add_template.description"))
+		.setDescriptionLocalizations(cmdLn("bulk_add_template.description")),
+	async execute(interaction: CommandInteraction, client: EClient) {
+		if (!interaction.guild) return;
+		const ul = ln(interaction.locale);
+		const guildTemplate = await getTemplateWithDB(interaction, client.settings);
+		if (!guildTemplate) {
+			return reply(interaction, {content: ul("error.noTemplate")});
+		}
+		const header = [
+			"user",
+			"charName",
+		];
+		if (guildTemplate.statistics) {
+			header.push(...Object.keys(guildTemplate.statistics));
+		}
+		//create CSV
+		const csvText = `\ufeff${header.join(";")}\n`;
+		const buffer = Buffer.from(csvText, "utf-8");
+		await interaction.reply({content: ul("bulk_add_template.success"),
+			files: [{attachment: buffer, name: "template.csv"}]});
+	}
+};
+
+export function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction) {
+	const ul = ln(interaction?.locale ?? "en" as Locale);
+	const members: {
+		[id: string]: UserData[];
+	} = {};
+	type CSVRow = {
+		user: string;
+		charName: string | undefined;
+		[key: string]: string | number | undefined;
+	};
+	let header = [
+		"user",
+		"charName",
+	];
+	if (guildTemplate.statistics) {
+		header = header.concat(Object.keys(guildTemplate.statistics));
+	}
+	if (guildTemplate.damage) {
+		header = header.concat(Object.keys(guildTemplate.damage));
+	}
+	header = header.map(key => removeEmojiAccents(key));
+	Papa.parse(url, {
+		download: true,
+		header: true,
+		dynamicTyping: true,
+		skipEmptyLines: true,
+		async step(row) {
+			//get the result row by row
+			const data = row.data as CSVRow;
+			const metaHeader = row.meta.fields?.map(key => removeEmojiAccents(key));
+			if (!metaHeader) {
+				return;
+			}
+			//verify that the header is correct
+			if (header.some(key => !metaHeader.includes(key))) {
+				return;
+			}
+			
+			//get the user id from the guild
+			const user = data.user;
+			const charName = data.charName;
+			//get user from the guild
+			let member: undefined | GuildMember;
+			if (interaction) {
+				member = (await interaction.guild!.members.fetch({query: user})).first();
+				if (!member || !member.user) {
+					return;
+				}
+			}
+			else {
+				//generate a fake member for testing only 
+				member = {
+					user: {
+						id: SnowflakeUtil.generate(),
+					},
+				} as unknown as GuildMember;
+			}
+			
+			//prevent duplicate with verify the charName
+			if (members.user.find(char => char.userName === charName)) {
+				return;
+			}
+			const stats: {[name: string]: number} = {};
+			//get the stats
+			if (guildTemplate.statistics) {
+				Object.keys(guildTemplate.statistics).forEach(key => {
+					stats[key] = data[key] as number;
+				});
+			}
+			
+			//add the data to the user
+			members.user.push({
+				userName: charName,
+				stats,
+				template: {
+					diceType: guildTemplate.diceType,
+					critical: guildTemplate.critical,
+				},
+			});
+		},
+		async complete() {
+			if (interaction)
+				await reply(interaction, {content: ul("bulk_add.success")});
+			else console.log("Bulk add success");
+		}
+	});
+	return members;
+}

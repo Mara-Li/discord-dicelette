@@ -33,6 +33,11 @@
       "success": "{{- user}} a bien été ajouté."
     }
   },
+  "bulk_add_template": {
+    "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
+    "name": "csv",
+    "success": "Voici votre fichier CSV ! Attention, par défaut, le délimiteur utilisé est `;`. N'oubliez pas de le préciser à l'import dans votre logiciel (excel/google sheet...).\nPrécisons que vous devez vous-même calculer les combinaisons !"
+  },
   "button": {
     "cancel": "Annuler",
     "continue": "Continuer",

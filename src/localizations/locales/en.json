@@ -16,7 +16,7 @@
   },
   "bulk_add": {
     "all_success": "",
-    "description": "",
+    "description": "Add multiple characters at once",
     "errors": {
       "headers": "",
       "invalid_file": "The file must be a CSV file. \nYou have provided a {{-ext}} file.",
@@ -32,6 +32,11 @@
     "user": {
       "success": "{{- user}} has been added."
     }
+  },
+  "bulk_add_template": {
+    "description": "Used to generate the CSV file for the add_mass command.",
+    "name": "csv",
+    "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
   },
   "button": {
     "add": {
