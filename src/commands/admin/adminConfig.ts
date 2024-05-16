@@ -1,9 +1,10 @@
 import { Translation } from "@interface";
-import { cmdLn } from "@localization";
+import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { reply } from "@utils";
 import { channelMention, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits,roleMention,SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import i18next from "i18next";
+import { Locale } from "moment";
 
 
 const t = i18next.getFixedT("en");
@@ -151,7 +152,7 @@ export const adminConfig = {
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
-		const ul = i18next.getFixedT(interaction.locale);
+		const ul = ln(interaction.locale);
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const subcommand = options.getSubcommand(true);
 		const subcommandGroup = options.getSubcommandGroup();

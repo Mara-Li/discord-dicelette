@@ -14,6 +14,21 @@
       "set": "{{- role}} sera maintenant ajouté aux joueurs quand leurs statistiques seront validées."
     }
   },
+  "bulk_add": {
+    "description": "Ajouter plusieurs personnages d'un coup",
+    "errors": {
+      "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.",
+      "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
+      "max": "La valeur {{- name}} est supérieure au maximum imposé ({{- max}}).",
+      "min": "La valeur {{- name}} est inférieure au minimum demandé ({{- min}})."
+    },
+    "name": "masse_ajout",
+    "options": {
+      "description": "Le fichier CSV à importer",
+      "name": "csv"
+    },
+    "success": "Le fichier a été parsé correctement. Maintenant, vérification des données et ajout des utilisateurs. Merci de patienter."
+  },
   "button": {
     "cancel": "Annuler",
     "continue": "Continuer",
