@@ -19,7 +19,7 @@ import Papa from "papaparse";
 const t = i18next.getFixedT("en");
 
 /**
- *! Note: Bulk data doesn't allow to register dice-per-user, as each user can have different dice
+ * ! Note: Bulk data doesn't allow to register dice-per-user, as each user can have different dice
  * I don't want to think about a specific way to handle this, so I will just ignore it for now.
  */
 export const bulkAdd = {
