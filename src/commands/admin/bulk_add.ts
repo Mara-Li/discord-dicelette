@@ -4,7 +4,6 @@
  */
 
 
-
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
 import { StatisticalTemplate } from "@dicelette/core";
 import { UserData } from "@interface";
@@ -13,8 +12,7 @@ import { EClient } from "@main";
 import { removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-import { createObjectCsvStringifier } from "csv-writer";
-import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,roleMention,SlashCommandBuilder,  SnowflakeUtil,  userMention } from "discord.js";
+import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,roleMention,SlashCommandBuilder,  userMention } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
 
@@ -53,7 +51,7 @@ export const bulkAdd = {
 		if (!guildTemplate) {
 			return reply(interaction, {content: ul("error.noTemplate")});
 		}
-		const members = parseCSV(csvFile.url, guildTemplate, interaction);
+		const members = await parseCSV(csvFile.url, guildTemplate, interaction);
 		for (const [user, data] of Object.entries(members)) {
 			const member = (await interaction!.guild!.members.fetch({query: user})).first();
 			if (!member || !member.user) {
@@ -177,7 +175,7 @@ export const bulkAddTemplate = {
 	}
 };
 
-export function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction) {
+export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction) {
 	const ul = ln(interaction?.locale ?? "en" as Locale);
 	const members: {
 		[id: string]: UserData[];
@@ -198,13 +196,19 @@ export function parseCSV(url: string, guildTemplate: StatisticalTemplate, intera
 		header = header.concat(Object.keys(guildTemplate.damage));
 	}
 	header = header.map(key => removeEmojiAccents(key));
-	Papa.parse(url, {
-		download: true,
+	//papaparse can't be used in Node, we need first to create a readable stream
+	const csvText = await readCSV(url);
+	if (!csvText) {
+		throw new Error("Invalid URL");
+	}
+	Papa.parse(csvText.replaceAll(/\s+;\s*/gi, ";"), {
 		header: true,
 		dynamicTyping: true,
 		skipEmptyLines: true,
+		//in case the file was wrongly parsed, we need to trim the space before and after the key
 		async step(row) {
 			//get the result row by row
+			//trim "\t" if there is any in key & value
 			const data = row.data as CSVRow;
 			const metaHeader = row.meta.fields?.map(key => removeEmojiAccents(key));
 			if (!metaHeader) {
@@ -214,29 +218,26 @@ export function parseCSV(url: string, guildTemplate: StatisticalTemplate, intera
 			if (header.some(key => !metaHeader.includes(key))) {
 				return;
 			}
-			
 			//get the user id from the guild
 			const user = data.user;
 			const charName = data.charName;
 			//get user from the guild
-			let member: undefined | GuildMember;
+			let guildMember: undefined | GuildMember;
+			let userID: string | undefined = data.user;
 			if (interaction) {
-				member = (await interaction.guild!.members.fetch({query: user})).first();
-				if (!member || !member.user) {
+				guildMember = (await interaction.guild!.members.fetch({query: user})).first();
+				if (!guildMember || !guildMember.user) {
 					return;
 				}
-			}
-			else {
-				//generate a fake member for testing only 
-				member = {
-					user: {
-						id: SnowflakeUtil.generate(),
-					},
-				} as unknown as GuildMember;
-			}
-			
+				userID = guildMember.id;
+			} 
+			if (!members[userID]) members[userID] = [];
 			//prevent duplicate with verify the charName
-			if (members.user.find(char => char.userName === charName)) {
+			if (members[userID].find(char => {
+				if (char.userName && charName) return removeEmojiAccents(char.userName) === removeEmojiAccents(charName);
+				else if (!char.userName && !charName) return true;
+				else return false;
+			})) {
 				return;
 			}
 			const stats: {[name: string]: number} = {};
@@ -247,8 +248,7 @@ export function parseCSV(url: string, guildTemplate: StatisticalTemplate, intera
 				});
 			}
 			
-			//add the data to the user
-			members.user.push({
+			members[userID].push({
 				userName: charName,
 				stats,
 				template: {
@@ -257,11 +257,20 @@ export function parseCSV(url: string, guildTemplate: StatisticalTemplate, intera
 				},
 			});
 		},
-		async complete() {
+		async complete(result) {
 			if (interaction)
 				await reply(interaction, {content: ul("bulk_add.success")});
-			else console.log("Bulk add success");
+			else console.log("Bulk add success", result.data);
 		}
 	});
 	return members;
+}
+
+async function readCSV(url: string) {
+	const response = await fetch(url);
+	if (!response.ok) {
+		throw new Error("Invalid URL");
+	}
+	return response.text();
+
 }

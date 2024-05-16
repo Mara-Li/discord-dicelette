@@ -1,97 +1,51 @@
 {
-    "ts-node": {
-        "require": [
-            "tsconfig-paths/register"
-        ]
-    },
-    "tsc-alias": {
-        "resolveFullPaths": true,
-    },
-    "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "lib": [
-            "ESNext"
-        ],
-        "rootDir": "./",
-        "outDir": "./dist/",
-        "strict": true,
-        "moduleResolution": "bundler",
-        "importHelpers": true,
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "allowSyntheticDefaultImports": true,
-        "allowJs": true,
-        "checkJs": false,
-        "resolveJsonModule": true,
-        "forceConsistentCasingInFileNames": true,
-        "removeComments": true,
-        "typeRoots": [
-            "node_modules/@types"
-        ],
-        "sourceMap": false,
-        "baseUrl": ".",
-        "paths": {
-            "@utils/*": [
-                "src/utils/*"
-            ],
-            "@utils": [
-                "src/utils/index.js"
-            ],
-            "@database/*": [
-                "src/database/*"
-            ],
-            "@database": [
-                "src/database/index.js"
-            ],
-            "@register/*": [
-                "src/database/register/*"
-            ],
-            "@dice/*": [
-                "src/database/dice/*"
-            ],
-            "@stats/*": [
-                "src/database/stats/*"
-            ],
-            "@localization/*": [
-                "src/localizations/*"
-            ],
-            "@localization": [
-                "src/localizations/index.js"
-            ],
-            "@main": [
-                "src/index.js"
-            ],
-            "@interface": [
-                "src/interface.js"
-            ],
-            "@events/*": [
-                "src/events/*"
-            ],
-            "@events": [
-                "src/events/index.js"
-            ],
-            "@commands/*": [
-                "src/commands/*"
-            ],
-            "@commands": [
-                "src/commands/index.js"
-            ],
-            "@console": [
-                "src/console.js"
-            ],
-        }
-    },
-    "files": [
-        "src/index.ts"
-    ],
-    "include": [
-        "./**/*.ts",
-        "jest.config.js",
-    ],
-    "exclude": [
-        "dist",
-        "node_modules"
-    ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true
+  },
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "esnext",
+    "lib": ["ESNext"],
+    "rootDir": "./",
+    "outDir": "./dist/",
+    "strict": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
+    "typeRoots": ["node_modules/@types"],
+    "sourceMap": false,
+    "baseUrl": ".",
+    "paths": {
+      "@utils/*": ["src/utils/*"],
+      "@utils": ["src/utils/index.js"],
+      "@database/*": ["src/database/*"],
+      "@database": ["src/database/index.js"],
+      "@register/*": ["src/database/register/*"],
+      "@dice/*": ["src/database/dice/*"],
+      "@stats/*": ["src/database/stats/*"],
+      "@localization/*": ["src/localizations/*"],
+      "@localization": ["src/localizations/index.js"],
+      "@main": ["src/index.js"],
+      "@interface": ["src/interface.js"],
+      "@events/*": ["src/events/*"],
+      "@events": ["src/events/index.js"],
+      "@commands/*": ["src/commands/*"],
+      "@commands": ["src/commands/index.js"],
+      "@console": ["src/console.js"]
+    }
+  },
+  "files": ["src/index.ts"],
+  "include": ["./**/*.ts", "jest.config.ts"],
+  "exclude": ["dist", "node_modules"]
 }

@@ -1,10 +1,11 @@
 import { StatisticalTemplate } from "@dicelette/core";
 
 import { parseCSV } from "../src/commands/admin/bulk_add";
+import { UserData } from "../src/interface";
 
 describe("parseCSV", () => {
 	it("parses a CSV file", async () => {
-		const url = "";
+		const url = "https://raw.githubusercontent.com/Dicelette/discord-dicelette/bulk-add/tests/test.csv";
 		const guildTemplate: StatisticalTemplate = {
 			charName: true,
 			statistics: {
@@ -27,6 +28,37 @@ describe("parseCSV", () => {
 				"CHA": "1d4",
 			},
 		};
-		const result = parseCSV(url, guildTemplate);
+		const temp = {
+			diceType: "4d6",
+			critical: { success: 20, failure: 1 }
+		};
+		const result = await parseCSV(url, guildTemplate);
+		const expectedResult: {[id: string]: UserData[]} = {
+			"mara__li" : [{
+				userName: "Blaïka",
+				stats: {
+					"STR": 12,
+					"DEX": 12,
+					"CON": 12,
+					"INT": 12,
+					"WIS": 12,
+					"CHA": 12,
+				},
+				template: temp,
+			}],
+			"truc" : [{
+				userName: "machin",
+				stats: {
+					"STR": 11,
+					"DEX": 10,
+					"CON": 11,
+					"INT": 10,
+					"WIS": 11,
+					"CHA": 10,
+				},
+				template: temp,
+			}],
+		};
+		expect(result).toEqual(expectedResult);
 	});
 });
