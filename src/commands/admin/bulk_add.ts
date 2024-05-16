@@ -73,7 +73,7 @@ export const bulkAdd = {
 
 				const statsEmbed = char.stats ? createStatsEmbed(ul) : undefined;
 				const diceEmbed = guildTemplate.damage ? createDiceEmbed(ul) : undefined;
-				//! important: As the bulk add can be for level upped characters, the value is not verified (min/max)
+				//! important: As the bulk add can be for level upped characters, the value is not verified (min/max) & total points
 				for (const [name, value] of Object.entries(char.stats ?? {})) {
 					const validateValue = guildTemplate.statistics?.[name];
 					if (!validateValue || !validateValue.combinaison) {
