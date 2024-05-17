@@ -48,8 +48,8 @@ export const bulkAdd = {
 		const csvFile = options.getAttachment(t("bulk_add.options.name"), true);
 		const ul= ln(interaction.locale);
 		await interaction.deferReply({ephemeral: true});
-		if (!csvFile.name.endsWith(".csv")) {
-			const ext = csvFile.name.split(".").pop();
+		const ext = csvFile.name.split(".").pop()?.toLowerCase() ?? "";
+		if (!ext || ext !== "csv") {
 			return reply(interaction, {content: ul("bulk_add.errors.invalid_file", { ext })});
 		}
 		/** download the file using paparse */
@@ -83,19 +83,12 @@ export const bulkAdd = {
 				//! important: As the bulk add can be for level upped characters, the value is not verified (min/max) & total points
 				for (const [name, value] of Object.entries(char.stats ?? {})) {
 					const validateValue = guildTemplate.statistics?.[name];
-					if (!validateValue || !validateValue.combinaison) {
-						statsEmbed!.addFields({
-							name : title(name),
-							value: `\`${value}\``,
-							inline: true,
-						});
-					} else if (validateValue.combinaison) {
-						statsEmbed!.addFields({
-							name : title(name),
-							value: `\`${validateValue.combinaison}\` = ${value}`,
-							inline: true,
-						});
-					} else continue;
+					const fieldValue = validateValue?.combinaison ? `\`${validateValue.combinaison}\` = ${value}` : `\`${value}\``;
+					statsEmbed!.addFields({
+						name : title(name),
+						value: fieldValue,
+						inline: true,
+					});
 				}
 				for (const [name, dice] of Object.entries(guildTemplate.damage ?? {})) {
 					diceEmbed!.addFields({
