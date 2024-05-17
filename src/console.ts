@@ -5,8 +5,11 @@ import chalk from "chalk";
  * @param message {unknown}
  * @param optionalParams {unknown[]}
  */
-export const error = (message?: unknown, ...optionalParams: unknown[]) => { 
-	console.error(chalk.bgRed("ERROR"), chalk.red(message, ...optionalParams));
+export const error = (message?: unknown, ...optionalParams: unknown[]) => {
+	//search the function that called this function
+	const stack = new Error().stack;
+	const caller = stack?.split("\n")[2].trim();
+	console.error(chalk.bgRed(caller), chalk.red(message, ...optionalParams));
 };
 
 /**

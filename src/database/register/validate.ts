@@ -3,7 +3,7 @@ import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
 import {StatisticalTemplate} from "@dicelette/core";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
-import {removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
+import {addAutoRole, removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, ensureEmbed,parseEmbedFields } from "@utils/parse";
 import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, PermissionsBitField, User, userMention } from "discord.js";
@@ -157,21 +157,9 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		}
 	}
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
-	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: userDataEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false}, db);
+	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: !!userDataEmbed, dice: !!diceEmbed, template: !!templateEmbed}, db);
 	await interaction.message.delete();
-	//give role to the user
-	if (db.has(interaction.guild!.id, "autoRole")) {
-		if (diceEmbed) {
-			const role = db.get(interaction.guild!.id, "autoRole.dice") as string;
-			if (role)
-				await interaction.guild?.members.cache.get(userID)?.roles.add(role);
-		}
-		if (statsEmbed) {
-			const role = db.get(interaction.guild!.id, "autoRole.stats") as string;
-			if (role)
-				await interaction.guild?.members.cache.get(userID)?.roles.add(role);
-		}
-	}
+	await addAutoRole(interaction, userID, !!userDataEmbed, !!diceEmbed,db );
 	await reply(interaction, { content: ul("modals.finished"), ephemeral: true});
 	return;
 }

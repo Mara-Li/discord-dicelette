@@ -191,8 +191,7 @@ export async function registerUser(
 			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndx}`);
 		}
 		else {
-			
-			enmap.push(interaction.guild.id, newChar, `user.${userID}`, false);
+			enmap.set(interaction.guild.id, [...user, newChar], `user.${userID}`);
 		}
 		return;
 	}

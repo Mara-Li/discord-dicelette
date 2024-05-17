@@ -134,7 +134,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 	registerUser(userID, interaction, interaction.message.id, thread, db, userName, skillDiceName, false);
 	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
-	await reply(interaction,{ content: ul("embeds.edit.dice"), ephemeral: true });
+	await reply(interaction,{ content: ul("embed.edit.dice"), ephemeral: true });
 	const compare = displayOldAndNewStats(diceEmbeds.toJSON().fields, fieldsToAppend);
 	const logMessage = ul("logs.dice.edit", {
 		user: userMention(interaction.user.id), 

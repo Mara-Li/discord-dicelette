@@ -2,7 +2,7 @@ import { createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
 import { Settings, Translation } from "@interface";
 import { lError, ln } from "@localization";
-import { removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import { addAutoRole, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons, registerDmgButton, validateCancelButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed,getEmbeds } from "@utils/parse";
@@ -126,14 +126,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		return acc;
 	}, {} as {[name: string]: string});
 	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul, first);
-	if (damageName && Object.keys(damageName).length > 0 && db.has(interaction.guild.id, "autoRole")) {
-		const role = db.get(interaction.guild.id, "autoRole.dice") as string;
-		if (role) {
-			const member = await interaction.guild.members.fetch(userID);
-			if (!member) return;
-			await member.roles.add(role);
-		}
-	}
+	await addAutoRole(interaction, userID, !!damageName && Object.keys(damageName).length > 0, false, db);
 	if (!first) {
 		const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
 		if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed

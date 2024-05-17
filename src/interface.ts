@@ -69,7 +69,9 @@ export interface GuildData {
  * - If the user doesn't exists or their stat was deleted: the bot will send a message to inform the user that he is not registered and roll normally, ignoring the statistique/characters (theses will be send into the comments part)
  */
 export interface UserData {
-	userName?: string; //by default, will be the id of the user, if changed to a string, it will be used
+	/** by default, will be the id of the user, if changed to a string, it will be used */
+	userName?: string; 
+	/** The statistics as value */
 	stats?: {
 		[name: string] : number;
 	};
@@ -81,6 +83,9 @@ export interface UserData {
 		critical?: Critical;
 		
 	},
+	/**
+	 * The skill dice that the user can do
+	 */
 	damage?: {
 		[name: string]: string;
 	}

@@ -14,6 +14,30 @@
       "set": "{{- role}} sera maintenant ajouté aux joueurs quand leurs statistiques seront validées."
     }
   },
+  "bulk_add": {
+    "all_success": "Tous les utilisateurs ont été enregistrés.",
+    "description": "Ajouter plusieurs personnages d'un coup",
+    "errors": {
+      "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.\n\nLes colonnes :\n- {{- name}} \nest/sont manquante(s).",
+      "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
+      "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !",
+      "missing_header": "Votre CSV n'a pas de noms de colonnes !",
+      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}"
+    },
+    "name": "import",
+    "options": {
+      "description": "Le fichier CSV à importer",
+      "name": "csv"
+    },
+    "user": {
+      "success": "{{- user}} a bien été ajouté."
+    }
+  },
+  "bulk_add_template": {
+    "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
+    "name": "csv",
+    "success": "Voici votre fichier CSV ! Attention, par défaut, le délimiteur utilisé est `;`. N'oubliez pas de le préciser à l'import dans votre logiciel (excel/google sheet...).\nPrécisons que vous devez vous-même calculer les combinaisons !"
+  },
   "button": {
     "cancel": "Annuler",
     "continue": "Continuer",
@@ -43,8 +67,7 @@
     "space": " ",
     "statistic": "statistique",
     "total": "Total",
-    "user": "Joueur",
-    "yes": "Oui"
+    "user": "Joueur"
   },
   "config": {
     "autoRole": {
@@ -134,7 +157,8 @@
   },
   "embeds": {
     "display": {
-      "title": ""
+    },
+    "edit": {
     }
   },
   "error": {
@@ -143,14 +167,14 @@
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
     "invalidDice": {
       "embeds": "Aucun embed de dé détecté",
-      "withDice": "Erreur : Dé invalide {{- dice}}",
-      "withError": "Erreur : Dé invalide {{- dice}}\n```{{- error}}```"
+      "withDice": "Erreur : Dé invalide {{- dice}}"
     },
     "mustBeGreater": "La valeur {{- value}} doit être plus grande que {{- min}}",
     "mustBeLower": "La valeur {{- value}} doit être plus petite que {{- max}}",
     "noDamage": "{{- atq}} n'est pas enregistré dans {{- charName}}.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
     "noEmbed": "Aucun embed trouvé",
+    "noGuild": "Aucune guilde n'a été trouvée",
     "noGuildData": "Aucune donnée trouvée pour le serveur {{- serveur }}.",
     "noMessage": "Aucun message trouvé.",
     "noStats": "Cette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",

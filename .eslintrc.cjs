@@ -11,7 +11,8 @@ module.exports = {
 	],
 	rules: {
 		"@typescript-eslint/ban-ts-comment": "off",
-		"unused-imports/no-unused-imports": "warn",
-		"no-unused-vars": "warn",
+		"unused-imports/no-unused-imports": "off",
+		"no-unused-vars": "off",
+		"@typescript-eslint/no-unused-vars": "off",
 	}
 };

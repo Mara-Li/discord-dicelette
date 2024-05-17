@@ -2,10 +2,12 @@ import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "@interface";
 import { editUserButtons } from "@utils/buttons";
 import { registerManagerID, registerUser } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
-import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, StageChannel, TextChannel,VoiceChannel } from "discord.js";
+import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, roleMention, StageChannel, TextChannel,User,VoiceChannel } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
+
+import { EClient } from "..";
 
 
 
@@ -295,3 +297,35 @@ export async function downloadTutorialImages() {
 export async function reply(interaction: CommandInteraction | ModalSubmitInteraction | ButtonInteraction, options: string | InteractionReplyOptions | MessagePayload) {
 	return interaction.replied || interaction.deferred ? await interaction.editReply(options) : await interaction.reply(options);
 }
+
+export async function addAutoRole(interaction: BaseInteraction, member: string, diceEmbed: boolean, statsEmbed: boolean, db: Settings) {
+	const autoRole = db.get(interaction.guild!.id, "autoRole");
+	if (!autoRole) return;
+	try {
+		const diceRole = autoRole.dice ? interaction.guild!.roles.cache.get(roleMention(autoRole.dice)) : undefined;
+		const statsRole = autoRole.stats ? interaction.guild!.roles.cache.get(roleMention(autoRole.stats)) : undefined;
+		if (diceEmbed && diceRole ) {
+			await interaction.guild!.members.cache.get(member)?.roles.add(roleMention(diceRole.id));
+		}
+		if (statsEmbed && statsRole) {
+			await interaction.guild!.members.cache.get(member)?.roles.add(roleMention(statsRole.id));
+		}
+	} catch (e) {
+		console.error("Error while adding role", e);
+		//delete the role from database so it will be skip next time
+		db.delete(interaction.guild!.id, "autoRole");
+		const dblogs = db.get(interaction.guild!.id, "logs");
+		const errorMessage = `\`\`\`\n${(e as Error).message}\n\`\`\``;
+		if (dblogs) {
+			const logs = await interaction.guild!.channels.fetch(dblogs);
+			if (logs instanceof TextChannel) {
+				logs.send(errorMessage);
+			}
+		} else {
+			//Dm the server owner because it's pretty important to know
+			const owner = await interaction.guild!.fetchOwner();
+			owner.send(errorMessage);
+		}
+	}
+}
+
