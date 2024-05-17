@@ -22,7 +22,8 @@
     "db": "tsx db-management.ts",
     "release": "commit-and-tag-version",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "tsc": "tsc --project tsconfig.json --skipLibCheck --noEmit && tsc-alias -p tsconfig.json"
   },
   "cross-os": {
     "clean": {
