@@ -181,8 +181,14 @@ export const bulkAddTemplate = {
 			files: [{attachment: buffer, name: "template.csv"}]});
 	}
 };
-
-export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction) {	
+/**
+ * Export a function to parse a CSV file and return the data, using PapaParse
+ * @param url {string} The URL of the CSV file, or the content of the file as string
+ * @param guildTemplate {StatisticalTemplate} The template of the guild
+ * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
+ * @returns {Promise<{[id: string]: UserData[]}>} The data parsed from the CSV file
+ */
+export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction): Promise<{ [id: string]: UserData[]; }> {	
 	let header = [
 		"user",
 		"charName",
@@ -217,7 +223,12 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	return await step(csvData, guildTemplate, interaction);
 }
 
-async function readCSV(url: string) {
+/**
+ * Read the distant CSV file
+ * @param url {string} The URL of the CSV file
+ * @returns {Promise<string>}
+ */
+async function readCSV(url: string): Promise<string> {
 	const response = await fetch(url);
 	if (!response.ok) {
 		throw new Error("Invalid URL");
@@ -226,7 +237,14 @@ async function readCSV(url: string) {
 
 }
 
-async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interaction?: CommandInteraction) {
+/**
+ * Parse the csv file and return the data in the correct format
+ * @param csv {CSVRow[]} The data parsed from the CSV file
+ * @param guildTemplate {StatisticalTemplate} The template of the guild
+ * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
+ * @returns {Promise<{[id: string]: UserData[]}>} The data parsed from the CSV file
+ */
+async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interaction?: CommandInteraction): Promise<{ [id: string]: UserData[]; }> {
 	const members: {
 		[id: string]: UserData[];
 	} = {};
@@ -265,10 +283,20 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 		const stats: {[name: string]: number} = {};
 		//get the stats
 		if (guildTemplate.statistics) {
+			const emptyStats = Object.keys(guildTemplate.statistics).filter(key => !data[key]);
+			if (emptyStats.length > 0) {
+				if (interaction) await reply(interaction, {content: ul("bulk_add.errors.missing_stats", {
+					user: userMention(userID), 
+					stats: emptyStats.join("\n- ")})
+				});
+				console.warn(`Missing stats for ${user}. Missing: ${emptyStats.join("\n- ")}`);
+				continue;
+			}
 			Object.keys(guildTemplate.statistics).forEach(key => {
 				stats[key] = data[key] as number;
 			});
 		}
+		
 		members[userID].push({
 			userName: charName,
 			stats,

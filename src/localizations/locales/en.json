@@ -22,7 +22,8 @@
       "invalid_file": "The file must be a CSV file. \nYou have provided a {{-ext}} file.",
       "max": "The {{- name}} value is greater than the imposed maximum ({{- max}}).",
       "min": "",
-      "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!"
+      "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!",
+      "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}"
     },
     "name": "bulk_add",
     "options": {
