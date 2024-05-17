@@ -1,43 +1,42 @@
 import { StatisticalTemplate } from "@dicelette/core";
 import { readFileSync } from "fs";
-import { re } from "mathjs";
 
 import { parseCSV } from "../src/commands/admin/bulk_add";
 import { UserData } from "../src/interface";
 
-function readLocalCSV(path: string) {
-	return readFileSync(path, "utf-8");
-}
+const guildTemplate: StatisticalTemplate = {
+	charName: true,
+	statistics: {
+		"STR": { max: 18, min: 3 },
+		"DEX": { max: 18, min: 3 },
+		"CON": { max: 18, min: 3 },
+		"INT": { max: 18, min: 3 },
+		"WIS": { max: 18, min: 3 },
+		"CHA": { max: 18, min: 3 },
+	},
+	total: 88,
+	diceType: "4d6",
+	critical: { success: 20, failure: 1 },
+	damage: {
+		"STR": "1d4",
+		"DEX": "1d4",
+		"CON": "1d4",
+		"INT": "1d4",
+		"WIS": "1d4",
+		"CHA": "1d4",
+	},
+};
+
+const temp = {
+	diceType: "4d6",
+	critical: { success: 20, failure: 1 }
+};
 
 describe("parseCSV", () => {
 	it("should be valid and equal", async () => {
 		const csv = readFileSync("tests/data/should_pass.csv", "utf-8");
-		const guildTemplate: StatisticalTemplate = {
-			charName: true,
-			statistics: {
-				"STR": { max: 18, min: 3 },
-				"DEX": { max: 18, min: 3 },
-				"CON": { max: 18, min: 3 },
-				"INT": { max: 18, min: 3 },
-				"WIS": { max: 18, min: 3 },
-				"CHA": { max: 18, min: 3 },
-			},
-			total: 88,
-			diceType: "4d6",
-			critical: { success: 20, failure: 1 },
-			damage: {
-				"STR": "1d4",
-				"DEX": "1d4",
-				"CON": "1d4",
-				"INT": "1d4",
-				"WIS": "1d4",
-				"CHA": "1d4",
-			},
-		};
-		const temp = {
-			diceType: "4d6",
-			critical: { success: 20, failure: 1 }
-		};
+		
+		
 		const result = await parseCSV(csv, guildTemplate);
 		const expectedResult: {[id: string]: UserData[]} = {
 			"mara__li" : [{
