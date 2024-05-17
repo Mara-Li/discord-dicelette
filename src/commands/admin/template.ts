@@ -156,6 +156,15 @@ export const registerTemplate = {
 				.setDescriptionLocalizations(cmdLn("register.options.userChan.description"))
 				.setRequired(false)
 				.addChannelTypes(ChannelType.PublicThread, ChannelType.GuildText, ChannelType.PrivateThread)
+		)
+		.addChannelOption(option =>
+			option
+				.setName(t("register.options.hider.name"))
+				.setDescription(t("register.options.hider.description"))
+				.setNameLocalizations(cmdLn("register.options.hider.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.hider.description"))
+				.setRequired(false)
+				.addChannelTypes(ChannelType.PublicThread, ChannelType.GuildText, ChannelType.PrivateThread)
 		),
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
@@ -169,6 +178,7 @@ export const registerTemplate = {
 		const guildId = interaction.guild.id;
 		const channel = options.getChannel(ul("common.channel"), true);
 		const userChan = options.getChannel(ul("register.options.userChan.name"), false);
+		const privateChar = options.getChannel(ul("register.options.hider.name"), false);
 		if (
 			(!(channel instanceof TextChannel) && (!(channel instanceof ThreadChannel))) || 
 			(!userChan && !(channel instanceof TextChannel))
@@ -257,9 +267,8 @@ export const registerTemplate = {
 				statsName: statsName ?? [],
 				damageName: damageName ?? []
 			};
-			if (userChan) {
-				json.managerId = userChan.id;
-			}
+			if (userChan) json.managerId = userChan.id;
+			if (privateChar) json.hiderChannel = privateChar.id;
 			client.settings.set(guildId, json);
 		} else {
 			const newData: GuildData = {

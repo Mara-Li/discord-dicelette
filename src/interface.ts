@@ -39,6 +39,7 @@ export interface GuildData {
 	managerId?: string;
 	deleteAfter?: number;
 	timestamp?: boolean;
+	hiderChannel?: string;
 	autoRole?: {
 		dice?: string;
 		stats?: string;
@@ -54,6 +55,7 @@ export interface GuildData {
 			charName?: string;
 			messageId: string;
 			damageName?: string[];
+			isPrivate?: boolean;
 		}[]
 	}
 
@@ -89,5 +91,6 @@ export interface UserData {
 	damage?: {
 		[name: string]: string;
 	}
+	private?: boolean;
 }
 

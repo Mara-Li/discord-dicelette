@@ -63,13 +63,15 @@
     "character": "character",
     "default": "Default",
     "dice": "dice",
+    "isPrivate": "Private character",
     "noSet": "/",
     "page": "Page {{- nb}}",
     "role": "role",
     "space": "",
     "statistic": "statistic",
     "total": "Total",
-    "user": "Player"
+    "user": "Player",
+    "yes": "✓"
   },
   "config": {
     "autoRole": {
@@ -86,6 +88,7 @@
     "logs": "Administration logs channel",
     "managerId": "Character sheet channel",
     "name": "config",
+    "privateChan": "Private characters channel",
     "rollChannel": "Global log dice result",
     "statsName": "Name of statistics",
     "templateID": "Link to template",
@@ -329,6 +332,10 @@
     "finished": "Completed statistics",
     "firstPage": "User Registration - Page 1/{{- page}}",
     "noPermission": "You do not have permissions to do this",
+    "private": {
+      "description": "If this record is private, put \"x\".",
+      "name": ""
+    },
     "removed": {
       "dice": "The dice have been removed from the user",
       "stats": "The statistics have been deleted"
@@ -361,6 +368,10 @@
     "name": "register",
     "options": {
       "channel": "The channel where the template and users will be registered",
+      "hider": {
+        "description": "Allows you to choose a channel in which the “private” characters will be sent",
+        "name": "private_character"
+      },
       "template": {
         "description": "The template to be registered",
         "name": "template"

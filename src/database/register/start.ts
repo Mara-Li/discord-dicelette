@@ -68,7 +68,7 @@ export async function submit_firstPage(interaction: ModalSubmitInteraction, db: 
  * @param interaction {ButtonInteraction}
  * @param template {StatisticalTemplate}
  */
-export async function showFirstPageModal(interaction: ButtonInteraction, template: StatisticalTemplate) {
+export async function showFirstPageModal(interaction: ButtonInteraction, template: StatisticalTemplate, havePrivate?: boolean) {
 	let nbOfPages = 1;
 	if (template.statistics) {
 		const nbOfStatistique = Object.keys(template.statistics).length;
@@ -98,7 +98,20 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 			.setValue(interaction.user.username ?? interaction.user.id)
 			.setStyle(TextInputStyle.Short)
 	);
-	modal.addComponents(charNameInput, userIdInputs);
+	const components = [charNameInput, userIdInputs];
+	if (havePrivate){
+		const privateInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+			new TextInputBuilder()
+				.setCustomId("private")
+				.setLabel(ul("modals.private.name"))
+				.setPlaceholder(ul("modals.private.description"))
+				.setRequired(false)
+				.setValue("")
+				.setStyle(TextInputStyle.Short)
+		);
+		components.push(privateInput);
+	}
+	modal.addComponents(components);
 	await interaction.showModal(modal);
 }
 
@@ -107,10 +120,10 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
  * @param interaction {ModalSubmitInteraction}
  * @param ul {Translation}
  */
-export async function open_register_user(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: Translation) {
+export async function open_register_user(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: Translation, havePrivate?: boolean) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (isModerator)
-		await showFirstPageModal(interaction, template);
+		await showFirstPageModal(interaction, template, havePrivate);
 	else
 		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
 }

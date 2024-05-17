@@ -88,7 +88,7 @@ export async function repostInThread(
 		embeds: embed,
 		components: [editUserButtons(ul, which.stats, which.dice)]},);
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
-	registerUser(userId, interaction, msg.id, thread, guildData, userTemplate.userName, damageName);
+	registerUser(userId, interaction, msg.id, thread, guildData, userTemplate.userName, damageName, userTemplate.private);
 }
 
 /**

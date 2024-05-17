@@ -61,13 +61,15 @@
     "character": "personnage",
     "default": "Défaut",
     "dice": "dé",
+    "isPrivate": "Personnage privé",
     "noSet": "/",
     "page": "Page {{- nb}}",
     "role": "rôle",
     "space": " ",
     "statistic": "statistique",
     "total": "Total",
-    "user": "Joueur"
+    "user": "Joueur",
+    "yes": "✓"
   },
   "config": {
     "autoRole": {
@@ -84,6 +86,7 @@
     "logs": "Channel des logs d'administration",
     "managerId": "Channel où seront envoyés les fiches",
     "name": "config",
+    "privateChan": "Channel des personnages privés",
     "rollChannel": "Log global des résultats de dés",
     "statsName": "Nom des statistiques",
     "templateID": "Lien vers la template",
@@ -327,6 +330,10 @@
     "finished": "Statistiques terminées",
     "firstPage": "Enregistrement de l'utilisateur - Page 1/{{- page}}",
     "noPermission": "Vous n'avez pas les autorisations pour faire cela",
+    "private": {
+      "description": "Si cette fiche est privée, mettez \"x\".",
+      "name": "Fiche privée"
+    },
     "removed": {
       "dice": "Les dés ont été supprimés de l'utilisateur",
       "stats": "Les statistiques ont bien été supprimés"
@@ -359,6 +366,10 @@
     "name": "enregistrer",
     "options": {
       "channel": "Le channel où le modèle et les utilisateurs seront enregistrés",
+      "hider": {
+        "description": "Permet de choisir un channel dans lequel les personnages \"privés\" seront envoyés",
+        "name": "personnage_privé"
+      },
       "template": {
         "description": "Le modèle à enregistrer",
         "name": "template"

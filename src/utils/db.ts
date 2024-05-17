@@ -147,6 +147,7 @@ export async function registerUser(
 	charName?: string, 
 	damage?: string[], 
 	deleteMsg: boolean = true,
+	isPrivate: boolean = false
 ) {
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
@@ -162,6 +163,7 @@ export async function registerUser(
 		charName,
 		messageId: msgId,
 		damageName: damage,
+		isPrivate
 	};
 	if (!charName) delete newChar.charName;
 	if (!damage) delete newChar.damageName;
