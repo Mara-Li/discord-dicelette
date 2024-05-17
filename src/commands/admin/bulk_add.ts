@@ -12,7 +12,7 @@ import { EClient } from "@main";
 import { removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,roleMention,SlashCommandBuilder,  User,  userMention } from "discord.js";
+import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,roleMention,SlashCommandBuilder,  TextChannel,  User,  userMention } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
 
@@ -126,11 +126,31 @@ export const bulkAdd = {
 				await repostInThread(allEmbeds, interaction, char, member.id, ul, {stats: statsEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false}, client.settings);
 				const autoRole = client.settings.get(interaction.guild!.id, "autoRole");
 				if (autoRole) {
-					if (diceEmbed && autoRole.dice) {
-						await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(autoRole.dice));
-					}
-					if (statsEmbed && autoRole.stats) {
-						await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(autoRole.stats));
+					try {
+						const diceRole = autoRole.dice ? interaction.guild!.roles.cache.get(roleMention(autoRole.dice)) : undefined;
+						const statsRole = autoRole.stats ? interaction.guild!.roles.cache.get(roleMention(autoRole.stats)) : undefined;
+						if (diceEmbed && diceRole ) {
+							await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(diceRole.id));
+						}
+						if (statsEmbed && statsRole) {
+							await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(statsRole.id));
+						}
+					} catch (e) {
+						console.error("Error while adding role", e);
+						//delete the role from database so it will be skip next time
+						client.settings.delete(interaction.guild!.id, "autoRole");
+						const db = client.settings.get(interaction.guild!.id, "logs");
+						const errorMessage = `\`\`\`\n${(e as Error).message}\n\`\`\``;
+						if (db) {
+							const logs = await interaction.guild!.channels.fetch(db);
+							if (logs instanceof TextChannel) {
+								logs.send(errorMessage);
+							}
+						} else {
+							//Dm the server owner because it's pretty important to know
+							const owner = await interaction.guild!.fetchOwner();
+							owner.send(errorMessage);
+						}
 					}
 				}
 				await reply(interaction, {content: ul("bulk_add.user.success", {user: userMention(member.id)})});

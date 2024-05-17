@@ -166,6 +166,7 @@
     }
   },
   "error": {
+    "autoRole": "Lors de l'ajout multiple, il y a eu une erreur. Pour éviter de la répéter, les rôles automatiques ont été supprimés.\nL'erreur est la suivante :",
     "charName": "Le personnage {{- charName}} n'est pas enregistré.",
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",

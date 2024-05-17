@@ -168,6 +168,7 @@
     }
   },
   "error": {
+    "autoRole": "During multiple addition, there was an error. \nTo avoid repeating it, automatic roles have been removed.\n\nThe error is:",
     "charName": "The character {{- charName}} is not registered.",
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
