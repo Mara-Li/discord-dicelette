@@ -19,7 +19,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		const { combinaisonFields, stats } = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
 		const embed = new EmbedBuilder()
-			.setTitle(ul("embed.add.title"))
+			.setTitle(ul("embed.add"))
 			.setThumbnail(oldEmbeds.thumbnail?.url || "")
 			.setFooter({ text: ul("common.page", { nb: page }) });
 		//add old fields

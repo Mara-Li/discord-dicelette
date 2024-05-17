@@ -20,9 +20,6 @@
     "errors": {
       "headers": "The column names do not match your model. \nPlease refer to the documentation and your template to check the column names.\n\n\nThe columns :\n- {{-name}}\nis/are missing.",
       "invalid_file": "The file must be a CSV file. \nYou have provided a {{-ext}} file.",
-      "invalid_header": "Columns are incorrect:\n- `{{- name}}`\nmissing",
-      "max": "The {{- name}} value is greater than the imposed maximum ({{- max}}).",
-      "min": "",
       "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!",
       "missing_header": "",
       "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}"
@@ -32,7 +29,6 @@
       "description": "The CSV file to import",
       "name": "csv"
     },
-    "success": "",
     "user": {
       "success": "{{- user}} has been added."
     }
@@ -73,8 +69,7 @@
     "space": "",
     "statistic": "statistic",
     "total": "Total",
-    "user": "Player",
-    "yes": ""
+    "user": "Player"
   },
   "config": {
     "autoRole": {
@@ -155,7 +150,7 @@
     "dice": "Skill Dice",
     "display": "Character",
     "edit": {
-      "dice": "Modified dice",
+      "dice": "Edited dices",
       "stats": "Modified statistics"
     },
     "stats": "Statistics",
@@ -164,24 +159,24 @@
   },
   "embeds": {
     "display": {
-      "title": "Personnage"
+    },
+    "edit": {
     }
   },
   "error": {
-    "autoRole": "During multiple addition, there was an error. \nTo avoid repeating it, automatic roles have been removed.\n\nThe error is:",
     "charName": "The character {{- charName}} is not registered.",
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
     "invalidDice": {
       "embeds": "No die embeds detected",
-      "withDice": "Error: Invalid die {{- dice}}",
-      "withError": "Error: Invalid die {{- dice}}\n\n```{{- error}}```"
+      "withDice": "Error: Invalid die {{- dice}}"
     },
     "mustBeGreater": "The {{- value}} value must be greater than {{- min}}",
     "mustBeLower": "The {{- value}} value must be smaller than {{- max}}",
     "noDamage": "{{- atq}} is not saved in {{- charName}}.",
     "noDice": "You cannot issue this command without having a registered die type!",
     "noEmbed": "No embeds found",
+    "noGuild": "No guilds found",
     "noGuildData": "No data found for server {{-server}}.",
     "noMessage": "No messages found.",
     "noStats": "This command cannot be used: no statistics have been recorded.",
