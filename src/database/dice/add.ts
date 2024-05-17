@@ -126,13 +126,12 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		return acc;
 	}, {} as {[name: string]: string});
 	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul, first);
-	if (damageName && Object.keys(damageName).length > 0 && db.has(interaction.guild.id, "autoRole")) {
-		const role = db.get(interaction.guild.id, "autoRole.dice") as string;
-		if (role) {
-			const member = await interaction.guild.members.fetch(userID);
-			if (!member) return;
-			await member.roles.add(role);
-		}
+	const autorole = db.get(interaction.guild.id, "autoRole");
+	if (damageName && Object.keys(damageName).length > 0 && autorole && autorole.dice) {
+		const member = await interaction.guild.members.fetch(userID);
+		if (!member) return;
+		await member.roles.add(autorole.dice);
+		
 	}
 	if (!first) {
 		const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");

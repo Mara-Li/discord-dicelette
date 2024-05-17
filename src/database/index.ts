@@ -36,7 +36,7 @@ export function createDiceEmbed(ul: Translation) {
  * @param ul {Translation}
  * @param thumbnail {string} The avatar of the user in the server (use server profile first, after global avatar)
  */
-export function createUserEmbed(ul: Translation, thumbnail: string) {
+export function createUserEmbed(ul: Translation, thumbnail: string | null) {
 	return new EmbedBuilder()
 		.setTitle(ul("embed.user"))
 		.setColor("Random")

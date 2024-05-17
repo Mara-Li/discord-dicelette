@@ -45,6 +45,7 @@ export default (client: EClient): void => {
 				await modalSubmit(interaction, ul, interactionUser, client.settings);
 			}
 		} catch (e) {
+			console.error(e);
 			error(e);
 			if (!interaction.guild) return;
 			const msgError = lError(e as Error, interaction);

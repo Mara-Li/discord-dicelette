@@ -160,16 +160,13 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: userDataEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false}, db);
 	await interaction.message.delete();
 	//give role to the user
-	if (db.has(interaction.guild!.id, "autoRole")) {
-		if (diceEmbed) {
-			const role = db.get(interaction.guild!.id, "autoRole.dice") as string;
-			if (role)
-				await interaction.guild?.members.cache.get(userID)?.roles.add(role);
+	const autorole = db.get(interaction.guild!.id, "autoRole");
+	if (autorole) {
+		if (diceEmbed && autorole.dice) {
+			await interaction.guild?.members.cache.get(userID)?.roles.add(autorole.dice);
 		}
-		if (statsEmbed) {
-			const role = db.get(interaction.guild!.id, "autoRole.stats") as string;
-			if (role)
-				await interaction.guild?.members.cache.get(userID)?.roles.add(role);
+		if (statsEmbed && autorole.stats) {
+			await interaction.guild?.members.cache.get(userID)?.roles.add(autorole.stats);
 		}
 	}
 	await reply(interaction, { content: ul("modals.finished"), ephemeral: true});

@@ -12,11 +12,17 @@ import { EClient } from "@main";
 import { removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,roleMention,SlashCommandBuilder,  userMention } from "discord.js";
+import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,roleMention,SlashCommandBuilder,  User,  userMention } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
 
 const t = i18next.getFixedT("en");
+
+type CSVRow = {
+	user: string;
+	charName: string | undefined;
+	[key: string]: string | number | undefined;
+};
 
 /**
  * ! Note: Bulk data doesn't allow to register dice-per-user, as each user can have different dice
@@ -54,12 +60,13 @@ export const bulkAdd = {
 		const members = await parseCSV(csvFile.url, guildTemplate, interaction);
 		for (const [user, data] of Object.entries(members)) {
 			//we already parsed the user, so the cache should be up to date
-			const member = interaction.guild?.members.cache.get(user);
+			let member : GuildMember | User | undefined = interaction.guild?.members.cache.get(user);
 			if (!member || !member.user) {
 				continue;
 			}
+			member = member.user as User;
 			for (const char of data) {
-				const userDataEmbed = createUserEmbed(ul, member.avatarURL() || "");
+				const userDataEmbed = createUserEmbed(ul, member.avatarURL());
 				userDataEmbed.addFields({
 					name: ul("common.charName"),
 					value: char.userName ?? "/",
@@ -124,14 +131,13 @@ export const bulkAdd = {
 				}
 				const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
 				await repostInThread(allEmbeds, interaction, char, member.id, ul, {stats: statsEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false}, client.settings);
-				if (client.settings.has(interaction.guild!.id, "autoRole")) {
-					if (diceEmbed) {
-						const role = client.settings.get(interaction.guild!.id, "autoRole.dice") as string;
-						if (role) await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(role));
+				const autoRole = client.settings.get(interaction.guild!.id, "autoRole");
+				if (autoRole) {
+					if (diceEmbed && autoRole.dice) {
+						await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(autoRole.dice));
 					}
-					if (statsEmbed) {
-						const role = client.settings.get(interaction.guild!.id, "autoRole.stats") as string;
-						if (role) await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(role));
+					if (statsEmbed && autoRole.stats) {
+						await interaction.guild!.members.cache.get(member.id)?.roles.add(roleMention(autoRole.stats));
 					}
 				}
 				await reply(interaction, {content: ul("bulk_add.user.success", {user: userMention(member.id)})});
@@ -176,16 +182,7 @@ export const bulkAddTemplate = {
 	}
 };
 
-export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction) {
-	const ul = ln(interaction?.locale ?? "en" as Locale);
-	const members: {
-		[id: string]: UserData[];
-	} = {};
-	type CSVRow = {
-		user: string;
-		charName: string | undefined;
-		[key: string]: string | number | undefined;
-	};
+export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction) {	
 	let header = [
 		"user",
 		"charName",
@@ -202,69 +199,21 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	if (!csvText) {
 		throw new Error("Invalid URL");
 	}
+	let csvData: CSVRow[] = [];
 	Papa.parse(csvText.replaceAll(/\s+;\s*/gi, ";"), {
 		header: true,
 		dynamicTyping: true,
 		skipEmptyLines: true,
 		//in case the file was wrongly parsed, we need to trim the space before and after the key
-		async step(row) {
-			//get the result row by row
-			//trim "\t" if there is any in key & value
-			const data = row.data as CSVRow;
-			const metaHeader = row.meta.fields?.map(key => removeEmojiAccents(key));
-			if (!metaHeader) {
-				return;
-			}
-			//verify that the header is correct
-			if (header.some(key => !metaHeader.includes(key))) {
-				return;
-			}
-			//get the user id from the guild
-			const user = data.user;
-			const charName = data.charName;
-			//get user from the guild
-			let guildMember: undefined | GuildMember;
-			let userID: string | undefined = data.user;
-			if (interaction) {
-				guildMember = (await interaction.guild!.members.fetch({query: user})).first();
-				if (!guildMember || !guildMember.user) {
-					return;
-				}
-				userID = guildMember.id;
-			} 
-			if (!members[userID]) members[userID] = [];
-			//prevent duplicate with verify the charName
-			if (members[userID].find(char => {
-				if (char.userName && charName) return removeEmojiAccents(char.userName) === removeEmojiAccents(charName);
-				else if (!char.userName && !charName) return true;
-				else return false;
-			})) {
-				return;
-			}
-			const stats: {[name: string]: number} = {};
-			//get the stats
-			if (guildTemplate.statistics) {
-				Object.keys(guildTemplate.statistics).forEach(key => {
-					stats[key] = data[key] as number;
-				});
-			}
-			
-			members[userID].push({
-				userName: charName,
-				stats,
-				template: {
-					diceType: guildTemplate.diceType,
-					critical: guildTemplate.critical,
-				},
-			});
+		
+		async complete(results) {
+			csvData = results.data as CSVRow[];
 		},
-		async complete(result) {
-			if (interaction)
-				await reply(interaction, {content: ul("bulk_add.success")});
-			else console.log("Bulk add success", result.data);
-		}
+		error(error: Error) {
+			console.error("Error while parsing CSV", error.message);
+		},
 	});
-	return members;
+	return await step(csvData, guildTemplate, interaction);
 }
 
 async function readCSV(url: string) {
@@ -274,4 +223,52 @@ async function readCSV(url: string) {
 	}
 	return response.text();
 
+}
+
+async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interaction?: CommandInteraction) {
+	const members: {
+		[id: string]: UserData[];
+	} = {};
+	//get the user id from the guild
+	for (const data of csv) {
+		const user = data.user;
+		const charName = data.charName;
+		//get user from the guild
+		let guildMember: undefined | GuildMember;
+		let userID: string | undefined = user;
+		if (interaction) {
+			guildMember = (await interaction.guild!.members.fetch({query: user})).first();
+			if (!guildMember || !guildMember.user) {
+				console.warn("Invalid user");
+				continue;
+			}
+			userID = guildMember.id;
+		} 
+		if (!members[userID]) members[userID] = [];
+		//prevent duplicate with verify the charName
+		if (members[userID].find(char => {
+			if (char.userName && charName) return removeEmojiAccents(char.userName) === removeEmojiAccents(charName);
+			else if (!char.userName && !charName) return true;
+			else return false;
+		})) {
+			console.warn("Duplicate character");
+			continue;
+		}
+		const stats: {[name: string]: number} = {};
+		//get the stats
+		if (guildTemplate.statistics) {
+			Object.keys(guildTemplate.statistics).forEach(key => {
+				stats[key] = data[key] as number;
+			});
+		}
+		members[userID].push({
+			userName: charName,
+			stats,
+			template: {
+				diceType: guildTemplate.diceType,
+				critical: guildTemplate.critical,
+			},
+		});
+	}
+	return members;
 }
