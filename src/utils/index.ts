@@ -2,7 +2,7 @@ import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "@interface";
 import { editUserButtons } from "@utils/buttons";
 import { registerManagerID, registerUser } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
-import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, roleMention, StageChannel, TextChannel,User,VoiceChannel } from "discord.js";
+import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, NewsChannel, PermissionFlagsBits, PrivateThreadChannel, PublicThreadChannel, roleMention, StageChannel, TextChannel,User,VoiceChannel } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
@@ -81,8 +81,15 @@ export async function repostInThread(
 	const msg = await thread.send({ 
 		embeds: embed,
 		components: [editUserButtons(ul, which.stats, which.dice)]},);
-	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;	
-	registerUser(userId, interaction, msg.id, thread, guildData, userTemplate.userName, damageName, userTemplate.private);
+	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;
+	const userRegister = {
+		userID: userId,
+		isPrivate: userTemplate.private,
+		charName: userTemplate.userName,
+		damage: damageName,
+		msgId: msg.id,
+	};
+	registerUser(userRegister, interaction, thread, guildData);
 }
 
 /**
@@ -245,9 +252,9 @@ export function displayOldAndNewStats(oldStats?: APIEmbedField[], newStats?: API
 	return stats;
 }
 
-export async function searchUserChannel(guildData: Settings, interaction: BaseInteraction, ul: Translation ) {
+export async function searchUserChannel(guildData: Settings, interaction: BaseInteraction, ul: Translation, isPrivate?: boolean ) {
 	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
-	const managerID = guildData.get(interaction.guild!.id, "managerId");
+	const managerID = isPrivate ? guildData.get(interaction.guild!.id, "hiderChannel") : guildData.get(interaction.guild!.id, "managerId");
 	if (managerID) {
 		const channel = await interaction.guild?.channels.fetch(managerID);
 		if (!channel || (channel instanceof CategoryChannel) || channel instanceof ForumChannel || channel instanceof MediaChannel || channel instanceof StageChannel || channel instanceof VoiceChannel) {
@@ -323,3 +330,26 @@ export async function addAutoRole(interaction: BaseInteraction, member: string, 
 	}
 }
 
+/**
+ * Check if the user have access to the channel where the data is stored
+ * - It always return true:
+ * 	- if the user is the owner of the data
+ * 	- if the user have the permission to manage roles
+ * - It returns false:
+ * 	- If there is no user or member found
+ * 	- If the thread doesn't exist (data will be not found anyway)
+ * 
+ * It will ultimately check if the user have access to the channel (with reading permission)
+ * @param interaction {BaseInteraction}
+ * @param thread {TextChannel | NewsChannel | PrivateThreadChannel | PublicThreadChannel<boolean> | undefined} if undefined, return false (because it's probably that the channel doesn't exist anymore, so we don't care about it)
+ * @param user {User | null} if null, return false
+ * @returns {boolean}
+ */
+export function haveAccess(interaction: BaseInteraction, thread: NewsChannel | TextChannel | PrivateThreadChannel | PublicThreadChannel<boolean> |undefined, user?: string): boolean {
+	if (!user) return false;
+	if (user === interaction.user.id) return true;
+	//verify if the user have access to the channel/thread, like reading the channel
+	const member = interaction.guild?.members.cache.get(interaction.user.id);
+	if (!member || !thread) return false;
+	return member.permissions.has(PermissionFlagsBits.ManageRoles) || member.permissionsIn(thread).has(PermissionFlagsBits.ViewChannel);
+}

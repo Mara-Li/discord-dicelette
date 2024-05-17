@@ -1,10 +1,10 @@
 import { createDiceEmbed, createStatsEmbed } from "@database";
 import { cmdLn,ln } from "@localization";
 import { EClient } from "@main";
-import { filterChoices, reply, searchUserChannel, title } from "@utils";
+import { filterChoices, haveAccess, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, SlashCommandBuilder } from "discord.js";
+import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
@@ -40,13 +40,17 @@ export const displayUser = {
 		if (!guildData) return;
 		const choices: string[] = [];
 		let userID = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
+		const privateChannel = await searchUserChannel(client.settings, interaction, ln(interaction.locale), true);
 		if (typeof userID !== "string") userID = interaction.user.id;
+		const allowed = haveAccess(interaction, privateChannel, userID);
 		if (fixed.name === t("common.character")) {
 			const guildChars = guildData.user[userID];
 			if (!guildChars) return;
 			for (const data of guildChars) {
-				if (data.charName)
-					choices.push(data.charName);
+				if (data.charName) {
+					if (!data.isPrivate) choices.push(data.charName);
+					else if (allowed) choices.push(data.charName);
+				}
 			}
 		}
 		if (choices.length === 0) return;
@@ -72,7 +76,16 @@ export const displayUser = {
 			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
 			return;
 		}
-		const thread = await searchUserChannel(client.settings, interaction, ul);
+		
+		const thread = await searchUserChannel(client.settings, interaction, ul, charData[user?.id ?? interaction.user.id]?.isPrivate);
+		if (!thread) 
+			return await reply(interaction, ul("error.noThread"));
+			
+		const allowHidden = haveAccess(interaction, thread, user?.id ?? interaction.user.id);
+		if (!allowHidden && charData[user?.id ?? interaction.user.id]?.isPrivate) {
+			await reply(interaction, ul("error.private"));
+			return;
+		}
 		const messageID = charData[user?.id ?? interaction.user.id].messageId;
 		try {
 			const userMessage = await thread?.messages.fetch(messageID);

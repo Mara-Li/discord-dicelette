@@ -187,6 +187,7 @@
     "noTemplateId": "No messages found with data saved in database:\n- Channel: `{{-channelId}}`\n- Message ID: `{{- messageId}}`",
     "noThread": "No valid channel found - Please re-register the template if the channel was deleted",
     "notRegistered": "You are not registered",
+    "private": "This character sheet is private! \nYou do not have permission to read it.",
     "rollChannelNotFound": "The channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
     "statNotFound": "Statistics not found! Did you make a typing error?",
     "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",

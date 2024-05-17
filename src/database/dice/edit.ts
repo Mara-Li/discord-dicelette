@@ -120,7 +120,14 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		const components = editUserButtons(ul, embedsList.exists.stats, false);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await reply(interaction,{ content: ul("modals.removed.dice"), ephemeral: true });
-		registerUser(userID, interaction, interaction.message.id, thread, db, userName, undefined, false);
+		
+		const userRegister = {
+			userID,
+			charName: userName,
+			damage: undefined,
+			msgId: interaction.message.id,
+		};
+		registerUser(userRegister, interaction, thread, db, false);
 		await sendLogs(ul("logs.dice.remove", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 		return;
 	} else if (fieldsToAppend.length > 25) {
@@ -131,7 +138,13 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		acc[field.name] = field.value;
 		return acc;
 	}, {} as {[name: string]: string}));
-	registerUser(userID, interaction, interaction.message.id, thread, db, userName, skillDiceName, false);
+	const userRegister = {
+		userID,
+		charName: userName,
+		damage: skillDiceName,
+		msgId: interaction.message.id,
+	};
+	registerUser(userRegister, interaction, thread, db, false);
 	const embedsList = getEmbedsList(ul, {which: "damage", embed: diceEmbed}, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
 	await reply(interaction,{ content: ul("embed.edit.dice"), ephemeral: true });

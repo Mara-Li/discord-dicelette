@@ -21,7 +21,8 @@ const t = i18next.getFixedT("en");
 type CSVRow = {
 	user: string;
 	charName: string | undefined;
-	[key: string]: string | number | undefined;
+	isPrivate: boolean | undefined;
+	[key: string]: string | number | undefined | boolean;
 };
 
 /**
@@ -57,7 +58,7 @@ export const bulkAdd = {
 		if (!guildTemplate) {
 			return reply(interaction, {content: ul("error.noTemplate")});
 		}
-		const members = await parseCSV(csvFile.url, guildTemplate, interaction);
+		const members = await parseCSV(csvFile.url, guildTemplate, interaction, client.settings.has(interaction.guild!.id, "hiderChannel"));
 		for (const [user, data] of Object.entries(members)) {
 			//we already parsed the user, so the cache should be up to date
 			let member : GuildMember | User | undefined = interaction.guild?.members.cache.get(user);
@@ -174,7 +175,7 @@ export const bulkAddTemplate = {
  * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
  * @returns {Promise<{[id: string]: UserData[]}>} The data parsed from the CSV file
  */
-export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction): Promise<{ [id: string]: UserData[]; }> {	
+export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction, allowPrivate?: boolean): Promise<{ [id: string]: UserData[]; }> {	
 	let header = [
 		"user",
 		"charName",
@@ -182,6 +183,7 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	if (guildTemplate.statistics) {
 		header = header.concat(Object.keys(guildTemplate.statistics));
 	}
+	if (allowPrivate) header.push("isPrivate");
 	const ul = ln(interaction?.locale ?? "en" as Locale);
 	if (guildTemplate.damage) {
 		header = header.concat(Object.keys(guildTemplate.damage));
@@ -233,7 +235,7 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	if (csvData.length === 0) {
 		throw new Error("Invalid CSV content");
 	}
-	return await step(csvData, guildTemplate, interaction);
+	return await step(csvData, guildTemplate, interaction, allowPrivate);
 }
 
 /**
@@ -257,7 +259,7 @@ async function readCSV(url: string): Promise<string> {
  * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
  * @returns {Promise<{[id: string]: UserData[]}>} The data parsed from the CSV file
  */
-async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interaction?: CommandInteraction): Promise<{ [id: string]: UserData[]; }> {
+async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interaction?: CommandInteraction, allowPrivate?: boolean): Promise<{ [id: string]: UserData[]; }> {
 	const members: {
 		[id: string]: UserData[];
 	} = {};
@@ -278,6 +280,7 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			}
 			userID = guildMember.id;
 		} 
+		const isPrivate = data.isPrivate;
 		if (!members[userID]) members[userID] = [];
 		if (guildTemplate.charName && !charName) {
 			if (interaction) await reply(interaction, {content: ul("bulk_add.errors.missing_charName", {user: userMention(userID)})});
@@ -309,15 +312,17 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 				stats[key] = data[key] as number;
 			});
 		}
-		
-		members[userID].push({
+		const newChar = {
 			userName: charName,
 			stats,
 			template: {
 				diceType: guildTemplate.diceType,
 				critical: guildTemplate.critical,
 			},
-		});
+			private: allowPrivate ? isPrivate : undefined,
+		};
+		if (!newChar.private) delete newChar.private;
+		members[userID].push(newChar);
 	}
 	return members;
 }

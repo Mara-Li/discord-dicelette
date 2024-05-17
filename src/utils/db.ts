@@ -2,7 +2,7 @@ import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import { EClient } from "@main";
-import {removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
+import {haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
 import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
 import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
@@ -96,12 +96,21 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
  * @param userId {string}
  * @param guild {Guild}
  * @param interaction {BaseInteraction}
- * @param charName {string}
+ * @param charName {string} 
+ * @param integrateCombinaison {boolean=true}
+ * @param allowAccess {boolean=true} Allow to access the private channel (only used by {@link displayUser})
  */
-export async function getUserFromMessage(guildData: Settings, userId: string, guild: Guild, interaction: BaseInteraction, charName?: string, integrateCombinaison: boolean = true) {
+export async function getUserFromMessage(
+	guildData: Settings, 
+	userId: string, 
+	guild: Guild, 
+	interaction: BaseInteraction, 
+	charName?: string, 
+	integrateCombinaison: boolean = true,
+	allowAccess: boolean = true
+	
+) {
 	const ul = ln(interaction.locale);
-	const userData = guildData.get(guild.id, `user.${userId}`);
-	if (!userData) return;
 	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const user = guildData.get(guild.id, `user.${userId}`)?.find(char => {
 		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
@@ -109,8 +118,11 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
 	});
 	if (!user) return;
 	const userMessageId = user.messageId;
-	const thread = await searchUserChannel(guildData, interaction, ul);
-	if (!thread) 
+	
+	const thread = await searchUserChannel(guildData, interaction, ul, user.isPrivate);
+	if (user.isPrivate && !allowAccess && !haveAccess(interaction, thread, userId)) {
+		throw new Error(ul("error.private"));
+	} else if (!thread) 
 		throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId);
@@ -139,16 +151,20 @@ export async function getUserFromMessage(guildData: Settings, userId: string, gu
  * @returns 
  */
 export async function registerUser(
-	userID: string, 
+	userData: {
+		userID: string,
+		isPrivate?: boolean,
+		charName?: string,
+		damage?: string[],
+		msgId: string,
+	},
 	interaction: BaseInteraction, 
-	msgId: string, 
 	thread: AnyThreadChannel | TextChannel | NewsChannel, 
 	enmap: Settings, 
-	charName?: string, 
-	damage?: string[], 
 	deleteMsg: boolean = true,
-	isPrivate: boolean = false
 ) {
+	const {userID, charName, msgId, isPrivate} = userData;
+	let {damage} = userData;
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
 	const uniCharName: string | undefined = charName ? removeAccents(charName.toLowerCase()) : undefined;
