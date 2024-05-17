@@ -328,3 +328,4 @@ export async function addAutoRole(interaction: BaseInteraction, member: string, 
 		}
 	}
 }
+
