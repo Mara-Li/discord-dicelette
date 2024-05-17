@@ -32,38 +32,37 @@ const temp = {
 	critical: { success: 20, failure: 1 }
 };
 
+const expectedResult: {[id: string]: UserData[]} = {
+	"mara__li" : [{
+		userName: "Blaïka",
+		stats: {
+			"STR": 12,
+			"DEX": 12,
+			"CON": 12,
+			"INT": 12,
+			"WIS": 12,
+			"CHA": 12,
+		},
+		template: temp,
+	}],
+	"truc" : [{
+		userName: "machin",
+		stats: {
+			"STR": 11,
+			"DEX": 10,
+			"CON": 11,
+			"INT": 10,
+			"WIS": 11,
+			"CHA": 10,
+		},
+		template: temp,
+	}],
+};
+
 describe("parseCSV", () => {
 	it("should be valid and equal", async () => {
 		const csv = readFileSync("tests/data/should_pass.csv", "utf-8");
-		
-		
 		const result = await parseCSV(csv, guildTemplate);
-		const expectedResult: {[id: string]: UserData[]} = {
-			"mara__li" : [{
-				userName: "Blaïka",
-				stats: {
-					"STR": 12,
-					"DEX": 12,
-					"CON": 12,
-					"INT": 12,
-					"WIS": 12,
-					"CHA": 12,
-				},
-				template: temp,
-			}],
-			"truc" : [{
-				userName: "machin",
-				stats: {
-					"STR": 11,
-					"DEX": 10,
-					"CON": 11,
-					"INT": 10,
-					"WIS": 11,
-					"CHA": 10,
-				},
-				template: temp,
-			}],
-		};
 		expect(result).toEqual(expectedResult);
 	});
 });
