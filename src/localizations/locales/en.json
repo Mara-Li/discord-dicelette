@@ -18,11 +18,13 @@
     "all_success": "",
     "description": "Add multiple characters at once",
     "errors": {
-      "headers": "",
+      "headers": "The column names do not match your model. \nPlease refer to the documentation and your template to check the column names.\n\n\nThe columns :\n- {{-name}}\nis/are missing.",
       "invalid_file": "The file must be a CSV file. \nYou have provided a {{-ext}} file.",
+      "invalid_header": "Columns are incorrect:\n- `{{- name}}`\nmissing",
       "max": "The {{- name}} value is greater than the imposed maximum ({{- max}}).",
       "min": "",
       "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!",
+      "missing_header": "",
       "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}"
     },
     "name": "bulk_add",

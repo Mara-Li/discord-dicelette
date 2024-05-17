@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+import { describe, expect,it} from "vitest";
 
 import { parseCSV } from "../src/commands/admin/bulk_add";
 import { UserData } from "../src/interface";
@@ -37,5 +38,9 @@ describe("parseCSV", () => {
 		const csv = readFileSync("tests/data/added_columns.csv", "utf-8");
 		const result = await parseCSV(csv, guildTemplate);
 		expect(result).toEqual(expectedResult);
+	});
+	it("should throw an error because of missing header", async () => {
+		const csv = readFileSync("tests/data/wrong_header.csv", "utf-8");
+		await expect(parseCSV(csv, guildTemplate)).rejects.toThrow("Missing header values");
 	});
 });

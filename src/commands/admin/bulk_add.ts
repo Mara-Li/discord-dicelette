@@ -196,6 +196,7 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	if (guildTemplate.statistics) {
 		header = header.concat(Object.keys(guildTemplate.statistics));
 	}
+	const ul = ln(interaction?.locale ?? "en" as Locale);
 	if (guildTemplate.damage) {
 		header = header.concat(Object.keys(guildTemplate.damage));
 	}
@@ -206,6 +207,7 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	if (!csvText || csvText.length === 0) {
 		throw new Error("Invalid CSV content");
 	}
+	let error: string | undefined = undefined;
 	let csvData: CSVRow[] = [];
 	Papa.parse(csvText.replaceAll(/\s+;\s*/gi, ";"), {
 		header: true,
@@ -214,12 +216,37 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 		//in case the file was wrongly parsed, we need to trim the space before and after the key
 		
 		async complete(results) {
+			if (!results.data) {
+				console.error("Error while parsing CSV", results.errors);
+				error= "Error while parsing CSV";
+				return;
+			}
+			//throw error if missing header (it shouldn't not throw if a header is added)
+			const dataHeader = results.meta.fields?.map(key => removeEmojiAccents(key));
+			if (!dataHeader) {
+				console.error("Error while parsing CSV, missing header");
+				if (interaction) await reply(interaction, {content: ul("bulk_add.errors.missing_header")});
+				error= "Missing header";
+				return;
+			}
+			//throw error only if missing values for the header
+			const missingHeader = header.filter(key => !dataHeader.includes(key));
+			if (missingHeader.length > 0) {
+				console.error("Error while parsing CSV, missing header values", missingHeader);
+				if (interaction) await reply(interaction, {content: ul("bulk_add.errors.headers", {name: missingHeader.join("\n- ")})});
+				error = "Missing header values";
+				return;
+			}
 			csvData = results.data as CSVRow[];
 		},
-		error(error: Error) {
-			console.error("Error while parsing CSV", error.message);
-		},
+		
 	});
+	if (error) {
+		throw new Error(error);
+	}
+	if (csvData.length === 0) {
+		throw new Error("Invalid CSV content");
+	}
 	return await step(csvData, guildTemplate, interaction);
 }
 
