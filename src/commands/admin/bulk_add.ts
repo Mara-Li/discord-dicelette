@@ -195,9 +195,10 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	}
 	header = header.map(key => removeEmojiAccents(key));
 	//papaparse can't be used in Node, we need first to create a readable stream
-	const csvText = await readCSV(url);
-	if (!csvText) {
-		throw new Error("Invalid URL");
+
+	const csvText = url.startsWith("https://") ? await readCSV(url) : url;
+	if (!csvText || csvText.length === 0) {
+		throw new Error("Invalid CSV content");
 	}
 	let csvData: CSVRow[] = [];
 	Papa.parse(csvText.replaceAll(/\s+;\s*/gi, ";"), {

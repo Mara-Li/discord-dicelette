@@ -1,11 +1,17 @@
 import { StatisticalTemplate } from "@dicelette/core";
+import { readFileSync } from "fs";
+import { re } from "mathjs";
 
 import { parseCSV } from "../src/commands/admin/bulk_add";
 import { UserData } from "../src/interface";
 
+function readLocalCSV(path: string) {
+	return readFileSync(path, "utf-8");
+}
+
 describe("parseCSV", () => {
-	it("parses a CSV file", async () => {
-		const url = "https://raw.githubusercontent.com/Dicelette/discord-dicelette/bulk-add/tests/test.csv";
+	it("should be valid and equal", async () => {
+		const csv = readFileSync("tests/data/should_pass.csv", "utf-8");
 		const guildTemplate: StatisticalTemplate = {
 			charName: true,
 			statistics: {
@@ -32,7 +38,7 @@ describe("parseCSV", () => {
 			diceType: "4d6",
 			critical: { success: 20, failure: 1 }
 		};
-		const result = await parseCSV(url, guildTemplate);
+		const result = await parseCSV(csv, guildTemplate);
 		const expectedResult: {[id: string]: UserData[]} = {
 			"mara__li" : [{
 				userName: "Blaïka",
