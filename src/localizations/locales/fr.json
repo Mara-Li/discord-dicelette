@@ -24,7 +24,7 @@
       "missing_header": "Votre CSV n'a pas de noms de colonnes !",
       "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}"
     },
-    "name": "masse_ajout",
+    "name": "import",
     "options": {
       "description": "Le fichier CSV à importer",
       "name": "csv"

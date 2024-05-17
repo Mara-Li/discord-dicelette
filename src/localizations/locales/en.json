@@ -24,7 +24,7 @@
       "missing_header": "",
       "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}"
     },
-    "name": "bulk_add",
+    "name": "import",
     "options": {
       "description": "The CSV file to import",
       "name": "csv"
