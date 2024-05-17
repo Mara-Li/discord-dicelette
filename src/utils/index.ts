@@ -6,12 +6,6 @@ import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, Butt
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
-
-import { EClient } from "..";
-
-
-
-
 /**
  * Set the tags for thread channel in forum
  * @param forum {ForumChannel}
