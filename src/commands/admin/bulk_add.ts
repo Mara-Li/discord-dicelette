@@ -230,10 +230,12 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 	const members: {
 		[id: string]: UserData[];
 	} = {};
+	const ul = ln(interaction?.locale ?? "en" as Locale);
 	//get the user id from the guild
 	for (const data of csv) {
 		const user = data.user;
 		const charName = data.charName;
+		
 		//get user from the guild
 		let guildMember: undefined | GuildMember;
 		let userID: string | undefined = user;
@@ -246,6 +248,11 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			userID = guildMember.id;
 		} 
 		if (!members[userID]) members[userID] = [];
+		if (guildTemplate.charName && !charName) {
+			if (interaction) await reply(interaction, {content: ul("bulk_add.errors.missing_charName", {user: userMention(userID)})});
+			console.warn(`Missing character name for ${user}`);
+			continue;
+		}
 		//prevent duplicate with verify the charName
 		if (members[userID].find(char => {
 			if (char.userName && charName) return removeEmojiAccents(char.userName) === removeEmojiAccents(charName);

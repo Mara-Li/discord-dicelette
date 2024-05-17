@@ -21,7 +21,8 @@
       "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.",
       "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
       "max": "La valeur {{- name}} est supérieure au maximum imposé ({{- max}}).",
-      "min": "La valeur {{- name}} est inférieure au minimum demandé ({{- min}})."
+      "min": "La valeur {{- name}} est inférieure au minimum demandé ({{- min}}).",
+      "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !"
     },
     "name": "masse_ajout",
     "options": {
