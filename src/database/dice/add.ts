@@ -141,7 +141,13 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 			await reply(interaction,{ content: ul("error.tooMuchDice"), ephemeral: true });
 			return;
 		}
-		registerUser(userID, interaction, interaction.message.id, thread, db, userName, damageName ? Object.keys(damageName) : undefined, false);
+		const userRegister = {
+			userID,
+			charName: userName,
+			damage: damageName ? Object.keys(damageName) : undefined,
+			msgId: interaction.message.id,
+		};
+		registerUser(userRegister, interaction, thread, db, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await reply(interaction,{ content: ul("modals.added.dice"), ephemeral: true });
 		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);

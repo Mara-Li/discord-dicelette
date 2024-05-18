@@ -93,7 +93,7 @@ export const dbRoll = {
 		const charName = optionChar ? removeAccents(optionChar.toLowerCase()) : undefined;
 		
 		try {
-			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
+			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, charName);
 			const userStatistiqueName = userStatistique?.userName ? removeAccents(userStatistique.userName.toLowerCase()) : undefined;
 			if (optionChar && userStatistiqueName !== charName) {
 				await reply(interaction,{ content: ul("error.charName", {charName: title(optionChar)}), ephemeral: true });

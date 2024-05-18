@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
-import {StatisticalTemplate} from "@dicelette/core";
+import {evalStatsDice, StatisticalTemplate} from "@dicelette/core";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import {addAutoRole, removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
@@ -28,6 +28,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 		return;
 	}
 	const charName = interaction.fields.getTextInputValue("charName");
+	const isPrivate = interaction.fields.getTextInputValue("private")?.toLowerCase() === "x";
 	const embed = new EmbedBuilder()
 		.setTitle(ul("embed.add"))
 		.setThumbnail(user.user.displayAvatarURL())
@@ -35,6 +36,7 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 		.addFields(
 			{ name: ul("common.charName"), value: charName.length > 0 ? charName : ul("common.noSet"), inline: true},
 			{ name: ul("common.user"), value: userMention(user.id), inline: true},
+			{name: ul("common.isPrivate"), value: isPrivate ? "✓" : "✕", inline: true},
 			{name: "\u200B", value: "_ _", inline: true}
 		);
 	//add continue button
@@ -57,6 +59,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const oldEmbeds = ensureEmbed(interaction.message);
 	let userID = oldEmbeds.fields.find(field => field.name === ul("common.user"))?.value;
 	let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul("common.charName"))?.value;
+	const isPrivate = oldEmbeds.fields.find(field => field.name === ul("common.isPrivate"))?.value === "✓";
 	if (charName && charName === ul("common.noSet"))
 		charName = undefined;
 	if (!userID) {
@@ -89,7 +92,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				inline: true,
 			
 			});
-		} else userDataEmbed.addFields(field);
+		} else if(field.name !== ul("common.isPrivate")) userDataEmbed.addFields(field);
 	}
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: {[name: string]: number} = {};
@@ -105,18 +108,20 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		for (const damage of damageFields) {
 			templateDamage[removeEmojiAccents(damage.name)] = damage.value;
 		}
-		if (template.damage)
-			for (const [name, dice] of Object.entries(template.damage)) {
-				templateDamage[name] = dice;
-				if (!diceEmbed) {
-					diceEmbed = createDiceEmbed(ul);
-				}
-				diceEmbed.addFields({
-					name: `${name}`,
-					value: `\`${dice}\``,
-					inline: true,
-				});
-			}
+	}
+	
+	for (const [name, dice] of Object.entries(template.damage ?? {})) {
+		if (!templateDamage) templateDamage = {};
+		templateDamage[name] = dice;
+		if (!diceEmbed) {
+			diceEmbed = createDiceEmbed(ul);
+		}
+		//why i forgot this????
+		diceEmbed.addFields({
+			name: `${name}`,
+			value: `\`${dice}\``,
+			inline: true,
+		});
 	}
 	//count the number of damage fields
 	const nbDmg = Object.keys(templateDamage || {}).length;
@@ -129,6 +134,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			critical: template.critical,
 		},	
 		damage: templateDamage,
+		private: isPrivate,
 	};
 	let templateEmbed: EmbedBuilder | undefined = undefined;
 	if (template.diceType || template.critical) {
@@ -157,9 +163,9 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		}
 	}
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
-	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: !!userDataEmbed, dice: !!diceEmbed, template: !!templateEmbed}, db);
+	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, {stats: !!statsEmbed, dice: !!diceEmbed, template: !!templateEmbed}, db);
 	await interaction.message.delete();
-	await addAutoRole(interaction, userID, !!userDataEmbed, !!diceEmbed,db );
+	await addAutoRole(interaction, userID, !!statsEmbed, !!diceEmbed, db );
 	await reply(interaction, { content: ul("modals.finished"), ephemeral: true});
 	return;
 }

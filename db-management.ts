@@ -95,7 +95,7 @@ function readAll() {
 	}
 }
 
-const unicode = (str?: string) => {
+const unicode = (str?: string|null) => {
 	if (!str) return undefined;
 	return removeAccents(str).toLowerCase();
 };

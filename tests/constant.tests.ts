@@ -25,6 +25,9 @@ export const guildTemplate: StatisticalTemplate = {
 	},
 };
 
+export const guildTemplate_noUserName: StatisticalTemplate = JSON.parse(JSON.stringify(guildTemplate));
+guildTemplate_noUserName.charName = false;
+
 const temp = {
 	diceType: "4d6",
 	critical: { success: 20, failure: 1 }
@@ -55,4 +58,16 @@ export const expectedResult: {[id: string]: UserData[]} = {
 		},
 		template: temp,
 	}],
+};
+
+export const expectedResult_WithSkills: {[id: string]: UserData[]} = JSON.parse(JSON.stringify(expectedResult));
+
+expectedResult_WithSkills.mara__li[0].damage = {
+	"Athletics": "1d4+STR",
+	"Acrobatics": "1d4+DEX",
+};
+
+expectedResult_WithSkills.truc[0].damage = {
+	"Athletics": "1d4+STR",
+	"Acrobatics": "1d4+DEX",
 };

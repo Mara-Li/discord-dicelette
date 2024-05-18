@@ -2,7 +2,7 @@ import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
-import { filterChoices, reply, searchUserChannel, title } from "@utils";
+import { filterChoices, isStatsThread, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { AutocompleteInteraction, CommandInteraction,CommandInteractionOptionResolver, Locale, PermissionFlagsBits, SlashCommandBuilder, userMention } from "discord.js";
 import i18next from "i18next";
@@ -65,7 +65,13 @@ export const deleteChar = {
 		}
 		const user = options.getUser(t("display.userLowercase"));
 		let charName = options.getString(t("common.character"))?.toLowerCase();
-		const thread = await searchUserChannel(client.settings, interaction, ul);
+		const charData = await getDatabaseChar(interaction, client, t);
+		const public_thread = await searchUserChannel(client.settings, interaction, ul);
+		let private_thread = await searchUserChannel(client.settings, interaction, ul, true);
+		if (
+			(private_thread && public_thread?.id === private_thread?.id)
+			|| isStatsThread(client.settings, interaction.guild!.id, private_thread)
+		) private_thread = undefined;
 		if (!charName) {
 			//delete all characters from the user
 			const allDataUser = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
@@ -74,15 +80,20 @@ export const deleteChar = {
 				return;
 			}
 			//list of all IDs of the messages to delete
-			const idsToDelete: string[] = Object.values(allDataUser).map((char) => char.messageId);
-			if (thread) {
-				thread.bulkDelete(idsToDelete);
+			const privateIds: string[] = Object.values(allDataUser).filter(data => data.isPrivate).map(data => data.messageId);
+			const publicIds: string[] = Object.values(allDataUser).filter(data => !data.isPrivate).map(data => data.messageId);
+			
+			if (public_thread) {
+				if (!private_thread) publicIds.push(...privateIds);
+				public_thread.bulkDelete(publicIds);
+			}
+			if (private_thread) {
+				private_thread.bulkDelete(privateIds);
 			}
 			client.settings.delete(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
 			await reply(interaction, ul("deleteChar.allSuccess", {user: userMention(user?.id ?? interaction.user.id)}));
 			return;
 		}
-		const charData = await getDatabaseChar(interaction, client, t);
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
 			if (charName) userName += ` (${charName})` ;
@@ -90,7 +101,8 @@ export const deleteChar = {
 			return;
 		}
 		charName = charName.includes(ul("common.default").toLowerCase()) ? undefined : charName;
-		if (!thread) {
+		const isPrivate = charData[user?.id ?? interaction.user.id].isPrivate;
+		if (!public_thread || (isPrivate && !private_thread)) {
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
 			return;
@@ -99,7 +111,7 @@ export const deleteChar = {
 		const msg = `${userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${title(charName)})*` : ""}`;
 		try {
 			//search for the message and delete it
-			const message = await thread.messages.fetch(messageID);
+			const message = isPrivate && private_thread ? await private_thread.messages.fetch(messageID) : await public_thread.messages.fetch(messageID);
 			await message.delete();
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			

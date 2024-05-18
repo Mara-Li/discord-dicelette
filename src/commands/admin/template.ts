@@ -108,7 +108,7 @@ export const generateTemplate = {
 			success: options.getNumber(t("generate.options.critical_success.name")) ?? undefined
 		};
 		//verify if everything is undefined in comparator object
-		const isUndefined = Object.values(critical).every(value => value === undefined);
+		const isUndefined = Object.values(critical).every(value => value == undefined);
 		if (isUndefined) critical = undefined;
 
 		const statistiqueTemplate: StatisticalTemplate = {
@@ -156,6 +156,15 @@ export const registerTemplate = {
 				.setDescriptionLocalizations(cmdLn("register.options.userChan.description"))
 				.setRequired(false)
 				.addChannelTypes(ChannelType.PublicThread, ChannelType.GuildText, ChannelType.PrivateThread)
+		)
+		.addChannelOption(option =>
+			option
+				.setName(t("register.options.hider.name"))
+				.setDescription(t("register.options.hider.description"))
+				.setNameLocalizations(cmdLn("register.options.hider.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.hider.description"))
+				.setRequired(false)
+				.addChannelTypes(ChannelType.PublicThread, ChannelType.GuildText, ChannelType.PrivateThread)
 		),
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
@@ -167,8 +176,9 @@ export const registerTemplate = {
 		const res = await fetch(template.url).then(res => res.json());
 		const templateData = verifyTemplateValue(res);
 		const guildId = interaction.guild.id;
-		const channel = options.getChannel(ul("common.channel"), true);
-		const userChan = options.getChannel(ul("register.options.userChan.name"), false);
+		const channel = options.getChannel(t("common.channel"), true);
+		const userChan = options.getChannel(t("register.options.userChan.name"), false);
+		const privateChan = options.getChannel(t("register.options.hider.name"), false);
 		if (
 			(!(channel instanceof TextChannel) && (!(channel instanceof ThreadChannel))) || 
 			(!userChan && !(channel instanceof TextChannel))
@@ -257,9 +267,8 @@ export const registerTemplate = {
 				statsName: statsName ?? [],
 				damageName: damageName ?? []
 			};
-			if (userChan) {
-				json.managerId = userChan.id;
-			}
+			if (userChan) json.managerId = userChan.id;
+			if (privateChan) json.privateChannel = privateChan.id;
 			client.settings.set(guildId, json);
 		} else {
 			const newData: GuildData = {

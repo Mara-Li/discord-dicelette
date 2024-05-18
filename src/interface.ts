@@ -39,6 +39,7 @@ export interface GuildData {
 	managerId?: string;
 	deleteAfter?: number;
 	timestamp?: boolean;
+	privateChannel?: string;
 	autoRole?: {
 		dice?: string;
 		stats?: string;
@@ -51,9 +52,10 @@ export interface GuildData {
 	},
 	user: {
 		[userID: string]: {
-			charName?: string;
+			charName?: string | null;
 			messageId: string;
 			damageName?: string[];
+			isPrivate?: boolean;
 		}[]
 	}
 
@@ -70,7 +72,7 @@ export interface GuildData {
  */
 export interface UserData {
 	/** by default, will be the id of the user, if changed to a string, it will be used */
-	userName?: string; 
+	userName?: string | null; 
 	/** The statistics as value */
 	stats?: {
 		[name: string] : number;
@@ -89,5 +91,6 @@ export interface UserData {
 	damage?: {
 		[name: string]: string;
 	}
+	private?: boolean;
 }
 

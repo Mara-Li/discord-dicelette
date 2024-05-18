@@ -2,8 +2,8 @@ import {log} from "@console";
 import { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
-import { filterChoices, removeEmojiAccents, reply, sendLogs, title } from "@utils";
-import { getTemplateWithDB, getUserFromMessage } from "@utils/db";
+import { filterChoices, haveAccess, removeEmojiAccents, reply, searchUserChannel, sendLogs, title } from "@utils";
+import { getDatabaseChar, getTemplateWithDB, getUserFromMessage } from "@utils/db";
 import {ChartJSNodeCanvas} from "chartjs-node-canvas";
 import { AttachmentBuilder, AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
@@ -154,16 +154,18 @@ export const graph = {
 		if (!guildData) return;
 		const choices: string[] = [];
 		let user = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
+		const privateChannel = await searchUserChannel(client.settings, interaction, ln(interaction.locale), true);
 		if (typeof user !== "string") {
 			user = interaction.user.id;
 		}
+		const allowed = haveAccess(interaction, privateChannel, user);
 		if (fixed.name === t("common.character")) {
-			//get ALL characters from the guild
 			const guildChars = guildData.user[user as string];
 			if (!guildChars) return;
 			for (const data of guildChars) {
 				if (data.charName)
-					choices.push(data.charName);
+					if (!data.isPrivate) choices.push(data.charName);
+					else if (allowed) choices.push(data.charName);
 			}
 		}
 		if (choices.length === 0) return;
@@ -189,44 +191,19 @@ export const graph = {
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
+		const charData = await getDatabaseChar(interaction, client, t);
 		const charName = options.getString(t("common.character"))?.toLowerCase();
-		let charData: { [key: string]: {
-			charName?: string;
-			messageId: string;
-			damageName?: string[];
-		} } = {};
-		if (!user && charName) {
-			//get the character data in the database 
-			const allUsersData = guildData.user;
-			const allUsers = Object.entries(allUsersData);
-			for (const [user, data] of allUsers) {
-				const userChar = data.find((char) => char.charName === charName);
-				if (userChar) {
-					charData = {
-						[user as string]: userChar
-					};
-					break;
-				}
-			}
-		} else {
-			const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
-			const findChara = userData?.find((char) => char.charName === charName);
-			if (!findChara) {
-				const userName = user?.username ?? interaction.user.username;
-				if (charName) userName.concat(` (${charName})`);
-				await reply(interaction,ul("error.userNotRegistered", {user: userName}));
-				return;
-			}
-			charData = {
-				[(user?.id ?? interaction.user.id)]: findChara
-			};
+		if (!charData) {
+			let userName = `<@${user?.id ?? interaction.user.id}>`;
+			if (charName) userName += ` (${charName})` ;
+			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
+			return;
 		}
 		try {
 			if (!interaction.guild || !interaction.channel) return;
 			const userId =  user?.id ?? interaction.user.id;
 			const charName = charData[userId].charName;
-			const userStatistique = await getUserFromMessage(client.settings, userId, interaction.guild, interaction, charName, false);
-
+			const userStatistique = await getUserFromMessage(client.settings, userId, interaction, charName,{integrateCombinaison: false, allowAccess: false});
 			if (!userStatistique || !userStatistique.stats) {
 				await reply(interaction,ul("error.notRegistered"));
 				return;
@@ -242,14 +219,14 @@ export const graph = {
 			if (serverTemplate?.statistics && (!min || !max)) {
 				if (!min) {
 					const allMin = Object.values(serverTemplate.statistics).map(stat => {
-						if (stat.min === undefined) return 0;
+						if (stat.min == undefined) return 0;
 						return stat.min;
 					});
 					min = Math.min(...allMin);
 				}
 				if (!max) {
 					const allMax = Object.values(serverTemplate.statistics).map(stat => {
-						if (stat.max === undefined) return 0;
+						if (stat.max == undefined) return 0;
 						return stat.max;
 					});
 					max = Math.max(...allMax);

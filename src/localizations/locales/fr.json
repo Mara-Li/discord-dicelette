@@ -18,11 +18,14 @@
     "all_success": "Tous les utilisateurs ont été enregistrés.",
     "description": "Ajouter plusieurs personnages d'un coup",
     "errors": {
+      "duplicate_charName": "Le personnage {{- charName}} (de {{- user}}) existe déjà dans la base .",
+      "global": "Les erreurs suivantes ont été trouvées :",
       "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.\n\nLes colonnes :\n- {{- name}} \nest/sont manquante(s).",
       "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
       "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !",
       "missing_header": "Votre CSV n'a pas de noms de colonnes !",
-      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}"
+      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}",
+      "user_not_found": "{{- user}} n'a pas été trouvé sur le serveur. Il est possible que le cache ne soit pas à jour, ou qu'il y ait une erreur dans l'ID ou l'username."
     },
     "name": "import",
     "options": {
@@ -61,13 +64,15 @@
     "character": "personnage",
     "default": "Défaut",
     "dice": "dé",
+    "isPrivate": "Personnage privé",
     "noSet": "/",
     "page": "Page {{- nb}}",
     "role": "rôle",
     "space": " ",
     "statistic": "statistique",
     "total": "Total",
-    "user": "Joueur"
+    "user": "Joueur",
+    "yes": "✓"
   },
   "config": {
     "autoRole": {
@@ -84,6 +89,7 @@
     "logs": "Channel des logs d'administration",
     "managerId": "Channel où seront envoyés les fiches",
     "name": "config",
+    "privateChan": "Channel des personnages privés",
     "rollChannel": "Log global des résultats de dés",
     "statsName": "Nom des statistiques",
     "templateID": "Lien vers la template",
@@ -182,6 +188,7 @@
     "noTemplateId": "Aucun message trouvé avec les données sauvegardée dans la base de données:\n- Channel : `{{- channelId}}`\n- ID du message : `{{- messageId}}`",
     "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
     "notRegistered": "Vous n'êtes pas enregistré",
+    "private": "Cette fiche est privée ! Vous n'avez pas la permissions pour la lire.",
     "rollChannelNotFound": "Le channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
@@ -190,6 +197,19 @@
     "user": "Utilisateur introuvable",
     "userChan": "Vous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "userNotRegistered": "{{- user}} n'est pas enregistré."
+  },
+  "export": {
+    "description": "Export tous les personnages sauvegardés dans un fichier csv",
+    "error": {
+      "noData": "Aucun n'utilisateur n'est enregistrés."
+    },
+    "name": "export",
+    "options": {
+      "desc": "Exporter que les personnages marqués comme privé",
+      "name": "fiche_privée_uniquement",
+      "private": {
+      }
+    }
   },
   "generate": {
     "description": "Générer un modèle de serveur pour les commandes de statistiques/dés",
@@ -327,6 +347,10 @@
     "finished": "Statistiques terminées",
     "firstPage": "Enregistrement de l'utilisateur - Page 1/{{- page}}",
     "noPermission": "Vous n'avez pas les autorisations pour faire cela",
+    "private": {
+      "description": "Si cette fiche est privée, mettez \"x\".",
+      "name": "Fiche privée"
+    },
     "removed": {
       "dice": "Les dés ont été supprimés de l'utilisateur",
       "stats": "Les statistiques ont bien été supprimés"
@@ -359,6 +383,10 @@
     "name": "enregistrer",
     "options": {
       "channel": "Le channel où le modèle et les utilisateurs seront enregistrés",
+      "hider": {
+        "description": "Permet de choisir un channel dans lequel les personnages \"privés\" seront envoyés",
+        "name": "personnage_privé"
+      },
       "template": {
         "description": "Le modèle à enregistrer",
         "name": "template"

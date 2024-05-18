@@ -100,7 +100,7 @@ export const dbd = {
 		const charName = charOptions ? removeAccents(charOptions).toLowerCase() : undefined;
 		const ul = ln(interaction.locale as Locale);
 		try {
-			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id,  interaction.guild, interaction, charName);
+			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, charName);
 			const userStatistiqueName = userStatistique?.userName ? removeAccents(userStatistique.userName).toLowerCase() : undefined;
 			if (charOptions && userStatistiqueName !== charName) {
 				await reply(interaction,{ content: ul("error.charName", {charName: title(charOptions)}), ephemeral: true });

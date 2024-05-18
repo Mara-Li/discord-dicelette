@@ -2,7 +2,7 @@ import { Settings, Translation } from "@interface";
 import { sendLogs, setTagsForRoll } from "@utils";
 import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
 /**
- * Find a thread by their data or create it
+ * Find a thread by their data or create it for roll
  * @param channel {TextChannel}
  * @param reason {string}
  */

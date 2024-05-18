@@ -273,6 +273,7 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	const disableThread = client.settings.get(interaction.guild!.id, "disableThread");
 	const autoRole = client.settings.get(interaction.guild!.id, "autoRole");
 	const managerId = client.settings.get(interaction.guild!.id, "managerId");
+	const privateChan = client.settings.get(interaction.guild!.id, "privateChannel");
 	const timestamp = client.settings.get(interaction.guild!.id, "timestamp");
 	const baseEmbed = new EmbedBuilder()
 		.setTitle(ul("config.title",{ guild: interaction.guild!.name}))
@@ -325,6 +326,12 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 		baseEmbed.addFields({
 			name: ul("config.managerId"),
 			value: `<#${managerId}>`,
+		});
+	}
+	if (privateChan) {
+		baseEmbed.addFields({
+			name: ul("config.privateChan"),
+			value: `<#${privateChan}>`,
 		});
 	}
 

@@ -29,7 +29,7 @@
       "combinaison": "endurance*2+force"
     }
   },
-  "diceType": "1d20+1d30+$>=50",
+  "diceType": "1d20+$>=20",
   "critical": {
     "failure": 1,
     "success": 50
