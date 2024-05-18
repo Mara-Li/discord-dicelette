@@ -20,14 +20,16 @@ export const exportData = {
 		.setDescription(t("export.description"))
 		.setDescriptionLocalizations(cmdLn("export.description"))
 		.addBooleanOption(option =>
-			option.setName("private")
-				.setDescription(t("export.options.private"))
-				.setDescriptionLocalizations(cmdLn("export.options.private"))
+			option
+				.setName(t("export.options.name"))
+				.setNameLocalizations(cmdLn("export.options.name"))
+				.setDescription(t("export.options.desc"))
+				.setDescriptionLocalizations(cmdLn("export.options.desc"))
 				.setRequired(false)),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const isPrivate = options.getBoolean("private") ?? undefined;
+		const isPrivate = options.getBoolean(t("export.options.name")) ?? undefined;
 		const allUser = client.settings.get(interaction.guild!.id, "user");
 		await interaction.deferReply();
 		if (!allUser) {
@@ -66,6 +68,8 @@ export const exportData = {
 			delimiter: ";",
 			skipEmptyLines: true,
 			columns,
+			quotes: [true],
+			header: true,
 		});
 		const buffer = Buffer.from(`\ufeff${csvText}`, "utf-8");
 		await interaction.editReply({

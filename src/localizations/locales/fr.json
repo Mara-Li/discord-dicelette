@@ -202,7 +202,10 @@
     },
     "name": "export",
     "options": {
-      "private": "Exporter que les personnages marqués comme privé"
+      "desc": "Exporter que les personnages marqués comme privé",
+      "name": "fiche_privée_uniquement",
+      "private": {
+      }
     }
   },
   "generate": {
