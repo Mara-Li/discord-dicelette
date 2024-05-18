@@ -95,9 +95,16 @@ function cleanUserDB(guildDB: Enmap<string, GuildData, unknown>, thread: GuildTe
 	const dbUser = guildDB.get(thread.guild.id, "user");
 	if (!dbUser) return;
 	if (!(thread instanceof TextChannel)) return;
-	for (const [user, data] of Object.entries(dbUser)) {
-		const oldMessage = thread.messages.cache.find(message => data.some(char => char.messageId === message.id));
-		if (oldMessage) guildDB.delete(thread.guild.id, `user.${user}`);
+	/** if private channel was deleted, delete only the private charactersheet */
+	const privateEnabled = guildDB.get(thread.guild.id, "privateChannel");
+	const isPrivate = privateEnabled === thread.id;
+	if (privateEnabled) {
+		for (const [user, data] of Object.entries(dbUser)) {
+			const filterChar = isPrivate ? data.filter(char => !char.isPrivate) : data.filter(char => char.isPrivate);
+			guildDB.set(thread.guild.id, filterChar, `user.${user}`);
+		}
+	} else {
+		guildDB.delete(thread.guild.id, "user");
 	}
 }
 
