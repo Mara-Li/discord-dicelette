@@ -205,7 +205,7 @@
     "name": "export",
     "options": {
       "desc": "Export only characters marked as private",
-      "name": "include_private_only",
+      "name": "private_sheet_only",
       "private": {
       }
     }
