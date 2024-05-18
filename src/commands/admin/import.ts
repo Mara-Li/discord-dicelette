@@ -5,7 +5,7 @@
 
 
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
-import { evalStatsDice, StatisticalTemplate } from "@dicelette/core";
+import { StatisticalTemplate } from "@dicelette/core";
 import { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
