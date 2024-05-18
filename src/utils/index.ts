@@ -2,7 +2,7 @@ import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "@interface";
 import { editUserButtons } from "@utils/buttons";
 import { registerManagerID, registerUser } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
-import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, NewsChannel, PermissionFlagsBits, PrivateThreadChannel, PublicThreadChannel, roleMention, StageChannel, TextChannel,User,VoiceChannel } from "discord.js";
+import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, NewsChannel, PermissionFlagsBits, PrivateThreadChannel, PublicThreadChannel, roleMention, StageChannel, TextChannel,VoiceChannel } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
@@ -64,7 +64,6 @@ export async function repostInThread(
 	if (!channel ||(channel instanceof CategoryChannel)) return;
 	if (!guildData) throw new Error(ul("error.generic", {e: "No server data found in database for this server."}));
 	let thread = await searchUserChannel(guildData, interaction, ul, userTemplate.private);
-	console.log(`Found: ${thread?.name}`);
 	if (!thread && channel instanceof TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as AnyThreadChannel | undefined;
 		if (!thread) {
