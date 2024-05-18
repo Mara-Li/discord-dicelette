@@ -276,9 +276,10 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
  * @param {BaseInteraction} interaction 
  * @param {string} channel 
  */
-export function registerManagerID(guildData: Settings, interaction: BaseInteraction, channel?: string) {
+export function registerManagerID(guildData: Settings, interaction: BaseInteraction, channel?: string, isPrivate: boolean = false) {
 	if (!channel || !interaction.guild) return;
-	guildData.set(interaction.guild.id, channel, "managerId");
+	if (!isPrivate) guildData.set(interaction.guild.id, channel, "managerId");
+	else guildData.set(interaction.guild.id, channel, "privateChannel");
 }
 
 export async function getFirstRegisteredChar(client: EClient, interaction: CommandInteraction, ul: Translation) {
