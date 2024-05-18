@@ -18,11 +18,14 @@
     "all_success": "Tous les utilisateurs ont été enregistrés.",
     "description": "Ajouter plusieurs personnages d'un coup",
     "errors": {
+      "duplicate_charName": "Le personnage {{- charName}} (de {{- user}}) existe déjà dans la base .",
+      "global": "Les erreurs suivantes ont été trouvées :",
       "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.\n\nLes colonnes :\n- {{- name}} \nest/sont manquante(s).",
       "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
       "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !",
       "missing_header": "Votre CSV n'a pas de noms de colonnes !",
-      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}"
+      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}",
+      "user_not_found": "{{- user}} n'a pas été trouvé sur le serveur. Il est possible que le cache ne soit pas à jour, ou qu'il y ait une erreur dans l'ID ou l'username."
     },
     "name": "import",
     "options": {

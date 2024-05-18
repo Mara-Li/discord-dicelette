@@ -59,7 +59,8 @@ export const bulkAdd = {
 		if (!guildTemplate) {
 			return reply(interaction, {content: ul("error.noTemplate")});
 		}
-		const members = await parseCSV(csvFile.url, guildTemplate, interaction, client.settings.has(interaction.guild!.id, "privateChannel"));
+		const {members, errors} = await parseCSV(csvFile.url, guildTemplate, interaction, client.settings.has(interaction.guild!.id, "privateChannel"));
+		
 		for (const [user, data] of Object.entries(members)) {
 			//we already parsed the user, so the cache should be up to date
 			let member : GuildMember | User | undefined = interaction.guild?.members.cache.get(user);
@@ -140,7 +141,9 @@ export const bulkAdd = {
 				await reply(interaction, {content: ul("bulk_add.user.success", {user: userMention(member.id)})});
 			}
 		}
-		await reply(interaction, {content: ul("bulk_add.all_success")});
+		let msg = ul("bulk_add.all_success");
+		if (errors.length > 0) msg += `\n${ul("bulk_add.errors.global")}\n${errors.join("\n")}`; 
+		await reply(interaction, {content: msg});
 		return;
 	}
 };
@@ -187,7 +190,7 @@ export const bulkAddTemplate = {
  * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
  * @returns {Promise<{[id: string]: UserData[]}>} The data parsed from the CSV file
  */
-export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction, allowPrivate?: boolean): Promise<{ [id: string]: UserData[]; }> {	
+export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction, allowPrivate?: boolean) {	
 	let header = [
 		"user",
 		"charName",
@@ -267,17 +270,16 @@ async function readCSV(url: string): Promise<string> {
  * @param csv {CSVRow[]} The data parsed from the CSV file
  * @param guildTemplate {StatisticalTemplate} The template of the guild
  * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
- * @returns {Promise<{[id: string]: UserData[]}>} The data parsed from the CSV file
  */
-async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interaction?: CommandInteraction, allowPrivate?: boolean): Promise<{ [id: string]: UserData[]; }> {
+async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interaction?: CommandInteraction, allowPrivate?: boolean) {
 	const members: {
 		[id: string]: UserData[];
 	} = {};
 	const ul = ln(interaction?.locale ?? "en" as Locale);
+	const errors: string[] = [];
 	//get the user id from the guild
 	for (const data of csv) {
 		const user = data.user.replaceAll("'", "").trim();
-		console.log(user);
 		const charName = data.charName;
 		
 		//get user from the guild
@@ -286,7 +288,9 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 		if (interaction) {
 			guildMember = interaction.guild?.members.cache.find(member => member.user.id === user || member.user.username === user || member.user.tag === user);
 			if (!guildMember || !guildMember.user) {
-				console.warn("Invalid user");
+				const msg = ul("bulk_add.errors.user_not_found", {user});
+				await reply(interaction, {content: msg});
+				errors.push(msg);
 				continue;
 			}
 			userID = guildMember.id;
@@ -294,7 +298,11 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 		const isPrivate = data.isPrivate;
 		if (!members[userID]) members[userID] = [];
 		if (guildTemplate.charName && !charName) {
-			if (interaction) await reply(interaction, {content: ul("bulk_add.errors.missing_charName", {user: userMention(userID)})});
+			if (interaction) {
+				const msg = ul("bulk_add.errors.missing_charName", {user: userMention(userID)});
+				await reply(interaction, {content: msg});
+				errors.push(msg);
+			}
 			console.warn(`Missing character name for ${user}`);
 			continue;
 		}
@@ -304,7 +312,15 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			else if (!char.userName && !charName) return true;
 			else return false;
 		})) {
-			console.warn("Duplicate character");
+			if (interaction) {
+				const msg = ul("bulk_add.errors.duplicate_charName", 
+					{user: userMention(userID), 
+						charName: charName ?? ul("common.default")
+					});
+				await reply(interaction, {content: msg});
+				errors.push(msg);
+			}
+			console.warn(`Duplicate character name for ${user}`);
 			continue;
 		}
 		const stats: {[name: string]: number} = {};
@@ -312,10 +328,13 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 		if (guildTemplate.statistics) {
 			const emptyStats = Object.keys(guildTemplate.statistics).filter(key => !data[key]);
 			if (emptyStats.length > 0) {
-				if (interaction) await reply(interaction, {content: ul("bulk_add.errors.missing_stats", {
-					user: userMention(userID), 
-					stats: emptyStats.join("\n- ")})
-				});
+				if (interaction) {
+					const msg = ul("bulk_add.errors.missing_stats", {
+						user: userMention(userID), 
+						stats: emptyStats.join("\n- ")});
+					await reply(interaction, {content: msg.content});
+					errors.push(msg.content);
+				}
 				console.warn(`Missing stats for ${user}. Missing: ${emptyStats.join("\n- ")}`);
 				continue;
 			}
@@ -345,6 +364,6 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 		if (!newChar.private) delete newChar.private;
 		members[userID].push(newChar);
 	}
-	return members;
+	return {members, errors};
 }
 

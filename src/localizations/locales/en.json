@@ -18,11 +18,14 @@
     "all_success": "",
     "description": "Add multiple characters at once",
     "errors": {
+      "duplicate_charName": "The character {{- charName}} (from {{- user}}) already exists in the database.",
+      "global": "The following errors were found:",
       "headers": "The column names do not match your model. \nPlease refer to the documentation and your template to check the column names.\n\n\nThe columns :\n- {{-name}}\nis/are missing.",
       "invalid_file": "The file must be a CSV file. \nYou have provided a {{-ext}} file.",
       "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!",
       "missing_header": "",
-      "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}"
+      "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}",
+      "user_not_found": "{{- user}} was not found on the server. \nIt is possible that the cache is not up to date, or that there is an error in the ID or username."
     },
     "name": "import",
     "options": {
