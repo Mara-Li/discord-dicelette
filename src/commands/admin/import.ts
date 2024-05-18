@@ -321,7 +321,7 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 				stats[key] = data[key] as number;
 			});
 		}
-		const dice: {[name: string]: string} | undefined = data.dice ? data.dice.split("/\r?\n/").reduce((acc, line) => {
+		const dice: {[name: string]: string} | undefined = data.dice ? data.dice.split(/\r?\n/).reduce((acc, line) => {
 			const match = line.match(/-\s*([^:]+)\s*:\s*(.+)/);
 			if (match) {
 				const key = match[1].trim();
