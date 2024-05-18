@@ -58,7 +58,7 @@ export const bulkAdd = {
 		if (!guildTemplate) {
 			return reply(interaction, {content: ul("error.noTemplate")});
 		}
-		const members = await parseCSV(csvFile.url, guildTemplate, interaction, client.settings.has(interaction.guild!.id, "hiderChannel"));
+		const members = await parseCSV(csvFile.url, guildTemplate, interaction, client.settings.has(interaction.guild!.id, "privateChannel"));
 		for (const [user, data] of Object.entries(members)) {
 			//we already parsed the user, so the cache should be up to date
 			let member : GuildMember | User | undefined = interaction.guild?.members.cache.get(user);

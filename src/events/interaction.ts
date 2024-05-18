@@ -92,7 +92,7 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: Translation,
  */
 async function buttonSubmit(interaction: ButtonInteraction, ul: Translation, interactionUser: User, template: StatisticalTemplate, db: Settings) {
 	if (interaction.customId === "register")
-		await open_register_user(interaction, template, interactionUser, ul, db.has(interaction.guild!.id, "hiderChannel"));
+		await open_register_user(interaction, template, interactionUser, ul, db.has(interaction.guild!.id, "privateChannel"));
 	else if (interaction.customId=="continue") {
 		await continuePage(interaction, template, ul, interactionUser);
 	} else if (interaction.customId.includes("add_dice")) {

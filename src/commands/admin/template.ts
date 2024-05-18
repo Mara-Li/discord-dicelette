@@ -176,9 +176,9 @@ export const registerTemplate = {
 		const res = await fetch(template.url).then(res => res.json());
 		const templateData = verifyTemplateValue(res);
 		const guildId = interaction.guild.id;
-		const channel = options.getChannel(ul("common.channel"), true);
-		const userChan = options.getChannel(ul("register.options.userChan.name"), false);
-		const privateChar = options.getChannel(ul("register.options.hider.name"), false);
+		const channel = options.getChannel(t("common.channel"), true);
+		const userChan = options.getChannel(t("register.options.userChan.name"), false);
+		const privateChan = options.getChannel(t("register.options.hider.name"), false);
 		if (
 			(!(channel instanceof TextChannel) && (!(channel instanceof ThreadChannel))) || 
 			(!userChan && !(channel instanceof TextChannel))
@@ -268,7 +268,7 @@ export const registerTemplate = {
 				damageName: damageName ?? []
 			};
 			if (userChan) json.managerId = userChan.id;
-			if (privateChar) json.hiderChannel = privateChar.id;
+			if (privateChan) json.privateChannel = privateChan.id;
 			client.settings.set(guildId, json);
 		} else {
 			const newData: GuildData = {

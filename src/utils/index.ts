@@ -64,6 +64,7 @@ export async function repostInThread(
 	if (!channel ||(channel instanceof CategoryChannel)) return;
 	if (!guildData) throw new Error(ul("error.generic", {e: "No server data found in database for this server."}));
 	let thread = await searchUserChannel(guildData, interaction, ul, userTemplate.private);
+	console.log(`Found: ${thread?.name}`);
 	if (!thread && channel instanceof TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as AnyThreadChannel | undefined;
 		if (!thread) {
@@ -252,9 +253,15 @@ export function displayOldAndNewStats(oldStats?: APIEmbedField[], newStats?: API
 	return stats;
 }
 
-export async function searchUserChannel(guildData: Settings, interaction: BaseInteraction, ul: Translation, isPrivate?: boolean ) {
+export async function searchUserChannel(
+	guildData: Settings, 
+	interaction: BaseInteraction, 
+	ul: Translation, 
+	isPrivate?: boolean 
+) {
 	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
-	const managerID = isPrivate ? guildData.get(interaction.guild!.id, "hiderChannel") : guildData.get(interaction.guild!.id, "managerId");
+	const baseChannel = guildData.get(interaction.guild!.id, "managerId");
+	const managerID = isPrivate ? guildData.get(interaction.guild!.id, "privateChannel") ?? baseChannel : baseChannel;
 	if (managerID) {
 		const channel = await interaction.guild?.channels.fetch(managerID);
 		if (!channel || (channel instanceof CategoryChannel) || channel instanceof ForumChannel || channel instanceof MediaChannel || channel instanceof StageChannel || channel instanceof VoiceChannel) {

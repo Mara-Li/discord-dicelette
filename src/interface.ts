@@ -39,7 +39,7 @@ export interface GuildData {
 	managerId?: string;
 	deleteAfter?: number;
 	timestamp?: boolean;
-	hiderChannel?: string;
+	privateChannel?: string;
 	autoRole?: {
 		dice?: string;
 		stats?: string;
