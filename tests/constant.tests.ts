@@ -25,6 +25,9 @@ export const guildTemplate: StatisticalTemplate = {
 	},
 };
 
+export const guildTemplate_noUserName: StatisticalTemplate = JSON.parse(JSON.stringify(guildTemplate));
+guildTemplate_noUserName.charName = false;
+
 const temp = {
 	diceType: "4d6",
 	critical: { success: 20, failure: 1 }

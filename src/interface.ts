@@ -72,7 +72,7 @@ export interface GuildData {
  */
 export interface UserData {
 	/** by default, will be the id of the user, if changed to a string, it will be used */
-	userName?: string; 
+	userName?: string | null; 
 	/** The statistics as value */
 	stats?: {
 		[name: string] : number;
