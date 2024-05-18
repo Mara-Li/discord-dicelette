@@ -3,7 +3,7 @@ import { describe, expect,it} from "vitest";
 
 import { parseCSV } from "../src/commands/admin/import";
 import { UserData } from "../src/interface";
-import { expectedResult, guildTemplate, guildTemplate_noUserName } from "./constant.tests";
+import { expectedResult, expectedResult_WithSkills, guildTemplate, guildTemplate_noUserName } from "./constant.tests";
 
 describe("parseCSV", () => {
 	it("should be valid and equal", async () => {
@@ -77,5 +77,13 @@ describe("parseCSV with no userName", () => {
 		expected.truc[0].private = undefined;
 		expected.mara__li[0].private = true;
 		expect(result).toEqual(expected);
+	});
+});
+
+describe("parseCSV with skills", () => {
+	it("should pass", async () => {
+		const csv = readFileSync("tests/data/skills/should_pass.csv", "utf-8");
+		const result = await parseCSV(csv, guildTemplate);
+		expect(result).toEqual(expectedResult_WithSkills);
 	});
 });
