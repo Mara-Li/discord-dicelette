@@ -5,7 +5,7 @@
 
 
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
-import { StatisticalTemplate } from "@dicelette/core";
+import { evalStatsDice, StatisticalTemplate } from "@dicelette/core";
 import { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
@@ -22,6 +22,7 @@ export type CSVRow = {
 	user: string;
 	charName: string | undefined | null;
 	isPrivate: boolean | undefined;
+	dice: string | undefined;
 	[key: string]: string | number | undefined | boolean | null;
 };
 
@@ -98,6 +99,15 @@ export const bulkAdd = {
 						inline: true,
 					});
 				}
+
+				for (const [name, dice] of Object.entries(char.damage ?? {})) {
+					diceEmbed!.addFields({
+						name : title(name),
+						value: `\`${dice}\``,
+						inline: true,
+					});
+				}
+
 				let templateEmbed: EmbedBuilder | undefined = undefined;
 				if (guildTemplate.diceType || guildTemplate.critical) {
 					templateEmbed = new EmbedBuilder()
@@ -126,7 +136,6 @@ export const bulkAdd = {
 				const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
 				await repostInThread(allEmbeds, interaction, char, member.id, ul, {stats: statsEmbed ? true : false, dice: diceEmbed ? true : false, template: templateEmbed ? true : false}, client.settings);
 				addAutoRole(interaction, member.id, !!diceEmbed, !!statsEmbed, client.settings);
-				
 				await reply(interaction, {content: ul("bulk_add.user.success", {user: userMention(member.id)})});
 			}
 		}
@@ -161,6 +170,8 @@ export const bulkAddTemplate = {
 		if (guildTemplate.statistics) {
 			header.push(...Object.keys(guildTemplate.statistics));
 		}
+		if (client.settings.has(interaction.guild.id, "privateChannel")) header.push("isPrivate");
+		header.push("dice");
 		//create CSV
 		const csvText = `\ufeff${header.join(";")}\n`;
 		const buffer = Buffer.from(csvText, "utf-8");
@@ -185,9 +196,7 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	}
 	if (allowPrivate) header.push("isPrivate");
 	const ul = ln(interaction?.locale ?? "en" as Locale);
-	if (guildTemplate.damage) {
-		header = header.concat(Object.keys(guildTemplate.damage));
-	}
+	header.push("dice");
 	header = header.map(key => removeEmojiAccents(key));
 	//papaparse can't be used in Node, we need first to create a readable stream
 
@@ -218,7 +227,7 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 				return;
 			}
 			//throw error only if missing values for the header
-			const missingHeader = header.filter(key => !dataHeader.includes(key));
+			const missingHeader = header.filter(key => !dataHeader.includes(key)).filter(key => key !== "dice");
 			if (missingHeader.length > 0) {
 				console.error("Error while parsing CSV, missing header values", missingHeader);
 				if (interaction) await reply(interaction, {content: ul("bulk_add.errors.headers", {name: missingHeader.join("\n- ")})});
@@ -312,7 +321,17 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 				stats[key] = data[key] as number;
 			});
 		}
-		const newChar = {
+		const dice: {[name: string]: string} | undefined = data.dice ? data.dice.split("/\r?\n/").reduce((acc, line) => {
+			const match = line.match(/-\s*([^:]+)\s*:\s*(.+)/);
+			if (match) {
+				const key = match[1].trim();
+				const value = match[2].trim();
+				acc[key] = value;
+			} 
+			return acc;
+		}, {} as {[name: string]: string}) : undefined;
+		console.log(dice);
+		const newChar: UserData = {
 			userName: charName,
 			stats,
 			template: {
@@ -320,6 +339,7 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 				critical: guildTemplate.critical,
 			},
 			private: allowPrivate ? isPrivate : undefined,
+			damage: dice,
 		};
 		if (!newChar.private) delete newChar.private;
 		members[userID].push(newChar);

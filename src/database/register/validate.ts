@@ -109,11 +109,8 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			templateDamage[removeEmojiAccents(damage.name)] = damage.value;
 		}
 	}
-	const evaluatedTemplateDamage = templateDamage ? Object.entries(templateDamage).reduce((acc, [name, dice]) => {
-		acc[name] = evalStatsDice(dice, stats);
-		return acc;
-	}, {} as {[name: string]: string}) : undefined;
-	for (const [name, dice] of Object.entries(evaluatedTemplateDamage ?? {})) {
+	
+	for (const [name, dice] of Object.entries(template.damage ?? {})) {
 		if (!templateDamage) templateDamage = {};
 		templateDamage[name] = dice;
 		if (!diceEmbed) {

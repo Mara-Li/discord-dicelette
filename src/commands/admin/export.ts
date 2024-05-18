@@ -46,6 +46,7 @@ export const exportData = {
 				const stats = await getUserFromMessage(client.settings, user, interaction, char.charName, {skipNotFound: true});
 				if (!stats) continue;
 				//reparse the statsName to get the name with accented characters
+				const dice: undefined | string = stats.damage ? Object.keys(stats.damage).map((key) => `- ${key}: ${stats.damage?.[key]}`).join("\n") : undefined;
 				let newStats: { [key: string]: number | undefined} = {};
 				if (statsName && stats.stats) {
 					for (const name of statsName) {
@@ -56,6 +57,7 @@ export const exportData = {
 					user,
 					charName: char.charName,
 					isPrivate: char.isPrivate !== undefined ? char.isPrivate : isPrivateAllowed ? false : undefined,
+					dice,
 					...newStats,
 				});
 			}
@@ -64,6 +66,7 @@ export const exportData = {
 		const columns = ["user", "charName"];
 		if (client.settings.get(interaction.guild.id, "privateChannel")) columns.push("isPrivate");
 		if (statsName) columns.push(...statsName);
+		columns.push("dice");
 		const csvText = Papa.unparse(csv, {
 			delimiter: ";",
 			skipEmptyLines: true,

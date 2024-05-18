@@ -78,10 +78,14 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 			continue;
 		} 
 		const statsValues = parseStatsString(statsEmbeds);
-		const diceEvaluated = evalStatsDice(dice, statsValues);
+		try {
+			evalStatsDice(dice, statsValues);
+		} catch (error) {
+			throw new Error(ul("error.invalidDice.withDice", {dice}));
+		}
 		newEmbedDice.push({
 			name: title(skill),
-			value: diceEvaluated,
+			value: `\`${dice}\``,
 			inline: true
 		});
 	}
@@ -93,7 +97,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 			//register the old value
 				newEmbedDice.push({
 					name: title(name),
-					value: field.value,
+					value: `${field.value}`,
 					inline: true
 				});
 			}
