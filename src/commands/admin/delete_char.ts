@@ -65,7 +65,10 @@ export const deleteChar = {
 		}
 		const user = options.getUser(t("display.userLowercase"));
 		let charName = options.getString(t("common.character"))?.toLowerCase();
-		const thread = await searchUserChannel(client.settings, interaction, ul);
+		const charData = await getDatabaseChar(interaction, client, t);
+		const public_thread = await searchUserChannel(client.settings, interaction, ul);
+		let private_thread = await searchUserChannel(client.settings, interaction, ul, true);
+		if (private_thread && public_thread?.id === private_thread?.id) private_thread = undefined;
 		if (!charName) {
 			//delete all characters from the user
 			const allDataUser = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
@@ -75,14 +78,13 @@ export const deleteChar = {
 			}
 			//list of all IDs of the messages to delete
 			const idsToDelete: string[] = Object.values(allDataUser).map((char) => char.messageId);
-			if (thread) {
-				thread.bulkDelete(idsToDelete);
+			if (public_thread) {
+				public_thread.bulkDelete(idsToDelete);
 			}
 			client.settings.delete(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
 			await reply(interaction, ul("deleteChar.allSuccess", {user: userMention(user?.id ?? interaction.user.id)}));
 			return;
 		}
-		const charData = await getDatabaseChar(interaction, client, t);
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
 			if (charName) userName += ` (${charName})` ;
@@ -90,7 +92,7 @@ export const deleteChar = {
 			return;
 		}
 		charName = charName.includes(ul("common.default").toLowerCase()) ? undefined : charName;
-		if (!thread) {
+		if (!public_thread) {
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
 			return;
@@ -99,7 +101,7 @@ export const deleteChar = {
 		const msg = `${userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${title(charName)})*` : ""}`;
 		try {
 			//search for the message and delete it
-			const message = await thread.messages.fetch(messageID);
+			const message = await public_thread.messages.fetch(messageID);
 			await message.delete();
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			
