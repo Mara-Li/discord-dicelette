@@ -276,14 +276,15 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 	const ul = ln(interaction?.locale ?? "en" as Locale);
 	//get the user id from the guild
 	for (const data of csv) {
-		const user = data.user;
+		const user = data.user.replaceAll("'", "").trim();
+		console.log(user);
 		const charName = data.charName;
 		
 		//get user from the guild
 		let guildMember: undefined | GuildMember;
 		let userID: string | undefined = user;
 		if (interaction) {
-			guildMember = (await interaction.guild!.members.fetch({query: user})).first();
+			guildMember = interaction.guild?.members.cache.find(member => member.user.id === user || member.user.username === user || member.user.tag === user);
 			if (!guildMember || !guildMember.user) {
 				console.warn("Invalid user");
 				continue;
@@ -322,7 +323,7 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 				stats[key] = data[key] as number;
 			});
 		}
-		const dice: {[name: string]: string} | undefined = data.dice ? data.dice.split(/\r?\n/).reduce((acc, line) => {
+		const dice: {[name: string]: string} | undefined = data.dice?.replaceAll("'", "") ? data.dice.split(/\r?\n/).reduce((acc, line) => {
 			const match = line.match(/-\s*([^:]+)\s*:\s*(.+)/);
 			if (match) {
 				const key = match[1].trim();
@@ -331,7 +332,6 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			} 
 			return acc;
 		}, {} as {[name: string]: string}) : undefined;
-		console.log(dice);
 		const newChar: UserData = {
 			userName: charName,
 			stats,
