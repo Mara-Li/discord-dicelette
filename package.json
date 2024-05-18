@@ -45,6 +45,7 @@
     "@types/parse-color": "^1.0.3",
     "better-serialize": "^1.0.0",
     "chalk": "^4",
+    "chart.js": "^3.9.1",
     "color-parse": "^2.0.2",
     "commit-and-tag-version": "^12.4.0",
     "csv-generate": "^4.4.1",
