@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
-import {StatisticalTemplate} from "@dicelette/core";
+import {evalStatsDice, StatisticalTemplate} from "@dicelette/core";
 import { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import {addAutoRole, removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
@@ -108,18 +108,23 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		for (const damage of damageFields) {
 			templateDamage[removeEmojiAccents(damage.name)] = damage.value;
 		}
-		if (template.damage)
-			for (const [name, dice] of Object.entries(template.damage)) {
-				templateDamage[name] = dice;
-				if (!diceEmbed) {
-					diceEmbed = createDiceEmbed(ul);
-				}
-				diceEmbed.addFields({
-					name: `${name}`,
-					value: `\`${dice}\``,
-					inline: true,
-				});
-			}
+	}
+	const evaluatedTemplateDamage = templateDamage ? Object.entries(templateDamage).reduce((acc, [name, dice]) => {
+		acc[name] = evalStatsDice(dice, stats);
+		return acc;
+	}, {} as {[name: string]: string}) : undefined;
+	for (const [name, dice] of Object.entries(evaluatedTemplateDamage ?? {})) {
+		if (!templateDamage) templateDamage = {};
+		templateDamage[name] = dice;
+		if (!diceEmbed) {
+			diceEmbed = createDiceEmbed(ul);
+		}
+		//why i forgot this????
+		diceEmbed.addFields({
+			name: `${name}`,
+			value: `\`${dice}\``,
+			inline: true,
+		});
 	}
 	//count the number of damage fields
 	const nbDmg = Object.keys(templateDamage || {}).length;
