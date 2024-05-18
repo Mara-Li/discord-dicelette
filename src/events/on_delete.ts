@@ -60,11 +60,7 @@ export const delete_message = (client: EClient): void => {
 			const channel = message.channel;
 			if (channel.isDMBased()) return;
 			if (client.settings.get(guildID, "templateID.messageId") === messageId) client.settings.delete(guildID, "templateID");
-			if (
-				channel.id !== client.settings.get(guildID, "privateChannel") 
-				|| channel.id !== client.settings.get(guildID, "managerId") ||
-				(channel.name !== "📝 • [STATS]" && channel.parentId === client.settings.get(guildID, "templateID.channelId"))
-			) return;
+			
 			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0){
 				for (const [user, values] of Object.entries(dbUser)) {
