@@ -2,7 +2,7 @@
  * Allow to export all characters from the database to a CSV file
 */
 
-import { cmdLn } from "@localization";
+import { cmdLn, ln } from "@localization";
 import { EClient } from "@main";
 import { removeEmojiAccents } from "@utils";
 import { getUserFromMessage } from "@utils/db";
@@ -36,6 +36,7 @@ export const exportData = {
 			await interaction.reply(t("export.error.noData"));
 			return;
 		}
+		const ul = ln(interaction.locale);
 		const csv: CSVRow[] = [];
 		const statsName = client.settings.get(interaction.guild.id, "templateID.statsName");
 		const isPrivateAllowed = client.settings.get(interaction.guild.id, "privateChannel");
@@ -46,7 +47,7 @@ export const exportData = {
 				const stats = await getUserFromMessage(client.settings, user, interaction, char.charName, {skipNotFound: true});
 				if (!stats) continue;
 				//reparse the statsName to get the name with accented characters
-				const dice: undefined | string = stats.damage ? Object.keys(stats.damage).map((key) => `- ${key}: ${stats.damage?.[key]}`).join("\n") : undefined;
+				const dice: undefined | string = stats.damage ? Object.keys(stats.damage).map((key) => `- ${key}${ul("common.space")}: ${stats.damage?.[key]}`).join("\n") : undefined;
 				let newStats: { [key: string]: number | undefined} = {};
 				if (statsName && stats.stats) {
 					for (const name of statsName) {
