@@ -37,7 +37,7 @@ export async function setTagsForRoll(forum: ForumChannel) {
  * Title case a string
  * @param str {str}
  */
-export function title(str?: string) {
+export function title(str?: string | null) {
 	if (!str) return "";
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }

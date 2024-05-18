@@ -104,7 +104,7 @@ export async function getUserFromMessage(
 	guildData: Settings, 
 	userId: string, 
 	interaction: BaseInteraction, 
-	charName?: string, 
+	charName?: string | null, 
 	options?: {
 		integrateCombinaison?: boolean,
 		allowAccess?: boolean,

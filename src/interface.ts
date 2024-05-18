@@ -52,7 +52,7 @@ export interface GuildData {
 	},
 	user: {
 		[userID: string]: {
-			charName?: string;
+			charName?: string | null;
 			messageId: string;
 			damageName?: string[];
 			isPrivate?: boolean;

@@ -20,9 +20,9 @@ const t = i18next.getFixedT("en");
 
 export type CSVRow = {
 	user: string;
-	charName: string | undefined;
+	charName: string | undefined | null;
 	isPrivate: boolean | undefined;
-	[key: string]: string | number | undefined | boolean;
+	[key: string]: string | number | undefined | boolean | null;
 };
 
 /**
