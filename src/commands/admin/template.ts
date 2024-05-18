@@ -108,7 +108,7 @@ export const generateTemplate = {
 			success: options.getNumber(t("generate.options.critical_success.name")) ?? undefined
 		};
 		//verify if everything is undefined in comparator object
-		const isUndefined = Object.values(critical).every(value => value === undefined);
+		const isUndefined = Object.values(critical).every(value => value == undefined);
 		if (isUndefined) critical = undefined;
 
 		const statistiqueTemplate: StatisticalTemplate = {

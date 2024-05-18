@@ -38,7 +38,7 @@ export async function getDatabaseChar(interaction: CommandInteraction, client: E
 		for (const [user, data] of allUsers) {
 			const userChar = data.find((char) => {
 				if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
-				return (charName === undefined && char.charName === undefined);
+				return (charName == undefined && char.charName == undefined);
 			});
 			if (userChar) {
 				return {
@@ -50,7 +50,7 @@ export async function getDatabaseChar(interaction: CommandInteraction, client: E
 	const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
 	let findChara = userData?.find((char) => {
 		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
-		return (charName === undefined && char.charName === undefined);
+		return (charName == undefined && char.charName == undefined);
 	});
 	if (!findChara)
 		findChara = userData?.[0];
@@ -118,7 +118,7 @@ export async function getUserFromMessage(
 	const guild = interaction.guild;
 	const user = guildData.get(guild!.id, `user.${userId}`)?.find(char => {
 		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
-		return (charName === undefined && char.charName === undefined);
+		return (charName == undefined && char.charName == undefined);
 	});
 	if (!user) return;
 	const userMessageId = user.messageId;
@@ -190,11 +190,11 @@ export async function registerUser(
 	if (user) {
 		const char = user.find(char => {
 			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
-			return (char.charName === undefined && charName === undefined);
+			return (char.charName == undefined && charName == undefined);
 		});
 		const charIndx = user.findIndex(char => {
 			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
-			return (char.charName === undefined && charName === undefined);
+			return (char.charName == undefined && charName == undefined);
 		});
 		if (char){
 			//delete old message

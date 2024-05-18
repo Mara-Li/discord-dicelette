@@ -117,7 +117,7 @@ export function deleteUser(
 	//delete the character from the database
 	const userCharIndex = guildData.user[user?.id ?? interaction.user.id].findIndex((char) => {
 		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
-		return (charName === undefined && char.charName === undefined);
+		return (charName == undefined && char.charName == undefined);
 	});
 	if (userCharIndex === -1) {
 		return guildData;

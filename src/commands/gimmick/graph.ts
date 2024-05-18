@@ -219,14 +219,14 @@ export const graph = {
 			if (serverTemplate?.statistics && (!min || !max)) {
 				if (!min) {
 					const allMin = Object.values(serverTemplate.statistics).map(stat => {
-						if (stat.min === undefined) return 0;
+						if (stat.min == undefined) return 0;
 						return stat.min;
 					});
 					min = Math.min(...allMin);
 				}
 				if (!max) {
 					const allMax = Object.values(serverTemplate.statistics).map(stat => {
-						if (stat.max === undefined) return 0;
+						if (stat.max == undefined) return 0;
 						return stat.max;
 					});
 					max = Math.max(...allMax);
