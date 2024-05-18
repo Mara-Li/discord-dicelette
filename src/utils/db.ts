@@ -103,16 +103,20 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 export async function getUserFromMessage(
 	guildData: Settings, 
 	userId: string, 
-	guild: Guild, 
 	interaction: BaseInteraction, 
 	charName?: string, 
-	integrateCombinaison: boolean = true,
-	allowAccess: boolean = true
-	
+	options?: {
+		integrateCombinaison?: boolean,
+		allowAccess?: boolean,
+		skipNotFound?: boolean
+	}
 ) {
+	if (!options) options = {integrateCombinaison: true, allowAccess: true, skipNotFound: false};
+	const {integrateCombinaison, allowAccess, skipNotFound} = options;
 	const ul = ln(interaction.locale);
 	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
-	const user = guildData.get(guild.id, `user.${userId}`)?.find(char => {
+	const guild = interaction.guild;
+	const user = guildData.get(guild!.id, `user.${userId}`)?.find(char => {
 		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
 		return (charName === undefined && char.charName === undefined);
 	});
@@ -129,13 +133,13 @@ export async function getUserFromMessage(
 		return getUserByEmbed(message, ul, undefined, integrateCombinaison);
 	} catch (error) {
 		//remove the user with faulty messageId from the database
-		const dbUser = guildData.get(guild.id, `user.${userId}`);
+		const dbUser = guildData.get(guild!.id, `user.${userId}`);
 		if (!dbUser) return;
 		const index = dbUser.findIndex(char => char.messageId === userMessageId);
 		if (index === -1) return;
 		dbUser.splice(index, 1);
-		guildData.set(guild.id, dbUser, `user.${userId}`);
-		throw new Error(ul("error.user"));
+		guildData.set(guild!.id, dbUser, `user.${userId}`);
+		if (!skipNotFound) throw new Error(ul("error.user"));
 	}
 }
 
@@ -289,7 +293,7 @@ export async function getFirstRegisteredChar(client: EClient, interaction: Comma
 	}
 	const firstChar = userData[0];
 	const optionChar = title(firstChar.charName);
-	const userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction!.guild as Guild, interaction, firstChar.charName);
+	const userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, firstChar.charName);
 
 	return {optionChar, userStatistique};
 }

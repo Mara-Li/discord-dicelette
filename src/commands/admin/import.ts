@@ -12,13 +12,13 @@ import { EClient } from "@main";
 import { addAutoRole, removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,roleMention,SlashCommandBuilder,  TextChannel,  User,  userMention } from "discord.js";
+import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,SlashCommandBuilder,  User,  userMention } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
 
 const t = i18next.getFixedT("en");
 
-type CSVRow = {
+export type CSVRow = {
 	user: string;
 	charName: string | undefined;
 	isPrivate: boolean | undefined;

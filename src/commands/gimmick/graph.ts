@@ -203,7 +203,7 @@ export const graph = {
 			if (!interaction.guild || !interaction.channel) return;
 			const userId =  user?.id ?? interaction.user.id;
 			const charName = charData[userId].charName;
-			const userStatistique = await getUserFromMessage(client.settings, userId, interaction.guild, interaction, charName, false, false);
+			const userStatistique = await getUserFromMessage(client.settings, userId, interaction, charName,{integrateCombinaison: false, allowAccess: false});
 			if (!userStatistique || !userStatistique.stats) {
 				await reply(interaction,ul("error.notRegistered"));
 				return;

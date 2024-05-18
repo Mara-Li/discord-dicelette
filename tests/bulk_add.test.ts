@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import { describe, expect,it} from "vitest";
 
-import { parseCSV } from "../src/commands/admin/bulk_add";
+import { parseCSV } from "../src/commands/admin/import";
 import { UserData } from "../src/interface";
 import { expectedResult, guildTemplate } from "./constant.tests";
 

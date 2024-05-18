@@ -197,6 +197,16 @@
     "userChan": "You cannot choose the channel {{- chan}} without choosing a channel where to post the cards, because it will be impossible to create a thread there.",
     "userNotRegistered": "{{- user}} is not registered."
   },
+  "export": {
+    "description": "Export all saved characters to a csv file",
+    "error": {
+      "noData": ""
+    },
+    "name": "export",
+    "options": {
+      "private": "Export only characters marked as private"
+    }
+  },
   "generate": {
     "description": "Generate server template for stats/dice commands",
     "help": "See [documentation](<https://dicelette.github.io/en/docs/model/register>) for template notation and help.\nYou can use ![this](<https://dicelette.github.io/en/docs/model/register/form>) to generate a template with a UI.",

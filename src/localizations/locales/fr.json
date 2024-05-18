@@ -195,6 +195,16 @@
     "userChan": "Vous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "userNotRegistered": "{{- user}} n'est pas enregistré."
   },
+  "export": {
+    "description": "Export tous les personnages sauvegardés dans un fichier csv",
+    "error": {
+      "noData": "Aucun n'utilisateur n'est enregistrés."
+    },
+    "name": "export",
+    "options": {
+      "private": "Exporter que les personnages marqués comme privé"
+    }
+  },
   "generate": {
     "description": "Générer un modèle de serveur pour les commandes de statistiques/dés",
     "help": "[Voir la documentation complète sur la génération d'un modèle](<https://dicelette.github.io/docs/model/register>).\nVous pouvez utiliser [ceci](<https://dicelette.github.io/docs/model/register/form>) pour générer un modèle en utilisant une interface.",
