@@ -63,7 +63,7 @@ export async function repostInThread(
 	const channel = interaction.channel;
 	if (!channel ||(channel instanceof CategoryChannel)) return;
 	if (!guildData) throw new Error(ul("error.generic", {e: "No server data found in database for this server."}));
-	let thread = await searchUserChannel(guildData, interaction, ul);
+	let thread = await searchUserChannel(guildData, interaction, ul, userTemplate.private);
 	if (!thread && channel instanceof TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as AnyThreadChannel | undefined;
 		if (!thread) {
