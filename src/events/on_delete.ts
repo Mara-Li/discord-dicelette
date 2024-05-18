@@ -63,7 +63,7 @@ export const delete_message = (client: EClient): void => {
 			if (
 				channel.id !== client.settings.get(guildID, "privateChannel") 
 				|| channel.id !== client.settings.get(guildID, "managerId") ||
-				channel.name !== "📝 • [STATS]"
+				(channel.name !== "📝 • [STATS]" && channel.parentId === client.settings.get(guildID, "templateID.channelId"))
 			) return;
 			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0){
