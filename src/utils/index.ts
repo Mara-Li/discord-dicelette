@@ -359,3 +359,7 @@ export function haveAccess(interaction: BaseInteraction, thread: NewsChannel | T
 	if (!member || !thread) return false;
 	return member.permissions.has(PermissionFlagsBits.ManageRoles) || member.permissionsIn(thread).has(PermissionFlagsBits.ViewChannel);
 }
+
+export function isStatsThread(db: Settings, guildID: string, thread: NewsChannel | TextChannel | PrivateThreadChannel | PublicThreadChannel<boolean> | undefined) {
+	return thread?.parent?.id === db.get(guildID, "templateID.channelId") && thread?.name === "📝 • [STATS]";
+}

@@ -1,7 +1,7 @@
 import { error as err } from "@console";
 import { GuildData } from "@interface";
 import { EClient } from "@main";
-import { sendLogs } from "@utils";
+import { isStatsThread, sendLogs } from "@utils";
 import {CommandInteraction, GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel, User} from "discord.js";
 import Enmap from "enmap";
 import removeAccents from "remove-accents";
@@ -35,7 +35,7 @@ export const delete_thread = (client: EClient): void => {
 			//search channelID in database and delete it
 			const guildID = thread.guild.id;
 			const db = client.settings;
-			if ((thread.name === "📝 • [STATS]" && thread.parentId === db.get(guildID, "template.channelId")) || thread.id === db.get(guildID, "managerId") || thread.id === db.get(guildID, "privateChannel")) {
+			if (isStatsThread(client.settings, guildID, thread) || thread.id === db.get(guildID, "managerId") || thread.id === db.get(guildID, "privateChannel")) {
 				//verify if the user message was in the thread
 				cleanUserDB(db, thread);
 			}
