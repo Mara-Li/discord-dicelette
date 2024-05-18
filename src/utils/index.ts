@@ -71,7 +71,7 @@ export async function repostInThread(
 				name: "📝 • [STATS]",
 				autoArchiveDuration: 10080,
 			}) as AnyThreadChannel;
-			registerManagerID(guildData, interaction, thread.id, userTemplate.private);
+			registerManagerID(guildData, interaction, thread.id);
 		}
 	}
 	if (!thread) {
@@ -276,7 +276,7 @@ export async function searchUserChannel(
 		const channel = await interaction.guild?.channels.fetch(channelId);
 		if (!channel || !(channel instanceof TextChannel)) return;
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]");
-		registerManagerID(guildData, interaction, thread?.id, isPrivate);
+		registerManagerID(guildData, interaction, thread?.id);
 	}
 	if (!thread) {
 		if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction)) {
