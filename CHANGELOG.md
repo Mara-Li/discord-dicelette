@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.0](https://github.com/Dicelette/discord-dicelette/compare/1.0.0...1.1.0) (2024-05-18)
+
+
+### Features
+
+* Bulk_add multiple characters ([4a116cb](https://github.com/Dicelette/discord-dicelette/commit/4a116cb6d3a087bf445df987e00528e07f3da31c))
+* import csv & hide characters ([5089cec](https://github.com/Dicelette/discord-dicelette/commit/5089cec8b12f191bb97966b00babe93159dc8639))
+* private char ([7a5a26d](https://github.com/Dicelette/discord-dicelette/commit/7a5a26dcec86cfcd579716ecc5eb604e7f82c473))
+
+
+### Bug Fixes
+
+* excel je te hais ([e676102](https://github.com/Dicelette/discord-dicelette/commit/e67610263393ab34e42ad29513ab1a36269cabe2))
+* forgot opt ([74f82e3](https://github.com/Dicelette/discord-dicelette/commit/74f82e33f26512edd9d0414d475c89c9bb770430))
+* rename commands ([4bed704](https://github.com/Dicelette/discord-dicelette/commit/4bed7046f0c2194106ee1e1a2d992e4357c60630))
+* test ([ea1a5f7](https://github.com/Dicelette/discord-dicelette/commit/ea1a5f764561cad3086d7bb531ddae245bbd873e))
+
 ## 1.0.0 (2024-04-21)
 
 
