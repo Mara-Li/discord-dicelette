@@ -13,7 +13,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ubuntu
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.PASSWORD }}
           script: |
             cd dicelette/
             git pull
