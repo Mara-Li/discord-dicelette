@@ -123,9 +123,6 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			inline: true,
 		});
 	}
-	//count the number of damage fields
-	const nbDmg = Object.keys(templateDamage || {}).length;
-	if (nbDmg > 25) throw new Error("[error.tooManyDmg]");
 	const userStatistique: UserData = {
 		userName: charName,
 		stats,

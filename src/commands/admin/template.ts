@@ -198,7 +198,7 @@ export const registerTemplate = {
 			.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
 			.setColor("Random");
 			
-		if (templateData.statistics && (Object.keys(templateData.statistics).length >= 20)) {
+		if (templateData.statistics && (Object.keys(templateData.statistics).length >= 25)) {
 			await reply(interaction, { content: ul("error.tooMuchStats"), ephemeral: true });
 			return;
 		}

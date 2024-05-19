@@ -137,10 +137,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		allEmbeds.push(diceEmbed);
 		if (templateEmbed) allEmbeds.push(templateEmbed);
 		const components = editUserButtons(ul, statsEmbed ? true: false, true);
-		if (damageName && Object.keys(damageName).length > 25) {
-			await reply(interaction,{ content: ul("error.tooMuchDice"), ephemeral: true });
-			return;
-		}
+		
 		const userRegister = {
 			userID,
 			charName: userName,
@@ -153,12 +150,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 		return;
 	}
-	if (damageName && Object.keys(damageName).length > 25) {
-		await reply(interaction,{ content: ul("error.tooMuchDice"), ephemeral: true });
-		const components = validateCancelButton(ul);
-		await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
-		return;
-	}
+	
 	const components = registerDmgButton(ul);
 	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
 	await reply(interaction,{ content: ul("modals.added.dice"), ephemeral: true });
