@@ -4,7 +4,7 @@ import { ln } from "@localization";
 import { EClient } from "@main";
 import {haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
 import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
-import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Guild, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
+import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
 
 

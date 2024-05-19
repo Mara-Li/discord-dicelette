@@ -192,7 +192,7 @@
     "rollChannelNotFound": "Le channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
-    "tooMuchStats": "Vous ne pouvez pas avoir plus de 20 statistiques",
+    "tooMuchStats": "Vous ne pouvez pas avoir plus de 25 statistiques",
     "totalExceededBy": "Le total de {{- value}} est dépassé de {{- max}}",
     "user": "Utilisateur introuvable",
     "userChan": "Vous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",

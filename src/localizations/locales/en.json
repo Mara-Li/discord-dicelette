@@ -194,7 +194,7 @@
     "rollChannelNotFound": "The channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
     "statNotFound": "Statistics not found! Did you make a typing error?",
     "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",
-    "tooMuchStats": "You cannot have more than 20 statistics",
+    "tooMuchStats": "You cannot have more than 25 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
     "user": "User not found",
     "userChan": "You cannot choose the channel {{- chan}} without choosing a channel where to post the cards, because it will be impossible to create a thread there.",

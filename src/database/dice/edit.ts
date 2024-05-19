@@ -134,10 +134,7 @@ export async function validate_editDice(interaction: ModalSubmitInteraction, ul:
 		registerUser(userRegister, interaction, thread, db, false);
 		await sendLogs(ul("logs.dice.remove", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
 		return;
-	} else if (fieldsToAppend.length > 25) {
-		await reply(interaction,{ content: ul("error.tooMuchDice"), ephemeral: true });
-		return;
-	}
+	} 
 	const skillDiceName = Object.keys(fieldsToAppend.reduce((acc, field) => {
 		acc[field.name] = field.value;
 		return acc;
