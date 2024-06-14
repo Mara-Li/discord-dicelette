@@ -40,6 +40,7 @@ export const client = new EClient({
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.MessageContent,
 		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMembers,
 	],
 	partials: [
 		Partials.Channel,
