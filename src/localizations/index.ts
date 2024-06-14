@@ -89,7 +89,7 @@ export function findKeyFromTranslation(translatedText: string) {
 	for (const locale of allLocales) {
 		const ul = ln(locale as Locale);
 		for (const key of ALL_TRANSLATION_KEYS) {
-			if (ul(key) === translatedText) return key;
+			if (ul(key).toLowerCase() === translatedText.toLowerCase()) return key;
 		}
 	}
 	return translatedText;
