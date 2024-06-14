@@ -6,7 +6,7 @@ import { embedStatistiques, showStatistiqueModal } from "@stats/add";
 import { removeEmojiAccents, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { parseEmbed } from "@utils/parse";
-import { ActionRowBuilder, type ButtonInteraction, type Locale, type ModalActionRowComponentBuilder,ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User } from "discord.js";
+import { ActionRowBuilder, type ButtonInteraction, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User } from "discord.js";
 
 
 /**
@@ -20,7 +20,7 @@ import { ActionRowBuilder, type ButtonInteraction, type Locale, type ModalAction
 export async function continuePage(interaction: ButtonInteraction, dbTemplate: StatisticalTemplate, ul: Translation, interactionUser: User) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (!isModerator) {
-		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
+		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 		return;
 	}
 	const embed = parseEmbed(interaction);
@@ -30,10 +30,10 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
 	const allTemplateStat = Object.keys(dbTemplate.statistics).map(stat => removeEmojiAccents(stat));
 	const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(removeEmojiAccents(stat))).map(stat => removeEmojiAccents(stat));
 	if (statsAlreadySet.length === allTemplateStat.length) {
-		await reply(interaction,{ content: ul("modals.alreadySet"), ephemeral: true });
+		await reply(interaction, { content: ul("modals.alreadySet"), ephemeral: true });
 		return;
 	}
-	const page = isNaN(Number.parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : Number.parseInt(interaction.customId.replace("page", ""), 10) + 1;
+	const page = Number.isNaN(Number.parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : Number.parseInt(interaction.customId.replace("page", ""), 10) + 1;
 	await showStatistiqueModal(interaction, dbTemplate, statsAlreadySet, page);
 }
 
@@ -45,10 +45,10 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
  */
 export async function pageNumber(interaction: ModalSubmitInteraction, ul: Translation, db: Settings) {
 	const pageNumber = Number.parseInt(interaction.customId.replace("page", ""), 10);
-	if (isNaN(pageNumber)) return;
+	if (Number.isNaN(pageNumber)) return;
 	const template = await getTemplateWithDB(interaction, db);
 	if (!template) {
-		await reply(interaction,{ content: ul("error.noTemplate") });
+		await reply(interaction, { content: ul("error.noTemplate") });
 		return;
 	}
 	await embedStatistiques(interaction, template, pageNumber);
@@ -57,7 +57,7 @@ export async function pageNumber(interaction: ModalSubmitInteraction, ul: Transl
  * Submit the first page when the modal is validated
  * @param interaction {ModalSubmitInteraction}
  */
-export async function submit_firstPage(interaction: ModalSubmitInteraction, db: Settings) {
+export async function recordFirstPage(interaction: ModalSubmitInteraction, db: Settings) {
 	if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
 	const template = await getTemplateWithDB(interaction, db);
 	if (!template) return;
@@ -76,7 +76,7 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 	}
 
 	const ul = ln(interaction.locale as Locale);
-	
+
 	const modal = new ModalBuilder()
 		.setCustomId("firstPage")
 		.setTitle(ul("modals.firstPage", { page: nbOfPages + 1 }));
@@ -99,7 +99,7 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 			.setStyle(TextInputStyle.Short)
 	);
 	const components = [charNameInput, userIdInputs];
-	if (havePrivate){
+	if (havePrivate) {
 		const privateInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()
 				.setCustomId("private")
@@ -120,11 +120,11 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
  * @param interaction {ModalSubmitInteraction}
  * @param ul {Translation}
  */
-export async function open_register_user(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: Translation, havePrivate?: boolean) {
+export async function startRegisterUser(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: Translation, havePrivate?: boolean) {
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (isModerator)
 		await showFirstPageModal(interaction, template, havePrivate);
 	else
-		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
+		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }
 

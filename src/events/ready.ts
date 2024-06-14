@@ -1,11 +1,11 @@
 import { commandsList } from "@commands";
-import {log, success } from "@console";
+import { log, success } from "@console";
 import type { GuildData } from "@interface";
-import { type EClient , VERSION } from "@main";
+import { type EClient, VERSION } from "@main";
 import { ActivityType, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
-import * as fs from "fs";
-import process from "process";
+import * as fs from "node:fs";
+import process from "node:process";
 
 
 
@@ -24,10 +24,13 @@ export default (client: EClient): void => {
 		client.user.setActivity("Roll Dices 🎲 !", { type: ActivityType.Competing });
 		for (const guild of client.guilds.cache.values()) {
 			log(`Registering commands for ${guild.name}`);
+
+			// biome-ignore lint/complexity/noForEach: forEach is fine here
 			guild.client.application.commands.cache.forEach((command) => {
 				log(`Deleting ${command.name}`);
 				command.delete();
 			});
+
 			await rest.put(
 				Routes.applicationGuildCommands(process.env.CLIENT_ID, guild.id),
 				{ body: serializedCommands },

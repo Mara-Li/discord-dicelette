@@ -5,8 +5,8 @@ import { lError, ln } from "@localization";
 import { addAutoRole, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons, registerDmgButton, } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
-import { ensureEmbed,getEmbeds } from "@utils/parse";
-import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Guild, type Locale, type ModalActionRowComponentBuilder,ModalBuilder, type ModalSubmitInteraction, PermissionsBitField,TextInputBuilder,TextInputStyle,type User, userMention } from "discord.js";
+import { ensureEmbed, getEmbeds } from "@utils/parse";
+import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Guild, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User, userMention } from "discord.js";
 
 /**
  * Interaction to add a new skill dice
@@ -14,7 +14,7 @@ import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Guild, typ
  * @param ul {Translation}
  * @param interactionUser {User}
  */
-export async function button_add_dice(interaction: ButtonInteraction, ul: Translation, interactionUser: User
+export async function executeAddDiceButton(interaction: ButtonInteraction, ul: Translation, interactionUser: User
 ) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
@@ -22,7 +22,7 @@ export async function button_add_dice(interaction: ButtonInteraction, ul: Transl
 	if (user || isModerator)
 		showDamageDiceModals(interaction, interaction.customId.includes("first"));
 	else
-		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
+		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }
 
 /**
@@ -68,10 +68,10 @@ export async function showDamageDiceModals(interaction: ButtonInteraction, first
  * @param ul {Translation}
  * @param interactionUser {User}
  */
-export async function submit_damageDice(interaction: ModalSubmitInteraction, ul: Translation, interactionUser: User, db: Settings) {
+export async function storeDamageDice(interaction: ModalSubmitInteraction, ul: Translation, interactionUser: User, db: Settings) {
 	const template = await getTemplateWithDB(interaction, db);
 	if (!template) {
-		await reply(interaction,{ content: ul("error.noTemplate") });
+		await reply(interaction, { content: ul("error.noTemplate") });
 		return;
 	}
 	const embed = ensureEmbed(interaction.message ?? undefined);
@@ -80,7 +80,7 @@ export async function submit_damageDice(interaction: ModalSubmitInteraction, ul:
 	if (user || isModerator)
 		await registerDamageDice(interaction, db, interaction.customId.includes("first"));
 	else
-		await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
+		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 
 }
 /**
@@ -101,7 +101,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
 			//add fields only if not already in the diceEmbed
-			if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(field.name)) === -1){
+			if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(field.name)) === -1) {
 				diceEmbed.addFields(field);
 			}
 		}
@@ -112,19 +112,20 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 	}
 	catch (error) {
 		const errorMsg = lError(error as Error, interaction);
-		await reply(interaction,{ content: errorMsg, ephemeral: true });
+		await reply(interaction, { content: errorMsg, ephemeral: true });
 		return;
 	}
-	if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(name)) === -1 || !diceEmbed.toJSON().fields){
+	if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(name)) === -1 || !diceEmbed.toJSON().fields) {
 		diceEmbed.addFields({
 			name: first ? `🔪${title(name)}` : title(name),
 			value,
 			inline: true,
-		});}
+		});
+	}
 	const damageName = diceEmbed.toJSON().fields?.reduce((acc, field) => {
 		acc[field.name] = field.value;
 		return acc;
-	}, {} as {[name: string]: string});
+	}, {} as { [name: string]: string });
 	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul, first);
 	await addAutoRole(interaction, userID, !!damageName && Object.keys(damageName).length > 0, false, db);
 	if (!first) {
@@ -136,8 +137,8 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		if (statsEmbed) allEmbeds.push(statsEmbed);
 		allEmbeds.push(diceEmbed);
 		if (templateEmbed) allEmbeds.push(templateEmbed);
-		const components = editUserButtons(ul, statsEmbed ? true: false, true);
-		
+		const components = editUserButtons(ul, !!statsEmbed, true);
+
 		const userRegister = {
 			userID,
 			charName: userName,
@@ -146,15 +147,15 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		};
 		registerUser(userRegister, interaction, thread, db, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
-		await reply(interaction,{ content: ul("modals.added.dice"), ephemeral: true });
-		await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
+		await reply(interaction, { content: ul("modals.added.dice"), ephemeral: true });
+		await sendLogs(ul("logs.dice.add", { user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}` }), interaction.guild as Guild, db);
 		return;
 	}
-	
+
 	const components = registerDmgButton(ul);
 	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
-	await reply(interaction,{ content: ul("modals.added.dice"), ephemeral: true });
+	await reply(interaction, { content: ul("modals.added.dice"), ephemeral: true });
 
-	await sendLogs(ul("logs.dice.add", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
+	await sendLogs(ul("logs.dice.add", { user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}` }), interaction.guild as Guild, db);
 	return;
 }
