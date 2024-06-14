@@ -39,9 +39,11 @@ export async function rollWithInteraction(
 		//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
 		dice = dice.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
 	}
-	const rollDice = roll(dice);
+	//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
+	dice = dice.trim();
+	const rollDice = roll(dice.trim());
 	if (!rollDice) {
-		error("no valid dice :", dice);
+		error("no valid dice :", dice.trim());
 		await reply(interaction, { content: ul("error.invalidDice.withDice", { dice }), ephemeral: true });
 		return;
 	}
@@ -58,6 +60,7 @@ export async function rollWithInteraction(
 		await findForumChannel(channel.parent as ForumChannel, channel as ThreadChannel, db, ul);
 	let mention: string = userMention(user?.id ?? interaction.user.id);
 	mention = charName ? `__**${title(charName)}**__ (${mention})` : mention;
+	console.log(mention);
 	const msg = `${mention} ${timestamp(db, interaction.guild.id)}\n  ${infoRoll ? `[__${title(infoRoll)}__] ` : ""}${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
