@@ -1,18 +1,17 @@
-import {log} from "@console";
+import { log } from "@console";
 import type { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { filterChoices, haveAccess, removeEmojiAccents, reply, searchUserChannel, sendLogs, title } from "@utils";
 import { getDatabaseChar, getTemplateWithDB, getUserFromMessage } from "@utils/db";
-import {ChartJSNodeCanvas} from "chartjs-node-canvas";
+import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import { AttachmentBuilder, type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
-import path from "path";
+import path from "node:path";
 
-async function chart(userData : UserData, labels: string[], lineColor?: string, fillColor?: string, min?: number, max?: number) {
-	if (!lineColor) lineColor = "#FF0000";
-	if (!fillColor) fillColor = "#FF0000";
+async function chart(userData: UserData, labels: string[], lineColor = "#FF0000", fillColor = "#FF0000", min?: number, max?: number) {
+
 	if (!userData.stats) return;
 	const data = {
 		labels: labels.map(key => title(key)),
@@ -46,7 +45,7 @@ async function chart(userData : UserData, labels: string[], lineColor?: string, 
 				},
 				ticks: {
 					stepSize: steps,
-					display: false,					
+					display: false,
 					color: "darkgrey",
 					showLabelBackdrop: false,
 					centerPointLabels: true,
@@ -77,7 +76,7 @@ async function chart(userData : UserData, labels: string[], lineColor?: string, 
 		},
 		aspectRatio: 1,
 	};
-	const renderer = new ChartJSNodeCanvas({ width: 800, height: 800});
+	const renderer = new ChartJSNodeCanvas({ width: 800, height: 800 });
 	renderer.registerFont(fontPath("Jost-Regular"), { family: "Jost", weight: "700" });
 	renderer.registerFont(fontPath("Ubuntu-Regular"), { family: "Ubuntu" });
 	return await renderer.renderToBuffer({
@@ -145,12 +144,12 @@ export const graph = {
 			.setNameLocalizations(cmdLn("graph.bg.name"))
 			.setDescriptionLocalizations(cmdLn("graph.bg.description"))
 			.setRequired(false)
-		),	
+		),
 	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guild!.id);
-		
+
 		if (!guildData) return;
 		const choices: string[] = [];
 		let user = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
@@ -171,7 +170,7 @@ export const graph = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result) ?? result, value: result}))
+			filter.map(result => ({ name: title(result) ?? result, value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -182,12 +181,12 @@ export const graph = {
 		let max = options.getNumber(t("graph.max.name")) ?? undefined;
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
-			await reply(interaction,ul("error.noTemplate"));
+			await reply(interaction, ul("error.noTemplate"));
 			return;
 		}
 		const serverTemplate = await getTemplateWithDB(interaction, client.settings);
 		if (!guildData.templateID.statsName || !serverTemplate?.statistics) {
-			await reply(interaction,ul("error.noStats"));
+			await reply(interaction, ul("error.noStats"));
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
@@ -195,17 +194,17 @@ export const graph = {
 		const charName = options.getString(t("common.character"))?.toLowerCase();
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
-			if (charName) userName += ` (${charName})` ;
-			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
+			if (charName) userName += ` (${charName})`;
+			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
 			return;
 		}
 		try {
 			if (!interaction.guild || !interaction.channel) return;
-			const userId =  user?.id ?? interaction.user.id;
+			const userId = user?.id ?? interaction.user.id;
 			const charName = charData[userId].charName;
-			const userStatistique = await getUserFromMessage(client.settings, userId, interaction, charName,{integrateCombinaison: false, allowAccess: false});
+			const userStatistique = await getUserFromMessage(client.settings, userId, interaction, charName, { integrateCombinaison: false, allowAccess: false });
 			if (!userStatistique || !userStatistique.stats) {
-				await reply(interaction,ul("error.notRegistered"));
+				await reply(interaction, ul("error.notRegistered"));
 				return;
 			}
 			const labels = guildData.templateID.statsName;
@@ -215,23 +214,23 @@ export const graph = {
 			const lineColor = options.getString(t("graph.line.name"));
 			const fillColor = options.getString(t("graph.bg.name"));
 			const color = generateColor(lineColor, fillColor);
-			
+
 			if (serverTemplate?.statistics && (!min || !max)) {
 				if (!min) {
 					const allMin = Object.values(serverTemplate.statistics).map(stat => {
-						if (stat.min == undefined) return 0;
+						if (stat.min == null) return 0;
 						return stat.min;
 					});
 					min = Math.min(...allMin);
 				}
 				if (!max) {
 					const allMax = Object.values(serverTemplate.statistics).map(stat => {
-						if (stat.max == undefined) return 0;
+						if (stat.max == null) return 0;
 						return stat.max;
 					});
 					max = Math.max(...allMax);
 				}
-				
+
 				if (min === 0) min = undefined;
 				if (max === 0) {
 					if (serverTemplate.critical?.success) {
@@ -249,17 +248,17 @@ export const graph = {
 			}
 			const image = await imagePersonalized(userStatistique, filteredLabels, color.line, color.background, min, max);
 			if (!image) {
-				await reply(interaction,ul("error.noMessage"));
+				await reply(interaction, ul("error.noMessage"));
 				return;
 			}
-			await reply(interaction,{ files: [image] });
+			await reply(interaction, { files: [image] });
 		} catch (error) {
-			await reply(interaction,ul("error.generic", {e: (error as Error)}));
-			sendLogs(ul("error.generic", {e: (error as Error)}), interaction.guild, client.settings);
+			await reply(interaction, ul("error.generic", { e: (error as Error) }));
+			sendLogs(ul("error.generic", { e: (error as Error) }), interaction.guild, client.settings);
 			log(error);
 		}
 	}
-		
+
 };
 
 function generateColor(line: string | null, background: string | null) {
@@ -273,7 +272,7 @@ function generateColor(line: string | null, background: string | null) {
 	}
 	line = convertHexToRGBA(line as string, 1);
 	background = convertHexToRGBA(background as string, 0.5);
-	return {line, background};
+	return { line, background };
 }
 
 function convertHexToRGBA(color: string, alpha?: number) {

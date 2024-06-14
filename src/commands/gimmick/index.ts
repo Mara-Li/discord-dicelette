@@ -1,4 +1,4 @@
 import { displayUser } from "./display";
 import { graph } from "./graph";
 
-export const gimmick = [displayUser, graph];
+export const GIMMICK = [displayUser, graph];

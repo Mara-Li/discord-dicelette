@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createTemplateEmbed } from "@database";
-import type {StatisticalTemplate} from "@dicelette/core";
+import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
 import { ln } from "@localization";
 import { removeEmojiAccents, searchUserChannel, title } from "@utils";
@@ -47,7 +47,7 @@ export function createEmbedsList(userDataEmbed: EmbedBuilder, statsEmbed?: Embed
  * @param ul {Translation}
  * @param embedToReplace {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}
  */
-export function getEmbedsList(ul: Translation, embedToReplace: {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}, message?: Message) {
+export function getEmbedsList(ul: Translation, embedToReplace: { which: "user" | "stats" | "damage" | "template", embed: EmbedBuilder }, message?: Message) {
 	const userDataEmbed = embedToReplace.which === "user" ? embedToReplace.embed : getEmbeds(ul, message, "user");
 	if (!userDataEmbed) throw new Error("[error.noEmbed]");
 	const statsEmbed = embedToReplace.which === "stats" ? embedToReplace.embed : getEmbeds(ul, message, "stats");
@@ -73,9 +73,9 @@ export function getEmbedsList(ul: Translation, embedToReplace: {which:"user" | "
 export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "stats" | "damage" | "template", ul: Translation) {
 	return embeds.filter(embed => {
 		if (which === "user") return embed.toJSON().title !== ul("embed.user");
-		else if (which === "stats") return embed.toJSON().title !== ul("embed.stats");
-		else if (which === "damage") return embed.toJSON().title !== ul("embed.dice");
-		else if (which === "template") return embed.toJSON().title !== ul("embed.template");
+		if (which === "stats") return embed.toJSON().title !== ul("embed.stats");
+		if (which === "damage") return embed.toJSON().title !== ul("embed.dice");
+		if (which === "template") return embed.toJSON().title !== ul("embed.template");
 	});
 }
 
@@ -84,9 +84,9 @@ export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "st
  * @param embed {Embed}
  * @returns { [name: string]: string }
  */
-export function parseEmbedFields(embed: Embed): {[name: string]: string} {
+export function parseEmbedFields(embed: Embed): { [name: string]: string } {
 	const fields = embed.fields;
-	const parsedFields: {[name: string]: string} = {};
+	const parsedFields: { [name: string]: string } = {};
 	for (const field of fields) {
 		parsedFields[removeBacktick(field.name)] = removeBacktick(field.value);
 	}
@@ -104,9 +104,9 @@ export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "
 	for (const embed of allEmbeds) {
 		const embedJSON = embed.toJSON();
 		if (embed.title === ul("embed.user") && which === "user") return new EmbedBuilder(embedJSON);
-		else if ((embed.title === ul("embed.stats") || title(embed.title ?? undefined) === title(ul("common.statistic"))) && which === "stats") return new EmbedBuilder(embedJSON);
-		else if (embed.title === ul("embed.dice") && which === "damage") return new EmbedBuilder(embedJSON);
-		else if (embed.title === ul("embed.template") && which === "template") return new EmbedBuilder(embedJSON);
+		if ((embed.title === ul("embed.stats") || title(embed.title ?? undefined) === title(ul("common.statistic"))) && which === "stats") return new EmbedBuilder(embedJSON);
+		if (embed.title === ul("embed.dice") && which === "damage") return new EmbedBuilder(embedJSON);
+		if (embed.title === ul("embed.template") && which === "template") return new EmbedBuilder(embedJSON);
 	}
 }
 
@@ -135,22 +135,22 @@ export async function bulkEditTemplateUser(guildData: Settings, interaction: Com
 						value: `\`${template.diceType}\``,
 						inline: true
 					});
-				if (template.critical?.success) 
+				if (template.critical?.success)
 					newEmbed.addFields({
 						name: ul("roll.critical.success"),
 						value: `\`${template.critical.success}\``,
 						inline: true
 					});
-				if (template.critical?.failure) 
+				if (template.critical?.failure)
 					newEmbed.addFields({
 						name: ul("roll.critical.failure"),
 						value: `\`${template.critical.failure}\``,
 						inline: true
 					});
-				const listEmbed = getEmbedsList(ul, {which: "template", embed: newEmbed}, userMessages);
+				const listEmbed = getEmbedsList(ul, { which: "template", embed: newEmbed }, userMessages);
 				await userMessages.edit({ embeds: listEmbed.list });
-			} catch (error) {
-				continue;
+			} catch {
+				//pass
 			}
 		}
 	}
@@ -163,7 +163,7 @@ export async function bulkEditTemplateUser(guildData: Settings, interaction: Com
  */
 export function getStatistiqueFields(interaction: ModalSubmitInteraction, templateData: StatisticalTemplate) {
 	const ul = ln(interaction.locale as Locale);
-	const combinaisonFields: {[name: string]: string} = {};
+	const combinaisonFields: { [name: string]: string } = {};
 	const stats: { [name: string]: number } = {};
 	let total = templateData.total;
 	if (!templateData.statistics) return { combinaisonFields, stats };
@@ -178,16 +178,17 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 		if (!statValue) continue;
 		const num = Number.parseInt(statValue, 10);
 		if (value.min && num < value.min) {
-			throw new Error(ul("error.mustBeGreater", {value: name, min: value.min}));
-		} else if (value.max && num > value.max) {
-			throw new Error(ul("error.mustBeLower", {value: name, max: value.max}));
+			throw new Error(ul("error.mustBeGreater", { value: name, min: value.min }));
+		} if (value.max && num > value.max) {
+			throw new Error(ul("error.mustBeLower", { value: name, max: value.max }));
 		}
 		if (total) {
 			total -= num;
 			if (total < 0) {
 				const exceeded = total * -1;
-				throw new Error(ul("error.totalExceededBy", {value: name, max: exceeded}));
-			} else stats[key] = num;
+				throw new Error(ul("error.totalExceededBy", { value: name, max: exceeded }));
+			}
+			stats[key] = num;
 		} else stats[key] = num;
 	}
 	return { combinaisonFields, stats };

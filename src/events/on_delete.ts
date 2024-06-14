@@ -2,11 +2,11 @@ import { error as err } from "@console";
 import type { GuildData } from "@interface";
 import type { EClient } from "@main";
 import { isStatsThread, sendLogs } from "@utils";
-import {type CommandInteraction, type GuildTextBasedChannel, type NonThreadGuildBasedChannel, TextChannel, type ThreadChannel, type User} from "discord.js";
+import { type CommandInteraction, type GuildTextBasedChannel, type NonThreadGuildBasedChannel, TextChannel, type ThreadChannel, type User } from "discord.js";
 import type Enmap from "enmap";
 import removeAccents from "remove-accents";
 
-export const delete_channel = (client	: EClient): void => {
+export const DELETE_CHANNEL = (client: EClient): void => {
 	client.on("channelDelete", async (channel) => {
 		try {
 			if (channel.isDMBased()) return;
@@ -19,17 +19,17 @@ export const delete_channel = (client	: EClient): void => {
 			if (db.get(guildID, "managerId") === channelID) db.delete(guildID, "managerId");
 			if (db.get(guildID, "privateChannel") === channelID) db.delete(guildID, "privateChannel");
 			if (db.get(guildID, "rollChannel") === channelID) db.delete(guildID, "rollChannel");
-			
+
 		} catch (error) {
 			err(error);
 			if (channel.isDMBased()) return;
 			sendLogs((error as Error).message, channel.guild, client.settings);
 		}
-		
+
 	});
 };
 
-export const delete_thread = (client: EClient): void => {
+export const DELETE_THREAD = (client: EClient): void => {
 	client.on("threadDelete", async (thread) => {
 		try {
 			//search channelID in database and delete it
@@ -49,7 +49,7 @@ export const delete_thread = (client: EClient): void => {
 	});
 };
 
-export const delete_message = (client: EClient): void => {
+export const DELETE_MESSAGE = (client: EClient): void => {
 	client.on("messageDelete", async (message) => {
 		try {
 			if (!message.guild) return;
@@ -60,9 +60,9 @@ export const delete_message = (client: EClient): void => {
 			const channel = message.channel;
 			if (channel.isDMBased()) return;
 			if (client.settings.get(guildID, "templateID.messageId") === messageId) client.settings.delete(guildID, "templateID");
-			
+
 			const dbUser = client.settings.get(guildID, "user");
-			if (dbUser && Object.keys(dbUser).length > 0){
+			if (dbUser && Object.keys(dbUser).length > 0) {
 				for (const [user, values] of Object.entries(dbUser)) {
 					for (const [index, value] of values.entries()) {
 						if (value.messageId === messageId) {
@@ -80,7 +80,7 @@ export const delete_message = (client: EClient): void => {
 	});
 };
 
-export const on_kick = (client: EClient): void => {
+export const ON_KICK = (client: EClient): void => {
 	client.on("guildDelete", async (guild) => {
 		//delete guild from database
 		try {
@@ -117,7 +117,7 @@ export function deleteUser(
 	//delete the character from the database
 	const userCharIndex = guildData.user[user?.id ?? interaction.user.id].findIndex((char) => {
 		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
-		return (charName == undefined && char.charName == undefined);
+		return (charName == null && char.charName == null);
 	});
 	if (userCharIndex === -1) {
 		return guildData;

@@ -1,13 +1,13 @@
-import {error} from "@console";
+import { error } from "@console";
 import { type Critical, type Statistic, type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import type { GuildData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { downloadTutorialImages, reply, title } from "@utils";
 import { bulkEditTemplateUser } from "@utils/parse";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, type Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention, ChannelType, type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, type Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import i18next from "i18next";
-import {dedent} from "ts-dedent";
+import { dedent } from "ts-dedent";
 
 const t = i18next.getFixedT("en");
 
@@ -35,7 +35,7 @@ export const generateTemplate = {
 				.setNameLocalizations(cmdLn("generate.options.dice.name"))
 				.setRequired(false)
 		)
-		
+
 		.addNumberOption(option =>
 			option
 				.setName(t("generate.options.total.name"))
@@ -81,11 +81,11 @@ export const generateTemplate = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const ul = ln(interaction.locale as Locale);
 		const name = options.getString(t("generate.options.stats.name")) ?? undefined;
-		let statServer: Statistic|undefined = undefined;
-		if (name){
+		let statServer: Statistic | undefined = undefined;
+		if (name) {
 			const statistiqueName = name.split(/[, ]+/);
 			statServer = {};
-			for (const stat of statistiqueName ) {
+			for (const stat of statistiqueName) {
 				statServer[stat] = {
 					max: 0,
 					min: 0,
@@ -95,7 +95,7 @@ export const generateTemplate = {
 		}
 
 		const atqName = options.getString(t("generate.options.damage.name"));
-		let atqDice : {[name: string]: string}|undefined = undefined;
+		let atqDice: { [name: string]: string } | undefined = undefined;
 		if (atqName) {
 			const atq = atqName.split(/[, ]+/);
 			atqDice = {};
@@ -103,12 +103,12 @@ export const generateTemplate = {
 				atqDice[name] = "1d5";
 			}
 		}
-		let critical : Critical | undefined = {
+		let critical: Critical | undefined = {
 			failure: options.getNumber(t("generate.options.critical_fail.name")) ?? undefined,
 			success: options.getNumber(t("generate.options.critical_success.name")) ?? undefined
 		};
 		//verify if everything is undefined in comparator object
-		const isUndefined = Object.values(critical).every(value => value == undefined);
+		const isUndefined = Object.values(critical).every(value => value == null);
 		if (isUndefined) critical = undefined;
 
 		const statistiqueTemplate: StatisticalTemplate = {
@@ -120,7 +120,7 @@ export const generateTemplate = {
 			damage: atqDice
 		};
 		const help = dedent(ul("generate.help"));
-		await reply(interaction, { content: help, files: [{ attachment: Buffer.from(JSON.stringify(statistiqueTemplate, null, 2), "utf-8"), name: "template.json" }]});
+		await reply(interaction, { content: help, files: [{ attachment: Buffer.from(JSON.stringify(statistiqueTemplate, null, 2), "utf-8"), name: "template.json" }] });
 	}
 };
 
@@ -180,29 +180,29 @@ export const registerTemplate = {
 		const userChan = options.getChannel(t("register.options.userChan.name"), false);
 		const privateChan = options.getChannel(t("register.options.hider.name"), false);
 		if (
-			(!(channel instanceof TextChannel) && (!(channel instanceof ThreadChannel))) || 
+			(!(channel instanceof TextChannel) && (!(channel instanceof ThreadChannel))) ||
 			(!userChan && !(channel instanceof TextChannel))
 		) {
-			await reply(interaction, { content: ul("error.userChan", {chan: channelMention(channel.id)}), ephemeral: true });
+			await reply(interaction, { content: ul("error.userChan", { chan: channelMention(channel.id) }), ephemeral: true });
 			return;
 		}
-		
+
 		const button = new ButtonBuilder()
 			.setCustomId("register")
 			.setLabel(ul("register.button"))
 			.setStyle(ButtonStyle.Primary);
-		const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);	
+		const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
 		const embedTemplate = new EmbedBuilder()
 			.setTitle(ul("register.embed.title"))
 			.setDescription(ul("register.embed.description"))
 			.setThumbnail("https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true")
 			.setColor("Random");
-			
+
 		if (templateData.statistics && (Object.keys(templateData.statistics).length >= 25)) {
 			await reply(interaction, { content: ul("error.tooMuchStats"), ephemeral: true });
 			return;
 		}
-		if (templateData.statistics) {	
+		if (templateData.statistics) {
 			for (const [stat, value] of Object.entries(templateData.statistics)) {
 				const min = value.min;
 				const max = value.max;
@@ -244,9 +244,9 @@ export const registerTemplate = {
 				value: damage,
 			});
 		}
-		const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components]});
+		const msg = await channel.send({ content: "", embeds: [embedTemplate], files: [{ attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"), name: "template.json" }], components: [components] });
 		msg.pin();
-	
+
 		//save in database file
 		const json = client.settings.get(guildId);
 		const statsName = templateData.statistics ? Object.keys(templateData.statistics) : undefined;
@@ -284,5 +284,5 @@ export const registerTemplate = {
 		}
 		await bulkEditTemplateUser(client.settings, interaction, ul, templateData);
 		await reply(interaction, { content: ul("register.embed.registered"), files: await downloadTutorialImages() });
-	}	
+	}
 };

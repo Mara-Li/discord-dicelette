@@ -78,7 +78,17 @@
   "overrides": [
     { "ignore": ["**/*.js"], "include": ["**/*.ts", "**/*.tsx"] },
     { "include": ["**/*.js"] },
-    { "include": ["*.json"] }
+    { "include": ["*.json"] },
+    {
+      "include": ["src/commands/gimmick/graph.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noParameterAssign": "off"
+          }
+        }
+      }
+    }
   ],
   "formatter": {
     "enabled": true,
