@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "repository": "",
   "type": "module",
+  "engineStrict": true,
   "scripts": {
     "init": "pnpm i && node install.js",
     "prebuild": "cross-os clean",
