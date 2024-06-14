@@ -1,11 +1,11 @@
 /* eslint-disable no-case-declarations */
-import { LINKS, Settings, Translation } from "@interface";
+import { LINKS, type Settings, type Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { reply } from "@utils";
-import { ApplicationCommand, Collection, CommandInteraction, CommandInteractionOptionResolver, Locale,SlashCommandBuilder, Snowflake } from "discord.js";
+import { type ApplicationCommand, type Collection, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, SlashCommandBuilder, type Snowflake } from "discord.js";
 import i18next from "i18next";
-import {dedent} from "ts-dedent";
+import { dedent } from "ts-dedent";
 
 const t = i18next.getFixedT("en");
 
@@ -22,7 +22,7 @@ export const help = {
 				.setDescription(t("help.info.description"))
 				.setDescriptionLocalizations(cmdLn("help.info.description"))
 		)
-		.addSubcommand(sub => 
+		.addSubcommand(sub =>
 			sub
 				.setName(t("help.bug.name"))
 				.setNameLocalizations(cmdLn("help.bug.name"))
@@ -34,7 +34,7 @@ export const help = {
 				.setName(t("help.fr.name"))
 				.setNameLocalizations(cmdLn("help.fr.name"))
 				.setDescription(t("help.fr.description"))
-				.setDescriptionLocalizations(cmdLn("help.fr.description"))		
+				.setDescriptionLocalizations(cmdLn("help.fr.description"))
 		)
 		.addSubcommand(sub =>
 			sub
@@ -59,50 +59,61 @@ export const help = {
 		if (!commandsID) return;
 
 		switch (subcommand) {
-		case (t("help.info.name")):
-			const rollID = commandsID.findKey(command => command.name === "roll");
-			const sceneID = commandsID.findKey(command => command.name === "scene");
-			const msg = ul("help.message", {rollId: rollID, sceneId: sceneID, dbCMD: createHelpMessageDB(interaction.guild!.id, ul, client.settings, commandsID)});
-			await reply(interaction,{ content: dedent(msg)});
-			await interaction.followUp({ content: dedent(ul("help.diceNotation"))});
-			break;
-		case (t("help.bug.name")):
-			await reply(interaction, { content: dedent(ul("help.bug.message", {link: link.bug}))});
-			break;
-		case (t("help.fr.name")):
-			await reply(interaction, { content: dedent(ul("help.fr.message", {link: link.fr}))});
-			break;
-		case (t("help.register.name")):
-			const helpDBCmd = getHelpDBCmd(commandsID);
-			await reply(interaction, { content: dedent(ul("help.register.message", {
-				dbd: helpDBCmd?.[t("rAtq.name")],
-				dbroll: helpDBCmd?.[t("dbRoll.name")],
-				graph: helpDBCmd?.[t("graph.name")],
-				display: helpDBCmd?.[t("display.title")],
-			}))});
-			break;
-		case (t("help.admin.name")):
-			const idsAdmin = getIDForAdminNoDB(commandsID);
-			await reply(interaction, { content: dedent(ul("help.admin.messageNoDB", {
-				logs: idsAdmin?.[t("logs.name")],
-				disable: idsAdmin?.[t("disableThread.name")],
-				result: idsAdmin?.[t("changeThread.name")],
-				delete: idsAdmin?.[t("timer.name")],
-				display: idsAdmin?.[t("config.display.name")],
-				timestamp: idsAdmin?.[t("timestamp.name")],
-			}))});
-			const idsAdminDB = getIDForAdminDB(commandsID, client.settings, interaction.guild!.id);
-			if (!idsAdminDB) return;
-			await interaction.followUp({ content: dedent(ul("help.admin.messageDB", {
-				deleteChar: idsAdminDB?.[t("deleteChar.name")],
-				stat: idsAdminDB?.["auto_role statistic"],
-				dice: idsAdminDB?.["auto_role dice"],
-				gm_dbd: idsAdminDB?.["gm dbd"],
-				gm_dbroll: idsAdminDB?.["gm dbroll"],
-				dbroll: idsAdminDB?.[t("dbRoll.name")],
-				dbd: idsAdminDB?.[t("rAtq.name")],
-			}))});
-			break;	
+			case (t("help.info.name")): {
+				const rollID = commandsID.findKey(command => command.name === "roll");
+				const sceneID = commandsID.findKey(command => command.name === "scene");
+				const msg = ul("help.message", { rollId: rollID, sceneId: sceneID, dbCMD: createHelpMessageDB(interaction.guild!.id, ul, client.settings, commandsID) });
+				await reply(interaction, { content: dedent(msg) });
+				await interaction.followUp({ content: dedent(ul("help.diceNotation")) });
+				break;
+			}
+			case (t("help.bug.name")):
+				await reply(interaction, { content: dedent(ul("help.bug.message", { link: link.bug })) });
+				break;
+			case (t("help.fr.name")):
+				await reply(interaction, { content: dedent(ul("help.fr.message", { link: link.fr })) });
+				break;
+			case (t("help.register.name")): {
+				const helpDBCmd = getHelpDBCmd(commandsID);
+				await reply(interaction, {
+					content: dedent(ul("help.register.message", {
+						dbd: helpDBCmd?.[t("rAtq.name")],
+						dbroll: helpDBCmd?.[t("dbRoll.name")],
+						graph: helpDBCmd?.[t("graph.name")],
+						display: helpDBCmd?.[t("display.title")],
+					}))
+				});
+				break;
+			}
+			case (t("help.admin.name")): {
+				const idsAdmin = getIDForAdminNoDB(commandsID);
+				await reply(interaction, {
+					content: dedent(ul("help.admin.messageNoDB", {
+						logs: idsAdmin?.[t("logs.name")],
+						disable: idsAdmin?.[t("disableThread.name")],
+						result: idsAdmin?.[t("changeThread.name")],
+						delete: idsAdmin?.[t("timer.name")],
+						display: idsAdmin?.[t("config.display.name")],
+						timestamp: idsAdmin?.[t("timestamp.name")],
+					}))
+				});
+				const idsAdminDB = getIDForAdminDB(commandsID, client.settings, interaction.guild!.id);
+				if (!idsAdminDB) return;
+				await interaction.followUp({
+					content: dedent(ul("help.admin.messageDB", {
+						deleteChar: idsAdminDB?.[t("deleteChar.name")],
+						stat: idsAdminDB?.["auto_role statistic"],
+						dice: idsAdminDB?.["auto_role dice"],
+						gm: {
+							dBd: idsAdminDB?.["gm dbd"],
+							dbRoll: idsAdminDB?.["gm dbroll"],
+						},
+						dbroll: idsAdminDB?.[t("dbRoll.name")],
+						dbd: idsAdminDB?.[t("rAtq.name")],
+					}))
+				});
+				break;
+			}
 		}
 	}
 };
@@ -116,7 +127,7 @@ function getHelpDBCmd(
 		t("graph.name"),
 		t("display.title"),
 	];
-	const ids: {[key: string]: string | undefined} = {};
+	const ids: { [key: string]: string | undefined } = {};
 	for (const cmd of commandToFind) {
 		ids[cmd] = commandsID.findKey(command => command.name === cmd);
 	}
@@ -124,8 +135,8 @@ function getHelpDBCmd(
 }
 
 function createHelpMessageDB(
-	guildID: Snowflake, 
-	ul: Translation, 
+	guildID: Snowflake,
+	ul: Translation,
 	db: Settings,
 	commandsID?: Collection<string, ApplicationCommand<unknown>>
 ) {
@@ -140,7 +151,7 @@ function createHelpMessageDB(
 }
 
 function getIDForAdminNoDB(commandsID: Collection<string, ApplicationCommand<unknown>>) {
-	const ids: {[key: string]: string | undefined} = {};
+	const ids: { [key: string]: string | undefined } = {};
 	const idConfig = commandsID.findKey(command => command.name === t("config.name"));
 	if (!idConfig) {
 		return;
@@ -163,7 +174,7 @@ function getIDForAdminDB(commandsID: Collection<string, ApplicationCommand<unkno
 		t("dbRoll.name"),
 		t("rAtq.name")
 	];
-	const ids: {[key: string]: string | undefined} = {};
+	const ids: { [key: string]: string | undefined } = {};
 	for (const cmd of commandToFind) {
 		if (cmd === t("mjRoll.name")) {
 			const id = commandsID.findKey(command => command.name === cmd);

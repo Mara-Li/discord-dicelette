@@ -1,9 +1,9 @@
-import { cmdLn,ln } from "@localization";
-import { EClient } from "@main";
+import { cmdLn, ln } from "@localization";
+import type { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
@@ -15,7 +15,7 @@ export const mjRoll = {
 		.setDescription(t("mjRoll.description"))
 		.setDescriptionLocalizations(cmdLn("mjRoll.description"))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-		.addSubcommand(sub => 
+		.addSubcommand(sub =>
 			sub
 				.setName(t("dbRoll.name"))
 				.setNameLocalizations(cmdLn("dbRoll.name"))
@@ -36,7 +36,7 @@ export const mjRoll = {
 						.setDescription(t("dbRoll.options.statistic"))
 						.setDescriptionLocalizations(cmdLn("dbRoll.options.statistic"))
 						.setRequired(true)
-						.setAutocomplete(true)				
+						.setAutocomplete(true)
 				)
 				.addStringOption(option =>
 					option
@@ -162,7 +162,7 @@ export const mjRoll = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result), value: result}))
+			filter.map(result => ({ name: title(result), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -171,13 +171,13 @@ export const mjRoll = {
 		const guildData = client.settings.get(interaction.guild.id);
 		const ul = ln(interaction.locale);
 		if (!guildData) return;
-		
+
 		const user = options.getUser(t("display.userLowercase"), true);
 		const charName = options.getString(t("common.character"), false)?.toLowerCase();
 		let optionChar = options.getString(t("common.character")) ?? undefined;
 		let charData = await getUserFromMessage(client.settings, user.id, interaction, charName);
 		if (charName && charData?.userName !== charName) {
-			await reply(interaction,{ content: ul("error.charName", {charName: title(charName)}), ephemeral: true });
+			await reply(interaction, { content: ul("error.charName", { charName: title(charName) }), ephemeral: true });
 			return;
 		}
 		if (!charData && !charName) {
@@ -187,16 +187,14 @@ export const mjRoll = {
 		}
 		if (!charData) {
 			let userName = `<@${user.id}>`;
-			if (charName) userName += ` (${charName})` ;
-			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
+			if (charName) userName += ` (${charName})`;
+			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
 			return;
 		}
 		const subcommand = options.getSubcommand(true);
-		if (subcommand === ul("dbRoll.name")) {
-			return await rollStatistique(interaction, client, charData, options, ul, optionChar, user);
-		} else if (subcommand === ul("rAtq.name")) {
-			return await rollDice(interaction, client, charData, options, ul, optionChar, user);
-		}
+		if (subcommand === ul("dbRoll.name")) return await rollStatistique(interaction, client, charData, options, ul, optionChar, user);
+		if (subcommand === ul("rAtq.name")) return await rollDice(interaction, client, charData, options, ul, optionChar, user);
+
 	}
 };
 

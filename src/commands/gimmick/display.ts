@@ -1,10 +1,10 @@
 import { createDiceEmbed, createStatsEmbed } from "@database";
 import { cmdLn,ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { filterChoices, haveAccess, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, type Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");

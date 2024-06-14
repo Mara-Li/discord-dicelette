@@ -1,11 +1,11 @@
 import { createStatsEmbed, getUserNameAndChar } from "@database";
 import { evalOneCombinaison } from "@dicelette/core";
-import { Settings, Translation } from "@interface";
-import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import type { Settings, Translation } from "@interface";
+import { displayOldAndNewStats, isArrayEqual, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons } from "@utils/buttons";
 import { getTemplateWithDB } from "@utils/db";
-import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse";
-import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
+import { ensureEmbed, getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse";
+import { ActionRowBuilder, type APIEmbedField, type ButtonInteraction, type Embed, type Guild, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User, userMention } from "discord.js";
 
 /**
  * Validate the stats and edit the embed with the new stats for editing
@@ -16,7 +16,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 	if (!interaction.message) return;
 	const statsEmbeds = getEmbeds(ul, interaction?.message ?? undefined, "stats");
 	if (!statsEmbeds) return;
-	const values  = interaction.fields.getTextInputValue("allStats");
+	const values = interaction.fields.getTextInputValue("allStats");
 	const templateStats = await getTemplateWithDB(interaction, db);
 	if (!templateStats || !templateStats.statistics) return;
 	const valuesAsStats = values.split("\n- ").map(stat => {
@@ -27,25 +27,25 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 	const stats = valuesAsStats.reduce((acc, { name, value }) => {
 		acc[name] = value;
 		return acc;
-	}, {} as {[name: string]: string});
+	}, {} as { [name: string]: string });
 	//verify value from template
 	const template = Object.fromEntries(Object.entries(templateStats.statistics).map(([name, value]) => [removeEmojiAccents(name), value]));
 	const embedsStatsFields: APIEmbedField[] = [];
 	for (const [name, value] of Object.entries(stats)) {
 		const stat = template?.[removeEmojiAccents(name)];
-		if (value.toLowerCase() === "x" 
-			|| value.trim().length === 0 
+		if (value.toLowerCase() === "x"
+			|| value.trim().length === 0
 			|| embedsStatsFields.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(name))
 		) continue;
 		if (!stat) {
-			throw new Error(ul("error.statNotFound", {value: name}));
+			throw new Error(ul("error.statNotFound", { value: name }));
 		}
-		const num = parseInt(value, 10);
-		if (isNaN(num)) {
+		const num = Number.parseInt(value, 10);
+		if (Number.isNaN(num)) {
 			//it's a combinaison OR an error
 			//we need to get the result of the combinaison
-			const combinaison = parseInt(evalOneCombinaison(value, stats), 10);
-			if (isNaN(combinaison)) {
+			const combinaison = Number.parseInt(evalOneCombinaison(value, stats), 10);
+			if (Number.isNaN(combinaison)) {
 				throw new Error(`[error.invalidFormula] ${value}`);
 			}
 			embedsStatsFields.push({
@@ -55,8 +55,8 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 			});
 			continue;
 		}
-		else if (stat.min && num < stat.min) {
-			throw new Error(ul("error.mustBeGreater", {value: name, min: stat.min}));
+		if (stat.min && num < stat.min) {
+			throw new Error(ul("error.mustBeGreater", { value: name, min: stat.min }));
 		}  //skip register total + max because leveling can be done here
 		embedsStatsFields.push({
 			name: title(name),
@@ -70,11 +70,11 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 		for (const field of oldStats) {
 			const name = field.name.toLowerCase();
 			if (
-				field.value !== "0" 
-				&& field.value !== "X" 
-				&& field.value.trim().length > 0 
+				field.value !== "0"
+				&& field.value !== "X"
+				&& field.value.trim().length > 0
 				&& embedsStatsFields.find(field => removeEmojiAccents(field.name) === removeEmojiAccents(name))
-			){
+			) {
 				//register the old value
 				embedsStatsFields.push({
 					name: title(name),
@@ -93,24 +93,24 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 	}
 	const newEmbedStats = createStatsEmbed(ul)
 		.addFields(fieldsToAppend);
-	const {userID, userName} = await getUserNameAndChar(interaction, ul);
+	const { userID, userName } = await getUserNameAndChar(interaction, ul);
 	if (!fieldsToAppend || fieldsToAppend.length === 0) {
 		//stats was removed
-		const {list, exists} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
+		const { list, exists } = getEmbedsList(ul, { which: "stats", embed: newEmbedStats }, interaction.message);
 		const toAdd = removeEmbedsFromList(list, "stats", ul);
 		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
-		await reply(interaction,{ content: ul("modals.removed.stats"), ephemeral: true });
-		await sendLogs(ul("logs.stats.removed", {user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`}), interaction.guild as Guild, db);
+		await reply(interaction, { content: ul("modals.removed.stats"), ephemeral: true });
+		await sendLogs(ul("logs.stats.removed", { user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}` }), interaction.guild as Guild, db);
 	}
 	//get the other embeds
-	const {list} = getEmbedsList(ul, {which: "stats", embed: newEmbedStats}, interaction.message);
+	const { list } = getEmbedsList(ul, { which: "stats", embed: newEmbedStats }, interaction.message);
 	await interaction.message.edit({ embeds: list });
-	await reply(interaction,{ content: ul("embed.edit.stats"), ephemeral: true });
+	await reply(interaction, { content: ul("embed.edit.stats"), ephemeral: true });
 	const compare = displayOldAndNewStats(statsEmbeds.toJSON().fields, fieldsToAppend);
 	const logMessage = ul("logs.stats.added", {
-		user: userMention(interaction.user.id), 
-		fiche: interaction.message.url, 
+		user: userMention(interaction.user.id),
+		fiche: interaction.message.url,
 		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`
 	});
 	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Guild, db);
@@ -171,11 +171,11 @@ export async function showEditorStats(interaction: ButtonInteraction, ul: Transl
  * @param ul {Translation}
  * @param interactionUser {User}
  */
-export async function start_edit_stats(interaction: ButtonInteraction, ul: Translation, interactionUser: User, db: Settings) {
+export async function triggerEditStats(interaction: ButtonInteraction, ul: Translation, interactionUser: User, db: Settings) {
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
 		showEditorStats(interaction, ul, db);
-	else await reply(interaction,{ content: ul("modals.noPermission"), ephemeral: true });
+	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }

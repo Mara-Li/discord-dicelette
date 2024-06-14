@@ -1,12 +1,6 @@
-import { Critical } from "@dicelette/core";
-import Enmap from "enmap";
-import { TFunction } from "i18next";
-
-export const enum THUMBNAIL {
-	DICE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/dice.png?raw=true",
-	TEMPLATE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/template.png?raw=true",
-	STATS = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/player.png?raw=true"
-}
+import type { Critical } from "@dicelette/core";
+import type Enmap from "enmap";
+import type { TFunction } from "i18next";
 
 export const TUTORIAL_IMAGES = [
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_1.png?raw=true",
@@ -17,7 +11,7 @@ export const TUTORIAL_IMAGES = [
 ];
 
 export const LINKS = {
-	fr : {
+	fr: {
 		bug: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=bug%2Ctriage%2Cfrench&projects=&template=bug_french.yml&title=%5BBug%5D%3A+",
 		fr: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=enhancement%2Ctriage%2Cfrench&projects=&template=Request_french.yml&title=%5BFR%5D%3A+",
 	},
@@ -72,10 +66,10 @@ export interface GuildData {
  */
 export interface UserData {
 	/** by default, will be the id of the user, if changed to a string, it will be used */
-	userName?: string | null; 
+	userName?: string | null;
 	/** The statistics as value */
 	stats?: {
-		[name: string] : number;
+		[name: string]: number;
 	};
 	/**
 	 * Allow to prevent returning each time to the JSON template for roll
@@ -83,7 +77,7 @@ export interface UserData {
 	template: {
 		diceType?: string;
 		critical?: Critical;
-		
+
 	},
 	/**
 	 * The skill dice that the user can do

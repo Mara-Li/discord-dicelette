@@ -1,10 +1,10 @@
-import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
-import { Settings, Translation, UserData } from "@interface";
+import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
+import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
-import { EClient } from "@main";
-import {haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
-import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
-import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
+import type { EClient } from "@main";
+import { haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
+import { ensureEmbed, getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
+import { type AnyThreadChannel, type BaseInteraction, type ButtonInteraction, CategoryChannel, type CommandInteraction, type CommandInteractionOptionResolver, type Embed, type Locale, type Message, type ModalSubmitInteraction, type NewsChannel, type TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
 
 
@@ -12,7 +12,7 @@ import removeAccents from "remove-accents";
  * Get the guild template when clicking on the "registering user" button or when submiting
  * @param interaction {ButtonInteraction}
  */
-export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate|undefined> {
+export async function getTemplate(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<StatisticalTemplate | undefined> {
 	const template = interaction.message?.attachments.first();
 	if (!template) return;
 	const res = await fetch(template.url).then(res => res.json());
@@ -38,7 +38,7 @@ export async function getDatabaseChar(interaction: CommandInteraction, client: E
 		for (const [user, data] of allUsers) {
 			const userChar = data.find((char) => {
 				if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
-				return (charName == undefined && char.charName == undefined);
+				return (charName == null && char.charName == null);
 			});
 			if (userChar) {
 				return {
@@ -50,7 +50,7 @@ export async function getDatabaseChar(interaction: CommandInteraction, client: E
 	const userData = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
 	let findChara = userData?.find((char) => {
 		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
-		return (charName == undefined && char.charName == undefined);
+		return (charName == null && char.charName == null);
 	});
 	if (!findChara)
 		findChara = userData?.[0];
@@ -73,9 +73,9 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 	const guild = interaction.guild;
 	const templateID = enmap.get(interaction.guild.id, "templateID");
 	const ul = ln(interaction.locale);
-	if (!enmap.has(interaction.guild.id)||!templateID) throw new Error(ul("error.noGuildData", {server : interaction.guild.name}));
+	if (!enmap.has(interaction.guild.id) || !templateID) throw new Error(ul("error.noGuildData", { server: interaction.guild.name }));
 
-	const {channelId, messageId} = templateID;
+	const { channelId, messageId } = templateID;
 	const channel = await guild.channels.fetch(channelId);
 	if (!channel || (channel instanceof CategoryChannel)) return;
 	try {
@@ -85,7 +85,7 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
 		const res = await fetch(template.url).then(res => res.json());
 		return verifyTemplateValue(res);
 	} catch (error) {
-		if ((error as Error).message === "Unknown Message") throw new Error(ul("error.noTemplateId", {channelId, messageId}));
+		if ((error as Error).message === "Unknown Message") throw new Error(ul("error.noTemplateId", { channelId, messageId }));
 		throw error;
 	}
 }
@@ -101,32 +101,33 @@ export async function getTemplateWithDB(interaction: ButtonInteraction | ModalSu
  * @param allowAccess {boolean=true} Allow to access the private channel (only used by {@link displayUser})
  */
 export async function getUserFromMessage(
-	guildData: Settings, 
-	userId: string, 
-	interaction: BaseInteraction, 
-	charName?: string | null, 
+	guildData: Settings,
+	userId: string,
+	interaction: BaseInteraction,
+	charName?: string | null,
 	options?: {
 		integrateCombinaison?: boolean,
 		allowAccess?: boolean,
 		skipNotFound?: boolean
 	}
 ) {
-	if (!options) options = {integrateCombinaison: true, allowAccess: true, skipNotFound: false};
-	const {integrateCombinaison, allowAccess, skipNotFound} = options;
+	//biome-ignore lint/style/noParameterAssign: We need to assign a default value
+	if (!options) options = { integrateCombinaison: true, allowAccess: true, skipNotFound: false };
+	const { integrateCombinaison, allowAccess, skipNotFound } = options;
 	const ul = ln(interaction.locale);
 	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const guild = interaction.guild;
 	const user = guildData.get(guild!.id, `user.${userId}`)?.find(char => {
 		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
-		return (charName == undefined && char.charName == undefined);
+		return (charName == null && char.charName == null);
 	});
 	if (!user) return;
 	const userMessageId = user.messageId;
-	
+
 	const thread = await searchUserChannel(guildData, interaction, ul, user.isPrivate);
 	if (user.isPrivate && !allowAccess && !haveAccess(interaction, thread, userId)) {
 		throw new Error(ul("error.private"));
-	} else if (!thread) 
+	} if (!thread)
 		throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId);
@@ -162,13 +163,13 @@ export async function registerUser(
 		damage?: string[],
 		msgId: string,
 	},
-	interaction: BaseInteraction, 
-	thread: AnyThreadChannel | TextChannel | NewsChannel, 
-	enmap: Settings, 
-	deleteMsg: boolean = true,
+	interaction: BaseInteraction,
+	thread: AnyThreadChannel | TextChannel | NewsChannel,
+	enmap: Settings,
+	deleteMsg = true,
 ) {
-	const {userID, charName, msgId, isPrivate} = userData;
-	let {damage} = userData;
+	const { userID, charName, msgId, isPrivate } = userData;
+	let { damage } = userData;
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
 	const uniCharName: string | undefined = charName ? removeAccents(charName.toLowerCase()) : undefined;
@@ -185,21 +186,22 @@ export async function registerUser(
 		damageName: damage,
 		isPrivate
 	};
+	//biome-ignore lint/performance/noDelete: We need to delete the key if it's not needed (because we are registering in the DB and undefined can lead to a bug)
 	if (!charName) delete newChar.charName;
+	//biome-ignore lint/performance/noDelete: We need to delete the key if it's not needed (because we are registering in the DB and undefined can lead to a bug)
 	if (!damage) delete newChar.damageName;
 	if (user) {
 		const char = user.find(char => {
 			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
-			return (char.charName == undefined && charName == undefined);
+			return (char.charName == null && charName == null);
 		});
 		const charIndx = user.findIndex(char => {
 			if (charName && char.charName) return removeAccents(char.charName).toLowerCase() === uniCharName;
-			return (char.charName == undefined && charName == undefined);
+			return (char.charName == null && charName == null);
 		});
-		if (char){
+		if (char) {
 			//delete old message
-			if (deleteMsg) 
-			{
+			if (deleteMsg) {
 				try {
 					const oldMessage = await thread.messages.fetch(char.messageId);
 					if (oldMessage) oldMessage.delete();
@@ -218,7 +220,7 @@ export async function registerUser(
 		return;
 	}
 	enmap.set(interaction.guild.id, [newChar], `user.${userID}`);
-	
+
 }
 
 /**
@@ -227,7 +229,7 @@ export async function registerUser(
  * @param ul {Translation}
  * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
-export function getUserByEmbed(message: Message, ul: Translation, first: boolean = false, integrateCombinaison: boolean = true) {
+export function getUserByEmbed(message: Message, ul: Translation, first = false, integrateCombinaison = true) {
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
@@ -236,24 +238,24 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 		user.userName = parsedFields[ul("common.charName")];
 	}
 	const templateStat = first ? userEmbed.toJSON().fields : getEmbeds(ul, message, "stats")?.toJSON()?.fields;
-	let stats: {[name: string]: number} | undefined = undefined;
+	let stats: { [name: string]: number } | undefined = undefined;
 	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
-			const value = parseInt(removeBacktick(stat.value), 10);
-			if (isNaN(value)) {
+			const value = Number.parseInt(removeBacktick(stat.value), 10);
+			if (Number.isNaN(value)) {
 				//it's a combinaison 
 				//remove the `x` = text;
 				const combinaison = stat.value.split("=")[1].trim();
 				if (integrateCombinaison)
-					stats[removeEmojiAccents(stat.name)] = parseInt(combinaison, 10);
+					stats[removeEmojiAccents(stat.name)] = Number.parseInt(combinaison, 10);
 			}
 			else stats[removeEmojiAccents(stat.name)] = value;
 		}
 	}
 	user.stats = stats;
 	const damageFields = first ? userEmbed.toJSON().fields : getEmbeds(ul, message, "damage")?.toJSON()?.fields;
-	let templateDamage: {[name: string]: string} | undefined = undefined;
+	let templateDamage: { [name: string]: string } | undefined = undefined;
 	if (damageFields) {
 		templateDamage = {};
 		for (const damage of damageFields) {
@@ -266,8 +268,8 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 	user.template = {
 		diceType: templateFields?.[title(ul("common.dice"))] || templateFields?.[(ul("common.dice"))] || undefined,
 		critical: {
-			success: parseInt(templateFields?.[ul("roll.critical.success")], 10),
-			failure: parseInt(templateFields[ul("roll.critical.failure")], 10),
+			success: Number.parseInt(templateFields?.[ul("roll.critical.success")], 10),
+			failure: Number.parseInt(templateFields[ul("roll.critical.failure")], 10),
 		}
 	};
 	return user as UserData;
@@ -288,12 +290,12 @@ export function registerManagerID(guildData: Settings, interaction: BaseInteract
 export async function getFirstRegisteredChar(client: EClient, interaction: CommandInteraction, ul: Translation) {
 	const userData = client.settings.get(interaction.guild!.id, `user.${interaction.user.id}`);
 	if (!userData) {
-		await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
+		await reply(interaction, { content: ul("error.notRegistered"), ephemeral: true });
 		return;
 	}
 	const firstChar = userData[0];
 	const optionChar = title(firstChar.charName);
 	const userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, firstChar.charName);
 
-	return {optionChar, userStatistique};
+	return { optionChar, userStatistique };
 }

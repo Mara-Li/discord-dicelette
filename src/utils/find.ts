@@ -1,6 +1,6 @@
-import { Settings, Translation } from "@interface";
+import type { Settings, Translation } from "@interface";
 import { sendLogs, setTagsForRoll } from "@utils";
-import { ForumChannel, TextChannel, ThreadChannel } from "discord.js";
+import { type ForumChannel, TextChannel, ThreadChannel } from "discord.js";
 /**
  * Find a thread by their data or create it for roll
  * @param channel {TextChannel}
@@ -30,7 +30,7 @@ export async function findThread(db: Settings, channel: TextChannel, ul: Transla
 		}
 		return 0;
 	});
-	const threadName = `🎲 ${ channel.name.replaceAll("-", " ")}`;
+	const threadName = `🎲 ${channel.name.replaceAll("-", " ")}`;
 	const thread = mostRecentThread.find(thread => thread.name.startsWith("🎲") && !thread.archived);
 	if (thread) {
 		const threadThatMustBeArchived = mostRecentThread.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id);
@@ -38,7 +38,7 @@ export async function findThread(db: Settings, channel: TextChannel, ul: Transla
 			await thread[1].setArchived(true);
 		}
 		return thread;
-	} else if (mostRecentThread.find(thread => thread.name === threadName && thread.archived)){
+	} if (mostRecentThread.find(thread => thread.name === threadName && thread.archived)) {
 		const thread = mostRecentThread.find(thread => thread.name === threadName && thread.archived);
 		if (thread) {
 			thread.setArchived(false);
@@ -96,7 +96,7 @@ export async function findForumChannel(forum: ForumChannel, thread: ThreadChanne
 	//create new forum thread
 	return await forum.threads.create({
 		name: `🎲 ${topic}`,
-		message: {content: ul("roll.reason")},
+		message: { content: ul("roll.reason") },
 		appliedTags: [tags.id as string],
 	});
 }

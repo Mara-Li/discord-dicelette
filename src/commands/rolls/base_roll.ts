@@ -1,15 +1,15 @@
 import { cmdLn, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { reply, setTagsForRoll } from "@utils";
 import { rollWithInteraction } from "@utils/roll";
 import {
 	channelMention,
-	CommandInteraction,
-	CommandInteractionOptionResolver,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
 	ForumChannel,
-	InteractionResponse,
-	Locale,
-	Message,
+	type InteractionResponse,
+	type Locale,
+	type Message,
 	SlashCommandBuilder,
 	TextChannel,
 	userMention} from "discord.js";
