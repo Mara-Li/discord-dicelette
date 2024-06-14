@@ -43,8 +43,7 @@
     "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
   },
   "button": {
-    "add": {
-    },
+    "add": {},
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -165,10 +164,8 @@
     "user": "Registered player"
   },
   "embeds": {
-    "display": {
-    },
-    "edit": {
-    }
+    "display": {},
+    "edit": {}
   },
   "error": {
     "charName": "The character {{- charName}} is not registered.",
@@ -176,7 +173,8 @@
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
     "invalidDice": {
       "embeds": "No die embeds detected",
-      "withDice": "Error: Invalid die {{- dice}}"
+      "withDice": "Error: Invalid die {{- dice}}",
+      "withoutDice": "Error: Invalid die"
     },
     "mustBeGreater": "The {{- value}} value must be greater than {{- min}}",
     "mustBeLower": "The {{- value}} value must be smaller than {{- max}}",
@@ -211,8 +209,7 @@
     "options": {
       "desc": "Export only characters marked as private",
       "name": "private_sheet_only",
-      "private": {
-      }
+      "private": {}
     }
   },
   "generate": {

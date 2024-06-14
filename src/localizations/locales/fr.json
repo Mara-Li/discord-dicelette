@@ -163,10 +163,8 @@
     "user": "Joueur enregistré"
   },
   "embeds": {
-    "display": {
-    },
-    "edit": {
-    }
+    "display": {},
+    "edit": {}
   },
   "error": {
     "charName": "Le personnage {{- charName}} n'est pas enregistré.",
@@ -174,7 +172,8 @@
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
     "invalidDice": {
       "embeds": "Aucun embed de dé détecté",
-      "withDice": "Erreur : Dé invalide {{- dice}}"
+      "withDice": "Erreur : Dé invalide {{- dice}}",
+      "withoutDice": "Erreur : Dé invalide"
     },
     "mustBeGreater": "La valeur {{- value}} doit être plus grande que {{- min}}",
     "mustBeLower": "La valeur {{- value}} doit être plus petite que {{- max}}",
@@ -209,8 +208,7 @@
     "options": {
       "desc": "Exporter que les personnages marqués comme privé",
       "name": "fiche_privée_uniquement",
-      "private": {
-      }
+      "private": {}
     }
   },
   "generate": {
