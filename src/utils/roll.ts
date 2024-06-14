@@ -2,12 +2,12 @@ import { deleteAfter } from "@commands/rolls/base_roll";
 import { error} from "@console";
 import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
 import { DETECT_DICE_MESSAGE } from "@events/message_create";
-import { Settings, Translation, UserData } from "@interface";
+import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { reply, timestamp, title } from "@utils";
 import { findForumChannel,findThread } from "@utils/find";
-import { CommandInteraction, CommandInteractionOptionResolver, ForumChannel, TextBasedChannel, TextChannel, ThreadChannel, User, userMention } from "discord.js";
+import { type CommandInteraction, type CommandInteractionOptionResolver, type ForumChannel, type TextBasedChannel, TextChannel, ThreadChannel, type User, userMention } from "discord.js";
 import i18next from "i18next";
 import removeAccents from "remove-accents";
 

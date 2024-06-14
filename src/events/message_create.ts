@@ -1,12 +1,12 @@
 /* eslint-disable no-useless-escape */
 import { deleteAfter } from "@commands/rolls/base_roll";
 import {error} from "@console";
-import { COMMENT_REGEX, Resultat,roll } from "@dicelette/core";
+import { COMMENT_REGEX, type Resultat,roll } from "@dicelette/core";
 import { lError, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { timestamp } from "@utils";
 import { findForumChannel, findThread } from "@utils/find";
-import {ChannelType, ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
+import {ChannelType, type ForumChannel, Locale, TextChannel, ThreadChannel, userMention} from "discord.js";
 
 import { parseResult } from "../dice";
 

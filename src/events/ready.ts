@@ -1,7 +1,7 @@
 import { commandsList } from "@commands";
 import {log, success } from "@console";
-import { GuildData } from "@interface";
-import { EClient , VERSION } from "@main";
+import type { GuildData } from "@interface";
+import { type EClient , VERSION } from "@main";
 import { ActivityType, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 import * as fs from "fs";

@@ -1,8 +1,8 @@
-import { Critical } from "@dicelette/core";
-import Enmap from "enmap";
-import { TFunction } from "i18next";
+import type { Critical } from "@dicelette/core";
+import type Enmap from "enmap";
+import type { TFunction } from "i18next";
 
-export const enum THUMBNAIL {
+export enum THUMBNAIL {
 	DICE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/dice.png?raw=true",
 	TEMPLATE = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/template.png?raw=true",
 	STATS = "https://github.com/Lisandra-dev/discord-dicelette/blob/main/assets/player.png?raw=true"

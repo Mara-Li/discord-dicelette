@@ -1,9 +1,9 @@
 import { cmdLn,ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");

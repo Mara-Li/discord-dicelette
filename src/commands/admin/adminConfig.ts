@@ -1,10 +1,9 @@
-import { Translation } from "@interface";
+import type { Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { reply } from "@utils";
-import { channelMention, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits,roleMention,SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
+import { channelMention, ChannelType, type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits, roleMention, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import i18next from "i18next";
-import { Locale } from "moment";
 
 
 const t = i18next.getFixedT("en");
@@ -50,8 +49,8 @@ export const adminConfig = {
 						.addChannelTypes(ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread)
 				)
 		)
-		
-		
+
+
 		/* DELETE AFTER */
 		.addSubcommand(subcommand =>
 			subcommand
@@ -70,7 +69,7 @@ export const adminConfig = {
 						.setMaxValue(3600)
 				)
 		)
-		
+
 		/* DISABLE THREAD */
 		.addSubcommand(subcommand =>
 			subcommand
@@ -132,23 +131,23 @@ export const adminConfig = {
 								.setDescriptionLocalizations(cmdLn("autoRole.options"))
 								.setRequired(false)
 						)
-				) 
+				)
 		)
 
 		/* TIMESTAMP */
-		.addSubcommand(sub => 
+		.addSubcommand(sub =>
 			sub
 				.setName(t("timestamp.name"))
 				.setDescription(t("timestamp.description"))
 				.setDescriptionLocalizations(cmdLn("timestamp.description"))
 				.setNameLocalizations(cmdLn("timestamp.name"))
-				.addBooleanOption(option => 
+				.addBooleanOption(option =>
 					option
 						.setName(t("disableThread.options.name"))
 						.setDescription(t("timestamp.options"))
 						.setRequired(true)
 				)
-		
+
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
@@ -158,21 +157,21 @@ export const adminConfig = {
 		const subcommandGroup = options.getSubcommandGroup();
 		if (subcommandGroup && subcommandGroup === t("autoRole.name")) {
 			if (subcommand === t("common.statistic")) return stats(options, client, ul, interaction);
-			else if (subcommand === t("common.dice")) return dice(options, client, ul, interaction);
+			if (subcommand === t("common.dice")) return dice(options, client, ul, interaction);
 		}
 		switch (subcommand) {
-		case t("logs.name"):
-			return await logs(interaction, client, ul, options);
-		case (t("changeThread.name")):
-			return await changeThread(interaction, client, ul, options);
-		case t("disableThread.name"):
-			return await disableThread(interaction, client, ul, options);
-		case t("timer.name"):
-			return await timer(interaction, client, ul, options);
-		case t("config.display.name"):
-			return await display(interaction, client, ul);
-		case t("timestamp.name"):
-			return await timestamp(interaction, client, ul, options);
+			case t("logs.name"):
+				return await logs(interaction, client, ul, options);
+			case (t("changeThread.name")):
+				return await changeThread(interaction, client, ul, options);
+			case t("disableThread.name"):
+				return await disableThread(interaction, client, ul, options);
+			case t("timer.name"):
+				return await timer(interaction, client, ul, options);
+			case t("config.display.name"):
+				return await display(interaction, client, ul);
+			case t("timestamp.name"):
+				return await timestamp(interaction, client, ul, options);
 		}
 	},
 };
@@ -185,7 +184,7 @@ function stats(options: CommandInteractionOptionResolver, client: EClient, ul: T
 		return reply(interaction, { content: ul("autoRole.stat.remove"), ephemeral: true });
 	}
 	client.settings.set(interaction.guild!.id, role.id, "autoRole.stats");
-	return reply(interaction, { content: ul("autoRole.stat.set", { role: roleMention(role.id)}), ephemeral: true });
+	return reply(interaction, { content: ul("autoRole.stat.set", { role: roleMention(role.id) }), ephemeral: true });
 }
 
 function dice(options: CommandInteractionOptionResolver, client: EClient, ul: Translation, interaction: CommandInteraction) {
@@ -196,7 +195,7 @@ function dice(options: CommandInteractionOptionResolver, client: EClient, ul: Tr
 		return reply(interaction, { content: ul("autoRole.dice.remove"), ephemeral: true });
 	}
 	client.settings.set(interaction.guild!.id, role.id, "autoRole.dice");
-	return reply(interaction, { content: ul("autoRole.dice.set", { role: roleMention(role.id)}), ephemeral: true });
+	return reply(interaction, { content: ul("autoRole.dice.set", { role: roleMention(role.id) }), ephemeral: true });
 }
 
 async function logs(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
@@ -204,12 +203,12 @@ async function logs(interaction: CommandInteraction, client: EClient, ul: Transl
 	if (!channel || !(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) {
 		const oldChan = client.settings.get(interaction.guild!.id, "logs");
 		client.settings.delete(interaction.guild!.id, "logs");
-		const msg = oldChan ? ` ${ul("logs.inChan", {chan: channelMention(oldChan)})}` : ".";
+		const msg = oldChan ? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}` : ".";
 		await reply(interaction, { content: `${ul("logs.delete")}${msg}`, ephemeral: true });
 		return;
 	}
 	client.settings.set(interaction.guild!.id, channel.id, "logs");
-	await reply(interaction, { content: ul("logs.set", {channel: channel.name}), ephemeral: true });
+	await reply(interaction, { content: ul("logs.set", { channel: channel.name }), ephemeral: true });
 }
 
 async function changeThread(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
@@ -217,15 +216,15 @@ async function changeThread(interaction: CommandInteraction, client: EClient, ul
 	if (!interaction.guild) return;
 	if (!channel || !(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) {
 		const oldChan = client.settings.get(interaction.guild.id, "rollChannel");
-		const msg = oldChan ? ` ${ul("logs.inChan", {chan: channelMention(oldChan)})}` : ".";
+		const msg = oldChan ? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}` : ".";
 		client.settings.delete(interaction.guild.id, "rollChannel");
-		await reply(interaction, {content: `${ul("changeThread.delete")}${msg}`, ephemeral: true});
+		await reply(interaction, { content: `${ul("changeThread.delete")}${msg}`, ephemeral: true });
 		return;
 	}
 	client.settings.set(interaction.guild.id, channel.id, "rollChannel");
-	await reply(interaction, ul("changeThread.set", {channel: channelMention(channel.id)}));
+	await reply(interaction, ul("changeThread.set", { channel: channelMention(channel.id) }));
 	return;
-	
+
 }
 
 async function disableThread(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
@@ -237,7 +236,7 @@ async function disableThread(interaction: CommandInteraction, client: EClient, u
 		client.settings.set(interaction.guild!.id, true, "disableThread");
 		if (rollChannel) {
 			const mention = `<#${rollChannel}>`;
-			const msg = ul("disableThread.disable.reply") + ul("disableThread.disable.mention", {mention});
+			const msg = ul("disableThread.disable.reply") + ul("disableThread.disable.mention", { mention });
 			await reply(interaction, msg);
 			return;
 		}
@@ -247,7 +246,7 @@ async function disableThread(interaction: CommandInteraction, client: EClient, u
 	client.settings.delete(interaction.guild!.id, "disableThread");
 	if (rollChannel) {
 		const mention = `<#${rollChannel}>`;
-		const msg = ul("disableThread.enable.reply") + ul("disableThread.enable.mention", {mention});
+		const msg = ul("disableThread.enable.reply") + ul("disableThread.enable.mention", { mention });
 		await reply(interaction, msg);
 		return;
 	}
@@ -276,7 +275,7 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	const privateChan = client.settings.get(interaction.guild!.id, "privateChannel");
 	const timestamp = client.settings.get(interaction.guild!.id, "timestamp");
 	const baseEmbed = new EmbedBuilder()
-		.setTitle(ul("config.title",{ guild: interaction.guild!.name}))
+		.setTitle(ul("config.title", { guild: interaction.guild!.name }))
 		.setThumbnail(interaction.guild!.iconURL() ?? "")
 		.setColor("Random");
 	if (timer) {
@@ -321,7 +320,7 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 			value: `<@&${autoRole.stats}>`,
 		});
 	}
-		
+
 	if (managerId) {
 		baseEmbed.addFields({
 			name: ul("config.managerId"),
@@ -338,7 +337,7 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	if (client.settings.has(interaction.guild!.id, "templateID")) {
 		const templateID = client.settings.get(interaction.guild!.id, "templateID");
 		const { channelId, messageId, statsName, damageName } = templateID ?? {};
-		if (messageId && messageId.length > 0 && channelId && channelId.length > 0){
+		if (messageId && messageId.length > 0 && channelId && channelId.length > 0) {
 			const messageLink = `https://discord.com/channels/${interaction.guild!.id}/${channelId}/${messageId}`;
 			baseEmbed.addFields({
 				name: ul("config.templateID"),

@@ -1,10 +1,10 @@
-import { StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
-import { Settings, Translation, UserData } from "@interface";
+import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
+import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import {haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
 import { ensureEmbed,getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
-import { AnyThreadChannel, BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, Embed, Locale, Message, ModalSubmitInteraction, NewsChannel, TextChannel } from "discord.js";
+import { type AnyThreadChannel, type BaseInteraction, type ButtonInteraction, CategoryChannel, type CommandInteraction, type CommandInteractionOptionResolver, type Embed, type Locale, type Message, type ModalSubmitInteraction, type NewsChannel, type TextChannel } from "discord.js";
 import removeAccents from "remove-accents";
 
 
@@ -165,7 +165,7 @@ export async function registerUser(
 	interaction: BaseInteraction, 
 	thread: AnyThreadChannel | TextChannel | NewsChannel, 
 	enmap: Settings, 
-	deleteMsg: boolean = true,
+	deleteMsg = true,
 ) {
 	const {userID, charName, msgId, isPrivate} = userData;
 	let {damage} = userData;
@@ -227,7 +227,7 @@ export async function registerUser(
  * @param ul {Translation}
  * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
-export function getUserByEmbed(message: Message, ul: Translation, first: boolean = false, integrateCombinaison: boolean = true) {
+export function getUserByEmbed(message: Message, ul: Translation, first = false, integrateCombinaison = true) {
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
@@ -240,13 +240,13 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
-			const value = parseInt(removeBacktick(stat.value), 10);
+			const value = Number.parseInt(removeBacktick(stat.value), 10);
 			if (isNaN(value)) {
 				//it's a combinaison 
 				//remove the `x` = text;
 				const combinaison = stat.value.split("=")[1].trim();
 				if (integrateCombinaison)
-					stats[removeEmojiAccents(stat.name)] = parseInt(combinaison, 10);
+					stats[removeEmojiAccents(stat.name)] = Number.parseInt(combinaison, 10);
 			}
 			else stats[removeEmojiAccents(stat.name)] = value;
 		}
@@ -266,8 +266,8 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 	user.template = {
 		diceType: templateFields?.[title(ul("common.dice"))] || templateFields?.[(ul("common.dice"))] || undefined,
 		critical: {
-			success: parseInt(templateFields?.[ul("roll.critical.success")], 10),
-			failure: parseInt(templateFields[ul("roll.critical.failure")], 10),
+			success: Number.parseInt(templateFields?.[ul("roll.critical.success")], 10),
+			failure: Number.parseInt(templateFields[ul("roll.critical.failure")], 10),
 		}
 	};
 	return user as UserData;

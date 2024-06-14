@@ -1,9 +1,9 @@
 import { error as err } from "@console";
-import { GuildData } from "@interface";
-import { EClient } from "@main";
+import type { GuildData } from "@interface";
+import type { EClient } from "@main";
 import { isStatsThread, sendLogs } from "@utils";
-import {CommandInteraction, GuildTextBasedChannel, NonThreadGuildBasedChannel, TextChannel, ThreadChannel, User} from "discord.js";
-import Enmap from "enmap";
+import {type CommandInteraction, type GuildTextBasedChannel, type NonThreadGuildBasedChannel, TextChannel, type ThreadChannel, type User} from "discord.js";
+import type Enmap from "enmap";
 import removeAccents from "remove-accents";
 
 export const delete_channel = (client	: EClient): void => {

@@ -1,4 +1,4 @@
-import { Translation } from "@interface";
+import type { Translation } from "@interface";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
 /**

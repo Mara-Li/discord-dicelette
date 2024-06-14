@@ -1,11 +1,11 @@
 import { createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice,roll } from "@dicelette/core";
-import { Settings, Translation } from "@interface";
+import type { Settings, Translation } from "@interface";
 import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons } from "@utils/buttons";
 import { registerUser } from "@utils/db";
 import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse";
-import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed, Guild, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
+import { ActionRowBuilder, type APIEmbedField, type ButtonInteraction, type Embed, type Guild, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User, userMention } from "discord.js";
 
 /**
  * Show the modal to **edit** the registered dice

@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
-import {Compare, Resultat } from "@dicelette/core";
-import { Translation } from "@interface";
+import type {Compare, Resultat } from "@dicelette/core";
+import type { Translation } from "@interface";
 import { evaluate } from "mathjs";
 import {dedent} from "ts-dedent";
 
@@ -23,13 +23,13 @@ export function parseResult(output: Resultat, ul: Translation, critical?: {failu
 		for (const r of messageResult) {
 			const tot = r.match(/ = (\d+)/);
 			if (tot) {
-				total = parseInt(tot[1], 10);
+				total = Number.parseInt(tot[1], 10);
 			}
 			
 			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${ul("roll.success")}**` : `**${ul("roll.failure")}**`;
 			const naturalDice = r.matchAll(/\[(\d+)\]/gi);
 			for (const dice of naturalDice) {
-				natural.push(parseInt(dice[1], 10));
+				natural.push(Number.parseInt(dice[1], 10));
 			}
 			if (critical) {
 				if (critical.failure && natural.includes(critical.failure)) {

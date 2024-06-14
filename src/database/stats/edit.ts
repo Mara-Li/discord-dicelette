@@ -1,11 +1,11 @@
 import { createStatsEmbed, getUserNameAndChar } from "@database";
 import { evalOneCombinaison } from "@dicelette/core";
-import { Settings, Translation } from "@interface";
+import type { Settings, Translation } from "@interface";
 import {displayOldAndNewStats, isArrayEqual, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons } from "@utils/buttons";
 import { getTemplateWithDB } from "@utils/db";
 import { ensureEmbed,getEmbeds, getEmbedsList, parseEmbedFields, removeEmbedsFromList } from "@utils/parse";
-import { ActionRowBuilder, APIEmbedField, ButtonInteraction, Embed,Guild,ModalActionRowComponentBuilder,ModalBuilder,ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User, userMention } from "discord.js";
+import { ActionRowBuilder, type APIEmbedField, type ButtonInteraction, type Embed,type Guild,type ModalActionRowComponentBuilder,ModalBuilder,type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User, userMention } from "discord.js";
 
 /**
  * Validate the stats and edit the embed with the new stats for editing
@@ -40,11 +40,11 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 		if (!stat) {
 			throw new Error(ul("error.statNotFound", {value: name}));
 		}
-		const num = parseInt(value, 10);
+		const num = Number.parseInt(value, 10);
 		if (isNaN(num)) {
 			//it's a combinaison OR an error
 			//we need to get the result of the combinaison
-			const combinaison = parseInt(evalOneCombinaison(value, stats), 10);
+			const combinaison = Number.parseInt(evalOneCombinaison(value, stats), 10);
 			if (isNaN(combinaison)) {
 				throw new Error(`[error.invalidFormula] ${value}`);
 			}

@@ -1,12 +1,12 @@
-import { StatisticalTemplate } from "@dicelette/core";
-import { Settings, Translation } from "@interface";
+import type { StatisticalTemplate } from "@dicelette/core";
+import type { Settings, Translation } from "@interface";
 import { ln } from "@localization";
 import { createEmbedFirstPage } from "@register/validate";
 import { embedStatistiques, showStatistiqueModal } from "@stats/add";
 import { removeEmojiAccents, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { parseEmbed } from "@utils/parse";
-import { ActionRowBuilder, ButtonInteraction, Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, User } from "discord.js";
+import { ActionRowBuilder, type ButtonInteraction, type Locale, type ModalActionRowComponentBuilder,ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User } from "discord.js";
 
 
 /**
@@ -33,7 +33,7 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
 		await reply(interaction,{ content: ul("modals.alreadySet"), ephemeral: true });
 		return;
 	}
-	const page = isNaN(parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : parseInt(interaction.customId.replace("page", ""), 10) + 1;
+	const page = isNaN(Number.parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : Number.parseInt(interaction.customId.replace("page", ""), 10) + 1;
 	await showStatistiqueModal(interaction, dbTemplate, statsAlreadySet, page);
 }
 
@@ -44,7 +44,7 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
  * @param ul {Translation}
  */
 export async function pageNumber(interaction: ModalSubmitInteraction, ul: Translation, db: Settings) {
-	const pageNumber = parseInt(interaction.customId.replace("page", ""), 10);
+	const pageNumber = Number.parseInt(interaction.customId.replace("page", ""), 10);
 	if (isNaN(pageNumber)) return;
 	const template = await getTemplateWithDB(interaction, db);
 	if (!template) {

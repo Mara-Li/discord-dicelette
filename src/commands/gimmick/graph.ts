@@ -1,11 +1,11 @@
 import {log} from "@console";
-import { UserData } from "@interface";
+import type { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { filterChoices, haveAccess, removeEmojiAccents, reply, searchUserChannel, sendLogs, title } from "@utils";
 import { getDatabaseChar, getTemplateWithDB, getUserFromMessage } from "@utils/db";
 import {ChartJSNodeCanvas} from "chartjs-node-canvas";
-import { AttachmentBuilder, AutocompleteInteraction, CommandInteraction, CommandInteractionOptionResolver, Locale, SlashCommandBuilder } from "discord.js";
+import { AttachmentBuilder, type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
 import path from "path";
@@ -239,10 +239,10 @@ export const graph = {
 					} else if (serverTemplate.diceType) {
 						const comparatorRegex = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(serverTemplate.diceType);
 						if (comparatorRegex?.groups?.comparator) {
-							max = parseInt(comparatorRegex.groups.comparator, 10);
+							max = Number.parseInt(comparatorRegex.groups.comparator, 10);
 						} else {
 							const diceMatch = /d(?<face>\d+)/.exec(serverTemplate.diceType);
-							max = diceMatch?.groups?.face ? parseInt(diceMatch.groups.face, 10) : undefined;
+							max = diceMatch?.groups?.face ? Number.parseInt(diceMatch.groups.face, 10) : undefined;
 						}
 					}
 				} else max = undefined;

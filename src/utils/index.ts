@@ -1,8 +1,8 @@
-import { Settings, Translation, TUTORIAL_IMAGES, UserData} from "@interface";
+import { type Settings, type Translation, TUTORIAL_IMAGES, type UserData} from "@interface";
 import { editUserButtons } from "@utils/buttons";
 import { registerManagerID, registerUser } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
-import { AnyThreadChannel, APIEmbedField,AttachmentBuilder,BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, Embed, EmbedBuilder, ForumChannel, Guild, GuildBasedChannel, GuildForumTagData, InteractionReplyOptions, MediaChannel,MessagePayload,ModalSubmitInteraction, NewsChannel, PermissionFlagsBits, PrivateThreadChannel, PublicThreadChannel, roleMention, StageChannel, TextChannel,VoiceChannel } from "discord.js";
+import { type AnyThreadChannel, type APIEmbedField,AttachmentBuilder,type BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, type Embed, type EmbedBuilder, ForumChannel, type Guild, type GuildBasedChannel, type GuildForumTagData, type InteractionReplyOptions, MediaChannel,type MessagePayload,ModalSubmitInteraction, type NewsChannel, PermissionFlagsBits, type PrivateThreadChannel, type PublicThreadChannel, roleMention, StageChannel, TextChannel,VoiceChannel } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
@@ -206,10 +206,10 @@ export function parseStatsString(statsEmbed: EmbedBuilder) {
 	const stats = parseEmbedFields(statsEmbed.toJSON() as Embed);
 	const parsedStats: {[name: string]: number} = {};
 	for (const [name, value] of Object.entries(stats)) {
-		let number = parseInt(value, 10);
+		let number = Number.parseInt(value, 10);
 		if (isNaN(number)) {
 			const combinaison = value.replace(/`(.*)` =/, "").trim();
-			number = parseInt(combinaison, 10);
+			number = Number.parseInt(combinaison, 10);
 		}
 		parsedStats[name] = number;
 	}

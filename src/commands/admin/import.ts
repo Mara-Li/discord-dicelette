@@ -5,14 +5,14 @@
 
 
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
-import { StatisticalTemplate } from "@dicelette/core";
-import { UserData } from "@interface";
+import type { StatisticalTemplate } from "@dicelette/core";
+import type { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { addAutoRole, removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-import {CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildMember, Locale, PermissionFlagsBits,SlashCommandBuilder,  User,  userMention } from "discord.js";
+import {type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, type GuildMember, type Locale, PermissionFlagsBits,SlashCommandBuilder,  type User,  userMention } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
 

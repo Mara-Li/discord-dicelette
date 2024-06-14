@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createTemplateEmbed } from "@database";
-import {StatisticalTemplate} from "@dicelette/core";
-import { Settings, Translation } from "@interface";
+import type {StatisticalTemplate} from "@dicelette/core";
+import type { Settings, Translation } from "@interface";
 import { ln } from "@localization";
 import { removeEmojiAccents, searchUserChannel, title } from "@utils";
-import { ButtonInteraction, CommandInteraction, Embed, EmbedBuilder, Locale, Message, ModalSubmitInteraction } from "discord.js";
+import { type ButtonInteraction, type CommandInteraction, type Embed, EmbedBuilder, type Locale, type Message, type ModalSubmitInteraction } from "discord.js";
 
 /**
  * Ensure the embeds are present
@@ -176,7 +176,7 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 		}
 		const statValue = interaction.fields.getTextInputValue(name);
 		if (!statValue) continue;
-		const num = parseInt(statValue, 10);
+		const num = Number.parseInt(statValue, 10);
 		if (value.min && num < value.min) {
 			throw new Error(ul("error.mustBeGreater", {value: name, min: value.min}));
 		} else if (value.max && num > value.max) {

@@ -1,4 +1,4 @@
-import { BaseInteraction, Locale, LocalizationMap } from "discord.js";
+import { type BaseInteraction, Locale, type LocalizationMap } from "discord.js";
 import {default as i18next} from "i18next";
 
 import { resources } from "./init";

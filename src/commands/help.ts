@@ -1,9 +1,9 @@
 /* eslint-disable no-case-declarations */
-import { LINKS, Settings, Translation } from "@interface";
+import { LINKS, type Settings, type Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { reply } from "@utils";
-import { ApplicationCommand, Collection, CommandInteraction, CommandInteractionOptionResolver, Locale,SlashCommandBuilder, Snowflake } from "discord.js";
+import { type ApplicationCommand, type Collection, type CommandInteraction, type CommandInteractionOptionResolver, type Locale,SlashCommandBuilder, type Snowflake } from "discord.js";
 import i18next from "i18next";
 import {dedent} from "ts-dedent";
 

@@ -1,11 +1,11 @@
 import {error} from "@console";
-import { Critical, Statistic, StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
-import { GuildData } from "@interface";
+import { type Critical, type Statistic, type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
+import type { GuildData } from "@interface";
 import { cmdLn, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { downloadTutorialImages, reply, title } from "@utils";
 import { bulkEditTemplateUser } from "@utils/parse";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, channelMention,ChannelType, type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, type Locale, PermissionFlagsBits, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
 import i18next from "i18next";
 import {dedent} from "ts-dedent";
 

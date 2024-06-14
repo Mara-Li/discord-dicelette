@@ -1,9 +1,9 @@
-import { evalCombinaison,StatisticalTemplate } from "@dicelette/core";
+import { evalCombinaison,type StatisticalTemplate } from "@dicelette/core";
 import { lError,ln } from "@localization";
 import { removeEmojiAccents, reply, title } from "@utils";
 import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
 import { ensureEmbed,getStatistiqueFields } from "@utils/parse";
-import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRowComponentBuilder,ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder,type Locale, type ModalActionRowComponentBuilder,ModalBuilder, type ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
 /**
  * Embed to display the statistics when adding a new user
@@ -11,7 +11,7 @@ import { ActionRowBuilder, ButtonInteraction, EmbedBuilder,Locale, ModalActionRo
  * @param template {StatisticalTemplate}
  * @param page {number}
  */
-export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page: number = 2) {
+export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page = 2) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = ensureEmbed(interaction.message);
@@ -84,7 +84,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
  * @param stats {string[]}
  * @param page {number}
  */
-export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page: number = 1) {
+export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page = 1) {
 	if (!template.statistics) return;
 	const ul = ln(interaction.locale as Locale);
 	const statsWithoutCombinaison = Object.keys(template.statistics).filter(stat => {

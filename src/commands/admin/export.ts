@@ -3,14 +3,14 @@
 */
 
 import { cmdLn, ln } from "@localization";
-import { EClient } from "@main";
+import type { EClient } from "@main";
 import { removeEmojiAccents } from "@utils";
 import { getUserFromMessage } from "@utils/db";
-import { CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
+import { type CommandInteraction, type CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
 
-import { CSVRow } from "./import";
+import type { CSVRow } from "./import";
 
 const t = i18next.getFixedT("en");
 export const exportData = {

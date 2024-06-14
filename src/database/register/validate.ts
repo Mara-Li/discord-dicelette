@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
-import {evalStatsDice, StatisticalTemplate} from "@dicelette/core";
-import { Settings, Translation, UserData } from "@interface";
+import type {StatisticalTemplate} from "@dicelette/core";
+import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import {addAutoRole, removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, ensureEmbed,parseEmbedFields } from "@utils/parse";
-import { ButtonInteraction, EmbedBuilder, Locale, ModalSubmitInteraction, PermissionsBitField, User, userMention } from "discord.js";
+import { type ButtonInteraction, EmbedBuilder, type Locale, type ModalSubmitInteraction, PermissionsBitField, type User, userMention } from "discord.js";
 
 /**
  * Create the embed after registering the user
@@ -97,7 +97,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: {[name: string]: number} = {};
 	for (const stat of templateStat) {
-		stats[stat] = parseInt(parsedFields[removeEmojiAccents(stat)], 10);
+		stats[stat] = Number.parseInt(parsedFields[removeEmojiAccents(stat)], 10);
 	}
 	const damageFields = oldEmbeds.fields.filter(field => field.name.startsWith("🔪"));
 	let templateDamage: {[name: string]: string} | undefined = undefined;
