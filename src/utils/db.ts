@@ -115,10 +115,10 @@ export async function getUserFromMessage(
 	if (!options) options = { integrateCombinaison: true, allowAccess: true, skipNotFound: false };
 	const { integrateCombinaison, allowAccess, skipNotFound } = options;
 	const ul = ln(interaction.locale);
-	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
+	const serializedName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const guild = interaction.guild;
 	const user = guildData.get(guild!.id, `user.${userId}`)?.find(char => {
-		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
+		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serializedName;
 		return (charName == null && char.charName == null);
 	});
 	if (!user) return;
