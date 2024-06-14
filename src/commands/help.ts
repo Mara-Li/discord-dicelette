@@ -57,7 +57,6 @@ export const help = {
 		const link = interaction.locale === "fr" ? LINKS.fr : LINKS.en;
 		const commandsID = await interaction.guild?.commands.fetch();
 		if (!commandsID) return;
-
 		switch (subcommand) {
 			case (t("help.info.name")): {
 				const rollID = commandsID.findKey(command => command.name === "roll");

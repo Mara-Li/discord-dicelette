@@ -5,6 +5,7 @@ import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
 import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
+import removeAccents from "remove-accents";
 
 const t = i18next.getFixedT("en");
 
@@ -176,7 +177,9 @@ export const mjRoll = {
 		const charName = options.getString(t("common.character"), false)?.toLowerCase();
 		let optionChar = options.getString(t("common.character")) ?? undefined;
 		let charData = await getUserFromMessage(client.settings, user.id, interaction, charName);
-		if (charName && charData?.userName !== charName) {
+		const serializedName = charData?.userName ? removeAccents(charData.userName).toLowerCase() : undefined;
+		const serializedNameQueries = charName ? removeAccents(charName).toLowerCase() : undefined;
+		if (charName && serializedName !== serializedNameQueries) {
 			await reply(interaction, { content: ul("error.charName", { charName: title(charName) }), ephemeral: true });
 			return;
 		}
@@ -192,9 +195,8 @@ export const mjRoll = {
 			return;
 		}
 		const subcommand = options.getSubcommand(true);
-		if (subcommand === ul("dbRoll.name")) return await rollStatistique(interaction, client, charData, options, ul, optionChar, user);
-		if (subcommand === ul("rAtq.name")) return await rollDice(interaction, client, charData, options, ul, optionChar, user);
-
+		if (subcommand === ul("dbRoll.name")) return await rollStatistique(interaction, client, charData, options, ul, optionChar, user, true);
+		if (subcommand === ul("rAtq.name")) return await rollDice(interaction, client, charData, options, ul, optionChar, user, true);
 	}
 };
 

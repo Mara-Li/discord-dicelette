@@ -56,7 +56,7 @@ export const DELETE_MESSAGE = (client: EClient): void => {
 			const messageId = message.id;
 			//search channelID in database and delete it
 			const guildID = message.guild.id;
-			console.log(message.channel.id, message.thread?.id);
+
 			const channel = message.channel;
 			if (channel.isDMBased()) return;
 			if (client.settings.get(guildID, "templateID.messageId") === messageId) client.settings.delete(guildID, "templateID");

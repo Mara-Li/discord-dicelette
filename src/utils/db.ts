@@ -115,15 +115,14 @@ export async function getUserFromMessage(
 	if (!options) options = { integrateCombinaison: true, allowAccess: true, skipNotFound: false };
 	const { integrateCombinaison, allowAccess, skipNotFound } = options;
 	const ul = ln(interaction.locale);
-	const serizalizedCharName = charName ? removeAccents(charName).toLowerCase() : undefined;
+	const serializedName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const guild = interaction.guild;
 	const user = guildData.get(guild!.id, `user.${userId}`)?.find(char => {
-		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serizalizedCharName;
+		if (char.charName && char) return removeAccents(char.charName).toLowerCase() === serializedName;
 		return (charName == null && char.charName == null);
 	});
 	if (!user) return;
 	const userMessageId = user.messageId;
-
 	const thread = await searchUserChannel(guildData, interaction, ul, user.isPrivate);
 	if (user.isPrivate && !allowAccess && !haveAccess(interaction, thread, userId)) {
 		throw new Error(ul("error.private"));
@@ -220,7 +219,6 @@ export async function registerUser(
 		return;
 	}
 	enmap.set(interaction.guild.id, [newChar], `user.${userID}`);
-
 }
 
 /**
@@ -229,19 +227,20 @@ export async function registerUser(
  * @param ul {Translation}
  * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
-export function getUserByEmbed(message: Message, ul: Translation, first = false, integrateCombinaison = true) {
+export function getUserByEmbed(message: Message, ul: Translation, first: boolean | undefined = false, integrateCombinaison = true) {
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
 	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Embed);
-	if (parsedFields[ul("common.charName")] !== ul("common.noSet")) {
-		user.userName = parsedFields[ul("common.charName")];
+	if (parsedFields["common.charName"] !== "common.noSet") {
+		user.userName = parsedFields["common.charName"];
 	}
 	const templateStat = first ? userEmbed.toJSON().fields : getEmbeds(ul, message, "stats")?.toJSON()?.fields;
 	let stats: { [name: string]: number } | undefined = undefined;
 	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
+			if (first && !stat.name.startsWith("✏️")) continue;
 			const value = Number.parseInt(removeBacktick(stat.value), 10);
 			if (Number.isNaN(value)) {
 				//it's a combinaison 
@@ -266,10 +265,10 @@ export function getUserByEmbed(message: Message, ul: Translation, first = false,
 	const templateFields = parseEmbedFields(templateEmbed?.toJSON() as Embed);
 	user.damage = templateDamage;
 	user.template = {
-		diceType: templateFields?.[title(ul("common.dice"))] || templateFields?.[(ul("common.dice"))] || undefined,
+		diceType: templateFields?.["common.dice"] || undefined,
 		critical: {
-			success: Number.parseInt(templateFields?.[ul("roll.critical.success")], 10),
-			failure: Number.parseInt(templateFields[ul("roll.critical.failure")], 10),
+			success: Number.parseInt(templateFields?.["roll.critical.success"], 10),
+			failure: Number.parseInt(templateFields["roll.critical.failure"], 10),
 		}
 	};
 	return user as UserData;

@@ -2,8 +2,8 @@
 import { createTemplateEmbed } from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
-import { ln } from "@localization";
-import { removeEmojiAccents, searchUserChannel, title } from "@utils";
+import { findKeyFromTranslation, ln } from "@localization";
+import { removeEmojiAccents, searchUserChannel } from "@utils";
 import { type ButtonInteraction, type CommandInteraction, type Embed, EmbedBuilder, type Locale, type Message, type ModalSubmitInteraction } from "discord.js";
 
 /**
@@ -88,7 +88,7 @@ export function parseEmbedFields(embed: Embed): { [name: string]: string } {
 	const fields = embed.fields;
 	const parsedFields: { [name: string]: string } = {};
 	for (const field of fields) {
-		parsedFields[removeBacktick(field.name)] = removeBacktick(field.value);
+		parsedFields[findKeyFromTranslation(removeBacktick(field.name))] = findKeyFromTranslation(removeBacktick(field.value));
 	}
 	return parsedFields;
 }
@@ -103,10 +103,11 @@ export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "
 	if (!allEmbeds) throw new Error(ul("error.noEmbed"));
 	for (const embed of allEmbeds) {
 		const embedJSON = embed.toJSON();
-		if (embed.title === ul("embed.user") && which === "user") return new EmbedBuilder(embedJSON);
-		if ((embed.title === ul("embed.stats") || title(embed.title ?? undefined) === title(ul("common.statistic"))) && which === "stats") return new EmbedBuilder(embedJSON);
-		if (embed.title === ul("embed.dice") && which === "damage") return new EmbedBuilder(embedJSON);
-		if (embed.title === ul("embed.template") && which === "template") return new EmbedBuilder(embedJSON);
+		const titleKey = findKeyFromTranslation(embed.title ?? "");
+		if (titleKey === "embed.user" && which === "user") return new EmbedBuilder(embedJSON);
+		if ((titleKey === "embed.stats" || titleKey === "common.statistic") && which === "stats") return new EmbedBuilder(embedJSON);
+		if (titleKey === "embed.dice" && which === "damage") return new EmbedBuilder(embedJSON);
+		if (titleKey === "embed.template" && which === "template") return new EmbedBuilder(embedJSON);
 	}
 }
 

@@ -60,10 +60,10 @@ export const bulkAdd = {
 			return reply(interaction, { content: ul("error.noTemplate") });
 		}
 		const { members, errors } = await parseCSV(csvFile.url, guildTemplate, interaction, client.settings.has(interaction.guild!.id, "privateChannel"));
-
+		const guildMembers = await interaction.guild?.members.fetch();
 		for (const [user, data] of Object.entries(members)) {
 			//we already parsed the user, so the cache should be up to date
-			let member: GuildMember | User | undefined = interaction.guild?.members.cache.get(user);
+			let member: GuildMember | User | undefined = guildMembers!.get(user);
 			if (!member || !member.user) {
 				continue;
 			}
@@ -287,8 +287,15 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 		//get user from the guild
 		let guildMember: undefined | GuildMember;
 		let userID: string | undefined = user;
+		const allMembers = await interaction?.guild?.members.fetch();
+		if (!allMembers) {
+			const msg = ul("bulk_add.errors.no_user");
+			errors.push(msg);
+			continue;
+		}
+		//get the user from the guild
 		if (interaction) {
-			guildMember = interaction.guild?.members.cache.find(member => member.user.id === user || member.user.username === user || member.user.tag === user);
+			guildMember = allMembers.find(member => member.user.id === user || member.user.username === user || member.user.tag === user);
 			if (!guildMember || !guildMember.user) {
 				const msg = ul("bulk_add.errors.user_not_found", { user });
 				await reply(interaction, { content: msg });

@@ -37,7 +37,6 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 			{ name: ul("common.charName"), value: charName.length > 0 ? charName : ul("common.noSet"), inline: true },
 			{ name: ul("common.user"), value: userMention(user.id), inline: true },
 			{ name: ul("common.isPrivate"), value: isPrivate ? "✓" : "✕", inline: true },
-			{ name: "\u200B", value: "_ _", inline: true }
 		);
 	//add continue button
 	if (template.statistics) {
@@ -92,7 +91,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				inline: true,
 
 			});
-		} else if (field.name !== ul("common.isPrivate")) userDataEmbed.addFields(field);
+		} else if (field.name !== "common.isPrivate") userDataEmbed.addFields(field);
 	}
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: { [name: string]: number } = {};

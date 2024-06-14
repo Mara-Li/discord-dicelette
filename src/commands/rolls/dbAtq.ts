@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {error} from "@console";
+import { error } from "@console";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
-import {getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
+import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollDice } from "@utils/roll";
 import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
@@ -25,7 +25,7 @@ export const dbd = {
 				.setDescription(t("rAtq.atq_name.description"))
 				.setDescriptionLocalizations(cmdLn("rAtq.atq_name.description"))
 				.setRequired(true)
-				.setAutocomplete(true)				
+				.setAutocomplete(true)
 		)
 		.addStringOption(option =>
 			option
@@ -62,9 +62,9 @@ export const dbd = {
 		let choices: string[] = [];
 		if (focused.name === t("rAtq.atq_name.name")) {
 			const char = options.getString(t("common.character"));
-			
-			if (char){
-				const values =  user.find((data) => {
+
+			if (char) {
+				const values = user.find((data) => {
 					if (data.charName) return removeAccents(data.charName).toLowerCase() === removeAccents(char).toLowerCase();
 					return false;
 				});
@@ -77,17 +77,28 @@ export const dbd = {
 			if (db.templateID.damageName && db.templateID.damageName.length > 0)
 				choices = choices.concat(db.templateID.damageName);
 		} else if (focused.name === t("common.character")) {
-			//get user characters 
-			const allCharactersFromUser = user
-				.map((data) => data.charName ?? "")
-				.filter((data) => data.length > 0);
-				
-			choices = allCharactersFromUser;
+			//if dice is set, get all characters that have this dice
+			const skill = options.getString(t("rAtq.atq_name.name"));
+			if (skill) {
+				const values = user.filter((data) => {
+					if (data.damageName) return data.damageName.map((data) => removeAccents(data).toLowerCase()).includes(removeAccents(skill).toLowerCase());
+					return false;
+				});
+				choices = values.map((data) => data.charName ?? "").filter((data) => data.length > 0);
+
+			} else {
+				//get user characters 
+				const allCharactersFromUser = user
+					.map((data) => data.charName ?? "")
+					.filter((data) => data.length > 0);
+
+				choices = allCharactersFromUser;
+			}
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result), value: result}))
+			filter.map(result => ({ name: title(result), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -101,9 +112,10 @@ export const dbd = {
 		const ul = ln(interaction.locale as Locale);
 		try {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, charName);
-			const userStatistiqueName = userStatistique?.userName ? removeAccents(userStatistique.userName).toLowerCase() : undefined;
-			if (charOptions && userStatistiqueName !== charName) {
-				await reply(interaction,{ content: ul("error.charName", {charName: title(charOptions)}), ephemeral: true });
+			const serializedUserNameDB = userStatistique?.userName ? removeAccents(userStatistique.userName).toLowerCase() : undefined;
+			const serializedQueries = charName ? removeAccents(charName).toLowerCase() : undefined;
+			if (charOptions && serializedUserNameDB !== serializedQueries) {
+				await reply(interaction, { content: ul("error.charName", { charName: title(charOptions) }), ephemeral: true });
 				return;
 			}
 			if (!userStatistique && !charName) {
@@ -112,17 +124,17 @@ export const dbd = {
 				charOptions = char?.optionChar ?? null;
 			}
 			if (!userStatistique) {
-				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
+				await reply(interaction, { content: ul("error.notRegistered"), ephemeral: true });
 				return;
 			}
 			if (!userStatistique.damage) {
-				await reply(interaction,{ content: ul("error.emptyDamage"), ephemeral: true });
+				await reply(interaction, { content: ul("error.emptyDamage"), ephemeral: true });
 				return;
 			}
 			return await rollDice(interaction, client, userStatistique, options, ul, charName);
 		} catch (e) {
 			error(e);
-			await reply(interaction,{ content: t("error.generic", {e: (e as Error)}), ephemeral: true });
+			await reply(interaction, { content: t("error.generic", { e: (e as Error) }), ephemeral: true });
 			return;
 		}
 	},

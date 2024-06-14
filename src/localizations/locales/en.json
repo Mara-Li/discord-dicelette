@@ -25,6 +25,7 @@
       "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!",
       "missing_header": "",
       "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}",
+      "no_user": "No members exist on this server.",
       "user_not_found": "{{- user}} was not found on the server. \nIt is possible that the cache is not up to date, or that there is an error in the ID or username."
     },
     "name": "import",
@@ -42,8 +43,7 @@
     "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
   },
   "button": {
-    "add": {
-    },
+    "add": {},
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -164,10 +164,8 @@
     "user": "Registered player"
   },
   "embeds": {
-    "display": {
-    },
-    "edit": {
-    }
+    "display": {},
+    "edit": {}
   },
   "error": {
     "charName": "The character {{- charName}} is not registered.",
@@ -175,7 +173,8 @@
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
     "invalidDice": {
       "embeds": "No die embeds detected",
-      "withDice": "Error: Invalid die {{- dice}}"
+      "withDice": "Error: Invalid die {{- dice}}",
+      "withoutDice": "Error: Invalid die"
     },
     "mustBeGreater": "The {{- value}} value must be greater than {{- min}}",
     "mustBeLower": "The {{- value}} value must be smaller than {{- max}}",
@@ -193,6 +192,7 @@
     "private": "This character sheet is private! \nYou do not have permission to read it.",
     "rollChannelNotFound": "The channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
     "statNotFound": "Statistics not found! Did you make a typing error?",
+    "template": "You must provide a JSON file.",
     "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",
     "tooMuchStats": "You cannot have more than 25 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
@@ -209,8 +209,7 @@
     "options": {
       "desc": "Export only characters marked as private",
       "name": "private_sheet_only",
-      "private": {
-      }
+      "private": {}
     }
   },
   "generate": {
