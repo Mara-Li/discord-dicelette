@@ -5,7 +5,7 @@ import type { EClient } from "@main";
 import { filterChoices, haveAccess, removeEmojiAccents, reply, searchUserChannel, sendLogs, title } from "@utils";
 import { getDatabaseChar, getTemplateWithDB, getUserFromMessage } from "@utils/db";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
-import { AttachmentBuilder, type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, SlashCommandBuilder } from "discord.js";
+import { AttachmentBuilder, type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, SlashCommandBuilder, userMention } from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
 import path from "node:path";
@@ -192,9 +192,9 @@ export const graph = {
 		const user = options.getUser(t("display.userLowercase"));
 		const charData = await getDatabaseChar(interaction, client, t);
 		const charName = options.getString(t("common.character"))?.toLowerCase();
+		let userName = `<@${user?.id ?? interaction.user.id}>`;
+		if (charName) userName += ` (${charName})`;
 		if (!charData) {
-			let userName = `<@${user?.id ?? interaction.user.id}>`;
-			if (charName) userName += ` (${charName})`;
 			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
 			return;
 		}
@@ -207,6 +207,12 @@ export const graph = {
 				await reply(interaction, ul("error.notRegistered"));
 				return;
 			}
+			const titleUser = () => {
+				let msg = "# ";
+				if (charName) msg += `${title(charName)} `;
+				msg += `⌈${userMention(userId)}⌋ `;
+				return msg;
+			};
 			const labels = guildData.templateID.statsName;
 			//only keep labels that exists in the user stats
 			const userStatKeys = Object.keys(userStatistique.stats).map(key => removeEmojiAccents(key));
@@ -220,8 +226,9 @@ export const graph = {
 					const allMin = Object.values(serverTemplate.statistics).map(stat => {
 						if (stat.min == null) return 0;
 						return stat.min;
-					});
-					min = Math.min(...allMin);
+					}).filter(min => min > 0);
+					if (allMin.length > 0)
+						min = Math.min(...allMin);
 				}
 				if (!max) {
 					const allMax = Object.values(serverTemplate.statistics).map(stat => {
@@ -251,7 +258,7 @@ export const graph = {
 				await reply(interaction, ul("error.noMessage"));
 				return;
 			}
-			await reply(interaction, { files: [image] });
+			await reply(interaction, { content: titleUser(), files: [image] });
 		} catch (error) {
 			await reply(interaction, ul("error.generic", { e: (error as Error) }));
 			sendLogs(ul("error.generic", { e: (error as Error) }), interaction.guild, client.settings);
