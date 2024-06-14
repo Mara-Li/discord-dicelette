@@ -1,7 +1,7 @@
 import { error } from "@console";
 import { cmdLn, lError, ln } from "@localization";
 import type { EClient } from "@main";
-import {filterChoices, reply, title } from "@utils";
+import { filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollStatistique } from "@utils/roll";
 import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
@@ -24,7 +24,7 @@ export const dbRoll = {
 				.setDescription(t("dbRoll.options.statistic"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.statistic"))
 				.setRequired(true)
-				.setAutocomplete(true)				
+				.setAutocomplete(true)
 		)
 		.addStringOption(option =>
 			option
@@ -63,6 +63,7 @@ export const dbRoll = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guild!.id);
+
 		if (!guildData) return;
 		let choices: string[] = [];
 		if (focused.name === t("common.statistic")) {
@@ -74,13 +75,13 @@ export const dbRoll = {
 			const allCharactersFromUser = userData
 				.map((data) => data.charName ?? "")
 				.filter((data) => data.length > 0);
-				
+
 			choices = allCharactersFromUser;
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result), value: result}))
+			filter.map(result => ({ name: title(result), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -91,27 +92,28 @@ export const dbRoll = {
 		if (!guildData) return;
 		let optionChar = options.getString(t("common.character")) ?? undefined;
 		const charName = optionChar ? removeAccents(optionChar.toLowerCase()) : undefined;
-		
+
 		try {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, charName);
-			const userStatistiqueName = userStatistique?.userName ? removeAccents(userStatistique.userName.toLowerCase()) : undefined;
-			if (optionChar && userStatistiqueName !== charName) {
-				await reply(interaction,{ content: ul("error.charName", {charName: title(optionChar)}), ephemeral: true });
+			const serializedNameDB = userStatistique?.userName ? removeAccents(userStatistique.userName.toLowerCase()) : undefined;
+			const serializedNameQueries = charName ? removeAccents(charName).toLowerCase() : undefined;
+			if (optionChar && serializedNameDB !== serializedNameQueries) {
+				await reply(interaction, { content: ul("error.charName", { charName: title(optionChar) }), ephemeral: true });
 				return;
 			}
-			if (!userStatistique && !charName){
-			//find the first character registered
+			if (!userStatistique && !charName) {
+				//find the first character registered
 				const char = await getFirstRegisteredChar(client, interaction, ul);
 				userStatistique = char?.userStatistique;
 				optionChar = char?.optionChar;
 			}
 			if (!userStatistique) {
-				await reply(interaction,{ content: ul("error.notRegistered"), ephemeral: true });
+				await reply(interaction, { content: ul("error.notRegistered"), ephemeral: true });
 				return;
 			}
-			
+
 			if (!userStatistique.stats) {
-				await reply(interaction,{ content: ul("error.noStats"), ephemeral: true });
+				await reply(interaction, { content: ul("error.noStats"), ephemeral: true });
 				return;
 			}
 			return await rollStatistique(interaction, client, userStatistique, options, ul, optionChar);
@@ -119,7 +121,7 @@ export const dbRoll = {
 		catch (e) {
 			error(e);
 			const msgError = lError(e as Error, interaction);
-			await reply(interaction,{ content: msgError, ephemeral: true });
+			await reply(interaction, { content: msgError, ephemeral: true });
 		}
 	}
 };
