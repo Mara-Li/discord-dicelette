@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.0](https://github.com/Dicelette/discord-dicelette/compare/1.1.0...1.2.0) (2024-06-14)
+
+
+### Features
+
+* mention user when using the same channel for roll ([5d97b18](https://github.com/Dicelette/discord-dicelette/commit/5d97b18a131b5ae127007588683d060bc542559f))
+
+
+### Bug Fixes
+
+* add an error when the file is not a JSON file ([a9e5125](https://github.com/Dicelette/discord-dicelette/commit/a9e5125004df9d579311602fed6446ced9d4111d))
+* can't register user dice ([df060b5](https://github.com/Dicelette/discord-dicelette/commit/df060b516539cc6310bf850e11efa6688cb828ec))
+* dice not recognized ([a8868ea](https://github.com/Dicelette/discord-dicelette/commit/a8868ea476c01be4d87582e2920fb93799d2d5de))
+* error message ([928d847](https://github.com/Dicelette/discord-dicelette/commit/928d8472559a9f55e723cff14d3fc3f839676d3b))
+* graph generation with minimal value ([65f740a](https://github.com/Dicelette/discord-dicelette/commit/65f740abfdaeda7ca04f226ced8dd7bdbf7b1dde))
+* key not found ([7bf758d](https://github.com/Dicelette/discord-dicelette/commit/7bf758d50794d76d088fdc03844a00f9f7064f2f))
+* make the get Embed translation agnostic ([de9cbeb](https://github.com/Dicelette/discord-dicelette/commit/de9cbebf4a4ff18ab65d28b1b1eec4ca2b756c2c))
+* mention on mjroll ([ce3cc6d](https://github.com/Dicelette/discord-dicelette/commit/ce3cc6d482bb02796d361dc383939ac447bc285e))
+* remove limitation for dice at 25 ; ([f8aa815](https://github.com/Dicelette/discord-dicelette/commit/f8aa8158c81fe454b2b76947365e957173861ab4))
+* use primarry the language of the serv, not the registerer ([b77ea9b](https://github.com/Dicelette/discord-dicelette/commit/b77ea9b0110ebaf513b661a37bf97e08979b749a))
+* user not found ([ecbeb00](https://github.com/Dicelette/discord-dicelette/commit/ecbeb000e5a9c08ca9c0ccf5563f2f5e5ef49d4b))
+* user not found ([ed31185](https://github.com/Dicelette/discord-dicelette/commit/ed31185f2b09126c94816b4cc51d46f7b2e0a41e))
+
 ## [1.1.0](https://github.com/Dicelette/discord-dicelette/compare/1.0.0...1.1.0) (2024-05-18)
 
 
