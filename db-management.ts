@@ -1,21 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Settings } from "@interface";
+import type { Settings } from "@interface";
 import color from "ansi-colors";
-import { Command, Option, OptionValues } from "commander";
+import { Command, Option, type OptionValues } from "commander";
 import Enmap from "enmap";
-import {writeFileSync} from "fs";
+import { writeFileSync } from "node:fs";
 import colorizeJson from "json-colorizer";
 import removeAccents from "remove-accents";
 
 //extends console to add console.error with color
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const error = (message?: any, ...optionalParams: any[]) => {
 	console.error("❌", color.red.bold(message), ...optionalParams);
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const success = (message?: any, ...optionalParams: any[]) => {
 	console.log("✅", color.green(message), optionalParams);
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const header = (message?: any) => {
 	return color.bold.underline(message);
 };
@@ -31,14 +33,14 @@ program
 	.addCommand(
 		new Command("get")
 			.description("Get data from the database")
-			.action(function(this: Command) { // Add type annotation for 'this'
+			.action(function (this: Command) { // Add type annotation for 'this'
 				getData(this.optsWithGlobals());
-			})			
+			})
 	)
 	.addCommand(
 		new Command("delete")
 			.description("Delete data from the database")
-			.action(function(this: Command) {
+			.action(function (this: Command) {
 				deleteData(this.optsWithGlobals());
 			}
 			)
@@ -48,7 +50,7 @@ program
 			.description("Edit guild data in the database")
 			.addOption(new Option("-k, --key <key>", "Key to set"))
 			.addOption(new Option("-v, --value <value>", "Value to set"))
-			.action(function(this: Command) {
+			.action(function (this: Command) {
 				const opt = this.optsWithGlobals();
 				editGuildData(opt.guild, opt.key, opt.value);
 			})
@@ -57,12 +59,12 @@ program
 		.addOption(new Option("-k, --key <key>", "Key to set"))
 		.addOption(new Option("-v, --value <value>", "Value to set"))
 		.addOption(new Option("-c, --charName <charName>", "Character name to edit"))
-		.action(function(this: Command) {
+		.action(function (this: Command) {
 			const options = this.optsWithGlobals();
 			editUserData(options.guild, options.user, options.key, options.value, options.charName);
 		})
 	);
-	
+
 const db = new Enmap({
 	name: "settings",
 }) as Settings;
@@ -85,7 +87,7 @@ function deleteAnUser(userId: string) {
 
 function readAll() {
 	const entries = db.entries();
-	if (Object.entries(entries).length === 0){
+	if (Object.entries(entries).length === 0) {
 		error("No data found.");
 		return;
 	}
@@ -95,7 +97,7 @@ function readAll() {
 	}
 }
 
-const unicode = (str?: string|null) => {
+const unicode = (str?: string | null) => {
 	if (!str) return undefined;
 	return removeAccents(str).toLowerCase();
 };
@@ -136,13 +138,13 @@ function getAllDataForUser(userId: string) {
 }
 
 function editUser(
-	guildId: string, 
-	userId: string, 
-	key: "charName" | "messageId" | "damageName", 
-	newValue?: string | string[], 
+	guildId: string,
+	userId: string,
+	key: "charName" | "messageId" | "damageName",
+	newValue?: string | string[],
 	charName?: string
 ) {
-	const user = db.get(guildId, `user.${userId}`) ;
+	const user = db.get(guildId, `user.${userId}`);
 	if (!user) {
 		error(`No data found for user ${userId}`);
 		return;
@@ -182,14 +184,14 @@ function getData(options: OptionValues) {
 		getDataUser(options.guild, options.user);
 	} else if (!options.guild && options.user) {
 		getAllDataForUser(options.user);
-		
+
 	}
-} 
+}
 
 function deleteData(options: OptionValues) {
 	//create a copy of the database before deleting, in case of accidental deletion
 	writeFileSync("./export.json", db.export());
-	
+
 	if (options.guild && !options.user) {
 		db.delete(options.guild);
 		success(`Deleted data for guild ${options.guild}`);
