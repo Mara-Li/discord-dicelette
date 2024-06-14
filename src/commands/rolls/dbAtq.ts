@@ -77,12 +77,23 @@ export const dbd = {
 			if (db.templateID.damageName && db.templateID.damageName.length > 0)
 				choices = choices.concat(db.templateID.damageName);
 		} else if (focused.name === t("common.character")) {
-			//get user characters 
-			const allCharactersFromUser = user
-				.map((data) => data.charName ?? "")
-				.filter((data) => data.length > 0);
+			//if dice is set, get all characters that have this dice
+			const skill = options.getString(t("rAtq.atq_name.name"));
+			if (skill) {
+				const values = user.filter((data) => {
+					if (data.damageName) return data.damageName.map((data) => removeAccents(data).toLowerCase()).includes(removeAccents(skill).toLowerCase());
+					return false;
+				});
+				choices = values.map((data) => data.charName ?? "").filter((data) => data.length > 0);
 
-			choices = allCharactersFromUser;
+			} else {
+				//get user characters 
+				const allCharactersFromUser = user
+					.map((data) => data.charName ?? "")
+					.filter((data) => data.length > 0);
+
+				choices = allCharactersFromUser;
+			}
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());

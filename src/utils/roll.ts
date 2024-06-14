@@ -52,11 +52,17 @@ export async function rollWithInteraction(
 	let mentionUser: string = userMention(user?.id ?? interaction.user.id);
 	const titleCharName = `__**${title(charName)}**__`;
 	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
-
-	const infoRollTotal = `${mention ? `${mentionUser}${ul("common.space")}:\n  ` : charName ? `${titleCharName}${ul("common.space")}:\n  ` : " "}${infoRoll ? `[__${title(infoRoll)}__] ` : ""}`;
+	const infoRollTotal = (mention?: boolean) => {
+		let user = " ";
+		if (mention) user = `${mentionUser}${ul("common.space")}:\n  `
+		else if (charName) user = `${titleCharName}${ul("common.space")}:\n  `
+		if (infoRoll) return `${user}[__${title(infoRoll)}__] `;
+		return user;
+	}
+	const retrieveUser = infoRollTotal(mention);
 	const hasDB = db.has(interaction.guild.id);
 	if (channel.name.startsWith("🎲") || hasDB && (db.get(interaction.guild.id, "disableThread") === true || (db.get(interaction.guild.id, "rollChannel") === channel.id))) {
-		await reply(interaction, { content: `${infoRollTotal}${parser}` });
+		await reply(interaction, { content: `${infoRollTotal(true)}${parser}`, });
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
@@ -68,7 +74,7 @@ export async function rollWithInteraction(
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
 	const idMessage = `↪ ${msgToEdit.url}`;
-	const inter = await reply(interaction, { content: `${infoRollTotal}${parser}\n\n${idMessage}` });
+	const inter = await reply(interaction, { content: `${retrieveUser}${parser}\n\n${idMessage}`, });
 	const timer = hasDB && db.get(interaction.guild.id, "deleteAfter") ? db.get(interaction.guild.id, "deleteAfter") as number : 180000;
 	deleteAfter(inter, timer);
 	return;
