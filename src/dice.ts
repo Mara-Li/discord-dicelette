@@ -1,7 +1,6 @@
 import type { Compare, Resultat } from "@dicelette/core";
 import type { Translation } from "@interface";
 import { evaluate } from "mathjs";
-import { dedent } from "ts-dedent";
 
 /**
  * Parse the result of the dice to be readable
@@ -38,15 +37,14 @@ export function parseResult(output: Resultat, ul: Translation, critical?: { fail
 				}
 			}
 			const totSucc = output.compare ? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\`` : `= \`${total}\``;
-			msgSuccess += `\n${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, totSucc).replaceAll("*", "\\*")}`;
+			msgSuccess += `\n  ${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, totSucc).replaceAll("*", "\\*")}`;
 			total = 0;
 		}
 	} else {
-		msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
+		msgSuccess = `  ${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
 	}
-	const result = msgSuccess;
-	const comment = output.comment ? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*\n` : "";
-	return dedent(`${comment}${result}`);
+	const comment = output.comment ? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*` : "";
+	return `${comment}${msgSuccess}`;
 }
 
 /**

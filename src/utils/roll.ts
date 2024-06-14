@@ -52,17 +52,19 @@ export async function rollWithInteraction(
 	let mentionUser: string = userMention(user?.id ?? interaction.user.id);
 	const titleCharName = `__**${title(charName)}**__`;
 	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
-	const infoRollTotal = (mention?: boolean) => {
+	const infoRollTotal = (mention?: boolean, time?: boolean) => {
 		let user = " ";
-		if (mention) user = `${mentionUser}${ul("common.space")}:\n  `
-		else if (charName) user = `${titleCharName}${ul("common.space")}:\n  `
+		if (mention) user = mentionUser
+		else if (charName) user = titleCharName;
+		if (time) user += `${timestamp(db, interaction.guild!.id)}`
+		if (user.trim().length > 0) user += `${ul("common.space")}:\n  `
 		if (infoRoll) return `${user}[__${title(infoRoll)}__] `;
 		return user;
 	}
 	const retrieveUser = infoRollTotal(mention);
 	const hasDB = db.has(interaction.guild.id);
 	if (channel.name.startsWith("🎲") || hasDB && (db.get(interaction.guild.id, "disableThread") === true || (db.get(interaction.guild.id, "rollChannel") === channel.id))) {
-		await reply(interaction, { content: `${infoRollTotal(true)}${parser}`, });
+		await reply(interaction, { content: `${infoRollTotal(true)}${parser}` });
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
@@ -70,9 +72,8 @@ export async function rollWithInteraction(
 		await findThread(db, parentChannel, ul) :
 		await findForumChannel(channel.parent as ForumChannel, channel as ThreadChannel, db, ul);
 
-	const msg = `${mentionUser} ${timestamp(db, interaction.guild.id)}\n  ${infoRoll ? `[__${title(infoRoll)}__] ` : ""}${parser}`;
 	const msgToEdit = await thread.send("_ _");
-	await msgToEdit.edit(msg);
+	await msgToEdit.edit(`${infoRollTotal(true, true)}${parser}`);
 	const idMessage = `↪ ${msgToEdit.url}`;
 	const inter = await reply(interaction, { content: `${retrieveUser}${parser}\n\n${idMessage}`, });
 	const timer = hasDB && db.get(interaction.guild.id, "deleteAfter") ? db.get(interaction.guild.id, "deleteAfter") as number : 180000;
@@ -119,7 +120,7 @@ export async function rollStatistique(
 	let comparator = "";
 	if (comparatorMatch) {
 		//remove from dice
-		dice = dice.replace(comparatorMatch[0], "");
+		dice = dice.replace(comparatorMatch[0], "").trim();
 		comparator = comparatorMatch[0];
 	}
 	const roll = `${replaceFormulaInDice(dice)}${modificatorString}${comparator} ${comments}`;
