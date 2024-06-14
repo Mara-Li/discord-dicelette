@@ -97,7 +97,6 @@ export const dbRoll = {
 			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, charName);
 			const serializedNameDB = userStatistique?.userName ? removeAccents(userStatistique.userName.toLowerCase()) : undefined;
 			const serializedNameQueries = charName ? removeAccents(charName).toLowerCase() : undefined;
-			console.log(`serializedNameDB: ${serializedNameDB} serializedNameQueries: ${serializedNameQueries}; statistique : ${userStatistique?.stats}`);
 			if (optionChar && serializedNameDB !== serializedNameQueries) {
 				await reply(interaction, { content: ul("error.charName", { charName: title(optionChar) }), ephemeral: true });
 				return;
