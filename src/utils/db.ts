@@ -240,6 +240,7 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
+			if (first && !stat.name.startsWith("✏️")) continue;
 			const value = Number.parseInt(removeBacktick(stat.value), 10);
 			if (Number.isNaN(value)) {
 				//it's a combinaison 
