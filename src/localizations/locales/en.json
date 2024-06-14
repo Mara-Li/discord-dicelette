@@ -25,6 +25,7 @@
       "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!",
       "missing_header": "",
       "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}",
+      "no_user": "No members exist on this server.",
       "user_not_found": "{{- user}} was not found on the server. \nIt is possible that the cache is not up to date, or that there is an error in the ID or username."
     },
     "name": "import",
@@ -193,6 +194,7 @@
     "private": "This character sheet is private! \nYou do not have permission to read it.",
     "rollChannelNotFound": "The channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
     "statNotFound": "Statistics not found! Did you make a typing error?",
+    "template": "You must provide a JSON file.",
     "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",
     "tooMuchStats": "You cannot have more than 25 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",

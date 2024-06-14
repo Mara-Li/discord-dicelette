@@ -25,6 +25,7 @@
       "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !",
       "missing_header": "Votre CSV n'a pas de noms de colonnes !",
       "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}",
+      "no_user": "Aucun membre n'existe sur ce serveur.",
       "user_not_found": "{{- user}} n'a pas été trouvé sur le serveur. Il est possible que le cache ne soit pas à jour, ou qu'il y ait une erreur dans l'ID ou l'username."
     },
     "name": "import",
@@ -191,6 +192,7 @@
     "private": "Cette fiche est privée ! Vous n'avez pas la permissions pour la lire.",
     "rollChannelNotFound": "Le channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
+    "template": "Vous devez fournir un fichier JSON.",
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 25 statistiques",
     "totalExceededBy": "Le total de {{- value}} est dépassé de {{- max}}",
