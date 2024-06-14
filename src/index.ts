@@ -11,6 +11,8 @@ import Enmap from "enmap";
 import * as process from "node:process";
 
 import * as pkg from "../package.json" assert { type: "json" };
+import { flattenJson } from "./localizations";
+import { resources } from "./localizations/init";
 
 dotenv.config({ path: ".env" });
 
@@ -33,7 +35,7 @@ export class EClient extends Client {
 	}
 }
 
-
+export const ALL_TRANSLATION_KEYS = Object.keys(flattenJson(resources.en.translation))
 
 export const client = new EClient({
 	intents: [

@@ -1,7 +1,8 @@
 import { type BaseInteraction, Locale, type LocalizationMap } from "discord.js";
-import {default as i18next} from "i18next";
+import { default as i18next } from "i18next";
 
 import { resources } from "./init";
+import { ALL_TRANSLATION_KEYS } from "..";
 
 
 export function ln(userLang: Locale) {
@@ -55,4 +56,41 @@ export function cmdLn(key: string) {
 		}
 	}
 	return localized;
+}
+
+interface JsonObject {
+	//biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	[key: string]: any;
+}
+
+export function flattenJson(obj: JsonObject, parentKey = '', result: JsonObject = {}): JsonObject {
+	for (const key in obj) {
+		// biome-ignore lint/suspicious/noPrototypeBuiltins: <explanation>
+		if (obj.hasOwnProperty(key)) {
+			const newKey = parentKey ? `${parentKey}.${key}` : key;
+			if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+				flattenJson(obj[key], newKey, result);
+			} else {
+				result[newKey] = obj[key];
+			}
+		}
+	}
+	return result;
+}
+
+/**
+ * Get the translation key from the translation text
+ * @param key {string}
+ * @param embed {{[name: string]: string}}
+ * @example : "Nom du personnage" => ""common.charName"
+ */
+export function findKeyFromTranslation(translatedText: string) {
+	const allLocales = Object.keys(resources);
+	for (const locale of allLocales) {
+		const ul = ln(locale as Locale);
+		for (const key of ALL_TRANSLATION_KEYS) {
+			if (ul(key) === translatedText) return key;
+		}
+	}
+	return translatedText;
 }

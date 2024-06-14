@@ -168,7 +168,7 @@ export async function validateDiceEdit(interaction: ModalSubmitInteraction, ul: 
  */
 export async function initiateDiceEdit(interaction: ButtonInteraction, ul: Translation, interactionUser: User) {
 	const embed = ensureEmbed(interaction.message);
-	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
+	const user = embed.fields.find(field => field.name === "common.user")?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
 		await showEditDice(interaction, ul);

@@ -92,7 +92,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				inline: true,
 
 			});
-		} else if (field.name !== ul("common.isPrivate")) userDataEmbed.addFields(field);
+		} else if (field.name !== "common.isPrivate") userDataEmbed.addFields(field);
 	}
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: { [name: string]: number } = {};
