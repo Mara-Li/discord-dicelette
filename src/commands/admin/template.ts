@@ -170,7 +170,8 @@ export const registerTemplate = {
 		if (!interaction.guild) return;
 		await interaction.deferReply({ ephemeral: true });
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.guild.preferredLocale ?? interaction.locale);
+
 		const template = options.getAttachment(t("register.options.template.name"), true);
 		//fetch the template
 		if (!template.contentType?.includes("json")) {

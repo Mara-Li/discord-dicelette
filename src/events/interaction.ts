@@ -16,7 +16,7 @@ import { type AutocompleteInteraction, type BaseInteraction, type ButtonInteract
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
-		const ul = ln(interaction.locale);
+		const ul = ln(interaction.guild?.preferredLocale ?? interaction.locale);
 		const interactionUser = interaction.user;
 		try {
 			if (interaction.isCommand()) {
