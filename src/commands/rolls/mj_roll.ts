@@ -195,9 +195,8 @@ export const mjRoll = {
 			return;
 		}
 		const subcommand = options.getSubcommand(true);
-		if (subcommand === ul("dbRoll.name")) return await rollStatistique(interaction, client, charData, options, ul, optionChar, user);
-		if (subcommand === ul("rAtq.name")) return await rollDice(interaction, client, charData, options, ul, optionChar, user);
-
+		if (subcommand === ul("dbRoll.name")) return await rollStatistique(interaction, client, charData, options, ul, optionChar, user, true);
+		if (subcommand === ul("rAtq.name")) return await rollDice(interaction, client, charData, options, ul, optionChar, user, true);
 	}
 };
 

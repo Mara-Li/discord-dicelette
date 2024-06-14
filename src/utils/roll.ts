@@ -31,9 +31,10 @@ export async function rollWithInteraction(
 	user?: User,
 	charName?: string,
 	infoRoll?: string,
+	mention?: boolean,
 ) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild) return;
-	const ul = ln(interaction.locale);
+	const ul = ln(interaction.guild.preferredLocale ?? interaction.locale);
 	const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
 	if (rollWithMessage) {
 		//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
@@ -48,7 +49,11 @@ export async function rollWithInteraction(
 		return;
 	}
 	const parser = parseResult(rollDice, ul, critical);
-	const infoRollTotal = `${charName ? `__**${title(charName)}**__${ul("common.space")}:\n  ` : "  "}${infoRoll ? `[__${title(infoRoll)}__] ` : ""}`;
+	let mentionUser: string = userMention(user?.id ?? interaction.user.id);
+	const titleCharName = `__**${title(charName)}**__`;
+	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
+
+	const infoRollTotal = `${mention ? `${mentionUser}${ul("common.space")}:\n  ` : charName ? `${titleCharName}${ul("common.space")}:\n  ` : " "}${infoRoll ? `[__${title(infoRoll)}__] ` : ""}`;
 	const hasDB = db.has(interaction.guild.id);
 	if (channel.name.startsWith("🎲") || hasDB && (db.get(interaction.guild.id, "disableThread") === true || (db.get(interaction.guild.id, "rollChannel") === channel.id))) {
 		await reply(interaction, { content: `${infoRollTotal}${parser}` });
@@ -58,10 +63,8 @@ export async function rollWithInteraction(
 	const thread = parentChannel instanceof TextChannel ?
 		await findThread(db, parentChannel, ul) :
 		await findForumChannel(channel.parent as ForumChannel, channel as ThreadChannel, db, ul);
-	let mention: string = userMention(user?.id ?? interaction.user.id);
-	mention = charName ? `__**${title(charName)}**__ (${mention})` : mention;
-	console.log(mention);
-	const msg = `${mention} ${timestamp(db, interaction.guild.id)}\n  ${infoRoll ? `[__${title(infoRoll)}__] ` : ""}${parser}`;
+
+	const msg = `${mentionUser} ${timestamp(db, interaction.guild.id)}\n  ${infoRoll ? `[__${title(infoRoll)}__] ` : ""}${parser}`;
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(msg);
 	const idMessage = `↪ ${msgToEdit.url}`;
@@ -80,7 +83,8 @@ export async function rollStatistique(
 	options: CommandInteractionOptionResolver,
 	ul: Translation,
 	optionChar?: string,
-	user?: User
+	user?: User,
+	mention?: boolean
 ) {
 	const statistique = options.getString(t("common.statistic"), true).toLowerCase();
 	//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
@@ -120,7 +124,8 @@ export async function rollStatistique(
 		template.critical,
 		user,
 		optionChar,
-		statistique
+		statistique,
+		mention
 	);
 }
 
@@ -131,7 +136,9 @@ export async function rollDice(
 	options: CommandInteractionOptionResolver,
 	ul: Translation,
 	charOptions?: string,
-	user?: User) {
+	user?: User,
+	mention?: boolean,
+) {
 	const atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	//search dice
@@ -150,5 +157,5 @@ export async function rollDice(
 		comparator = comparatorMatch[0];
 	}
 	const roll = `${dice}${modificatorString}${comparator} ${comments}`;
-	await rollWithInteraction(interaction, roll, interaction.channel as TextBasedChannel, client.settings, undefined, user, charOptions, atq);
+	await rollWithInteraction(interaction, roll, interaction.channel as TextBasedChannel, client.settings, undefined, user, charOptions, atq, mention);
 }
