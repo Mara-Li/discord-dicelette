@@ -79,6 +79,14 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	let userID = oldEmbedsFields?.["common.user"];
 	let charName: string | undefined = oldEmbedsFields?.["common.charName"];
 	const isPrivate = oldEmbedsFields["common.isPrivate"] === "common.yes";
+	const channelToPost = oldEmbedsFields?.["common.channel"];
+	if (channelToPost) {
+		const channel = await interaction.guild?.channels.fetch(channelToPost.replace("<#", "").replace(">", ""));
+		if (!channel) {
+			await reply(interaction, { content: ul("error.channel", { channel: channelToPost }), ephemeral: true });
+			return;
+		}
+	}
 	if (charName && charName === "common.noSet")
 		charName = undefined;
 	if (!userID) {
@@ -183,7 +191,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		}
 	}
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
-	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, { stats: !!statsEmbed, dice: !!diceEmbed, template: !!templateEmbed }, db);
+	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, { stats: !!statsEmbed, dice: !!diceEmbed, template: !!templateEmbed }, db, channelToPost.replace("<#", "").replace(">", ""));
 	await interaction.message.delete();
 	await addAutoRole(interaction, userID, !!statsEmbed, !!diceEmbed, db);
 	await reply(interaction, { content: ul("modals.finished"), ephemeral: true });
