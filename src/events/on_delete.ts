@@ -1,8 +1,8 @@
-import { error as err } from "@console";
+import { error as err, log } from "@console";
 import type { GuildData, PersonnageIds } from "@interface";
 import type { EClient } from "@main";
 import { sendLogs } from "@utils";
-import { type AnyThreadChannel, type CommandInteraction, type GuildTextBasedChannel, type NonThreadGuildBasedChannel, TextChannel, type ThreadChannel, type User } from "discord.js";
+import type { AnyThreadChannel, CommandInteraction, GuildTextBasedChannel, NonThreadGuildBasedChannel, ThreadChannel, User } from "discord.js";
 import type Enmap from "enmap";
 import removeAccents from "remove-accents";
 
@@ -34,6 +34,7 @@ function deleteIfChannelOrThread(db: Enmap<string, GuildData, unknown>, guildID:
 export const DELETE_THREAD = (client: EClient): void => {
 	client.on("threadDelete", async (thread) => {
 		try {
+			log(`Thread ${thread.name} was deleted`);
 			//search channelID in database and delete it
 			const guildID = thread.guild.id;
 			const db = client.settings;
@@ -49,12 +50,13 @@ export const DELETE_THREAD = (client: EClient): void => {
 
 export const DELETE_MESSAGE = (client: EClient): void => {
 	client.on("messageDelete", async (message) => {
+		log(`Message ${message.id} was deleted`);
 		try {
 			if (!message.guild) return;
 			const messageId = message.id;
 			//search channelID in database and delete it
 			const guildID = message.guild.id;
-
+			log(`Message ${messageId} was deleted`)
 			const channel = message.channel;
 			if (channel.isDMBased()) return;
 			if (client.settings.get(guildID, "templateID.messageId") === messageId) client.settings.delete(guildID, "templateID");
@@ -65,13 +67,17 @@ export const DELETE_MESSAGE = (client: EClient): void => {
 			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0) {
 				for (const [user, values] of Object.entries(dbUser)) {
+					log(`checking value for user ${user}`)
 					for (const [index, value] of values.entries()) {
+						log(`checking character ${value.charName}`, value.messageId, messageId, channel.id);
 						const persoId: PersonnageIds = Array.isArray(value.messageId) ? { messageId: value.messageId[0], channelId: value.messageId[1] } : { messageId: value.messageId };
 						if (persoId.messageId === messageId && persoId.channelId === channel.id) {
+							log(`Deleted character ${value.charName} for user ${user}`)
 							values.splice(index, 1);
 						}
 						if (persoId.messageId === messageId) {
-							if (isPrivate && value.isPrivate) values.splice(index, 1);
+							log(`Deleted character ${value.charName} for user ${user}`)
+							if (isPrivate && value.isPrivate) { values.splice(index, 1) };
 							if (isDefault && !value.isPrivate) values.splice(index, 1);
 						}
 					}
@@ -100,13 +106,14 @@ export const ON_KICK = (client: EClient): void => {
 function cleanUserDB(guildDB: Enmap<string, GuildData, unknown>, thread: GuildTextBasedChannel | ThreadChannel | NonThreadGuildBasedChannel) {
 	const dbUser = guildDB.get(thread.guild.id, "user");
 	if (!dbUser) return;
-	if (!(thread instanceof TextChannel)) return;
+	if (!thread.isTextBased()) return;
 	/** if private channel was deleted, delete only the private charactersheet */
 	const privateEnabled = guildDB.get(thread.guild.id, "privateChannel");
 	const isPrivate = privateEnabled === thread.id;
 	const publicDefault = guildDB.get(thread.guild.id, "managerId");
 
 	for (const [user, data] of Object.entries(dbUser)) {
+		log(`Checking user ${user}`);
 		const filterChar = data.filter(char => {
 			if (Array.isArray(char.messageId)) {
 				return char.messageId[1] !== thread.id;
@@ -114,7 +121,9 @@ function cleanUserDB(guildDB: Enmap<string, GuildData, unknown>, thread: GuildTe
 			if (isPrivate && char.isPrivate) return false;
 			if (publicDefault === thread.id) return false;
 		});
-		guildDB.set(thread.guild.id, filterChar, `user.${user}`);
+		log(`Deleted ${data.length - filterChar.length} characters for user ${user}`)
+		if (filterChar.length === 0) guildDB.delete(thread.guild.id, `user.${user}`);
+		else guildDB.set(thread.guild.id, filterChar, `user.${user}`);
 	}
 
 }

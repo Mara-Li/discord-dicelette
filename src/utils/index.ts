@@ -268,15 +268,20 @@ export async function searchUserChannel(
 		managerID = isPrivate ? guildData.get(interaction.guild!.id, "privateChannel") ?? baseChannel : baseChannel;
 
 	if (managerID) {
-		const channel = await interaction.guild?.channels.fetch(managerID);
-		if (!channel || (channel instanceof CategoryChannel) || channel instanceof ForumChannel || channel instanceof MediaChannel || channel instanceof StageChannel || channel instanceof VoiceChannel) {
-			if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction))
-				await interaction?.channel?.send(ul("error.noThread"));
-			else
-				await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
+		try {
+			const channel = await interaction.guild?.channels.fetch(managerID);
+			if (!channel || (channel instanceof CategoryChannel) || channel instanceof ForumChannel || channel instanceof MediaChannel || channel instanceof StageChannel || channel instanceof VoiceChannel) {
+				if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction))
+					await interaction?.channel?.send(ul("error.noThread"));
+				else
+					await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
+				return;
+			}
+			thread = channel;
+		} catch (error) {
+			console.error("Error while fetching channel", error);
 			return;
 		}
-		thread = channel;
 	} else {
 		const channelId = guildData.get(interaction.guild!.id, "templateID.channelId");
 		const channel = await interaction.guild?.channels.fetch(channelId);

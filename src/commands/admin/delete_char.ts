@@ -108,6 +108,7 @@ export const deleteChar = {
 		if (!publicThread || (isPrivate && !privateThread) || !userChannel) {
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
+			await reply(interaction, ul("deleteChar.success", { user: userMention(user?.id ?? interaction.user.id) }));
 			return;
 		}
 		const messageID = managerID.messageId;
