@@ -94,12 +94,14 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		return;
 	}
 	userID = userID.replace("<@", "").replace(">", "");
-	const userDataEmbed = createUserEmbed(ul, userEmbed.toJSON().thumbnail?.url || "");
-	let diceEmbed: EmbedBuilder | undefined = getEmbeds(ul, interaction.message, "damage");
-	let statsEmbed: EmbedBuilder | undefined = getEmbeds(ul, interaction.message, "stats");
-	const diceEmbedFields = diceEmbed ? diceEmbed.toJSON().fields ?? [] : [];
-	const statEmbedsFields = statsEmbed ? statsEmbed.toJSON().fields ?? [] : [];
-	for (const field of diceEmbedFields) {
+	const userDataEmbed = createUserEmbed(ul, userEmbed.toJSON().thumbnail?.url || "", userID, charName);
+	const oldDiceEmbeds = getEmbeds(ul, interaction.message, "damage");
+	const oldStatsEmbed = getEmbeds(ul, interaction.message, "stats");
+	const oldDiceEmbedsFields = oldDiceEmbeds ? oldDiceEmbeds.toJSON().fields ?? [] : [];
+	const statEmbedsFields = oldStatsEmbed ? oldStatsEmbed.toJSON().fields ?? [] : [];
+	let diceEmbed: EmbedBuilder | undefined = undefined;
+	let statsEmbed: EmbedBuilder | undefined = undefined;
+	for (const field of oldDiceEmbedsFields) {
 		if (!diceEmbed) {
 			diceEmbed = createDiceEmbed(ul);
 		}

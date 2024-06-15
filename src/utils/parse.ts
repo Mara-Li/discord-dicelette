@@ -82,10 +82,11 @@ export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "st
 /**
  * Parse the embed fields and remove the backtick if any
  * @param embed {Embed}
- * @returns { [name: string]: string }
+ * @returns { {[name: string]: string} }
  */
 export function parseEmbedFields(embed: Embed): { [name: string]: string } {
 	const fields = embed.fields;
+	if (!fields) return {};
 	const parsedFields: { [name: string]: string } = {};
 	for (const field of fields) {
 		parsedFields[findKeyFromTranslation(removeBacktick(field.name))] = findKeyFromTranslation(removeBacktick(field.value));
@@ -108,6 +109,7 @@ export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "
 		if ((titleKey === "embed.stats" || titleKey === "common.statistic") && which === "stats") return new EmbedBuilder(embedJSON);
 		if (titleKey === "embed.dice" && which === "damage") return new EmbedBuilder(embedJSON);
 		if (titleKey === "embed.template" && which === "template") return new EmbedBuilder(embedJSON);
+		if (titleKey === "embed.add" && which === "user") return new EmbedBuilder(embedJSON);
 	}
 }
 

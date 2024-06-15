@@ -233,8 +233,9 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
 	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Embed);
-	if (parsedFields["common.charName"] !== "common.noSet") {
-		user.userName = parsedFields["common.charName"];
+	const charNameFields = [{ key: "common.charName", value: parsedFields?.["common.charName"] }, { key: "common.character", value: parsedFields?.["common.character"] }].find(field => field.value !== undefined);
+	if (charNameFields && charNameFields.value !== "common.noSet") {
+		user.userName = charNameFields.value;
 	}
 	const templateStat = first ? userEmbed.toJSON().fields : getEmbeds(ul, message, "stats")?.toJSON()?.fields;
 	let stats: { [name: string]: number } | undefined = undefined;

@@ -5,8 +5,8 @@ import { createEmbedFirstPage } from "@register/validate";
 import { embedStatistiques, showStatistiqueModal } from "@stats/add";
 import { removeEmojiAccents, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
-import { parseEmbed } from "@utils/parse";
-import { ActionRowBuilder, type ButtonInteraction, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User } from "discord.js";
+import { getEmbeds, parseEmbedFields } from "@utils/parse";
+import { ActionRowBuilder, type ButtonInteraction, type Embed, EmbedBuilder, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User } from "discord.js";
 
 
 /**
@@ -23,18 +23,18 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
 		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 		return;
 	}
-	const embed = parseEmbed(interaction);
-	if (!embed) return;
-	if (!dbTemplate.statistics) return;
-
+	const page = Number.isNaN(Number.parseInt(interaction.customId.replace("page", ""), 10)) ? 1 : Number.parseInt(interaction.customId.replace("page", ""), 10);
+	const embed = getEmbeds(ul, interaction.message, "user");
+	if (!embed || !dbTemplate.statistics) return;
+	const statsEmbed = getEmbeds(ul, interaction.message, "stats") ?? new EmbedBuilder();
 	const allTemplateStat = Object.keys(dbTemplate.statistics).map(stat => removeEmojiAccents(stat));
-	const statsAlreadySet = Object.keys(embed).filter(stat => allTemplateStat.includes(removeEmojiAccents(stat))).map(stat => removeEmojiAccents(stat));
+
+	const statsAlreadySet = Object.keys(parseEmbedFields(statsEmbed.toJSON() as Embed)).filter(stat => allTemplateStat.includes(removeEmojiAccents(stat))).map(stat => removeEmojiAccents(stat));
 	if (statsAlreadySet.length === allTemplateStat.length) {
 		await reply(interaction, { content: ul("modals.alreadySet"), ephemeral: true });
 		return;
 	}
-	const page = Number.isNaN(Number.parseInt(interaction.customId.replace("page", ""), 10)) ? 2 : Number.parseInt(interaction.customId.replace("page", ""), 10) + 1;
-	await showStatistiqueModal(interaction, dbTemplate, statsAlreadySet, page);
+	await showStatistiqueModal(interaction, dbTemplate, statsAlreadySet, page + 1);
 }
 
 /**

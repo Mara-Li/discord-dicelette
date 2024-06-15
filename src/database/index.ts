@@ -2,6 +2,7 @@ import type { Translation } from "@interface";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
 import { type ButtonInteraction, EmbedBuilder, type ModalSubmitInteraction, TextChannel, ThreadChannel } from "discord.js";
 import { findKeyFromTranslation } from "../localizations";
+import { title } from "../utils";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found
@@ -18,7 +19,7 @@ export async function getUserNameAndChar(interaction: ButtonInteraction | ModalS
 	const userID = userEmbed.toJSON().fields?.find(field => findKeyFromTranslation(field.name) === "common.user")?.value.replace("<@", "").replace(">", "");
 	if (!userID) throw new Error(ul("error.user"));
 	if (!interaction.channel || !(interaction.channel instanceof ThreadChannel) && !(interaction.channel instanceof TextChannel)) throw new Error(ul("error.noThread"));
-	let userName = userEmbed.toJSON().fields?.find(field => findKeyFromTranslation(field.name) === "common.charName")?.value;
+	let userName = userEmbed.toJSON().fields?.find(field => findKeyFromTranslation(field.name) === "common.character")?.value;
 	if (userName === ul("common.noSet")) userName = undefined;
 	return { userID, userName, thread: interaction.channel };
 }
@@ -37,11 +38,15 @@ export function createDiceEmbed(ul: Translation) {
  * @param ul {Translation}
  * @param thumbnail {string} The avatar of the user in the server (use server profile first, after global avatar)
  */
-export function createUserEmbed(ul: Translation, thumbnail: string | null) {
-	return new EmbedBuilder()
+export function createUserEmbed(ul: Translation, thumbnail: string | null, user: string, charName?: string) {
+	const userEmbed = new EmbedBuilder()
 		.setTitle(ul("embed.user"))
 		.setColor("Random")
-		.setThumbnail(thumbnail);
+		.setThumbnail(thumbnail)
+		.addFields({ name: title(ul("common.user")), value: `<@${user}>`, inline: true });
+	if (charName) userEmbed.addFields({ name: title(ul("common.character")), value: title(charName), inline: true });
+	else userEmbed.addFields({ name: title(ul("common.character")), value: title(ul("common.noSet")), inline: true });
+	return userEmbed;
 }
 
 /**

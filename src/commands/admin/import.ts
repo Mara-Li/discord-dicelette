@@ -49,7 +49,7 @@ export const bulkAdd = {
 	async execute(interaction: CommandInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const csvFile = options.getAttachment(t("bulk_add.options.name"), true);
-		const ul = ln(interaction.locale);
+		const ul = ln(interaction.guild?.preferredLocale ?? interaction.locale);
 		await interaction.deferReply({ ephemeral: true });
 		const ext = csvFile.name.split(".").pop()?.toLowerCase() ?? "";
 		if (!ext || ext !== "csv") {
@@ -70,10 +70,10 @@ export const bulkAdd = {
 			}
 			member = member.user as User;
 			for (const char of data) {
-				const userDataEmbed = createUserEmbed(ul, char.avatar ?? member.avatarURL() ?? member.defaultAvatarURL);
+				const userDataEmbed = createUserEmbed(ul, char.avatar ?? member.avatarURL() ?? member.defaultAvatarURL, member.id, char.userName ?? undefined);
 				userDataEmbed.addFields({
-					name: ul("common.charName"),
-					value: title(char.userName) ?? "/",
+					name: title(ul("common.character")),
+					value: title(char.userName) ?? ul("common.noSet"),
 					inline: true,
 				});
 				userDataEmbed.addFields({
