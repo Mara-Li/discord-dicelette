@@ -1,5 +1,5 @@
 import { createDiceEmbed, createStatsEmbed } from "@database";
-import { cmdLn,ln } from "@localization";
+import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { filterChoices, haveAccess, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
@@ -32,7 +32,7 @@ export const displayUser = {
 				.setDescriptionLocalizations(cmdLn("display.character"))
 				.setRequired(false)
 				.setAutocomplete(true)
-		),	
+		),
 	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
@@ -56,9 +56,9 @@ export const displayUser = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result) ?? result, value: result}))
+			filter.map(result => ({ name: title(result) ?? result, value: result }))
 		);
-	}, 
+	},
 	async execute(interaction: CommandInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guildId as string);
@@ -72,15 +72,15 @@ export const displayUser = {
 		const charName = options.getString(t("common.character"))?.toLowerCase();
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
-			if (charName) userName += ` (${charName})` ;
-			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
+			if (charName) userName += ` (${charName})`;
+			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
 			return;
 		}
-		
+
 		const thread = await searchUserChannel(client.settings, interaction, ul, charData[user?.id ?? interaction.user.id]?.isPrivate);
-		if (!thread) 
+		if (!thread)
 			return await reply(interaction, ul("error.noThread"));
-			
+
 		const allowHidden = haveAccess(interaction, thread, user?.id ?? interaction.user.id);
 		if (!allowHidden && charData[user?.id ?? interaction.user.id]?.isPrivate) {
 			await reply(interaction, ul("error.private"));
@@ -93,13 +93,14 @@ export const displayUser = {
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
 			const diceFields = diceEmbed?.toJSON().fields;
 			const statsFields = statisticEmbed?.toJSON().fields;
+			const dataUserEmbeds = getEmbeds(ul, userMessage, "user");
 			if (!statisticEmbed && !diceEmbed && !diceFields && !statsFields) {
 				await reply(interaction, ul("error.user"));
 				return;
 			}
 			const displayEmbed = new EmbedBuilder()
 				.setTitle(ul("embed.display"))
-				.setThumbnail(user?.displayAvatarURL() ?? interaction.user.displayAvatarURL())
+				.setThumbnail(dataUserEmbeds?.toJSON().thumbnail?.url ?? user?.displayAvatarURL() ?? interaction.user.displayAvatarURL())
 				.setColor("Gold")
 				.addFields({
 					name: ul("common.user"),
@@ -111,9 +112,9 @@ export const displayUser = {
 					value: title(charData[user?.id ?? interaction.user.id].charName) ?? ul("common.noSet"),
 					inline: true
 				});
-			const newStatEmbed: EmbedBuilder | undefined = statsFields ? createStatsEmbed(ul).addFields(statsFields) : undefined;	
+			const newStatEmbed: EmbedBuilder | undefined = statsFields ? createStatsEmbed(ul).addFields(statsFields) : undefined;
 			const newDiceEmbed = diceFields ? createDiceEmbed(ul).addFields(diceFields) : undefined;
-			const displayEmbeds : EmbedBuilder[] = [displayEmbed];
+			const displayEmbeds: EmbedBuilder[] = [displayEmbed];
 			if (newStatEmbed) displayEmbeds.push(newStatEmbed);
 			if (newDiceEmbed) displayEmbeds.push(newDiceEmbed);
 			await reply(interaction, { embeds: displayEmbeds });
@@ -121,6 +122,6 @@ export const displayUser = {
 			await reply(interaction, ul("error.noMessage"));
 			return;
 		}
-		
+
 	}
 };

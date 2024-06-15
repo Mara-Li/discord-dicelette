@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.3.0](https://github.com/Dicelette/discord-dicelette/compare/1.2.0...1.3.0) (2024-06-15)
+
+
+### Features
+
+* support to custom avatar URL in charasheet ([3d4fd88](https://github.com/Dicelette/discord-dicelette/commit/3d4fd88ff623bc4cd244321de5c12434400c21ea))
+
+
+### Bug Fixes
+
+* capitalization issue on import ([18b50b9](https://github.com/Dicelette/discord-dicelette/commit/18b50b9a6a24d1e1ef1280ba11837932217734af))
+* capitalize for userEmbed fields name ([27e4e8c](https://github.com/Dicelette/discord-dicelette/commit/27e4e8cb77d018094682d4909c1669c1b80f7d65))
+* isPrivate not recognized ([5e043a9](https://github.com/Dicelette/discord-dicelette/commit/5e043a9e273550d5c32ce4ede6ffcaafc132dda9))
+
 ## [1.2.0](https://github.com/Dicelette/discord-dicelette/compare/1.1.0...1.2.0) (2024-06-14)
 
 

@@ -108,7 +108,8 @@ export async function getUserFromMessage(
 	options?: {
 		integrateCombinaison?: boolean,
 		allowAccess?: boolean,
-		skipNotFound?: boolean
+		skipNotFound?: boolean,
+		fetchAvatar?: boolean,
 	}
 ) {
 	//biome-ignore lint/style/noParameterAssign: We need to assign a default value
@@ -130,7 +131,7 @@ export async function getUserFromMessage(
 		throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId);
-		return getUserByEmbed(message, ul, undefined, integrateCombinaison);
+		return getUserByEmbed(message, ul, undefined, integrateCombinaison, options.fetchAvatar);
 	} catch (error) {
 		//remove the user with faulty messageId from the database
 		const dbUser = guildData.get(guild!.id, `user.${userId}`);
@@ -227,7 +228,7 @@ export async function registerUser(
  * @param ul {Translation}
  * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
-export function getUserByEmbed(message: Message, ul: Translation, first: boolean | undefined = false, integrateCombinaison = true) {
+export function getUserByEmbed(message: Message, ul: Translation, first: boolean | undefined = false, integrateCombinaison = true, fetchAvatar = false) {
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
@@ -271,6 +272,7 @@ export function getUserByEmbed(message: Message, ul: Translation, first: boolean
 			failure: Number.parseInt(templateFields["roll.critical.failure"], 10),
 		}
 	};
+	if (fetchAvatar) user.avatar = userEmbed.toJSON().thumbnail?.url || undefined;
 	return user as UserData;
 
 }

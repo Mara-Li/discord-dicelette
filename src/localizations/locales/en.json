@@ -43,7 +43,8 @@
     "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
   },
   "button": {
-    "add": {},
+    "add": {
+    },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -164,8 +165,10 @@
     "user": "Registered player"
   },
   "embeds": {
-    "display": {},
-    "edit": {}
+    "display": {
+    },
+    "edit": {
+    }
   },
   "error": {
     "charName": "The character {{- charName}} is not registered.",
@@ -209,7 +212,8 @@
     "options": {
       "desc": "Export only characters marked as private",
       "name": "private_sheet_only",
-      "private": {}
+      "private": {
+      }
     }
   },
   "generate": {
@@ -327,6 +331,10 @@
       "stats": "Statistics added"
     },
     "alreadySet": "All statistics are already defined",
+    "avatar": {
+      "description": "The link to the character image (by default, uses the user's avatar)",
+      "name": "Avatar"
+    },
     "charName": {
       "description": "Enter your character's name",
       "name": "Character name"
