@@ -267,7 +267,7 @@ export async function parseCSV(
 			//throw error only if missing values for the header
 			const missingHeader = header
 				.filter((key) => !dataHeader.includes(key))
-				.filter((key) => key !== "dice");
+				.filter((key) => key !== "dice" && key !== "avatar" && key !== "channel");
 			if (missingHeader.length > 0) {
 				console.error("Error while parsing CSV, missing header values", missingHeader);
 				if (interaction)
