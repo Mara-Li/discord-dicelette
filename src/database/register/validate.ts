@@ -3,10 +3,27 @@ import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
-import { addAutoRole, removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
+import {
+	addAutoRole,
+	removeEmoji,
+	removeEmojiAccents,
+	reply,
+	repostInThread,
+	title,
+} from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
-import { type ButtonInteraction, channelMention, type Embed, EmbedBuilder, type Locale, type ModalSubmitInteraction, PermissionsBitField, type User, userMention } from "discord.js";
+import {
+	type ButtonInteraction,
+	channelMention,
+	type Embed,
+	EmbedBuilder,
+	type Locale,
+	type ModalSubmitInteraction,
+	PermissionsBitField,
+	type User,
+	userMention,
+} from "discord.js";
 
 /**
  * Create the embed after registering the user
@@ -15,50 +32,70 @@ import { type ButtonInteraction, channelMention, type Embed, EmbedBuilder, type 
  * @param interaction {ModalSubmitInteraction}
  * @param template {StatisticalTemplate}
  */
-export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate, setting: Settings) {
+export async function createEmbedFirstPage(
+	interaction: ModalSubmitInteraction,
+	template: StatisticalTemplate,
+	setting: Settings
+) {
 	const ul = ln(interaction.locale as Locale);
 	const channel = interaction.channel;
 	if (!channel) {
 		throw new Error("No channel found");
 	}
 	const userFromField = interaction.fields.getTextInputValue("userID");
-	const user = (await interaction!.guild!.members.fetch({ query: userFromField })).first();
+	const user = (
+		await interaction!.guild!.members.fetch({ query: userFromField })
+	).first();
 	if (!user) {
 		reply(interaction, { content: ul("error.user"), ephemeral: true });
 		return;
 	}
-	const customChannel = interaction.fields.getTextInputValue("channelId")
-	if (customChannel.length > 0) {
-		const channel = await interaction.guild?.channels.fetch(customChannel);
-		if (!channel) {
-			reply(interaction, { content: ul("error.channel", { channel }), ephemeral: true });
-			return;
-		}
-	}
+	const customChannel = interaction.fields.getTextInputValue("channelId");
 	const charName = interaction.fields.getTextInputValue("charName");
-	const isPrivate = interaction.fields.getTextInputValue("private")?.toLowerCase() === "x";
+	const isPrivate =
+		interaction.fields.getTextInputValue("private")?.toLowerCase() === "x";
 	const avatar = interaction.fields.getTextInputValue("avatar");
-	let mention = setting.get(interaction.guild!.id, "managerId");
-	if (isPrivate && setting.get(interaction.guild!.id, "privateChannel")) mention = setting.get(interaction.guild!.id, "privateChannel");
-	else if (customChannel.length > 0) mention = customChannel;
+	let managerId = setting.get(interaction.guild!.id, "managerId");
+	if (isPrivate && setting.get(interaction.guild!.id, "privateChannel"))
+		managerId = setting.get(interaction.guild!.id, "privateChannel");
+	if (customChannel.length > 0) managerId = customChannel;
+	console.log(customChannel.length > 0, managerId);
+	const existChannel = managerId
+		? await interaction.guild?.channels.fetch(managerId)
+		: undefined;
+	if (!existChannel) {
+		reply(interaction, { content: ul("error.noThread"), ephemeral: true });
+		return;
+	}
 	const embed = new EmbedBuilder()
 		.setTitle(ul("embed.add"))
 		.setThumbnail(avatar.length > 0 ? avatar : user.displayAvatarURL())
 		.setFooter({ text: ul("common.page", { nb: 1 }) })
 		.addFields(
-			{ name: ul("common.charName"), value: charName.length > 0 ? charName : ul("common.noSet"), inline: true },
+			{
+				name: ul("common.charName"),
+				value: charName.length > 0 ? charName : ul("common.noSet"),
+				inline: true,
+			},
 			{ name: ul("common.user"), value: userMention(user.id), inline: true },
-			{ name: ul("common.isPrivate"), value: isPrivate ? "✓" : "✕", inline: true },
+			{ name: ul("common.isPrivate"), value: isPrivate ? "✓" : "✕", inline: true }
 		);
 	if (channelMention) {
-		embed.addFields({ name: "_ _", value: "_ _", inline: true })
-		embed.addFields({ name: title(ul("common.channel")), value: `${channelMention(mention as string)}`, inline: true })
-		embed.addFields({ name: "_ _", value: "_ _", inline: true })
-	};
+		embed.addFields({ name: "_ _", value: "_ _", inline: true });
+		embed.addFields({
+			name: title(ul("common.channel")),
+			value: `${channelMention(managerId as string)}`,
+			inline: true,
+		});
+		embed.addFields({ name: "_ _", value: "_ _", inline: true });
+	}
 
 	//add continue button
 	if (template.statistics) {
-		await reply(interaction, { embeds: [embed], components: [continueCancelButtons(ul)] });
+		await reply(interaction, {
+			embeds: [embed],
+			components: [continueCancelButtons(ul)],
+		});
 		return;
 	}
 	const allButtons = registerDmgButton(ul);
@@ -68,10 +105,14 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 /**
  * Validate the user and create the embeds
  * It will register the final embeds and send it in the thread
- * @param {ButtonInteraction} interaction 
+ * @param {ButtonInteraction} interaction
  * @param template {StatisticalTemplate}
  */
-export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate, db: Settings) {
+export async function validateUser(
+	interaction: ButtonInteraction,
+	template: StatisticalTemplate,
+	db: Settings
+) {
 	const ul = ln(interaction.locale as Locale);
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
 	if (!userEmbed) throw new Error("No user embed found");
@@ -81,20 +122,29 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const isPrivate = oldEmbedsFields["common.isPrivate"] === "common.yes";
 	const channelToPost = oldEmbedsFields?.["common.channel"];
 	if (channelToPost) {
-		const channel = await interaction.guild?.channels.fetch(channelToPost.replace("<#", "").replace(">", ""));
+		const channel = await interaction.guild?.channels.fetch(
+			channelToPost.replace("<#", "").replace(">", "")
+		);
 		if (!channel) {
-			await reply(interaction, { content: ul("error.channel", { channel: channelToPost }), ephemeral: true });
+			await reply(interaction, {
+				content: ul("error.channel", { channel: channelToPost }),
+				ephemeral: true,
+			});
 			return;
 		}
 	}
-	if (charName && charName === "common.noSet")
-		charName = undefined;
+	if (charName && charName === "common.noSet") charName = undefined;
 	if (!userID) {
 		await reply(interaction, { content: ul("error.user"), ephemeral: true });
 		return;
 	}
 	userID = userID.replace("<@", "").replace(">", "");
-	const userDataEmbed = createUserEmbed(ul, userEmbed.toJSON().thumbnail?.url || "", userID, charName);
+	const userDataEmbed = createUserEmbed(
+		ul,
+		userEmbed.toJSON().thumbnail?.url || "",
+		userID,
+		charName
+	);
 	const oldDiceEmbeds = getEmbeds(ul, interaction.message, "damage");
 	const oldStatsEmbed = getEmbeds(ul, interaction.message, "stats");
 	const oldDiceEmbedsFields = oldDiceEmbeds ? oldDiceEmbeds.toJSON().fields ?? [] : [];
@@ -109,7 +159,6 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 			name: title(removeEmojiAccents(field.name)),
 			value: `\`${field.value}\``,
 			inline: true,
-
 		});
 	}
 	for (const field of statEmbedsFields) {
@@ -124,7 +173,9 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	}
 
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
-	const parsedStats = statsEmbed ? parseEmbedFields(statsEmbed.toJSON() as Embed) : undefined;
+	const parsedStats = statsEmbed
+		? parseEmbedFields(statsEmbed.toJSON() as Embed)
+		: undefined;
 	const stats: { [name: string]: number } = {};
 	if (parsedStats)
 		for (const stat of templateStat) {
@@ -193,7 +244,16 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		}
 	}
 	const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
-	await repostInThread(allEmbeds, interaction, userStatistique, userID, ul, { stats: !!statsEmbed, dice: !!diceEmbed, template: !!templateEmbed }, db, channelToPost.replace("<#", "").replace(">", ""));
+	await repostInThread(
+		allEmbeds,
+		interaction,
+		userStatistique,
+		userID,
+		ul,
+		{ stats: !!statsEmbed, dice: !!diceEmbed, template: !!templateEmbed },
+		db,
+		channelToPost.replace("<#", "").replace(">", "")
+	);
 	await interaction.message.delete();
 	await addAutoRole(interaction, userID, !!statsEmbed, !!diceEmbed, db);
 	await reply(interaction, { content: ul("modals.finished"), ephemeral: true });
@@ -206,11 +266,16 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
  * @param interactionUser {User}
  */
 
-export async function validateUserButton(interaction: ButtonInteraction, interactionUser: User, template: StatisticalTemplate, ul: Translation, db: Settings) {
-	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
-	if (isModerator)
-		await validateUser(interaction, template, db);
-	else
-		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
+export async function validateUserButton(
+	interaction: ButtonInteraction,
+	interactionUser: User,
+	template: StatisticalTemplate,
+	ul: Translation,
+	db: Settings
+) {
+	const isModerator = interaction.guild?.members.cache
+		.get(interactionUser.id)
+		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+	if (isModerator) await validateUser(interaction, template, db);
+	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }
-
