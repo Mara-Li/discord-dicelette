@@ -1,7 +1,7 @@
 import { createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId } from "@interface";
-import { lError, ln } from "@localization";
+import { findKeyFromTranslation, lError, ln } from "@localization";
 import { addAutoRole, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons, registerDmgButton, } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
@@ -75,7 +75,7 @@ export async function storeDamageDice(interaction: ModalSubmitInteraction, ul: T
 		return;
 	}
 	const embed = ensureEmbed(interaction.message ?? undefined);
-	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
+	const user = embed.fields.find(field => findKeyFromTranslation(field.name) === "common.user")?.value.replace("<@", "").replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
 		await registerDamageDice(interaction, db, interaction.customId.includes("first"));
@@ -96,7 +96,7 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 	let value = interaction.fields.getTextInputValue("damageValue");
 	if (!interaction.guild) throw new Error(ul("error.noGuild"));
 	if (!interaction.message) throw new Error(ul("error.noMessage"));
-	const oldDiceEmbeds = first ? ensureEmbed(interaction.message).toJSON() : getEmbeds(ul, interaction.message ?? undefined, "damage")?.toJSON();
+	const oldDiceEmbeds = getEmbeds(ul, interaction.message ?? undefined, "damage")?.toJSON();
 	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder(oldDiceEmbeds) : createDiceEmbed(ul);
 	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
@@ -126,6 +126,10 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		acc[field.name] = field.value;
 		return acc;
 	}, {} as { [name: string]: string });
+	if (damageName && Object.keys(damageName).length > 25) {
+		await reply(interaction, { content: ul("modals.dice.max"), ephemeral: true });
+		return;
+	}
 	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul, first);
 	await addAutoRole(interaction, userID, !!damageName && Object.keys(damageName).length > 0, false, db);
 	if (!first) {
@@ -158,7 +162,16 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 	}
 
 	const components = registerDmgButton(ul);
-	await interaction?.message?.edit({ embeds: [diceEmbed], components: [components] });
+	//get all other embeds from the old messages
+	//remove the old dice embed
+	//add the new dice embed
+	const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
+	if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed
+	const statsEmbed = getEmbeds(ul, interaction.message ?? undefined, "stats");
+	const allEmbeds = [userEmbed];
+	if (statsEmbed) allEmbeds.push(statsEmbed);
+	allEmbeds.push(diceEmbed);
+	await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 	await reply(interaction, { content: ul("modals.added.dice"), ephemeral: true });
 
 	await sendLogs(ul("logs.dice.add", { user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}` }), interaction.guild as Guild, db);

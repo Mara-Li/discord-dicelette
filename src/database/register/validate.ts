@@ -2,11 +2,11 @@
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation, UserData } from "@interface";
-import { findKeyFromTranslation, ln } from "@localization";
+import { ln } from "@localization";
 import { addAutoRole, removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
-import { createEmbedsList, ensureEmbed, parseEmbedFields } from "@utils/parse";
-import { type ButtonInteraction, channelMention, EmbedBuilder, type Locale, type ModalSubmitInteraction, PermissionsBitField, type User, userMention } from "discord.js";
+import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
+import { type ButtonInteraction, channelMention, type Embed, EmbedBuilder, type Locale, type ModalSubmitInteraction, PermissionsBitField, type User, userMention } from "discord.js";
 
 /**
  * Create the embed after registering the user
@@ -73,8 +73,9 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
  */
 export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate, db: Settings) {
 	const ul = ln(interaction.locale as Locale);
-	const oldEmbeds = ensureEmbed(interaction.message);
-	const oldEmbedsFields = parseEmbedFields(oldEmbeds);
+	const userEmbed = getEmbeds(ul, interaction.message, "user");
+	if (!userEmbed) throw new Error("No user embed found");
+	const oldEmbedsFields = parseEmbedFields(userEmbed.toJSON() as Embed);
 	let userID = oldEmbedsFields?.["common.user"];
 	let charName: string | undefined = oldEmbedsFields?.["common.charName"];
 	const isPrivate = oldEmbedsFields["common.isPrivate"] === "common.yes";
@@ -85,38 +86,42 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		return;
 	}
 	userID = userID.replace("<@", "").replace(">", "");
-	const userDataEmbed = createUserEmbed(ul, oldEmbeds.thumbnail?.url || "");
-	let diceEmbed: EmbedBuilder | undefined = undefined;
-	let statsEmbed: EmbedBuilder | undefined = undefined;
-	for (const field of oldEmbeds.fields) {
-		if (field.name.startsWith("🔪")) {
-			if (!diceEmbed) {
-				diceEmbed = createDiceEmbed(ul);
-			}
-			diceEmbed.addFields({
-				name: title(removeEmojiAccents(field.name)),
-				value: `\`${field.value}\``,
-				inline: true,
+	const userDataEmbed = createUserEmbed(ul, userEmbed.toJSON().thumbnail?.url || "");
+	let diceEmbed: EmbedBuilder | undefined = getEmbeds(ul, interaction.message, "damage");
+	let statsEmbed: EmbedBuilder | undefined = getEmbeds(ul, interaction.message, "stats");
+	const diceEmbedFields = diceEmbed ? diceEmbed.toJSON().fields ?? [] : [];
+	const statEmbedsFields = statsEmbed ? statsEmbed.toJSON().fields ?? [] : [];
+	for (const field of diceEmbedFields) {
+		if (!diceEmbed) {
+			diceEmbed = createDiceEmbed(ul);
+		}
+		diceEmbed.addFields({
+			name: title(removeEmojiAccents(field.name)),
+			value: `\`${field.value}\``,
+			inline: true,
 
-			});
-		} else if (field.name.startsWith("✏️")) {
-			if (!statsEmbed) {
-				statsEmbed = createStatsEmbed(ul);
-			}
-			statsEmbed.addFields({
-				name: title(removeEmoji(field.name)),
-				value: field.value,
-				inline: true,
-
-			});
-		} else if (findKeyFromTranslation(field.name) !== "common.isPrivate") userDataEmbed.addFields({ name: field.name, value: title(field.value), inline: field.inline });
+		});
 	}
+	for (const field of statEmbedsFields) {
+		if (!statsEmbed) {
+			statsEmbed = createStatsEmbed(ul);
+		}
+		statsEmbed.addFields({
+			name: title(removeEmoji(field.name)),
+			value: field.value,
+			inline: true,
+		});
+	}
+
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
+	const parsedStats = statsEmbed ? parseEmbedFields(statsEmbed.toJSON() as Embed) : undefined;
 	const stats: { [name: string]: number } = {};
-	for (const stat of templateStat) {
-		stats[stat] = Number.parseInt(oldEmbedsFields[removeEmojiAccents(stat)], 10);
-	}
-	const damageFields = oldEmbeds.fields.filter(field => field.name.startsWith("🔪"));
+	if (parsedStats)
+		for (const stat of templateStat) {
+			stats[stat] = Number.parseInt(parsedStats[removeEmojiAccents(stat)], 10);
+		}
+
+	const damageFields = diceEmbed?.toJSON().fields ?? [];
 	let templateDamage: { [name: string]: string } | undefined = undefined;
 
 	if (damageFields.length > 0) {
@@ -149,7 +154,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		},
 		damage: templateDamage,
 		private: isPrivate,
-		avatar: oldEmbeds.thumbnail?.url,
+		avatar: userEmbed.toJSON().thumbnail?.url,
 	};
 	let templateEmbed: EmbedBuilder | undefined = undefined;
 	if (template.diceType || template.critical) {

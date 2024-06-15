@@ -2,7 +2,7 @@ import { evalCombinaison, type StatisticalTemplate } from "@dicelette/core";
 import { lError, ln } from "@localization";
 import { removeEmojiAccents, reply, title } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
-import { ensureEmbed, getStatistiqueFields } from "@utils/parse";
+import { getEmbeds, getStatistiqueFields } from "@utils/parse";
 import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
 /**
@@ -14,27 +14,26 @@ import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Locale, ty
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page = 2) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
-	const oldEmbeds = ensureEmbed(interaction.message);
+	const userEmbed = getEmbeds(ul, interaction.message, "user");
+	if (!userEmbed) return;
+	const statsEmbed = getEmbeds(ul, interaction.message, "stats");
 	try {
 		const { combinaisonFields, stats } = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
-		const embed = new EmbedBuilder()
-			.setTitle(ul("embed.add"))
-			.setThumbnail(oldEmbeds.thumbnail?.url || "")
-			.setFooter({ text: ul("common.page", { nb: page }) });
+		userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
 		//add old fields
-		for (const field of oldEmbeds.fields) {
-			embed.addFields(field);
-		}
+
+		const statEmbeds = statsEmbed ?? new EmbedBuilder()
+			.setTitle(ul("embed.stats"))
 		for (const [stat, value] of Object.entries(stats)) {
-			embed.addFields({
+			statEmbeds.addFields({
 				name: title(`✏️ ${title(stat)}`),
 				value: value.toString(),
 				inline: true,
 			});
 		}
 		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison).map(name => removeEmojiAccents(name)) : [];
-		const embedObject = embed.toJSON();
+		const embedObject = statEmbeds.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;
 		const parsedFields: { [name: string]: string; } = {};
@@ -51,7 +50,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				combinaison = evalCombinaison(combinaisonFields, embedStats);
 				//add combinaison to the embed
 				for (const stat of Object.keys(combinaison)) {
-					embed.addFields({
+					statEmbeds.addFields({
 						name: title(`✏️ ${title(stat)}`),
 						value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
 						inline: true,
@@ -62,11 +61,11 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				await reply(interaction, { content: errorMsg, ephemeral: true });
 				return;
 			}
-			await interaction.message.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
+			await interaction.message.edit({ embeds: [userEmbed, statEmbeds], components: [registerDmgButton(ul)] });
 			await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 			return;
 		}
-		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
+		await interaction.message.edit({ embeds: [userEmbed, statEmbeds], components: [continueCancelButtons(ul)] });
 		await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 		return;
 	} catch (error) {

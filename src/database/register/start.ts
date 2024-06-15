@@ -129,8 +129,6 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 		);
 		components.push(privateInput);
 	}
-
-
 	modal.addComponents(components);
 	await interaction.showModal(modal);
 }
