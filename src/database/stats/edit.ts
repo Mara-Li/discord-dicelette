@@ -60,7 +60,7 @@ export async function editStats(interaction: ModalSubmitInteraction, ul: Transla
 		}  //skip register total + max because leveling can be done here
 		embedsStatsFields.push({
 			name: title(name),
-			value: num.toString(),
+			value: `\`${num}\``,
 			inline: true
 		});
 	}

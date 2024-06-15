@@ -158,15 +158,10 @@
       "dice": "Dés modifiés",
       "stats": "Statistiques modifiées"
     },
+    "old": "Joueur enregistré",
     "stats": "Statistiques",
     "template": "Modèle",
-    "user": "Joueur enregistré"
-  },
-  "embeds": {
-    "display": {
-    },
-    "edit": {
-    }
+    "user": "⌈⌋ Fiche ⌈⌋"
   },
   "error": {
     "channel": "Le channel `{{-channel}}` n'existe pas sur ce serveur.",
@@ -198,7 +193,7 @@
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 25 statistiques",
     "totalExceededBy": "Le total de {{- value}} est dépassé de {{- max}}",
-    "user": "Utilisateur introuvable",
+    "user": "Utilisateur introuvable. \n- Il peut s'agir d'une erreur temporaire causé par la mise à jour du cache,\n- La fiche est introuvable car elle a été supprimé (ou son channel) mais les données n'ont pas été supprimé de la base de données. Si tel est le cas, vous devez utiliser la commande `/supprimer_char`.",
     "userChan": "Vous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "userNotRegistered": "{{- user}} n'est pas enregistré."
   },
@@ -210,9 +205,7 @@
     "name": "export",
     "options": {
       "desc": "Exporter que les personnages marqués comme privé",
-      "name": "fiche_privée_uniquement",
-      "private": {
-      }
+      "name": "fiche_privée_uniquement"
     }
   },
   "generate": {

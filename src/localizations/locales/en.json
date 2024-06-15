@@ -160,9 +160,10 @@
       "dice": "Edited dices",
       "stats": "Modified statistics"
     },
+    "old": "",
     "stats": "Statistics",
     "template": "Model",
-    "user": "Registered player"
+    "user": "⌈⌋ Sheet ⌈⌋"
   },
   "embeds": {
     "display": {
@@ -200,7 +201,7 @@
     "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",
     "tooMuchStats": "You cannot have more than 25 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
-    "user": "User not found",
+    "user": "User not found. \n\n- This may be a temporary error caused by updating the cache,\n\n- The record cannot be found because it has been deleted (or its channel) but the data has not been deleted from the database. \nIf so, you need to use the `/delete_char` command.",
     "userChan": "You cannot choose the channel {{- chan}} without choosing a channel where to post the cards, because it will be impossible to create a thread there.",
     "userNotRegistered": "{{- user}} is not registered."
   },

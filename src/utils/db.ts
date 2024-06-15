@@ -1,5 +1,5 @@
 import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
-import type { Settings, Translation, UserData, UserRegistration } from "@interface";
+import type { PersonnageIds, Settings, Translation, UserData, UserRegistration } from "@interface";
 import { ln } from "@localization";
 import type { EClient } from "@main";
 import { haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
@@ -123,24 +123,18 @@ export async function getUserFromMessage(
 		return (charName == null && char.charName == null);
 	});
 	if (!user) return;
-	const userMessageId = Array.isArray(user.messageId) ? user.messageId[0] : user.messageId;
-	const thread = Array.isArray(userMessageId) ? await searchUserChannel(guildData, interaction, ul, user.isPrivate, user.messageId[1]) : await searchUserChannel(guildData, interaction, ul, user.isPrivate);
+	const userMessageId: PersonnageIds = Array.isArray(user.messageId) ? { channelId: user.messageId[1], messageId: user.messageId[0] } : { messageId: user.messageId };
+	const thread = await searchUserChannel(guildData, interaction, ul, user.isPrivate, userMessageId.channelId);
 	if (user.isPrivate && !allowAccess && !haveAccess(interaction, thread, userId)) {
 		throw new Error(ul("error.private"));
 	} if (!thread)
 		throw new Error(ul("error.noThread"));
 	try {
-		const message = await thread.messages.fetch(userMessageId);
+		const message = await thread.messages.fetch(userMessageId.messageId);
 		return getUserByEmbed(message, ul, undefined, integrateCombinaison, options.fetchAvatar);
 	} catch (error) {
-		//remove the user with faulty messageId from the database
-		const dbUser = guildData.get(guild!.id, `user.${userId}`);
-		if (!dbUser) return;
-		const index = dbUser.findIndex(char => char.messageId === userMessageId);
-		if (index === -1) return;
-		dbUser.splice(index, 1);
-		guildData.set(guild!.id, dbUser, `user.${userId}`);
 		if (!skipNotFound) throw new Error(ul("error.user"));
+
 	}
 }
 

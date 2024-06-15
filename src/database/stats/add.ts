@@ -2,7 +2,7 @@ import { evalCombinaison, type StatisticalTemplate } from "@dicelette/core";
 import { lError, ln } from "@localization";
 import { removeEmojiAccents, reply, title } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
-import { getEmbeds, getStatistiqueFields } from "@utils/parse";
+import { getEmbeds, getStatistiqueFields, removeBacktick } from "@utils/parse";
 import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
 /**
@@ -38,12 +38,12 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		if (!fields) return;
 		const parsedFields: { [name: string]: string; } = {};
 		for (const field of fields) {
-			parsedFields[removeEmojiAccents(field.name)] = field.value.toLowerCase();
+			parsedFields[removeEmojiAccents(field.name)] = removeBacktick(field.value.toLowerCase());
 		}
 
 		const embedStats = Object.fromEntries(Object.entries(parsedFields).filter(
 			([key,]) => statsWithoutCombinaison.includes(key)
-		));
+		))
 		if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
 			let combinaison: { [name: string]: number; } = {};
 			try {

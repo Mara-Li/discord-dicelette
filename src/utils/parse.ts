@@ -105,11 +105,11 @@ export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "
 	for (const embed of allEmbeds) {
 		const embedJSON = embed.toJSON();
 		const titleKey = findKeyFromTranslation(embed.title ?? "");
-		if (titleKey === "embed.user" && which === "user") return new EmbedBuilder(embedJSON);
+		const userKeys = ["embed.user", "embed.add", "embed.old"];
+		if (userKeys.includes(titleKey) && which === "user") return new EmbedBuilder(embedJSON);
 		if ((titleKey === "embed.stats" || titleKey === "common.statistic") && which === "stats") return new EmbedBuilder(embedJSON);
 		if (titleKey === "embed.dice" && which === "damage") return new EmbedBuilder(embedJSON);
 		if (titleKey === "embed.template" && which === "template") return new EmbedBuilder(embedJSON);
-		if (titleKey === "embed.add" && which === "user") return new EmbedBuilder(embedJSON);
 	}
 }
 
