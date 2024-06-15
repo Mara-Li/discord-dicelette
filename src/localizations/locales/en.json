@@ -345,6 +345,7 @@
       "name": "Character name"
     },
     "dice": {
+      "max": "You cannot have more than 25 registered dice (discord field limits).",
       "name": "Name",
       "placeholder": "Enter a valid die",
       "value": "Value"

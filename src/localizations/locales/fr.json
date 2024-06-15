@@ -343,6 +343,7 @@
       "name": "Nom du personnage"
     },
     "dice": {
+      "max": "Vous ne pouvez pas avoir plus de 25 dés enregistrés (limites de champ discord).",
       "name": "Nom",
       "placeholder": "Entrer un dé valide",
       "value": "Valeur"
