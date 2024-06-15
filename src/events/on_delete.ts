@@ -1,8 +1,8 @@
 import { error as err } from "@console";
-import type { GuildData } from "@interface";
+import type { GuildData, PersonnageIds } from "@interface";
 import type { EClient } from "@main";
-import { isStatsThread, sendLogs } from "@utils";
-import { type CommandInteraction, type GuildTextBasedChannel, type NonThreadGuildBasedChannel, TextChannel, type ThreadChannel, type User } from "discord.js";
+import { sendLogs } from "@utils";
+import { type AnyThreadChannel, type CommandInteraction, type GuildTextBasedChannel, type NonThreadGuildBasedChannel, TextChannel, type ThreadChannel, type User } from "discord.js";
 import type Enmap from "enmap";
 import removeAccents from "remove-accents";
 
@@ -10,24 +10,26 @@ export const DELETE_CHANNEL = (client: EClient): void => {
 	client.on("channelDelete", async (channel) => {
 		try {
 			if (channel.isDMBased()) return;
-			const channelID = channel.id;
-			//search channelID in database and delete it
 			const guildID = channel.guild.id;
 			const db = client.settings;
-			if (db.get(guildID, "templateID.channelId") === channelID) db.delete(guildID, "templateID");
-			if (db.get(guildID, "logs") === channelID) db.delete(guildID, "logs");
-			if (db.get(guildID, "managerId") === channelID) db.delete(guildID, "managerId");
-			if (db.get(guildID, "privateChannel") === channelID) db.delete(guildID, "privateChannel");
-			if (db.get(guildID, "rollChannel") === channelID) db.delete(guildID, "rollChannel");
-
+			deleteIfChannelOrThread(db, guildID, channel);
 		} catch (error) {
 			err(error);
 			if (channel.isDMBased()) return;
 			sendLogs((error as Error).message, channel.guild, client.settings);
 		}
-
 	});
 };
+
+function deleteIfChannelOrThread(db: Enmap<string, GuildData, unknown>, guildID: string, channel: NonThreadGuildBasedChannel | AnyThreadChannel<boolean>) {
+	const channelID = channel.id;
+	cleanUserDB(db, channel);
+	if (db.get(guildID, "templateID.channelId") === channelID) db.delete(guildID, "templateID");
+	if (db.get(guildID, "logs") === channelID) db.delete(guildID, "logs");
+	if (db.get(guildID, "managerId") === channelID) db.delete(guildID, "managerId");
+	if (db.get(guildID, "privateChannel") === channelID) db.delete(guildID, "privateChannel");
+	if (db.get(guildID, "rollChannel") === channelID) db.delete(guildID, "rollChannel");
+}
 
 export const DELETE_THREAD = (client: EClient): void => {
 	client.on("threadDelete", async (thread) => {
@@ -35,12 +37,8 @@ export const DELETE_THREAD = (client: EClient): void => {
 			//search channelID in database and delete it
 			const guildID = thread.guild.id;
 			const db = client.settings;
-			if (isStatsThread(client.settings, guildID, thread) || thread.id === db.get(guildID, "managerId") || thread.id === db.get(guildID, "privateChannel")) {
-				//verify if the user message was in the thread
-				cleanUserDB(db, thread);
-			}
-			if (db.get(guildID, "logs") === thread.id) db.delete(guildID, "logs");
-			if (db.get(guildID, "template.channelId") === thread.id) db.delete(guildID, "template");
+			//verify if the user message was in the thread
+			deleteIfChannelOrThread(db, guildID, thread);
 		} catch (error) {
 			err(error);
 			if (thread.isDMBased()) return;
@@ -60,13 +58,21 @@ export const DELETE_MESSAGE = (client: EClient): void => {
 			const channel = message.channel;
 			if (channel.isDMBased()) return;
 			if (client.settings.get(guildID, "templateID.messageId") === messageId) client.settings.delete(guildID, "templateID");
-
+			const defaultChannel = client.settings.get(guildID, "managerId");
+			const privateChannel = client.settings.get(guildID, "privateChannel");
+			const isDefault = defaultChannel === channel.id;
+			const isPrivate = privateChannel === channel.id;
 			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0) {
 				for (const [user, values] of Object.entries(dbUser)) {
 					for (const [index, value] of values.entries()) {
-						if (value.messageId === messageId) {
+						const persoId: PersonnageIds = Array.isArray(value.messageId) ? { messageId: value.messageId[0], channelId: value.messageId[1] } : { messageId: value.messageId };
+						if (persoId.messageId === messageId && persoId.channelId === channel.id) {
 							values.splice(index, 1);
+						}
+						if (persoId.messageId === messageId) {
+							if (isPrivate && value.isPrivate) values.splice(index, 1);
+							if (isDefault && !value.isPrivate) values.splice(index, 1);
 						}
 					}
 					if (values.length === 0) delete dbUser[user];
@@ -98,14 +104,19 @@ function cleanUserDB(guildDB: Enmap<string, GuildData, unknown>, thread: GuildTe
 	/** if private channel was deleted, delete only the private charactersheet */
 	const privateEnabled = guildDB.get(thread.guild.id, "privateChannel");
 	const isPrivate = privateEnabled === thread.id;
-	if (privateEnabled) {
-		for (const [user, data] of Object.entries(dbUser)) {
-			const filterChar = isPrivate ? data.filter(char => !char.isPrivate) : data.filter(char => char.isPrivate);
-			guildDB.set(thread.guild.id, filterChar, `user.${user}`);
-		}
-	} else {
-		guildDB.delete(thread.guild.id, "user");
+	const publicDefault = guildDB.get(thread.guild.id, "managerId");
+
+	for (const [user, data] of Object.entries(dbUser)) {
+		const filterChar = data.filter(char => {
+			if (Array.isArray(char.messageId)) {
+				return char.messageId[1] !== thread.id;
+			}
+			if (isPrivate && char.isPrivate) return false;
+			if (publicDefault === thread.id) return false;
+		});
+		guildDB.set(thread.guild.id, filterChar, `user.${user}`);
 	}
+
 }
 
 export function deleteUser(
