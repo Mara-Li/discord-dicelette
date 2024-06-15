@@ -6,13 +6,26 @@ import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
 import { lError, ln } from "@localization";
 import type { EClient } from "@main";
-import { continuePage, startRegisterUser, pageNumber, recordFirstPage } from "@register/start";
+import {
+	continuePage,
+	startRegisterUser,
+	pageNumber,
+	recordFirstPage,
+} from "@register/start";
 import { validateUserButton } from "@register/validate";
 import { editStats, triggerEditStats } from "@stats/edit";
 import { reply } from "@utils";
 import { getTemplate, getTemplateWithDB } from "@utils/db";
 import { ensureEmbed } from "@utils/parse";
-import { type AutocompleteInteraction, type BaseInteraction, type ButtonInteraction, type ModalSubmitInteraction, PermissionsBitField, TextChannel, type User } from "discord.js";
+import {
+	type AutocompleteInteraction,
+	type BaseInteraction,
+	type ButtonInteraction,
+	type ModalSubmitInteraction,
+	PermissionsBitField,
+	TextChannel,
+	type User,
+} from "discord.js";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
@@ -25,7 +38,6 @@ export default (client: EClient): void => {
 				);
 				if (!command) return;
 				await command.execute(interaction, client);
-
 			} else if (interaction.isAutocomplete()) {
 				const interac = interaction as AutocompleteInteraction;
 				const command = autCompleteCmd.find(
@@ -35,7 +47,9 @@ export default (client: EClient): void => {
 				await command.autocomplete(interac, client);
 			} else if (interaction.isButton()) {
 				let template = await getTemplate(interaction);
-				template = template ? template : await getTemplateWithDB(interaction, client.settings);
+				template = template
+					? template
+					: await getTemplateWithDB(interaction, client.settings);
 				if (!template) {
 					await interaction.channel?.send({ content: ul("error.noTemplate") });
 					return;
@@ -49,7 +63,11 @@ export default (client: EClient): void => {
 			error(e);
 			if (!interaction.guild) return;
 			const msgError = lError(e as Error, interaction);
-			if (interaction.isButton() || interaction.isModalSubmit() || interaction.isCommand())
+			if (
+				interaction.isButton() ||
+				interaction.isModalSubmit() ||
+				interaction.isCommand()
+			)
 				await reply(interaction, msgError);
 			if (client.settings.has(interaction.guild.id)) {
 				const db = client.settings.get(interaction.guild.id, "logs");
@@ -69,7 +87,12 @@ export default (client: EClient): void => {
  * @param ul {Translation}
  * @param interactionUser {User}
  */
-async function modalSubmit(interaction: ModalSubmitInteraction, ul: Translation, interactionUser: User, db: Settings) {
+async function modalSubmit(
+	interaction: ModalSubmitInteraction,
+	ul: Translation,
+	interactionUser: User,
+	db: Settings
+) {
 	if (interaction.customId.includes("damageDice")) {
 		await storeDamageDice(interaction, ul, interactionUser, db);
 	} else if (interaction.customId.includes("page")) {
@@ -90,19 +113,33 @@ async function modalSubmit(interaction: ModalSubmitInteraction, ul: Translation,
  * @param interactionUser {User}
  * @param template {StatisticalTemplate}
  */
-async function buttonSubmit(interaction: ButtonInteraction, ul: Translation, interactionUser: User, template: StatisticalTemplate, db: Settings) {
+async function buttonSubmit(
+	interaction: ButtonInteraction,
+	ul: Translation,
+	interactionUser: User,
+	template: StatisticalTemplate,
+	db: Settings
+) {
 	if (interaction.customId === "register")
-		await startRegisterUser(interaction, template, interactionUser, ul, db.has(interaction.guild!.id, "privateChannel"));
+		await startRegisterUser(
+			interaction,
+			template,
+			interactionUser,
+			ul,
+			db.has(interaction.guild!.id, "privateChannel")
+		);
 	else if (interaction.customId === "continue") {
 		await continuePage(interaction, template, ul, interactionUser);
 	} else if (interaction.customId.includes("add_dice")) {
-		await executeAddDiceButton(interaction, ul, interactionUser);
+		await executeAddDiceButton(interaction, ul, interactionUser, db);
 	} else if (interaction.customId === "edit_stats") {
 		await triggerEditStats(interaction, ul, interactionUser, db);
 	} else if (interaction.customId === "validate") {
 		await validateUserButton(interaction, interactionUser, template, ul, db);
-	} else if (interaction.customId === "cancel") await cancel(interaction, ul, interactionUser);
-	else if (interaction.customId === "edit_dice") await initiateDiceEdit(interaction, ul, interactionUser);
+	} else if (interaction.customId === "cancel")
+		await cancel(interaction, ul, interactionUser);
+	else if (interaction.customId === "edit_dice")
+		await initiateDiceEdit(interaction, ul, interactionUser, db);
 }
 
 /**
@@ -112,12 +149,20 @@ async function buttonSubmit(interaction: ButtonInteraction, ul: Translation, int
  * @param ul {Translation}
  * @param interactionUser {User}
  */
-async function cancel(interaction: ButtonInteraction, ul: Translation, interactionUser: User) {
+async function cancel(
+	interaction: ButtonInteraction,
+	ul: Translation,
+	interactionUser: User
+) {
 	const embed = ensureEmbed(interaction.message);
-	const user = embed.fields.find(field => field.name === ul("common.user"))?.value.replace("<@", "").replace(">", "") === interactionUser.id;
-	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
-	if (user || isModerator)
-		await interaction.message.edit({ components: [] });
+	const user =
+		embed.fields
+			.find((field) => field.name === ul("common.user"))
+			?.value.replace("<@", "")
+			.replace(">", "") === interactionUser.id;
+	const isModerator = interaction.guild?.members.cache
+		.get(interactionUser.id)
+		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+	if (user || isModerator) await interaction.message.edit({ components: [] });
 	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }
-

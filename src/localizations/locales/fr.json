@@ -186,6 +186,7 @@
     "noTemplateId": "Aucun message trouvé avec les données sauvegardée dans la base de données:\n- Channel : `{{- channelId}}`\n- ID du message : `{{- messageId}}`",
     "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
     "notRegistered": "Vous n'êtes pas enregistré",
+    "oldEmbed": "Cette fiche ne correspond pas à celle dans la base de données. Vous trouverez la nouvelle fiche [ici]({{- fiche}}).",
     "private": "Cette fiche est privée ! Vous n'avez pas la permissions pour la lire.",
     "rollChannelNotFound": "Le channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
