@@ -1,6 +1,6 @@
 import { createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice, roll } from "@dicelette/core";
-import type { Settings, Translation } from "@interface";
+import type { Settings, Translation, UserRegistration } from "@interface";
 import { displayOldAndNewStats, parseStatsString, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons } from "@utils/buttons";
 import { registerUser } from "@utils/db";
@@ -125,11 +125,11 @@ export async function validateDiceEdit(interaction: ModalSubmitInteraction, ul: 
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await reply(interaction, { content: ul("modals.removed.dice"), ephemeral: true });
 
-		const userRegister = {
+		const userRegister: UserRegistration = {
 			userID,
 			charName: userName,
 			damage: undefined,
-			msgId: interaction.message.id,
+			msgId: [interaction.message.id, interaction.message.channelId],
 		};
 		registerUser(userRegister, interaction, thread, db, false);
 		await sendLogs(ul("logs.dice.remove", { user: userMention(interaction.user.id), fiche: interaction.message.url, char: `${userMention(userID)} ${userName ? `(${userName})` : ""}` }), interaction.guild as Guild, db);

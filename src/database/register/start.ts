@@ -61,7 +61,7 @@ export async function recordFirstPage(interaction: ModalSubmitInteraction, db: S
 	if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
 	const template = await getTemplateWithDB(interaction, db);
 	if (!template) return;
-	await createEmbedFirstPage(interaction, template);
+	await createEmbedFirstPage(interaction, template, db);
 }
 /**
  * Modal opened to register a new user with the name of the character and the user id
@@ -107,7 +107,16 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 			.setValue("")
 			.setStyle(TextInputStyle.Short)
 	);
-	const components = [charNameInput, userIdInputs, avatarInputs];
+	const channelIdInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+		new TextInputBuilder()
+			.setCustomId("channelId")
+			.setLabel(ul("modals.channel.name"))
+			.setPlaceholder(ul("modals.channel.description"))
+			.setRequired(false)
+			.setValue("")
+			.setStyle(TextInputStyle.Short)
+	);
+	const components = [charNameInput, userIdInputs, avatarInputs, channelIdInput];
 	if (havePrivate) {
 		const privateInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()

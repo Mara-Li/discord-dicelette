@@ -6,7 +6,7 @@ import { findKeyFromTranslation, ln } from "@localization";
 import { addAutoRole, removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, ensureEmbed, parseEmbedFields } from "@utils/parse";
-import { type ButtonInteraction, EmbedBuilder, type Locale, type ModalSubmitInteraction, PermissionsBitField, type User, userMention } from "discord.js";
+import { type ButtonInteraction, channelMention, EmbedBuilder, type Locale, type ModalSubmitInteraction, PermissionsBitField, type User, userMention } from "discord.js";
 
 /**
  * Create the embed after registering the user
@@ -15,7 +15,7 @@ import { type ButtonInteraction, EmbedBuilder, type Locale, type ModalSubmitInte
  * @param interaction {ModalSubmitInteraction}
  * @param template {StatisticalTemplate}
  */
-export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate) {
+export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, template: StatisticalTemplate, setting: Settings) {
 	const ul = ln(interaction.locale as Locale);
 	const channel = interaction.channel;
 	if (!channel) {
@@ -27,9 +27,20 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 		reply(interaction, { content: ul("error.user"), ephemeral: true });
 		return;
 	}
+	const customChannel = interaction.fields.getTextInputValue("channelId")
+	if (customChannel.length > 0) {
+		const channel = await interaction.guild?.channels.fetch(customChannel);
+		if (!channel) {
+			reply(interaction, { content: ul("error.channel", { channel }), ephemeral: true });
+			return;
+		}
+	}
 	const charName = interaction.fields.getTextInputValue("charName");
 	const isPrivate = interaction.fields.getTextInputValue("private")?.toLowerCase() === "x";
 	const avatar = interaction.fields.getTextInputValue("avatar");
+	let mention = setting.get(interaction.guild!.id, "managerId");
+	if (isPrivate && setting.get(interaction.guild!.id, "privateChannel")) mention = setting.get(interaction.guild!.id, "privateChannel");
+	else if (customChannel.length > 0) mention = customChannel;
 	const embed = new EmbedBuilder()
 		.setTitle(ul("embed.add"))
 		.setThumbnail(avatar.length > 0 ? avatar : user.displayAvatarURL())
@@ -39,6 +50,12 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 			{ name: ul("common.user"), value: userMention(user.id), inline: true },
 			{ name: ul("common.isPrivate"), value: isPrivate ? "✓" : "✕", inline: true },
 		);
+	if (channelMention) {
+		embed.addFields({ name: "_ _", value: "_ _", inline: true })
+		embed.addFields({ name: title(ul("common.channel")), value: `${channelMention(mention as string)}`, inline: true })
+		embed.addFields({ name: "_ _", value: "_ _", inline: true })
+	};
+
 	//add continue button
 	if (template.statistics) {
 		await reply(interaction, { embeds: [embed], components: [continueCancelButtons(ul)] });

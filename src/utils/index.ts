@@ -1,4 +1,4 @@
-import { type Settings, type Translation, TUTORIAL_IMAGES, type UserData } from "@interface";
+import { type DiscordChannel, type Settings, type Translation, TUTORIAL_IMAGES, type UserData } from "@interface";
 import { editUserButtons } from "@utils/buttons";
 import { registerManagerID, registerUser } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
@@ -257,11 +257,15 @@ export async function searchUserChannel(
 	guildData: Settings,
 	interaction: BaseInteraction,
 	ul: Translation,
-	isPrivate?: boolean
-) {
+	isPrivate?: boolean,
+	managerID?: string
+): Promise<DiscordChannel> {
 	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
 	const baseChannel = guildData.get(interaction.guild!.id, "managerId");
-	const managerID = isPrivate ? guildData.get(interaction.guild!.id, "privateChannel") ?? baseChannel : baseChannel;
+	if (!managerID)
+		//biome-ignore lint/style/noParameterAssign: We need to reassign the value
+		managerID = isPrivate ? guildData.get(interaction.guild!.id, "privateChannel") ?? baseChannel : baseChannel;
+
 	if (managerID) {
 		const channel = await interaction.guild?.channels.fetch(managerID);
 		if (!channel || (channel instanceof CategoryChannel) || channel instanceof ForumChannel || channel instanceof MediaChannel || channel instanceof StageChannel || channel instanceof VoiceChannel) {

@@ -1,5 +1,5 @@
 import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
-import type { Settings, Translation, UserData } from "@interface";
+import type { Settings, Translation, UserData, UserRegistration } from "@interface";
 import { ln } from "@localization";
 import type { EClient } from "@main";
 import { haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
@@ -123,8 +123,8 @@ export async function getUserFromMessage(
 		return (charName == null && char.charName == null);
 	});
 	if (!user) return;
-	const userMessageId = user.messageId;
-	const thread = await searchUserChannel(guildData, interaction, ul, user.isPrivate);
+	const userMessageId = Array.isArray(user.messageId) ? user.messageId[0] : user.messageId;
+	const thread = Array.isArray(userMessageId) ? await searchUserChannel(guildData, interaction, ul, user.isPrivate, user.messageId[1]) : await searchUserChannel(guildData, interaction, ul, user.isPrivate);
 	if (user.isPrivate && !allowAccess && !haveAccess(interaction, thread, userId)) {
 		throw new Error(ul("error.private"));
 	} if (!thread)
@@ -156,17 +156,11 @@ export async function getUserFromMessage(
  * @returns 
  */
 export async function registerUser(
-	userData: {
-		userID: string,
-		isPrivate?: boolean,
-		charName?: string,
-		damage?: string[],
-		msgId: string,
-	},
+	userData: UserRegistration,
 	interaction: BaseInteraction,
 	thread: AnyThreadChannel | TextChannel | NewsChannel,
 	enmap: Settings,
-	deleteMsg = true,
+	deleteMsg: boolean | undefined = true,
 ) {
 	const { userID, charName, msgId, isPrivate } = userData;
 	let { damage } = userData;
@@ -203,8 +197,16 @@ export async function registerUser(
 			//delete old message
 			if (deleteMsg) {
 				try {
-					const oldMessage = await thread.messages.fetch(char.messageId);
-					if (oldMessage) oldMessage.delete();
+					if (Array.isArray(char.messageId)) {
+						const threadOfChar = await searchUserChannel(enmap, interaction, ln(interaction.locale), char.isPrivate, char.messageId[1]);
+						if (threadOfChar) {
+							const oldMessage = await threadOfChar.messages.fetch(char.messageId[1]);
+							if (oldMessage) oldMessage.delete();
+						}
+					} else {
+						const oldMessage = await thread.messages.fetch(char.messageId);
+						if (oldMessage) oldMessage.delete();
+					}
 				} catch (error) {
 					//skip unknow message
 				}
@@ -214,9 +216,7 @@ export async function registerUser(
 			if (damage) char.damageName = damage;
 			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndx}`);
 		}
-		else {
-			enmap.set(interaction.guild.id, [...user, newChar], `user.${userID}`);
-		}
+		else enmap.set(interaction.guild.id, [...user, newChar], `user.${userID}`);
 		return;
 	}
 	enmap.set(interaction.guild.id, [newChar], `user.${userID}`);

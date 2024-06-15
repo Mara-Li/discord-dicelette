@@ -171,6 +171,7 @@
     }
   },
   "error": {
+    "channel": "The channel `{{-channel}}` does not exist on this server.",
     "charName": "The character {{- charName}} is not registered.",
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
@@ -334,6 +335,10 @@
     "avatar": {
       "description": "The link to the character image (by default, uses the user's avatar)",
       "name": "Avatar"
+    },
+    "channel": {
+      "description": "Allows you to post the file elsewhere than in the default channels",
+      "name": "Channel (in ID form) where to post the file"
     },
     "charName": {
       "description": "Enter your character's name",

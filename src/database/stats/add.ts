@@ -1,9 +1,9 @@
-import { evalCombinaison,type StatisticalTemplate } from "@dicelette/core";
-import { lError,ln } from "@localization";
+import { evalCombinaison, type StatisticalTemplate } from "@dicelette/core";
+import { lError, ln } from "@localization";
 import { removeEmojiAccents, reply, title } from "@utils";
-import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
-import { ensureEmbed,getStatistiqueFields } from "@utils/parse";
-import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder,type Locale, type ModalActionRowComponentBuilder,ModalBuilder, type ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
+import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
+import { ensureEmbed, getStatistiqueFields } from "@utils/parse";
+import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
 /**
  * Embed to display the statistics when adding a new user
@@ -59,19 +59,19 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				}
 			} catch (error) {
 				const errorMsg = lError(error as Error, interaction);
-				await reply(interaction,{ content: errorMsg, ephemeral: true });
+				await reply(interaction, { content: errorMsg, ephemeral: true });
 				return;
 			}
 			await interaction.message.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
-			await reply(interaction,{ content: ul("modals.added.stats"), ephemeral: true });
+			await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 			return;
 		}
 		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
-		await reply(interaction,{ content: ul("modals.added.stats"), ephemeral: true });
+		await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 		return;
 	} catch (error) {
 		const errorMsg = lError(error as Error, interaction);
-		await reply(interaction,{ content: errorMsg, ephemeral: true });
+		await reply(interaction, { content: errorMsg, ephemeral: true });
 	}
 }
 
@@ -100,7 +100,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		if (statToDisplay.length === 0) {
 			//remove button
 			const button = registerDmgButton(ul);
-			await reply(interaction,{ content: ul("modals.alreadySet"), ephemeral: true });
+			await reply(interaction, { content: ul("modals.alreadySet"), ephemeral: true });
 			await interaction.message.edit({ components: [button] });
 		}
 	}

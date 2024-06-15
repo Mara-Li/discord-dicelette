@@ -1,4 +1,5 @@
 import type { Critical } from "@dicelette/core";
+import type { NewsChannel, PrivateThreadChannel, PublicThreadChannel, TextChannel } from "discord.js";
 import type Enmap from "enmap";
 import type { TFunction } from "i18next";
 
@@ -21,10 +22,22 @@ export const LINKS = {
 	}
 } as const;
 
-
-
+/**
+ * - If is an array: `[messageId, channelId]`
+ * - If is a string: `messageId` only
+ */
+export type UserMessageId = [string, string] | string;
 export type Settings = Enmap<string, GuildData, unknown>;
 export type Translation = TFunction<"translation", undefined>;
+export type DiscordChannel = PrivateThreadChannel | PublicThreadChannel<boolean> | TextChannel | NewsChannel | undefined
+export type PersonnageIds = { channelId?: string, messageId: string };
+export type UserRegistration = {
+	userID: string,
+	isPrivate?: boolean,
+	charName?: string,
+	damage?: string[],
+	msgId: UserMessageId,
+}
 
 export interface GuildData {
 	logs?: string,
@@ -47,7 +60,11 @@ export interface GuildData {
 	user: {
 		[userID: string]: {
 			charName?: string | null;
-			messageId: string;
+			/**
+			 * Can be an array if the character sheet is saved in another channel than the default
+			 * It will be always 2 elements: the messageId and the channelId
+			 */
+			messageId: UserMessageId;
 			damageName?: string[];
 			isPrivate?: boolean;
 		}[]

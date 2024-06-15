@@ -1,6 +1,6 @@
 import { createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
-import type { Settings, Translation } from "@interface";
+import type { Settings, Translation, UserMessageId } from "@interface";
 import { lError, ln } from "@localization";
 import { addAutoRole, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons, registerDmgButton, } from "@utils/buttons";
@@ -139,11 +139,16 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 		if (templateEmbed) allEmbeds.push(templateEmbed);
 		const components = editUserButtons(ul, !!statsEmbed, true);
 
-		const userRegister = {
+		const userRegister: {
+			userID: string;
+			charName: string | undefined;
+			damage: string[] | undefined;
+			msgId: UserMessageId;
+		} = {
 			userID,
 			charName: userName,
 			damage: damageName ? Object.keys(damageName) : undefined,
-			msgId: interaction.message.id,
+			msgId: [interaction.message.id, interaction.message.channel.id],
 		};
 		registerUser(userRegister, interaction, thread, db, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });

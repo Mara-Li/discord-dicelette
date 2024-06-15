@@ -169,6 +169,7 @@
     }
   },
   "error": {
+    "channel": "Le channel `{{-channel}}` n'existe pas sur ce serveur.",
     "charName": "Le personnage {{- charName}} n'est pas enregistré.",
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
@@ -332,6 +333,10 @@
     "avatar": {
       "description": "Le lien vers l'image du personnage (par défaut, utilise l'avatar de l'utilisateur)",
       "name": "Avatar"
+    },
+    "channel": {
+      "description": "Permet de poster la fiche ailleurs que dans les channels par défaut.",
+      "name": "Channel (sous forme d'ID) où poster la fiche"
     },
     "charName": {
       "description": "Entrez le nom de votre personnage",
