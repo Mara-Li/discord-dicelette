@@ -73,7 +73,7 @@ export const bulkAdd = {
 				const userDataEmbed = createUserEmbed(ul, char.avatar ?? member.avatarURL() ?? member.defaultAvatarURL);
 				userDataEmbed.addFields({
 					name: ul("common.charName"),
-					value: char.userName ?? "/",
+					value: title(char.userName) ?? "/",
 					inline: true,
 				});
 				userDataEmbed.addFields({
@@ -117,7 +117,7 @@ export const bulkAdd = {
 						.setTitle(ul("embed.template"))
 						.setColor("DarkerGrey");
 					templateEmbed.addFields({
-						name: ul("common.dice"),
+						name: title(ul("common.dice")),
 						value: `\`${guildTemplate.diceType}\``,
 						inline: true,
 					});
@@ -171,12 +171,14 @@ export const bulkAddTemplate = {
 		const header = [
 			"user",
 			"charName",
+			"avatar"
 		];
 		if (guildTemplate.statistics) {
 			header.push(...Object.keys(guildTemplate.statistics));
 		}
 		if (client.settings.has(interaction.guild.id, "privateChannel")) header.push("isPrivate");
 		header.push("dice");
+
 		//create CSV
 		const csvText = `\ufeff${header.join(";")}\n`;
 		const buffer = Buffer.from(csvText, "utf-8");
