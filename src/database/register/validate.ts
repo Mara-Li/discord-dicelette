@@ -58,9 +58,10 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = ensureEmbed(interaction.message);
 	const oldEmbedsFields = parseEmbedFields(oldEmbeds);
+	console.log(oldEmbedsFields);
 	let userID = oldEmbedsFields?.["common.user"];
 	let charName: string | undefined = oldEmbedsFields?.["common.charName"];
-	const isPrivate = oldEmbedsFields["common.isPrivate"] === "✓";
+	const isPrivate = oldEmbedsFields["common.isPrivate"] === "common.yes";
 	if (charName && charName === "common.noSet")
 		charName = undefined;
 	if (!userID) {
