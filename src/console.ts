@@ -1,5 +1,6 @@
 import chalk from "chalk";
-
+import dotenv from "dotenv";
+dotenv.config();
 /**
  * Extends console.error with a red background and red text
  * @param message {unknown}
@@ -17,7 +18,7 @@ export const error = (message?: unknown, ...optionalParams: unknown[]) => {
  * @param message {unknown}
  * @param optionalParams {unknown[]}
  */
-export const warn = (message?: unknown, ...optionalParams: unknown[]) => { 
+export const warn = (message?: unknown, ...optionalParams: unknown[]) => {
 	console.warn(chalk.bgYellow("WARNING"), chalk.yellow(message, ...optionalParams));
 };
 
@@ -26,7 +27,8 @@ export const warn = (message?: unknown, ...optionalParams: unknown[]) => {
  * @param message {unknown}
  * @param optionalParams {unknown[]}
  */
-export const log = (message?: unknown, ...optionalParams: unknown[]) => { 
+export const log = (message?: unknown, ...optionalParams: unknown[]) => {
+	if (process.env.NODE_ENV === "production") return;
 	console.log(chalk.bgBlue("INFO"), chalk.blue(message, ...optionalParams));
 };
 
