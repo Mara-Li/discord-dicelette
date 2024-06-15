@@ -2,7 +2,7 @@
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation, UserData } from "@interface";
-import { ln } from "@localization";
+import { findKeyFromTranslation, ln } from "@localization";
 import { addAutoRole, removeEmoji, removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, ensureEmbed, parseEmbedFields } from "@utils/parse";
@@ -29,9 +29,10 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 	}
 	const charName = interaction.fields.getTextInputValue("charName");
 	const isPrivate = interaction.fields.getTextInputValue("private")?.toLowerCase() === "x";
+	const avatar = interaction.fields.getTextInputValue("avatar");
 	const embed = new EmbedBuilder()
 		.setTitle(ul("embed.add"))
-		.setThumbnail(user.user.displayAvatarURL())
+		.setThumbnail(avatar.length > 0 ? avatar : user.displayAvatarURL())
 		.setFooter({ text: ul("common.page", { nb: 1 }) })
 		.addFields(
 			{ name: ul("common.charName"), value: charName.length > 0 ? charName : ul("common.noSet"), inline: true },
@@ -56,17 +57,17 @@ export async function createEmbedFirstPage(interaction: ModalSubmitInteraction, 
 export async function validateUser(interaction: ButtonInteraction, template: StatisticalTemplate, db: Settings) {
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = ensureEmbed(interaction.message);
-	let userID = oldEmbeds.fields.find(field => field.name === ul("common.user"))?.value;
-	let charName: string | undefined = oldEmbeds.fields.find(field => field.name === ul("common.charName"))?.value;
-	const isPrivate = oldEmbeds.fields.find(field => field.name === ul("common.isPrivate"))?.value === "✓";
-	if (charName && charName === ul("common.noSet"))
+	const oldEmbedsFields = parseEmbedFields(oldEmbeds);
+	let userID = oldEmbedsFields?.["common.user"];
+	let charName: string | undefined = oldEmbedsFields?.["common.charName"];
+	const isPrivate = oldEmbedsFields["common.isPrivate"] === "✓";
+	if (charName && charName === "common.noSet")
 		charName = undefined;
 	if (!userID) {
 		await reply(interaction, { content: ul("error.user"), ephemeral: true });
 		return;
 	}
 	userID = userID.replace("<@", "").replace(">", "");
-	const parsedFields = parseEmbedFields(oldEmbeds);
 	const userDataEmbed = createUserEmbed(ul, oldEmbeds.thumbnail?.url || "");
 	let diceEmbed: EmbedBuilder | undefined = undefined;
 	let statsEmbed: EmbedBuilder | undefined = undefined;
@@ -91,12 +92,12 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				inline: true,
 
 			});
-		} else if (field.name !== "common.isPrivate") userDataEmbed.addFields(field);
+		} else if (findKeyFromTranslation(field.name) !== "common.isPrivate") userDataEmbed.addFields(field);
 	}
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: { [name: string]: number } = {};
 	for (const stat of templateStat) {
-		stats[stat] = Number.parseInt(parsedFields[removeEmojiAccents(stat)], 10);
+		stats[stat] = Number.parseInt(oldEmbedsFields[removeEmojiAccents(stat)], 10);
 	}
 	const damageFields = oldEmbeds.fields.filter(field => field.name.startsWith("🔪"));
 	let templateDamage: { [name: string]: string } | undefined = undefined;
@@ -131,6 +132,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 		},
 		damage: templateDamage,
 		private: isPrivate,
+		avatar: oldEmbeds.thumbnail?.url,
 	};
 	let templateEmbed: EmbedBuilder | undefined = undefined;
 	if (template.diceType || template.critical) {

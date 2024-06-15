@@ -163,8 +163,10 @@
     "user": "Joueur enregistré"
   },
   "embeds": {
-    "display": {},
-    "edit": {}
+    "display": {
+    },
+    "edit": {
+    }
   },
   "error": {
     "charName": "Le personnage {{- charName}} n'est pas enregistré.",
@@ -208,7 +210,8 @@
     "options": {
       "desc": "Exporter que les personnages marqués comme privé",
       "name": "fiche_privée_uniquement",
-      "private": {}
+      "private": {
+      }
     }
   },
   "generate": {
@@ -326,6 +329,10 @@
       "stats": "Statistiques ajoutés"
     },
     "alreadySet": "Toutes les statistiques sont déjà définies",
+    "avatar": {
+      "description": "Le lien vers l'image du personnage (par défaut, utilise l'avatar de l'utilisateur)",
+      "name": "Avatar"
+    },
     "charName": {
       "description": "Entrez le nom de votre personnage",
       "name": "Nom du personnage"

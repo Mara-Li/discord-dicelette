@@ -21,6 +21,7 @@ const t = i18next.getFixedT("en");
 export type CSVRow = {
 	user: string;
 	charName: string | undefined | null;
+	avatar: string | undefined | null;
 	isPrivate: boolean | undefined;
 	dice: string | undefined;
 	[key: string]: string | number | undefined | boolean | null;
@@ -69,7 +70,7 @@ export const bulkAdd = {
 			}
 			member = member.user as User;
 			for (const char of data) {
-				const userDataEmbed = createUserEmbed(ul, member.avatarURL());
+				const userDataEmbed = createUserEmbed(ul, char.avatar ?? member.avatarURL() ?? member.defaultAvatarURL);
 				userDataEmbed.addFields({
 					name: ul("common.charName"),
 					value: char.userName ?? "/",
@@ -196,6 +197,7 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 	let header = [
 		"user",
 		"charName",
+		"avatar",
 	];
 	if (guildTemplate.statistics) {
 		header = header.concat(Object.keys(guildTemplate.statistics));
@@ -305,6 +307,7 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			userID = guildMember.id;
 		}
 		const isPrivate = data.isPrivate;
+
 		if (!members[userID]) members[userID] = [];
 		if (guildTemplate.charName && !charName) {
 			if (interaction) {
@@ -373,9 +376,12 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			},
 			private: allowPrivate ? isPrivate : undefined,
 			damage: dice,
+			avatar: data.avatar ?? undefined,
 		};
 		// biome-ignore lint/performance/noDelete: I need this because the file will be rewritten and the undefined value can broke object
 		if (!newChar.private) delete newChar.private;
+		// biome-ignore lint/performance/noDelete: I need this because the file will be rewritten and the undefined value can broke object
+		if (!newChar.avatar) delete newChar.avatar;
 		members[userID].push(newChar);
 	}
 	return { members, errors };

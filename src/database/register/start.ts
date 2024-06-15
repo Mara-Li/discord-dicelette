@@ -98,7 +98,16 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 			.setValue(interaction.user.username ?? interaction.user.id)
 			.setStyle(TextInputStyle.Short)
 	);
-	const components = [charNameInput, userIdInputs];
+	const avatarInputs = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+		new TextInputBuilder()
+			.setCustomId("avatar")
+			.setLabel(ul("modals.avatar.name"))
+			.setPlaceholder(ul("modals.avatar.description"))
+			.setRequired(false)
+			.setValue("")
+			.setStyle(TextInputStyle.Short)
+	);
+	const components = [charNameInput, userIdInputs, avatarInputs];
 	if (havePrivate) {
 		const privateInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()
@@ -111,6 +120,8 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 		);
 		components.push(privateInput);
 	}
+
+
 	modal.addComponents(components);
 	await interaction.showModal(modal);
 }

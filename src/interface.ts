@@ -85,6 +85,13 @@ export interface UserData {
 	damage?: {
 		[name: string]: string;
 	}
+	/**
+	 * If the character is private or not
+	 */
 	private?: boolean;
+	/**
+	 * Thumbnail of the user, if exists 
+	 */
+	avatar?: string;
 }
 
