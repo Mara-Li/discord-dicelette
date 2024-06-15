@@ -1,7 +1,7 @@
-import { type Settings, type Translation, TUTORIAL_IMAGES, type UserData } from "@interface";
+import { type DiscordChannel, type Settings, type Translation, TUTORIAL_IMAGES, type UserData, type UserRegistration } from "@interface";
 import { editUserButtons } from "@utils/buttons";
 import { registerManagerID, registerUser } from "@utils/db";
-import { parseEmbedFields } from "@utils/parse";
+import { parseEmbedFields, removeBacktick } from "@utils/parse";
 import { type AnyThreadChannel, type APIEmbedField, AttachmentBuilder, type BaseInteraction, ButtonInteraction, CategoryChannel, CommandInteraction, type Embed, type EmbedBuilder, ForumChannel, type Guild, type GuildBasedChannel, type GuildForumTagData, type InteractionReplyOptions, MediaChannel, type MessagePayload, ModalSubmitInteraction, type NewsChannel, PermissionFlagsBits, type PrivateThreadChannel, type PublicThreadChannel, roleMention, StageChannel, TextChannel, VoiceChannel } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
@@ -58,12 +58,13 @@ export async function repostInThread(
 	userId: string,
 	ul: Translation,
 	which: { stats?: boolean, dice?: boolean, template?: boolean },
-	guildData: Settings
+	guildData: Settings,
+	managerId?: string
 ) {
 	const channel = interaction.channel;
 	if (!channel || (channel instanceof CategoryChannel)) return;
 	if (!guildData) throw new Error(ul("error.generic", { e: "No server data found in database for this server." }));
-	let thread = await searchUserChannel(guildData, interaction, ul, userTemplate.private);
+	let thread = await searchUserChannel(guildData, interaction, ul, userTemplate.private, managerId);
 	if (!thread && channel instanceof TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(thread => thread.name === "📝 • [STATS]") as AnyThreadChannel | undefined;
 		if (!thread) {
@@ -83,12 +84,12 @@ export async function repostInThread(
 		components: [editUserButtons(ul, which.stats, which.dice)]
 	},);
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;
-	const userRegister = {
+	const userRegister: UserRegistration = {
 		userID: userId,
 		isPrivate: userTemplate.private,
 		charName: userTemplate.userName,
 		damage: damageName,
-		msgId: msg.id,
+		msgId: [msg.id, thread.id],
 	};
 	registerUser(userRegister, interaction, thread, guildData);
 }
@@ -106,7 +107,7 @@ export function removeEmoji(dice: string) {
  * @param dice {string}
 */
 export function removeEmojiAccents(dice: string) {
-	return removeAccents(removeEmoji(dice));
+	return removeBacktick(removeAccents(removeEmoji(dice)));
 }
 
 /**
@@ -141,7 +142,7 @@ export function replaceFormulaInDice(dice: string) {
 			const result = evaluate(formula);
 			return cleanedDice(dice.replace(formulaMatch.groups.formula, result.toString()));
 		} catch (error) {
-			throw new Error(`[error.invalidFormula, common.space]: ${formulaMatch.groups.formula}`);
+			throw new Error(`[error.invalidFormula, common.space]: ${formulaMatch.groups.formula} [From: replaceFormulaInDice]`);
 		}
 	}
 	return cleanedDice(dice);
@@ -257,21 +258,30 @@ export async function searchUserChannel(
 	guildData: Settings,
 	interaction: BaseInteraction,
 	ul: Translation,
-	isPrivate?: boolean
-) {
+	isPrivate?: boolean,
+	managerID?: string
+): Promise<DiscordChannel> {
 	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
 	const baseChannel = guildData.get(interaction.guild!.id, "managerId");
-	const managerID = isPrivate ? guildData.get(interaction.guild!.id, "privateChannel") ?? baseChannel : baseChannel;
+	if (!managerID)
+		//biome-ignore lint/style/noParameterAssign: We need to reassign the value
+		managerID = isPrivate ? guildData.get(interaction.guild!.id, "privateChannel") ?? baseChannel : baseChannel;
+
 	if (managerID) {
-		const channel = await interaction.guild?.channels.fetch(managerID);
-		if (!channel || (channel instanceof CategoryChannel) || channel instanceof ForumChannel || channel instanceof MediaChannel || channel instanceof StageChannel || channel instanceof VoiceChannel) {
-			if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction))
-				await interaction?.channel?.send(ul("error.noThread"));
-			else
-				await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
+		try {
+			const channel = await interaction.guild?.channels.fetch(managerID);
+			if (!channel || (channel instanceof CategoryChannel) || channel instanceof ForumChannel || channel instanceof MediaChannel || channel instanceof StageChannel || channel instanceof VoiceChannel) {
+				if ((interaction instanceof CommandInteraction || interaction instanceof ButtonInteraction || interaction instanceof ModalSubmitInteraction))
+					await interaction?.channel?.send(ul("error.noThread"));
+				else
+					await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
+				return;
+			}
+			thread = channel;
+		} catch (error) {
+			console.error("Error while fetching channel", error);
 			return;
 		}
-		thread = channel;
 	} else {
 		const channelId = guildData.get(interaction.guild!.id, "templateID.channelId");
 		const channel = await interaction.guild?.channels.fetch(channelId);

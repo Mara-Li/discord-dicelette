@@ -1,13 +1,13 @@
 {
   "name": "dicelette",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "",
   "main": "dist/index.js",
   "repository": "",
   "type": "module",
   "engineStrict": true,
   "scripts": {
-    "init": "pnpm i && node install.js",
+    "postinstall": "node install.js",
     "prebuild": "cross-os clean",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "prestart": "pnpm run build",
@@ -24,7 +24,7 @@
     "release": "commit-and-tag-version",
     "test": "vitest run",
     "test:watch": "vitest",
-    "tsc": "tsc --project tsconfig.json --skipLibCheck --noEmit && tsc-alias -p tsconfig.json"
+    "prerelease": "tsc --project tsconfig.json --skipLibCheck --noEmit && tsc-alias -p tsconfig.json"
   },
   "cross-os": {
     "clean": {

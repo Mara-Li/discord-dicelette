@@ -6,6 +6,7 @@ import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
 import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, type Locale, SlashCommandBuilder } from "discord.js";
 import i18next from "i18next";
+import type { PersonnageIds } from "@interface";
 
 const t = i18next.getFixedT("en");
 
@@ -76,8 +77,9 @@ export const displayUser = {
 			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
 			return;
 		}
-
-		const thread = await searchUserChannel(client.settings, interaction, ul, charData[user?.id ?? interaction.user.id]?.isPrivate);
+		const userData = charData[user?.id ?? interaction.user.id];
+		const managerID: PersonnageIds = Array.isArray(userData.messageId) ? { channelId: userData.messageId[1], messageId: userData.messageId[0] } : { messageId: userData.messageId };
+		const thread = await searchUserChannel(client.settings, interaction, ul, userData?.isPrivate, managerID?.channelId);
 		if (!thread)
 			return await reply(interaction, ul("error.noThread"));
 
@@ -86,9 +88,8 @@ export const displayUser = {
 			await reply(interaction, ul("error.private"));
 			return;
 		}
-		const messageID = charData[user?.id ?? interaction.user.id].messageId;
 		try {
-			const userMessage = await thread?.messages.fetch(messageID);
+			const userMessage = await thread?.messages.fetch(managerID.messageId);
 			const statisticEmbed = getEmbeds(ul, userMessage, "stats");
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
 			const diceFields = diceEmbed?.toJSON().fields;

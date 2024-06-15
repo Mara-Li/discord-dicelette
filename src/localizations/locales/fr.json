@@ -158,17 +158,13 @@
       "dice": "Dés modifiés",
       "stats": "Statistiques modifiées"
     },
+    "old": "Joueur enregistré",
     "stats": "Statistiques",
     "template": "Modèle",
-    "user": "Joueur enregistré"
-  },
-  "embeds": {
-    "display": {
-    },
-    "edit": {
-    }
+    "user": "⌈⌋ Fiche ⌈⌋"
   },
   "error": {
+    "channel": "Le channel `{{-channel}}` n'existe pas sur ce serveur.",
     "charName": "Le personnage {{- charName}} n'est pas enregistré.",
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "generic": "Une erreur est survenue :\n```\n{{- e.message}}\n```",
@@ -190,6 +186,7 @@
     "noTemplateId": "Aucun message trouvé avec les données sauvegardée dans la base de données:\n- Channel : `{{- channelId}}`\n- ID du message : `{{- messageId}}`",
     "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
     "notRegistered": "Vous n'êtes pas enregistré",
+    "oldEmbed": "Cette fiche ne correspond pas à celle dans la base de données. Vous trouverez la nouvelle fiche [ici](<{{- fiche}}>).",
     "private": "Cette fiche est privée ! Vous n'avez pas la permissions pour la lire.",
     "rollChannelNotFound": "Le channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
@@ -197,7 +194,7 @@
     "tooMuchDice": "Trop de dés ont été enregistrés ! Vous ne pouvez pas avoir plus de 25 dés enregistrés.",
     "tooMuchStats": "Vous ne pouvez pas avoir plus de 25 statistiques",
     "totalExceededBy": "Le total de {{- value}} est dépassé de {{- max}}",
-    "user": "Utilisateur introuvable",
+    "user": "Utilisateur introuvable. \n- Il peut s'agir d'une erreur temporaire causé par la mise à jour du cache,\n- La fiche est introuvable car elle a été supprimé (ou son channel) mais les données n'ont pas été supprimé de la base de données. Si tel est le cas, vous devez utiliser la commande `/supprimer_char`.",
     "userChan": "Vous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "userNotRegistered": "{{- user}} n'est pas enregistré."
   },
@@ -209,9 +206,7 @@
     "name": "export",
     "options": {
       "desc": "Exporter que les personnages marqués comme privé",
-      "name": "fiche_privée_uniquement",
-      "private": {
-      }
+      "name": "fiche_privée_uniquement"
     }
   },
   "generate": {
@@ -333,11 +328,16 @@
       "description": "Le lien vers l'image du personnage (par défaut, utilise l'avatar de l'utilisateur)",
       "name": "Avatar"
     },
+    "channel": {
+      "description": "Permet de poster la fiche ailleurs que dans les channels par défaut.",
+      "name": "Channel (sous forme d'ID) où poster la fiche"
+    },
     "charName": {
       "description": "Entrez le nom de votre personnage",
       "name": "Nom du personnage"
     },
     "dice": {
+      "max": "Vous ne pouvez pas avoir plus de 25 dés enregistrés (limites de champ discord).",
       "name": "Nom",
       "placeholder": "Entrer un dé valide",
       "value": "Valeur"

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createTemplateEmbed } from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
-import type { Settings, Translation } from "@interface";
+import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findKeyFromTranslation, ln } from "@localization";
 import { removeEmojiAccents, searchUserChannel } from "@utils";
 import { type ButtonInteraction, type CommandInteraction, type Embed, EmbedBuilder, type Locale, type Message, type ModalSubmitInteraction } from "discord.js";
@@ -82,10 +82,11 @@ export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "st
 /**
  * Parse the embed fields and remove the backtick if any
  * @param embed {Embed}
- * @returns { [name: string]: string }
+ * @returns { {[name: string]: string} }
  */
 export function parseEmbedFields(embed: Embed): { [name: string]: string } {
 	const fields = embed.fields;
+	if (!fields) return {};
 	const parsedFields: { [name: string]: string } = {};
 	for (const field of fields) {
 		parsedFields[findKeyFromTranslation(removeBacktick(field.name))] = findKeyFromTranslation(removeBacktick(field.value));
@@ -104,7 +105,8 @@ export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "
 	for (const embed of allEmbeds) {
 		const embedJSON = embed.toJSON();
 		const titleKey = findKeyFromTranslation(embed.title ?? "");
-		if (titleKey === "embed.user" && which === "user") return new EmbedBuilder(embedJSON);
+		const userKeys = ["embed.user", "embed.add", "embed.old"];
+		if (userKeys.includes(titleKey) && which === "user") return new EmbedBuilder(embedJSON);
 		if ((titleKey === "embed.stats" || titleKey === "common.statistic") && which === "stats") return new EmbedBuilder(embedJSON);
 		if (titleKey === "embed.dice" && which === "damage") return new EmbedBuilder(embedJSON);
 		if (titleKey === "embed.template" && which === "template") return new EmbedBuilder(embedJSON);
@@ -121,12 +123,14 @@ export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "
  */
 export async function bulkEditTemplateUser(guildData: Settings, interaction: CommandInteraction, ul: Translation, template: StatisticalTemplate) {
 	const users = guildData.get(interaction.guild!.id, "user");
-	const thread = await searchUserChannel(guildData, interaction, ul);
-	if (!thread) return;
+
 	for (const userID in users) {
 		for (const char of users[userID]) {
+			const managerId: PersonnageIds = Array.isArray(char.messageId) ? { channelId: char.messageId[1], messageId: char.messageId[0] } : { messageId: char.messageId };
+			const thread = await searchUserChannel(guildData, interaction, ul, char.isPrivate, managerId?.channelId);
+			if (!thread) continue;
 			try {
-				const userMessages = await thread.messages.fetch(char.messageId);
+				const userMessages = await thread.messages.fetch(managerId.messageId);
 				const templateEmbed = getEmbeds(ul, userMessages, "template");
 				if (!templateEmbed) continue;
 				const newEmbed = createTemplateEmbed(ul);

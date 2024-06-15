@@ -160,17 +160,13 @@
       "dice": "Edited dices",
       "stats": "Modified statistics"
     },
+    "old": "",
     "stats": "Statistics",
     "template": "Model",
-    "user": "Registered player"
-  },
-  "embeds": {
-    "display": {
-    },
-    "edit": {
-    }
+    "user": "⌈⌋ Sheet ⌈⌋"
   },
   "error": {
+    "channel": "The channel `{{-channel}}` does not exist on this server.",
     "charName": "The character {{- charName}} is not registered.",
     "emptyDamage": "You have no ability dice saved.",
     "generic": "An error has occurred :\n```\n{{- e.message}}\n```",
@@ -192,6 +188,7 @@
     "noTemplateId": "No messages found with data saved in database:\n- Channel: `{{-channelId}}`\n- Message ID: `{{- messageId}}`",
     "noThread": "No valid channel found - Please re-register the template if the channel was deleted",
     "notRegistered": "You are not registered",
+    "oldEmbed": "This record does not match the one in the database. \nYou will find the new sheet [here]({{- sheet}}).",
     "private": "This character sheet is private! \nYou do not have permission to read it.",
     "rollChannelNotFound": "The channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
     "statNotFound": "Statistics not found! Did you make a typing error?",
@@ -199,7 +196,7 @@
     "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",
     "tooMuchStats": "You cannot have more than 25 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
-    "user": "User not found",
+    "user": "User not found. \n\n- This may be a temporary error caused by updating the cache,\n\n- The record cannot be found because it has been deleted (or its channel) but the data has not been deleted from the database. \nIf so, you need to use the `/delete_char` command.",
     "userChan": "You cannot choose the channel {{- chan}} without choosing a channel where to post the cards, because it will be impossible to create a thread there.",
     "userNotRegistered": "{{- user}} is not registered."
   },
@@ -335,11 +332,16 @@
       "description": "The link to the character image (by default, uses the user's avatar)",
       "name": "Avatar"
     },
+    "channel": {
+      "description": "Allows you to post the file elsewhere than in the default channels",
+      "name": "Channel (in ID form) where to post the file"
+    },
     "charName": {
       "description": "Enter your character's name",
       "name": "Character name"
     },
     "dice": {
+      "max": "You cannot have more than 25 registered dice (discord field limits).",
       "name": "Name",
       "placeholder": "Enter a valid die",
       "value": "Value"

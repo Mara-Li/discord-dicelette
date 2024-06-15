@@ -1,9 +1,9 @@
-import { evalCombinaison,type StatisticalTemplate } from "@dicelette/core";
-import { lError,ln } from "@localization";
+import { evalCombinaison, type StatisticalTemplate } from "@dicelette/core";
+import { lError, ln } from "@localization";
 import { removeEmojiAccents, reply, title } from "@utils";
-import { continueCancelButtons,registerDmgButton } from "@utils/buttons";
-import { ensureEmbed,getStatistiqueFields } from "@utils/parse";
-import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder,type Locale, type ModalActionRowComponentBuilder,ModalBuilder, type ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
+import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
+import { getEmbeds, getStatistiqueFields, removeBacktick } from "@utils/parse";
+import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 
 /**
  * Embed to display the statistics when adding a new user
@@ -14,64 +14,63 @@ import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder,type Locale, typ
 export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page = 2) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
-	const oldEmbeds = ensureEmbed(interaction.message);
+	const userEmbed = getEmbeds(ul, interaction.message, "user");
+	if (!userEmbed) return;
+	const statsEmbed = getEmbeds(ul, interaction.message, "stats");
 	try {
 		const { combinaisonFields, stats } = getStatistiqueFields(interaction, template);
 		//combine all embeds as one
-		const embed = new EmbedBuilder()
-			.setTitle(ul("embed.add"))
-			.setThumbnail(oldEmbeds.thumbnail?.url || "")
-			.setFooter({ text: ul("common.page", { nb: page }) });
+		userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
 		//add old fields
-		for (const field of oldEmbeds.fields) {
-			embed.addFields(field);
-		}
+
+		const statEmbeds = statsEmbed ?? new EmbedBuilder()
+			.setTitle(ul("embed.stats"))
 		for (const [stat, value] of Object.entries(stats)) {
-			embed.addFields({
-				name: title(`✏️ ${title(stat)}`),
-				value: value.toString(),
+			statEmbeds.addFields({
+				name: title(stat),
+				value: `\`${value}\``,
 				inline: true,
 			});
 		}
 		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison).map(name => removeEmojiAccents(name)) : [];
-		const embedObject = embed.toJSON();
+		const embedObject = statEmbeds.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;
 		const parsedFields: { [name: string]: string; } = {};
 		for (const field of fields) {
-			parsedFields[removeEmojiAccents(field.name)] = field.value.toLowerCase();
+			parsedFields[removeEmojiAccents(field.name)] = removeBacktick(field.value.toLowerCase());
 		}
 
 		const embedStats = Object.fromEntries(Object.entries(parsedFields).filter(
 			([key,]) => statsWithoutCombinaison.includes(key)
-		));
+		))
 		if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
 			let combinaison: { [name: string]: number; } = {};
 			try {
 				combinaison = evalCombinaison(combinaisonFields, embedStats);
 				//add combinaison to the embed
 				for (const stat of Object.keys(combinaison)) {
-					embed.addFields({
-						name: title(`✏️ ${title(stat)}`),
+					statEmbeds.addFields({
+						name: title(stat),
 						value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
 						inline: true,
 					});
 				}
 			} catch (error) {
 				const errorMsg = lError(error as Error, interaction);
-				await reply(interaction,{ content: errorMsg, ephemeral: true });
+				await reply(interaction, { content: errorMsg, ephemeral: true });
 				return;
 			}
-			await interaction.message.edit({ embeds: [embed], components: [registerDmgButton(ul)] });
-			await reply(interaction,{ content: ul("modals.added.stats"), ephemeral: true });
+			await interaction.message.edit({ embeds: [userEmbed, statEmbeds], components: [registerDmgButton(ul)] });
+			await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 			return;
 		}
-		await interaction.message.edit({ embeds: [embed], components: [continueCancelButtons(ul)] });
-		await reply(interaction,{ content: ul("modals.added.stats"), ephemeral: true });
+		await interaction.message.edit({ embeds: [userEmbed, statEmbeds], components: [continueCancelButtons(ul)] });
+		await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 		return;
 	} catch (error) {
 		const errorMsg = lError(error as Error, interaction);
-		await reply(interaction,{ content: errorMsg, ephemeral: true });
+		await reply(interaction, { content: errorMsg, ephemeral: true });
 	}
 }
 
@@ -100,7 +99,7 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		if (statToDisplay.length === 0) {
 			//remove button
 			const button = registerDmgButton(ul);
-			await reply(interaction,{ content: ul("modals.alreadySet"), ephemeral: true });
+			await reply(interaction, { content: ul("modals.alreadySet"), ephemeral: true });
 			await interaction.message.edit({ components: [button] });
 		}
 	}

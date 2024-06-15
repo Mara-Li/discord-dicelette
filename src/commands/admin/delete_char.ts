@@ -4,8 +4,9 @@ import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { filterChoices, isStatsThread, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
-import { type AutocompleteInteraction, type CommandInteraction,type CommandInteractionOptionResolver, type Locale, PermissionFlagsBits, SlashCommandBuilder, userMention } from "discord.js";
+import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, PermissionFlagsBits, SlashCommandBuilder, userMention } from "discord.js";
 import i18next from "i18next";
+import type { DiscordChannel, PersonnageIds, Translation, UserMessageId } from "@interface";
 
 const t = i18next.getFixedT("en");
 
@@ -52,9 +53,9 @@ export const deleteChar = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result) ?? result, value: result}))
+			filter.map(result => ({ name: title(result) ?? result, value: result }))
 		);
-	}, 	
+	},
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guildId as string);
@@ -66,6 +67,7 @@ export const deleteChar = {
 		const user = options.getUser(t("display.userLowercase"));
 		let charName = options.getString(t("common.character"))?.toLowerCase();
 		const charData = await getDatabaseChar(interaction, client, t);
+		//default channel
 		const publicThread = await searchUserChannel(client.settings, interaction, ul);
 		let privateThread = await searchUserChannel(client.settings, interaction, ul, true);
 		if (
@@ -76,53 +78,69 @@ export const deleteChar = {
 			//delete all characters from the user
 			const allDataUser = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
 			if (!allDataUser) {
-				await reply(interaction, ul("deleteChar.noCharacters", {user: userMention(user?.id ?? interaction.user.id)}));
+				await reply(interaction, ul("deleteChar.noCharacters", { user: userMention(user?.id ?? interaction.user.id) }));
 				return;
 			}
 			//list of all IDs of the messages to delete
-			const privateIds: string[] = Object.values(allDataUser).filter(data => data.isPrivate).map(data => data.messageId);
-			const publicIds: string[] = Object.values(allDataUser).filter(data => !data.isPrivate).map(data => data.messageId);
-			
-			if (publicThread) {
-				if (!privateThread) publicIds.push(...privateIds);
-				publicThread.bulkDelete(publicIds);
-			}
-			if (privateThread) {
-				privateThread.bulkDelete(privateIds);
-			}
+			const privateIds: UserMessageId[] = Object.values(allDataUser).filter(data => data.isPrivate).map(data => data.messageId);
+			const publicIds: UserMessageId[] = Object.values(allDataUser).filter(data => !data.isPrivate).map(data => data.messageId);
+
+			if (!privateThread) publicIds.push(...privateIds);
+			await deleteMessage(publicIds, client, interaction, ul, publicThread);
+			if (privateThread) await deleteMessage(privateIds, client, interaction, ul, privateThread);
+
 			client.settings.delete(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
-			await reply(interaction, ul("deleteChar.allSuccess", {user: userMention(user?.id ?? interaction.user.id)}));
+			await reply(interaction, ul("deleteChar.allSuccess", { user: userMention(user?.id ?? interaction.user.id) }));
 			return;
 		}
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
-			if (charName) userName += ` (${charName})` ;
-			await reply(interaction, ul("error.userNotRegistered", {user: userName}));
+			if (charName) userName += ` (${charName})`;
+			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
 			return;
 		}
 		charName = charName.includes(ul("common.default").toLowerCase()) ? undefined : charName;
-		const isPrivate = charData[user?.id ?? interaction.user.id].isPrivate;
-		if (!publicThread || (isPrivate && !privateThread)) {
+		const userData = charData[user?.id ?? interaction.user.id];
+		const isPrivate = userData.isPrivate;
+		const managerID: PersonnageIds = Array.isArray(userData.messageId) ? { channelId: userData.messageId[1], messageId: userData.messageId[0] } : { messageId: userData.messageId };
+		const userChannel: DiscordChannel | undefined = Array.isArray(userData.messageId) ? await searchUserChannel(client.settings, interaction, ul, userData.isPrivate, userData.messageId[1]) : undefined;
+
+		if (!publicThread || (isPrivate && !privateThread) || !userChannel) {
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
+			await reply(interaction, ul("deleteChar.success", { user: userMention(user?.id ?? interaction.user.id) }));
 			return;
 		}
-		const messageID = charData[user?.id ?? interaction.user.id].messageId;
+		const messageID = managerID.messageId;
 		const msg = `${userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${title(charName)})*` : ""}`;
 		try {
 			//search for the message and delete it
-			const message = isPrivate && privateThread ? await privateThread.messages.fetch(messageID) : await publicThread.messages.fetch(messageID);
+			const message = await userChannel.messages.fetch(messageID);
 			await message.delete();
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
-			
-			await reply(interaction, ul("deleteChar.success", {user: msg}));
+
+			await reply(interaction, ul("deleteChar.success", { user: msg }));
 			client.settings.set(interaction.guildId as string, newGuildData);
 		} catch (e) {
 			error(e);
 			//no message found, delete the character from the database
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
-			await reply(interaction, ul("deleteChar.success", {user: msg}));	
+			await reply(interaction, ul("deleteChar.success", { user: msg }));
 		}
-	} 
+	}
 };
+
+async function deleteMessage(ids: UserMessageId[], client: EClient, interaction: CommandInteraction, ul: Translation, publicThread?: DiscordChannel) {
+	for (const id of ids) {
+		if (Array.isArray(id)) {
+			const userThread = await searchUserChannel(client.settings, interaction, ul, false, id[0]);
+			if (!userThread) continue;
+			const message = await userThread.messages.fetch(id[1]);
+			await message.delete();
+		} else if (publicThread) {
+			const message = await publicThread.messages.fetch(id);
+			await message.delete();
+		}
+	}
+}
