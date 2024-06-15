@@ -58,7 +58,6 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 	const ul = ln(interaction.locale as Locale);
 	const oldEmbeds = ensureEmbed(interaction.message);
 	const oldEmbedsFields = parseEmbedFields(oldEmbeds);
-	console.log(oldEmbedsFields);
 	let userID = oldEmbedsFields?.["common.user"];
 	let charName: string | undefined = oldEmbedsFields?.["common.charName"];
 	const isPrivate = oldEmbedsFields["common.isPrivate"] === "common.yes";
@@ -93,7 +92,7 @@ export async function validateUser(interaction: ButtonInteraction, template: Sta
 				inline: true,
 
 			});
-		} else if (findKeyFromTranslation(field.name) !== "common.isPrivate") userDataEmbed.addFields(field);
+		} else if (findKeyFromTranslation(field.name) !== "common.isPrivate") userDataEmbed.addFields({ name: field.name, value: title(field.value), inline: field.inline });
 	}
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const stats: { [name: string]: number } = {};
