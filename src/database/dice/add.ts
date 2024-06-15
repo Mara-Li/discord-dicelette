@@ -5,7 +5,7 @@ import { findKeyFromTranslation, lError, ln } from "@localization";
 import { addAutoRole, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons, registerDmgButton, } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
-import { ensureEmbed, getEmbeds } from "@utils/parse";
+import { ensureEmbed, getEmbeds, removeBacktick } from "@utils/parse";
 import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Guild, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User, userMention } from "discord.js";
 
 /**
@@ -117,13 +117,13 @@ export async function registerDamageDice(interaction: ModalSubmitInteraction, db
 	}
 	if (diceEmbed.toJSON().fields?.findIndex(f => removeEmojiAccents(f.name) === removeEmojiAccents(name)) === -1 || !diceEmbed.toJSON().fields) {
 		diceEmbed.addFields({
-			name: first ? `🔪${title(name)}` : title(name),
-			value,
+			name: title(name),
+			value: `\`${value}\``,
 			inline: true,
 		});
 	}
 	const damageName = diceEmbed.toJSON().fields?.reduce((acc, field) => {
-		acc[field.name] = field.value;
+		acc[field.name] = removeBacktick(field.value);
 		return acc;
 	}, {} as { [name: string]: string });
 	if (damageName && Object.keys(damageName).length > 25) {

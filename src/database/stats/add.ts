@@ -27,8 +27,8 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 			.setTitle(ul("embed.stats"))
 		for (const [stat, value] of Object.entries(stats)) {
 			statEmbeds.addFields({
-				name: title(`✏️ ${title(stat)}`),
-				value: value.toString(),
+				name: title(stat),
+				value: `\`${value}\``,
 				inline: true,
 			});
 		}
@@ -51,7 +51,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				//add combinaison to the embed
 				for (const stat of Object.keys(combinaison)) {
 					statEmbeds.addFields({
-						name: title(`✏️ ${title(stat)}`),
+						name: title(stat),
 						value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
 						inline: true,
 					});
