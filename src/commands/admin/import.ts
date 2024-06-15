@@ -3,7 +3,6 @@
  * The bot will register user as the other commands, with adding them into the user thread using {@link validateUser}
  */
 
-
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { UserData } from "@interface";
@@ -12,7 +11,17 @@ import type { EClient } from "@main";
 import { addAutoRole, removeEmojiAccents, reply, repostInThread, title } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-import { type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, type GuildMember, type Locale, PermissionFlagsBits, SlashCommandBuilder, type User, userMention } from "discord.js";
+import {
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	EmbedBuilder,
+	type GuildMember,
+	type Locale,
+	PermissionFlagsBits,
+	SlashCommandBuilder,
+	type User,
+	userMention,
+} from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
 
@@ -23,6 +32,7 @@ export type CSVRow = {
 	charName: string | undefined | null;
 	avatar: string | undefined | null;
 	isPrivate: boolean | undefined;
+	channel: string | undefined;
 	dice: string | undefined;
 	[key: string]: string | number | undefined | boolean | null;
 };
@@ -39,12 +49,13 @@ export const bulkAdd = {
 		.setNameLocalizations(cmdLn("bulk_add.name"))
 		.setDescription(t("bulk_add.description"))
 		.setDescriptionLocalizations(cmdLn("bulk_add.description"))
-		.addAttachmentOption((option) => option
-			.setName(t("bulk_add.options.name"))
-			.setNameLocalizations(cmdLn("bulk_add.options.name"))
-			.setDescription(t("bulk_add.options.description"))
-			.setDescriptionLocalizations(cmdLn("bulk_add.options.description"))
-			.setRequired(true),
+		.addAttachmentOption((option) =>
+			option
+				.setName(t("bulk_add.options.name"))
+				.setNameLocalizations(cmdLn("bulk_add.options.name"))
+				.setDescription(t("bulk_add.options.description"))
+				.setDescriptionLocalizations(cmdLn("bulk_add.options.description"))
+				.setRequired(true)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
@@ -60,7 +71,12 @@ export const bulkAdd = {
 		if (!guildTemplate) {
 			return reply(interaction, { content: ul("error.noTemplate") });
 		}
-		const { members, errors } = await parseCSV(csvFile.url, guildTemplate, interaction, client.settings.has(interaction.guild!.id, "privateChannel"));
+		const { members, errors } = await parseCSV(
+			csvFile.url,
+			guildTemplate,
+			interaction,
+			client.settings.has(interaction.guild!.id, "privateChannel")
+		);
 		const guildMembers = await interaction.guild?.members.fetch();
 		for (const [user, data] of Object.entries(members)) {
 			//we already parsed the user, so the cache should be up to date
@@ -70,24 +86,21 @@ export const bulkAdd = {
 			}
 			member = member.user as User;
 			for (const char of data) {
-				const userDataEmbed = createUserEmbed(ul, char.avatar ?? member.avatarURL() ?? member.defaultAvatarURL, member.id, char.userName ?? undefined);
-				userDataEmbed.addFields({
-					name: title(ul("common.character")),
-					value: title(char.userName) ?? ul("common.noSet"),
-					inline: true,
-				});
-				userDataEmbed.addFields({
-					name: ul("common.user"),
-					value: userMention(member.id),
-					inline: true,
-				});
+				const userDataEmbed = createUserEmbed(
+					ul,
+					char.avatar ?? member.avatarURL() ?? member.defaultAvatarURL,
+					member.id,
+					char.userName ?? undefined
+				);
 
 				const statsEmbed = char.stats ? createStatsEmbed(ul) : undefined;
 				let diceEmbed = guildTemplate.damage ? createDiceEmbed(ul) : undefined;
 				//! important: As the bulk add can be for level upped characters, the value is not verified (min/max) & total points
 				for (const [name, value] of Object.entries(char.stats ?? {})) {
 					const validateValue = guildTemplate.statistics?.[name];
-					const fieldValue = validateValue?.combinaison ? `\`${validateValue.combinaison}\` = ${value}` : `\`${value}\``;
+					const fieldValue = validateValue?.combinaison
+						? `\`${validateValue.combinaison}\` = ${value}`
+						: `\`${value}\``;
 					statsEmbed!.addFields({
 						name: title(name),
 						value: fieldValue,
@@ -136,17 +149,34 @@ export const bulkAdd = {
 						});
 					}
 				}
-				const allEmbeds = createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed);
-				await repostInThread(allEmbeds, interaction, char, member.id, ul, { stats: !!statsEmbed, dice: !!diceEmbed, template: !!templateEmbed }, client.settings);
+				const allEmbeds = createEmbedsList(
+					userDataEmbed,
+					statsEmbed,
+					diceEmbed,
+					templateEmbed
+				);
+				await repostInThread(
+					allEmbeds,
+					interaction,
+					char,
+					member.id,
+					ul,
+					{ stats: !!statsEmbed, dice: !!diceEmbed, template: !!templateEmbed },
+					client.settings,
+					char.channel
+				);
 				addAutoRole(interaction, member.id, !!diceEmbed, !!statsEmbed, client.settings);
-				await reply(interaction, { content: ul("bulk_add.user.success", { user: userMention(member.id) }) });
+				await reply(interaction, {
+					content: ul("bulk_add.user.success", { user: userMention(member.id) }),
+				});
 			}
 		}
 		let msg = ul("bulk_add.all_success");
-		if (errors.length > 0) msg += `\n${ul("bulk_add.errors.global")}\n${errors.join("\n")}`;
+		if (errors.length > 0)
+			msg += `\n${ul("bulk_add.errors.global")}\n${errors.join("\n")}`;
 		await reply(interaction, { content: msg });
 		return;
-	}
+	},
 };
 
 /** Allow to create a CSV file for easy edition
@@ -168,15 +198,12 @@ export const bulkAddTemplate = {
 		if (!guildTemplate) {
 			return reply(interaction, { content: ul("error.noTemplate") });
 		}
-		const header = [
-			"user",
-			"charName",
-			"avatar"
-		];
+		const header = ["user", "charName", "avatar", "channel"];
 		if (guildTemplate.statistics) {
 			header.push(...Object.keys(guildTemplate.statistics));
 		}
-		if (client.settings.has(interaction.guild.id, "privateChannel")) header.push("isPrivate");
+		if (client.settings.has(interaction.guild.id, "privateChannel"))
+			header.push("isPrivate");
 		header.push("dice");
 
 		//create CSV
@@ -184,30 +211,30 @@ export const bulkAddTemplate = {
 		const buffer = Buffer.from(csvText, "utf-8");
 		await interaction.reply({
 			content: ul("bulk_add_template.success"),
-			files: [{ attachment: buffer, name: "template.csv" }]
+			files: [{ attachment: buffer, name: "template.csv" }],
 		});
-	}
+	},
 };
 /**
  * Export a function to parse a CSV file and return the data, using PapaParse
  * @param url {string} The URL of the CSV file, or the content of the file as string
  * @param guildTemplate {StatisticalTemplate} The template of the guild
  * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
- * @returns {Promise<{[id: string]: UserData[]}>} The data parsed from the CSV file
  */
-export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, interaction?: CommandInteraction, allowPrivate?: boolean) {
-	let header = [
-		"user",
-		"charName",
-		"avatar",
-	];
+export async function parseCSV(
+	url: string,
+	guildTemplate: StatisticalTemplate,
+	interaction?: CommandInteraction,
+	allowPrivate?: boolean
+) {
+	let header = ["user", "charName", "avatar", "channel"];
 	if (guildTemplate.statistics) {
 		header = header.concat(Object.keys(guildTemplate.statistics));
 	}
 	if (allowPrivate) header.push("isPrivate");
-	const ul = ln(interaction?.locale ?? "en" as Locale);
+	const ul = ln(interaction?.locale ?? ("en" as Locale));
 	header.push("dice");
-	header = header.map(key => removeEmojiAccents(key));
+	header = header.map((key) => removeEmojiAccents(key));
 	//papaparse can't be used in Node, we need first to create a readable stream
 
 	const csvText = url.startsWith("https://") ? await readCSV(url) : url;
@@ -229,24 +256,29 @@ export async function parseCSV(url: string, guildTemplate: StatisticalTemplate, 
 				return;
 			}
 			//throw error if missing header (it shouldn't not throw if a header is added)
-			const dataHeader = results.meta.fields?.map(key => removeEmojiAccents(key));
+			const dataHeader = results.meta.fields?.map((key) => removeEmojiAccents(key));
 			if (!dataHeader) {
 				console.error("Error while parsing CSV, missing header");
-				if (interaction) await reply(interaction, { content: ul("bulk_add.errors.missing_header") });
+				if (interaction)
+					await reply(interaction, { content: ul("bulk_add.errors.missing_header") });
 				error = "Missing header";
 				return;
 			}
 			//throw error only if missing values for the header
-			const missingHeader = header.filter(key => !dataHeader.includes(key)).filter(key => key !== "dice");
+			const missingHeader = header
+				.filter((key) => !dataHeader.includes(key))
+				.filter((key) => key !== "dice");
 			if (missingHeader.length > 0) {
 				console.error("Error while parsing CSV, missing header values", missingHeader);
-				if (interaction) await reply(interaction, { content: ul("bulk_add.errors.headers", { name: missingHeader.join("\n- ") }) });
+				if (interaction)
+					await reply(interaction, {
+						content: ul("bulk_add.errors.headers", { name: missingHeader.join("\n- ") }),
+					});
 				error = "Missing header values";
 				return;
 			}
 			csvData = results.data as CSVRow[];
 		},
-
 	});
 	if (error) {
 		throw new Error(error);
@@ -268,7 +300,6 @@ async function readCSV(url: string): Promise<string> {
 		throw new Error("Invalid URL");
 	}
 	return response.text();
-
 }
 
 /**
@@ -277,15 +308,21 @@ async function readCSV(url: string): Promise<string> {
  * @param guildTemplate {StatisticalTemplate} The template of the guild
  * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
  */
-async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interaction?: CommandInteraction, allowPrivate?: boolean) {
+async function step(
+	csv: CSVRow[],
+	guildTemplate: StatisticalTemplate,
+	interaction?: CommandInteraction,
+	allowPrivate?: boolean
+) {
 	const members: {
 		[id: string]: UserData[];
 	} = {};
-	const ul = ln(interaction?.locale ?? "en" as Locale);
+	const ul = ln(interaction?.locale ?? ("en" as Locale));
 	const errors: string[] = [];
 	//get the user id from the guild
 	for (const data of csv) {
 		const user = data.user.replaceAll("'", "").trim();
+		const channel = data.channel ? data.channel.replaceAll("'", "").trim() : undefined;
 		const charName = data.charName;
 
 		//get user from the guild
@@ -299,7 +336,12 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 		}
 		//get the user from the guild
 		if (interaction) {
-			guildMember = allMembers.find(member => member.user.id === user || member.user.username === user || member.user.tag === user);
+			guildMember = allMembers.find(
+				(member) =>
+					member.user.id === user ||
+					member.user.username === user ||
+					member.user.tag === user
+			);
 			if (!guildMember || !guildMember.user) {
 				const msg = ul("bulk_add.errors.user_not_found", { user });
 				await reply(interaction, { content: msg });
@@ -321,17 +363,19 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			continue;
 		}
 		//prevent duplicate with verify the charName
-		if (members[userID].find(char => {
-			if (char.userName && charName) return removeEmojiAccents(char.userName) === removeEmojiAccents(charName);
-			if (!char.userName && !charName) return true;
-			return false;
-		})) {
+		if (
+			members[userID].find((char) => {
+				if (char.userName && charName)
+					return removeEmojiAccents(char.userName) === removeEmojiAccents(charName);
+				if (!char.userName && !charName) return true;
+				return false;
+			})
+		) {
 			if (interaction) {
-				const msg = ul("bulk_add.errors.duplicate_charName",
-					{
-						user: userMention(userID),
-						charName: charName ?? ul("common.default")
-					});
+				const msg = ul("bulk_add.errors.duplicate_charName", {
+					user: userMention(userID),
+					charName: charName ?? ul("common.default"),
+				});
 				await reply(interaction, { content: msg });
 				errors.push(msg);
 			}
@@ -341,12 +385,14 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 		const stats: { [name: string]: number } = {};
 		//get the stats
 		if (guildTemplate.statistics) {
-			const emptyStats = Object.keys(guildTemplate.statistics).filter(key => !data[key]);
+			const emptyStats = Object.keys(guildTemplate.statistics).filter(
+				(key) => !data[key]
+			);
 			if (emptyStats.length > 0) {
 				if (interaction) {
 					const msg = ul("bulk_add.errors.missing_stats", {
 						user: userMention(userID),
-						stats: emptyStats.join("\n- ")
+						stats: emptyStats.join("\n- "),
 					});
 					await reply(interaction, { content: msg.content });
 					errors.push(msg.content);
@@ -358,17 +404,21 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			for (const key of Object.keys(guildTemplate.statistics)) {
 				stats[key] = data[key] as number;
 			}
-
 		}
-		const dice: { [name: string]: string } | undefined = data.dice?.replaceAll("'", "") ? data.dice.split(/\r?\n/).reduce((acc, line) => {
-			const match = line.match(/-\s*([^:]+)\s*:\s*(.+)/);
-			if (match) {
-				const key = match[1].trim();
-				const value = match[2].trim();
-				acc[key] = value;
-			}
-			return acc;
-		}, {} as { [name: string]: string }) : undefined;
+		const dice: { [name: string]: string } | undefined = data.dice?.replaceAll("'", "")
+			? data.dice.split(/\r?\n/).reduce(
+					(acc, line) => {
+						const match = line.match(/-\s*([^:]+)\s*:\s*(.+)/);
+						if (match) {
+							const key = match[1].trim();
+							const value = match[2].trim();
+							acc[key] = value;
+						}
+						return acc;
+					},
+					{} as { [name: string]: string }
+				)
+			: undefined;
 		const newChar: UserData = {
 			userName: charName,
 			stats,
@@ -379,6 +429,7 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 			private: allowPrivate ? isPrivate : undefined,
 			damage: dice,
 			avatar: data.avatar ?? undefined,
+			channel,
 		};
 		// biome-ignore lint/performance/noDelete: I need this because the file will be rewritten and the undefined value can broke object
 		if (!newChar.private) delete newChar.private;
@@ -388,4 +439,3 @@ async function step(csv: CSVRow[], guildTemplate: StatisticalTemplate, interacti
 	}
 	return { members, errors };
 }
-

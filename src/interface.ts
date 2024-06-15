@@ -1,5 +1,10 @@
 import type { Critical } from "@dicelette/core";
-import type { NewsChannel, PrivateThreadChannel, PublicThreadChannel, TextChannel } from "discord.js";
+import type {
+	NewsChannel,
+	PrivateThreadChannel,
+	PublicThreadChannel,
+	TextChannel,
+} from "discord.js";
 import type Enmap from "enmap";
 import type { TFunction } from "i18next";
 
@@ -18,8 +23,8 @@ export const LINKS = {
 	},
 	en: {
 		bug: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=bug%2Ctriage%2Cenglish&projects=&template=bug_english.yml&title=%5BBug%5D%3A+",
-		fr: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=enhancement%2Ctriage%2Cenglish&projects=&template=request_english.yml&title=%5BFR%5D%3A+"
-	}
+		fr: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=enhancement%2Ctriage%2Cenglish&projects=&template=request_english.yml&title=%5BFR%5D%3A+",
+	},
 } as const;
 
 /**
@@ -29,20 +34,25 @@ export const LINKS = {
 export type UserMessageId = [string, string] | string;
 export type Settings = Enmap<string, GuildData, unknown>;
 export type Translation = TFunction<"translation", undefined>;
-export type DiscordChannel = PrivateThreadChannel | PublicThreadChannel<boolean> | TextChannel | NewsChannel | undefined
-export type PersonnageIds = { channelId?: string, messageId: string };
+export type DiscordChannel =
+	| PrivateThreadChannel
+	| PublicThreadChannel<boolean>
+	| TextChannel
+	| NewsChannel
+	| undefined;
+export type PersonnageIds = { channelId?: string; messageId: string };
 export type UserRegistration = {
-	userID: string,
-	isPrivate?: boolean,
-	charName?: string,
-	damage?: string[],
-	msgId: UserMessageId,
-}
+	userID: string;
+	isPrivate?: boolean;
+	charName?: string;
+	damage?: string[];
+	msgId: UserMessageId;
+};
 
 export interface GuildData {
-	logs?: string,
-	rollChannel?: string,
-	disableThread?: boolean,
+	logs?: string;
+	rollChannel?: string;
+	disableThread?: boolean;
 	managerId?: string;
 	deleteAfter?: number;
 	timestamp?: boolean;
@@ -56,7 +66,7 @@ export interface GuildData {
 		messageId: string;
 		statsName: string[];
 		damageName: string[];
-	},
+	};
 	user: {
 		[userID: string]: {
 			charName?: string | null;
@@ -67,18 +77,17 @@ export interface GuildData {
 			messageId: UserMessageId;
 			damageName?: string[];
 			isPrivate?: boolean;
-		}[]
-	}
-
+		}[];
+	};
 }
 
 /**
  * When a user is registered, a message will be sent in the corresponding channel for the template
  * When any user roll on a statistique:
- * - The bot will check the user in the database. 
+ * - The bot will check the user in the database.
  * - If it is, it will get the message with the statistique attached:
  * 	- The bot will get the content of the JSON file and parse it to get the statistique of the user
- * 	- Using it, it will roll normally and send the result to the user 
+ * 	- Using it, it will roll normally and send the result to the user
  * - If the user doesn't exists or their stat was deleted: the bot will send a message to inform the user that he is not registered and roll normally, ignoring the statistique/characters (theses will be send into the comments part)
  */
 export interface UserData {
@@ -94,21 +103,23 @@ export interface UserData {
 	template: {
 		diceType?: string;
 		critical?: Critical;
-
-	},
+	};
 	/**
 	 * The skill dice that the user can do
 	 */
 	damage?: {
 		[name: string]: string;
-	}
+	};
 	/**
 	 * If the character is private or not
 	 */
 	private?: boolean;
 	/**
-	 * Thumbnail of the user, if exists 
+	 * Thumbnail of the user, if exists
 	 */
 	avatar?: string;
+	/**
+	 * The channelID where the message is stored
+	 */
+	channel?: string;
 }
-
