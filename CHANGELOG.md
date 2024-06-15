@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.4.0](https://github.com/Dicelette/discord-dicelette/compare/1.3.0...1.4.0) (2024-06-15)
+
+
+### Features
+
+* allow to set another channel for user ([32c5123](https://github.com/Dicelette/discord-dicelette/commit/32c51239f326072e1abfb6e3b43e203e0da3da1b))
+* support sending in another channel ([1633f89](https://github.com/Dicelette/discord-dicelette/commit/1633f8952ec8ad5de91c0b2e820e2fca377872b9))
+
+
+### Bug Fixes
+
+* allow to import/export with channel id ([a6e1a6a](https://github.com/Dicelette/discord-dicelette/commit/a6e1a6acdadea8ad3c6005dac4f71250843b1567))
+* avatar & channel are not mandatory ([fd0a426](https://github.com/Dicelette/discord-dicelette/commit/fd0a426516caba237be64d5136363d69ec5658aa))
+* delete user ([9948082](https://github.com/Dicelette/discord-dicelette/commit/99480823b25eae92fd43932e6edb000104008a9b))
+* do not delete user when not found (because cache error) ([f283d97](https://github.com/Dicelette/discord-dicelette/commit/f283d974b15aa4d7094ae6b16837a52798acb08f))
+* field can be more than 25 so we need to separate the embed during registrationt oo ([55d705e](https://github.com/Dicelette/discord-dicelette/commit/55d705ed3bdd6d04e38336593a669635f099a3f5))
+* hard cap for embeds ([d0c9b55](https://github.com/Dicelette/discord-dicelette/commit/d0c9b55223ddc584d2a6c1df778d8312feed2cbc))
+* if a custom channel is set, private char must be ignored (+-) ([67c7eaa](https://github.com/Dicelette/discord-dicelette/commit/67c7eaa07044be0318f11746f2e071679ec11985))
+* no data in userEmbed ([332f850](https://github.com/Dicelette/discord-dicelette/commit/332f8507a95a9ce38bcd99882c8f92c4fd1a6c22))
+* verify the url of avatar in case of problem ([1305504](https://github.com/Dicelette/discord-dicelette/commit/1305504df84739e2abc9ca508c7d4ee5f5d56ba4))
+
 ## [1.3.0](https://github.com/Dicelette/discord-dicelette/compare/1.2.0...1.3.0) (2024-06-15)
 
 
