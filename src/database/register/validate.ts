@@ -25,6 +25,13 @@ import {
 	userMention,
 } from "discord.js";
 
+function verifyAvatarUrl(url: string) {
+	if (url.length === 0) return false;
+	if (url.match(/^(http(s?):)([/|.|\w|\s|-])*\.(?:jpe?g|gifv?|png|webp|gif)$/gi))
+		return url;
+	return false;
+}
+
 /**
  * Create the embed after registering the user
  * If the template has statistics, show the continue button
@@ -55,11 +62,13 @@ export async function createEmbedFirstPage(
 	const isPrivate =
 		interaction.fields.getTextInputValue("private")?.toLowerCase() === "x";
 	const avatar = interaction.fields.getTextInputValue("avatar");
+
 	let managerId = setting.get(interaction.guild!.id, "managerId");
 	if (isPrivate && setting.get(interaction.guild!.id, "privateChannel"))
 		managerId = setting.get(interaction.guild!.id, "privateChannel");
 	if (customChannel.length > 0) managerId = customChannel;
-	console.log(customChannel.length > 0, managerId);
+
+	const verifiedAvatar = verifyAvatarUrl(avatar);
 	const existChannel = managerId
 		? await interaction.guild?.channels.fetch(managerId)
 		: undefined;
@@ -69,7 +78,7 @@ export async function createEmbedFirstPage(
 	}
 	const embed = new EmbedBuilder()
 		.setTitle(ul("embed.add"))
-		.setThumbnail(avatar.length > 0 ? avatar : user.displayAvatarURL())
+		.setThumbnail(verifiedAvatar ? avatar : user.displayAvatarURL())
 		.setFooter({ text: ul("common.page", { nb: 1 }) })
 		.addFields(
 			{
