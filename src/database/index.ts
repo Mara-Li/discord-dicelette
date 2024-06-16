@@ -120,18 +120,12 @@ export function verifyIfEmbedInDB(
 		return char.charName == null && userName == null;
 	});
 	if (!charName) return { isInDb: false };
-	let defaultChannel = db.get(message.guild!.id, "managerId");
-	if (charName.isPrivate) defaultChannel = db.get(message.guild!.id, "privateChannel");
-	const ids: PersonnageIds = Array.isArray(charName.messageId)
-		? { channelId: charName.messageId[1], messageId: charName.messageId[0] }
-		: { messageId: charName.messageId };
-	if (ids.channelId)
-		return {
-			isInDb: message.channel.id === ids.channelId && message.id === ids.messageId,
-			coord: ids,
-		};
+	const ids: PersonnageIds = {
+		channelId: charName.messageId[1],
+		messageId: charName.messageId[0],
+	};
 	return {
-		isInDb: message.channelId === defaultChannel && message.id === ids.messageId,
-		coord: { messageId: ids.messageId, channelId: defaultChannel },
+		isInDb: message.channel.id === ids.channelId && message.id === ids.messageId,
+		coord: ids,
 	};
 }

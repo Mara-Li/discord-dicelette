@@ -243,7 +243,7 @@ export async function registerDamageDice(
 			damage: damageName ? Object.keys(damageName) : undefined,
 			msgId: [interaction.message.id, interaction.message.channel.id],
 		};
-		registerUser(userRegister, interaction, thread, db, false);
+		registerUser(userRegister, interaction, db, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await reply(interaction, { content: ul("modals.added.dice"), ephemeral: true });
 		await sendLogs(

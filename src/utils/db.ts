@@ -11,7 +11,6 @@ import type { EClient } from "@main";
 import { haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
 import { ensureEmbed, getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
 import {
-	type AnyThreadChannel,
 	type BaseInteraction,
 	type ButtonInteraction,
 	CategoryChannel,
@@ -21,8 +20,6 @@ import {
 	type Locale,
 	type Message,
 	type ModalSubmitInteraction,
-	type NewsChannel,
-	type TextChannel,
 } from "discord.js";
 import removeAccents from "remove-accents";
 
@@ -163,20 +160,20 @@ export async function getUserFromMessage(
 		return charName == null && char.charName == null;
 	});
 	if (!user) return;
-	const userMessageId: PersonnageIds = Array.isArray(user.messageId)
-		? { channelId: user.messageId[1], messageId: user.messageId[0] }
-		: { messageId: user.messageId };
+	const userMessageId: PersonnageIds = {
+		channelId: user.messageId[1],
+		messageId: user.messageId[0],
+	};
 	const thread = await searchUserChannel(
 		guildData,
 		interaction,
 		ul,
-		user.isPrivate,
 		userMessageId.channelId
 	);
-	if (user.isPrivate && !allowAccess && !haveAccess(interaction, thread, userId)) {
+	if (!thread) throw new Error(ul("error.noThread"));
+	if (user.isPrivate && !allowAccess && !haveAccess(interaction, thread.id, userId)) {
 		throw new Error(ul("error.private"));
 	}
-	if (!thread) throw new Error(ul("error.noThread"));
 	try {
 		const message = await thread.messages.fetch(userMessageId.messageId);
 		return getUserByEmbed(
@@ -206,11 +203,11 @@ export async function getUserFromMessage(
 export async function registerUser(
 	userData: UserRegistration,
 	interaction: BaseInteraction,
-	thread: AnyThreadChannel | TextChannel | NewsChannel,
 	enmap: Settings,
 	deleteMsg: boolean | undefined = true
 ) {
 	const { userID, charName, msgId, isPrivate } = userData;
+	const ids: PersonnageIds = { channelId: msgId[1], messageId: msgId[0] };
 	let { damage } = userData;
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
@@ -253,20 +250,14 @@ export async function registerUser(
 			//delete old message
 			if (deleteMsg) {
 				try {
-					if (Array.isArray(char.messageId)) {
-						const threadOfChar = await searchUserChannel(
-							enmap,
-							interaction,
-							ln(interaction.locale),
-							char.isPrivate,
-							char.messageId[1]
-						);
-						if (threadOfChar) {
-							const oldMessage = await threadOfChar.messages.fetch(char.messageId[1]);
-							if (oldMessage) oldMessage.delete();
-						}
-					} else {
-						const oldMessage = await thread.messages.fetch(char.messageId);
+					const threadOfChar = await searchUserChannel(
+						enmap,
+						interaction,
+						ln(interaction.locale),
+						ids.channelId
+					);
+					if (threadOfChar) {
+						const oldMessage = await threadOfChar.messages.fetch(char.messageId[1]);
 						if (oldMessage) oldMessage.delete();
 					}
 				} catch (error) {

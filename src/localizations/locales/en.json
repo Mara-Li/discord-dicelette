@@ -178,6 +178,7 @@
     "mustBeGreater": "The {{- value}} value must be greater than {{- min}}",
     "mustBeLower": "The {{- value}} value must be smaller than {{- max}}",
     "noDamage": "{{- atq}} is not saved in {{- charName}}.",
+    "noDefaultChannel": "You must provide at least one default channel to save the records.",
     "noDice": "You cannot issue this command without having a registered die type!",
     "noEmbed": "No embeds found",
     "noGuild": "No guilds found",

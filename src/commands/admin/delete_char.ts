@@ -2,11 +2,24 @@ import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { filterChoices, isStatsThread, reply, searchUserChannel, title } from "@utils";
+import { filterChoices, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
-import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, PermissionFlagsBits, SlashCommandBuilder, userMention } from "discord.js";
+import {
+	type AutocompleteInteraction,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	type Locale,
+	PermissionFlagsBits,
+	SlashCommandBuilder,
+	userMention,
+} from "discord.js";
 import i18next from "i18next";
-import type { DiscordChannel, PersonnageIds, Translation, UserMessageId } from "@interface";
+import type {
+	DiscordChannel,
+	PersonnageIds,
+	Translation,
+	UserMessageId,
+} from "@interface";
 
 const t = i18next.getFixedT("en");
 
@@ -17,7 +30,7 @@ export const deleteChar = {
 		.setNameLocalizations(cmdLn("deleteChar.name"))
 		.setDescription(t("deleteChar.description"))
 		.setDescriptionLocalizations(cmdLn("deleteChar.description"))
-		.addUserOption(option =>
+		.addUserOption((option) =>
 			option
 				.setName(t("display.userLowercase"))
 				.setNameLocalizations(cmdLn("display.userLowercase"))
@@ -25,7 +38,7 @@ export const deleteChar = {
 				.setDescriptionLocalizations(cmdLn("deleteChar.user"))
 				.setRequired(true)
 		)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("common.character"))
 				.setNameLocalizations(cmdLn("common.character"))
@@ -33,7 +46,10 @@ export const deleteChar = {
 				.setDescription(t("deleteChar.character"))
 				.setAutocomplete(true)
 		),
-	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
+	async autocomplete(
+		interaction: AutocompleteInteraction,
+		client: EClient
+	): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guildId as string);
@@ -53,7 +69,7 @@ export const deleteChar = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result) ?? result, value: result }))
+			filter.map((result) => ({ name: title(result) ?? result, value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
@@ -68,29 +84,42 @@ export const deleteChar = {
 		let charName = options.getString(t("common.character"))?.toLowerCase();
 		const charData = await getDatabaseChar(interaction, client, t);
 		//default channel
-		const publicThread = await searchUserChannel(client.settings, interaction, ul);
-		let privateThread = await searchUserChannel(client.settings, interaction, ul, true);
-		if (
-			(privateThread && publicThread?.id === privateThread?.id)
-			|| isStatsThread(client.settings, interaction.guild!.id, privateThread)
-		) privateThread = undefined;
+		const isPrivateEnabled = client.settings.get(
+			interaction.guildId as string,
+			"privateChannel"
+		);
 		if (!charName) {
 			//delete all characters from the user
-			const allDataUser = client.settings.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
+			const allDataUser = client.settings.get(
+				interaction.guild!.id,
+				`user.${user?.id ?? interaction.user.id}`
+			);
 			if (!allDataUser) {
-				await reply(interaction, ul("deleteChar.noCharacters", { user: userMention(user?.id ?? interaction.user.id) }));
+				await reply(
+					interaction,
+					ul("deleteChar.noCharacters", {
+						user: userMention(user?.id ?? interaction.user.id),
+					})
+				);
 				return;
 			}
 			//list of all IDs of the messages to delete
-			const privateIds: UserMessageId[] = Object.values(allDataUser).filter(data => data.isPrivate).map(data => data.messageId);
-			const publicIds: UserMessageId[] = Object.values(allDataUser).filter(data => !data.isPrivate).map(data => data.messageId);
+			const idToDelete: UserMessageId[] = Object.values(allDataUser).map(
+				(data) => data.messageId
+			);
 
-			if (!privateThread) publicIds.push(...privateIds);
-			await deleteMessage(publicIds, client, interaction, ul, publicThread);
-			if (privateThread) await deleteMessage(privateIds, client, interaction, ul, privateThread);
+			await deleteMessage(idToDelete, client, interaction, ul);
 
-			client.settings.delete(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`);
-			await reply(interaction, ul("deleteChar.allSuccess", { user: userMention(user?.id ?? interaction.user.id) }));
+			client.settings.delete(
+				interaction.guild!.id,
+				`user.${user?.id ?? interaction.user.id}`
+			);
+			await reply(
+				interaction,
+				ul("deleteChar.allSuccess", {
+					user: userMention(user?.id ?? interaction.user.id),
+				})
+			);
 			return;
 		}
 		if (!charData) {
@@ -99,16 +128,26 @@ export const deleteChar = {
 			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
 			return;
 		}
-		charName = charName.includes(ul("common.default").toLowerCase()) ? undefined : charName;
+		charName = charName.includes(ul("common.default").toLowerCase())
+			? undefined
+			: charName;
 		const userData = charData[user?.id ?? interaction.user.id];
 		const isPrivate = userData.isPrivate;
-		const managerID: PersonnageIds = Array.isArray(userData.messageId) ? { channelId: userData.messageId[1], messageId: userData.messageId[0] } : { messageId: userData.messageId };
-		const userChannel: DiscordChannel | undefined = Array.isArray(userData.messageId) ? await searchUserChannel(client.settings, interaction, ul, userData.isPrivate, userData.messageId[1]) : undefined;
+		const managerID: PersonnageIds = {
+			channelId: userData.messageId[1],
+			messageId: userData.messageId[0],
+		};
+		const userChannel: DiscordChannel | undefined = Array.isArray(userData.messageId)
+			? await searchUserChannel(client.settings, interaction, ul, managerID.channelId)
+			: undefined;
 
-		if (!publicThread || (isPrivate && !privateThread) || !userChannel) {
+		if (!userChannel) {
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
-			await reply(interaction, ul("deleteChar.success", { user: userMention(user?.id ?? interaction.user.id) }));
+			await reply(
+				interaction,
+				ul("deleteChar.success", { user: userMention(user?.id ?? interaction.user.id) })
+			);
 			return;
 		}
 		const messageID = managerID.messageId;
@@ -128,19 +167,19 @@ export const deleteChar = {
 			client.settings.set(interaction.guildId as string, newGuildData);
 			await reply(interaction, ul("deleteChar.success", { user: msg }));
 		}
-	}
+	},
 };
 
-async function deleteMessage(ids: UserMessageId[], client: EClient, interaction: CommandInteraction, ul: Translation, publicThread?: DiscordChannel) {
+async function deleteMessage(
+	ids: UserMessageId[],
+	client: EClient,
+	interaction: CommandInteraction,
+	ul: Translation
+) {
 	for (const id of ids) {
-		if (Array.isArray(id)) {
-			const userThread = await searchUserChannel(client.settings, interaction, ul, false, id[0]);
-			if (!userThread) continue;
-			const message = await userThread.messages.fetch(id[1]);
-			await message.delete();
-		} else if (publicThread) {
-			const message = await publicThread.messages.fetch(id);
-			await message.delete();
-		}
+		const userThread = await searchUserChannel(client.settings, interaction, ul, id[1]);
+		if (!userThread) continue;
+		const message = await userThread.messages.fetch(id[1]);
+		await message.delete();
 	}
 }

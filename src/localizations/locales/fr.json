@@ -176,6 +176,7 @@
     "mustBeGreater": "La valeur {{- value}} doit être plus grande que {{- min}}",
     "mustBeLower": "La valeur {{- value}} doit être plus petite que {{- max}}",
     "noDamage": "{{- atq}} n'est pas enregistré dans {{- charName}}.",
+    "noDefaultChannel": "Vous devez fournir au moins un channel par défaut pour sauvegarder les fiches.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
     "noEmbed": "Aucun embed trouvé",
     "noGuild": "Aucune guilde n'a été trouvée",

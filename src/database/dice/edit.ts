@@ -1,6 +1,6 @@
 import { createDiceEmbed, getUserNameAndChar, verifyIfEmbedInDB } from "@database";
 import { evalStatsDice, roll } from "@dicelette/core";
-import type { Settings, Translation, UserRegistration } from "@interface";
+import type { Settings, Translation, UserMessageId, UserRegistration } from "@interface";
 import {
 	displayOldAndNewStats,
 	parseStatsString,
@@ -163,6 +163,10 @@ export async function validateDiceEdit(
 	}
 	const diceEmbed = createDiceEmbed(ul).addFields(fieldsToAppend);
 	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul);
+	const messageID = [
+		interaction.message.id,
+		interaction.message.channelId,
+	] as UserMessageId;
 	if (!fieldsToAppend || fieldsToAppend.length === 0) {
 		//dice was removed
 		const embedsList = getEmbedsList(
@@ -179,9 +183,9 @@ export async function validateDiceEdit(
 			userID,
 			charName: userName,
 			damage: undefined,
-			msgId: [interaction.message.id, interaction.message.channelId],
+			msgId: messageID,
 		};
-		registerUser(userRegister, interaction, thread, db, false);
+		registerUser(userRegister, interaction, db, false);
 		await sendLogs(
 			ul("logs.dice.remove", {
 				user: userMention(interaction.user.id),
@@ -206,9 +210,9 @@ export async function validateDiceEdit(
 		userID,
 		charName: userName,
 		damage: skillDiceName,
-		msgId: interaction.message.id,
+		msgId: messageID,
 	};
-	registerUser(userRegister, interaction, thread, db, false);
+	registerUser(userRegister, interaction, db, false);
 	const embedsList = getEmbedsList(
 		ul,
 		{ which: "damage", embed: diceEmbed },
