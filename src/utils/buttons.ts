@@ -12,7 +12,7 @@ export function editUserButtons(ul: Translation, stats?: boolean, dice?: boolean
 	const addDice = new ButtonBuilder()
 		.setCustomId("add_dice")
 		.setLabel(ul("button.dice"))
-		.setEmoji("➕")	
+		.setEmoji("➕")
 		.setStyle(ButtonStyle.Primary);
 	const editUser = new ButtonBuilder()
 		.setCustomId("edit_stats")
@@ -24,9 +24,13 @@ export function editUserButtons(ul: Translation, stats?: boolean, dice?: boolean
 		.setLabel(ul("button.edit.dice"))
 		.setEmoji("📝")
 		.setStyle(ButtonStyle.Secondary);
-	
-	if (stats && dice)	
-		return new ActionRowBuilder<ButtonBuilder>().addComponents([editUser, editDice, addDice]);
+
+	if (stats && dice)
+		return new ActionRowBuilder<ButtonBuilder>().addComponents([
+			editUser,
+			editDice,
+			addDice,
+		]);
 	const components = [addDice];
 	if (stats) components.push(editUser);
 	if (dice) components.push(editDice);
@@ -46,7 +50,10 @@ export function continueCancelButtons(ul: Translation) {
 		.setCustomId("cancel")
 		.setLabel(ul("button.cancel"))
 		.setStyle(ButtonStyle.Danger);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([continueButton, cancelButton]);
+	return new ActionRowBuilder<ButtonBuilder>().addComponents([
+		continueButton,
+		cancelButton,
+	]);
 }
 
 /**
@@ -62,7 +69,10 @@ export function validateCancelButton(ul: Translation) {
 		.setCustomId("cancel")
 		.setLabel(ul("button.cancel"))
 		.setStyle(ButtonStyle.Danger);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([validateButton, cancelButton]);
+	return new ActionRowBuilder<ButtonBuilder>().addComponents([
+		validateButton,
+		cancelButton,
+	]);
 }
 
 /**
@@ -82,5 +92,9 @@ export function registerDmgButton(ul: Translation) {
 		.setCustomId("add_dice_first")
 		.setLabel(ul("button.dice"))
 		.setStyle(ButtonStyle.Primary);
-	return new ActionRowBuilder<ButtonBuilder>().addComponents([registerDmgButton, validateButton, cancelButton]);
+	return new ActionRowBuilder<ButtonBuilder>().addComponents([
+		registerDmgButton,
+		validateButton,
+		cancelButton,
+	]);
 }

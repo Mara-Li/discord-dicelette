@@ -3,7 +3,17 @@ import { lError, ln } from "@localization";
 import { removeEmojiAccents, reply, title } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { getEmbeds, getStatistiqueFields, removeBacktick } from "@utils/parse";
-import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
+import {
+	ActionRowBuilder,
+	type ButtonInteraction,
+	EmbedBuilder,
+	type Locale,
+	type ModalActionRowComponentBuilder,
+	ModalBuilder,
+	type ModalSubmitInteraction,
+	TextInputBuilder,
+	TextInputStyle,
+} from "discord.js";
 
 /**
  * Embed to display the statistics when adding a new user
@@ -11,7 +21,11 @@ import { ActionRowBuilder, type ButtonInteraction, EmbedBuilder, type Locale, ty
  * @param template {StatisticalTemplate}
  * @param page {number}
  */
-export async function embedStatistiques(interaction: ModalSubmitInteraction, template: StatisticalTemplate, page = 2) {
+export async function embedStatistiques(
+	interaction: ModalSubmitInteraction,
+	template: StatisticalTemplate,
+	page = 2
+) {
 	if (!interaction.message) return;
 	const ul = ln(interaction.locale as Locale);
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
@@ -23,8 +37,7 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 		userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
 		//add old fields
 
-		const statEmbeds = statsEmbed ?? new EmbedBuilder()
-			.setTitle(ul("embed.stats"))
+		const statEmbeds = statsEmbed ?? new EmbedBuilder().setTitle(ul("embed.stats"));
 		for (const [stat, value] of Object.entries(stats)) {
 			statEmbeds.addFields({
 				name: title(stat),
@@ -32,20 +45,28 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				inline: true,
 			});
 		}
-		const statsWithoutCombinaison = template.statistics ? Object.keys(template.statistics).filter(stat => !template.statistics![stat].combinaison).map(name => removeEmojiAccents(name)) : [];
+		const statsWithoutCombinaison = template.statistics
+			? Object.keys(template.statistics)
+					.filter((stat) => !template.statistics![stat].combinaison)
+					.map((name) => removeEmojiAccents(name))
+			: [];
 		const embedObject = statEmbeds.toJSON();
 		const fields = embedObject.fields;
 		if (!fields) return;
-		const parsedFields: { [name: string]: string; } = {};
+		const parsedFields: { [name: string]: string } = {};
 		for (const field of fields) {
-			parsedFields[removeEmojiAccents(field.name)] = removeBacktick(field.value.toLowerCase());
+			parsedFields[removeEmojiAccents(field.name)] = removeBacktick(
+				field.value.toLowerCase()
+			);
 		}
 
-		const embedStats = Object.fromEntries(Object.entries(parsedFields).filter(
-			([key,]) => statsWithoutCombinaison.includes(key)
-		))
+		const embedStats = Object.fromEntries(
+			Object.entries(parsedFields).filter(([key]) =>
+				statsWithoutCombinaison.includes(key)
+			)
+		);
 		if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
-			let combinaison: { [name: string]: number; } = {};
+			let combinaison: { [name: string]: number } = {};
 			try {
 				combinaison = evalCombinaison(combinaisonFields, embedStats);
 				//add combinaison to the embed
@@ -61,11 +82,17 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 				await reply(interaction, { content: errorMsg, ephemeral: true });
 				return;
 			}
-			await interaction.message.edit({ embeds: [userEmbed, statEmbeds], components: [registerDmgButton(ul)] });
+			await interaction.message.edit({
+				embeds: [userEmbed, statEmbeds],
+				components: [registerDmgButton(ul)],
+			});
 			await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 			return;
 		}
-		await interaction.message.edit({ embeds: [userEmbed, statEmbeds], components: [continueCancelButtons(ul)] });
+		await interaction.message.edit({
+			embeds: [userEmbed, statEmbeds],
+			components: [continueCancelButtons(ul)],
+		});
 		await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 		return;
 	} catch (error) {
@@ -76,26 +103,37 @@ export async function embedStatistiques(interaction: ModalSubmitInteraction, tem
 
 /**
  * Modal to display the statistics when adding a new user
- * Will display the statistics that are not already set 
+ * Will display the statistics that are not already set
  * 5 statistics per page
  * @param interaction {ButtonInteraction}
  * @param template {StatisticalTemplate}
  * @param stats {string[]}
  * @param page {number}
  */
-export async function showStatistiqueModal(interaction: ButtonInteraction, template: StatisticalTemplate, stats?: string[], page = 1) {
+export async function showStatistiqueModal(
+	interaction: ButtonInteraction,
+	template: StatisticalTemplate,
+	stats?: string[],
+	page = 1
+) {
 	if (!template.statistics) return;
 	const ul = ln(interaction.locale as Locale);
-	const statsWithoutCombinaison = Object.keys(template.statistics).filter(stat => {
-		return !template.statistics?.[stat]?.combinaison;
-	}) ?? [];
-	const nbOfPages = Math.ceil(statsWithoutCombinaison.length / 5) >= 1 ? Math.ceil(statsWithoutCombinaison.length / 5) : page;
+	const statsWithoutCombinaison =
+		Object.keys(template.statistics).filter((stat) => {
+			return !template.statistics?.[stat]?.combinaison;
+		}) ?? [];
+	const nbOfPages =
+		Math.ceil(statsWithoutCombinaison.length / 5) >= 1
+			? Math.ceil(statsWithoutCombinaison.length / 5)
+			: page;
 	const modal = new ModalBuilder()
 		.setCustomId(`page${page}`)
 		.setTitle(ul("modals.steps", { page, max: nbOfPages + 1 }));
 	let statToDisplay = statsWithoutCombinaison;
 	if (stats && stats.length > 0) {
-		statToDisplay = statToDisplay.filter(stat => !stats.includes(removeEmojiAccents(stat)));
+		statToDisplay = statToDisplay.filter(
+			(stat) => !stats.includes(removeEmojiAccents(stat))
+		);
 		if (statToDisplay.length === 0) {
 			//remove button
 			const button = registerDmgButton(ul);
@@ -104,7 +142,12 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 		}
 	}
 	const statsToDisplay = statToDisplay.slice(0, 4);
-	const statisticsLowerCase = Object.fromEntries(Object.entries(template.statistics).map(([key, value]) => [removeEmojiAccents(key), value]));
+	const statisticsLowerCase = Object.fromEntries(
+		Object.entries(template.statistics).map(([key, value]) => [
+			removeEmojiAccents(key),
+			value,
+		])
+	);
 	for (const stat of statsToDisplay) {
 		const cleanedName = removeEmojiAccents(stat);
 		const value = statisticsLowerCase[cleanedName];
@@ -127,4 +170,3 @@ export async function showStatistiqueModal(interaction: ButtonInteraction, templ
 	}
 	await interaction.showModal(modal);
 }
-

@@ -31,15 +31,22 @@ export async function findThread(db: Settings, channel: TextChannel, ul: Transla
 		return 0;
 	});
 	const threadName = `🎲 ${channel.name.replaceAll("-", " ")}`;
-	const thread = mostRecentThread.find(thread => thread.name.startsWith("🎲") && !thread.archived);
+	const thread = mostRecentThread.find(
+		(thread) => thread.name.startsWith("🎲") && !thread.archived
+	);
 	if (thread) {
-		const threadThatMustBeArchived = mostRecentThread.filter(tr => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id);
+		const threadThatMustBeArchived = mostRecentThread.filter(
+			(tr) => tr.name.startsWith("🎲") && !tr.archived && tr.id !== thread.id
+		);
 		for (const thread of threadThatMustBeArchived) {
 			await thread[1].setArchived(true);
 		}
 		return thread;
-	} if (mostRecentThread.find(thread => thread.name === threadName && thread.archived)) {
-		const thread = mostRecentThread.find(thread => thread.name === threadName && thread.archived);
+	}
+	if (mostRecentThread.find((thread) => thread.name === threadName && thread.archived)) {
+		const thread = mostRecentThread.find(
+			(thread) => thread.name === threadName && thread.archived
+		);
 		if (thread) {
 			thread.setArchived(false);
 			return thread;
@@ -60,9 +67,14 @@ export async function findThread(db: Settings, channel: TextChannel, ul: Transla
  * @param forum {ForumChannel}
  * @param reason {string}
  * @param thread {ThreadChannel | TextChannel}
- * @returns 
+ * @returns
  */
-export async function findForumChannel(forum: ForumChannel, thread: ThreadChannel | TextChannel, db: Settings, ul: Translation) {
+export async function findForumChannel(
+	forum: ForumChannel,
+	thread: ThreadChannel | TextChannel,
+	db: Settings,
+	ul: Translation
+) {
 	const guild = forum.guild.id;
 	const rollChannelId = db.get(guild, "rollChannel");
 	if (rollChannelId) {
@@ -85,7 +97,7 @@ export async function findForumChannel(forum: ForumChannel, thread: ThreadChanne
 		return 0;
 	});
 	const topic = thread.name;
-	const rollTopic = allForumChannel.find(thread => thread.name === `🎲 ${topic}`);
+	const rollTopic = allForumChannel.find((thread) => thread.name === `🎲 ${topic}`);
 	const tags = await setTagsForRoll(forum);
 	if (rollTopic) {
 		//archive all other roll topic
@@ -100,4 +112,3 @@ export async function findForumChannel(forum: ForumChannel, thread: ThreadChanne
 		appliedTags: [tags.id as string],
 	});
 }
-

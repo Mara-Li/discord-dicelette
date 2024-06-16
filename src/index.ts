@@ -2,7 +2,12 @@ import { log } from "@console";
 import interaction from "@events/interaction";
 import join from "@events/join";
 import MESSAGE_CREATE from "@events/message_create";
-import { DELETE_CHANNEL, DELETE_MESSAGE, DELETE_THREAD, ON_KICK } from "@events/on_delete";
+import {
+	DELETE_CHANNEL,
+	DELETE_MESSAGE,
+	DELETE_THREAD,
+	ON_KICK,
+} from "@events/on_delete";
 import ready from "@events/ready";
 import type { GuildData } from "@interface";
 import { Client, type ClientOptions, GatewayIntentBits, Partials } from "discord.js";
@@ -30,12 +35,12 @@ export class EClient extends Client {
 			name: "settings",
 			fetchAll: false,
 			autoFetch: true,
-			cloneLevel: "deep"
+			cloneLevel: "deep",
 		});
 	}
 }
 
-export const ALL_TRANSLATION_KEYS = Object.keys(flattenJson(resources.en.translation))
+export const ALL_TRANSLATION_KEYS = Object.keys(flattenJson(resources.en.translation));
 
 export const client = new EClient({
 	intents: [
@@ -44,11 +49,7 @@ export const client = new EClient({
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMembers,
 	],
-	partials: [
-		Partials.Channel,
-		Partials.GuildMember,
-		Partials.User
-	],
+	partials: [Partials.Channel, Partials.GuildMember, Partials.User],
 });
 
 export const VERSION = pkg.version ?? "0.0.0";
@@ -64,8 +65,7 @@ try {
 	DELETE_MESSAGE(client);
 	DELETE_CHANNEL(client);
 	DELETE_THREAD(client);
-}
-catch (error) {
+} catch (error) {
 	console.error(error);
 }
 

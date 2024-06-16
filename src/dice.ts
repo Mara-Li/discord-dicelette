@@ -5,13 +5,21 @@ import { evaluate } from "mathjs";
 /**
  * Parse the result of the dice to be readable
  * @param {Resultat} output
- * @param {Translation} ul 
- * @param {failure: number | undefined, success: number | undefined} critical 
+ * @param {Translation} ul
+ * @param {failure: number | undefined, success: number | undefined} critical
  */
-export function parseResult(output: Resultat, ul: Translation, critical?: { failure?: number, success?: number }) {
+export function parseResult(
+	output: Resultat,
+	ul: Translation,
+	critical?: { failure?: number; success?: number }
+) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
-	let msgSuccess = `${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\d+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
+	let msgSuccess = `${output.result
+		.replaceAll(";", "\n")
+		.replaceAll(":", " ⟶")
+		.replaceAll(/ = (\d+)/g, " = ` $1 `")
+		.replaceAll("*", "\\*")}`;
 	const messageResult = output.result.split(";");
 	let succ = "";
 	if (output.compare) {
@@ -24,7 +32,9 @@ export function parseResult(output: Resultat, ul: Translation, critical?: { fail
 				total = Number.parseInt(tot[1], 10);
 			}
 
-			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`) ? `**${ul("roll.success")}**` : `**${ul("roll.failure")}**`;
+			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`)
+				? `**${ul("roll.success")}**`
+				: `**${ul("roll.failure")}**`;
 			const naturalDice = r.matchAll(/\[(\d+)\]/gi);
 			for (const dice of naturalDice) {
 				natural.push(Number.parseInt(dice[1], 10));
@@ -36,29 +46,51 @@ export function parseResult(output: Resultat, ul: Translation, critical?: { fail
 					succ = `**${ul("roll.critical.success")}**`;
 				}
 			}
-			const totSucc = output.compare ? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\`` : `= \`${total}\``;
-			msgSuccess += `\n  ${succ} — ${r.replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, totSucc).replaceAll("*", "\\*")}`;
+			const totSucc = output.compare
+				? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\``
+				: `= \`${total}\``;
+			msgSuccess += `\n  ${succ} — ${r
+				.replaceAll(":", " ⟶")
+				.replaceAll(/ = (\S+)/g, totSucc)
+				.replaceAll("*", "\\*")}`;
 			total = 0;
 		}
 	} else {
-		msgSuccess = `  ${output.result.replaceAll(";", "\n").replaceAll(":", " ⟶").replaceAll(/ = (\S+)/g, " = ` $1 `").replaceAll("*", "\\*")}`;
+		msgSuccess = `  ${output.result
+			.replaceAll(";", "\n")
+			.replaceAll(":", " ⟶")
+			.replaceAll(/ = (\S+)/g, " = ` $1 `")
+			.replaceAll("*", "\\*")}`;
 	}
-	const comment = output.comment ? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*` : "";
+	const comment = output.comment
+		? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*`
+		: "";
 	return `${comment}${msgSuccess}`;
 }
 
 /**
  * Replace the compare sign as it will invert the result for a better reading
  * As the comparaison is after the total (like 20>10)
- * @param {Compare} compare 
+ * @param {Compare} compare
  * @param {number} total
  */
-function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "≤" | "=" | "!=" | "==" | "" {
+function goodCompareSign(
+	compare: Compare,
+	total: number
+): "<" | ">" | "≥" | "≤" | "=" | "!=" | "==" | "" {
 	//as the comparaison value is AFTER the total, we need to invert the sign to have a good comparaison string
 	const { sign, value } = compare;
 	const success = evaluate(`${total} ${sign} ${value}`);
 	if (success) {
-		return sign.replace(">=", "≥").replace("<=", "≤") as "<" | ">" | "≥" | "≤" | "=" | "" | "!=" | "==";
+		return sign.replace(">=", "≥").replace("<=", "≤") as
+			| "<"
+			| ">"
+			| "≥"
+			| "≤"
+			| "="
+			| ""
+			| "!="
+			| "==";
 	}
 	switch (sign) {
 		case "<":
@@ -79,4 +111,3 @@ function goodCompareSign(compare: Compare, total: number): "<" | ">" | "≥" | "
 			return "";
 	}
 }
-

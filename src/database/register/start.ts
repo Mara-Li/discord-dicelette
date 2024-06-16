@@ -6,8 +6,20 @@ import { embedStatistiques, showStatistiqueModal } from "@stats/add";
 import { removeEmojiAccents, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { getEmbeds, parseEmbedFields } from "@utils/parse";
-import { ActionRowBuilder, type ButtonInteraction, type Embed, EmbedBuilder, type Locale, type ModalActionRowComponentBuilder, ModalBuilder, type ModalSubmitInteraction, PermissionsBitField, TextInputBuilder, TextInputStyle, type User } from "discord.js";
-
+import {
+	ActionRowBuilder,
+	type ButtonInteraction,
+	type Embed,
+	EmbedBuilder,
+	type Locale,
+	type ModalActionRowComponentBuilder,
+	ModalBuilder,
+	type ModalSubmitInteraction,
+	PermissionsBitField,
+	TextInputBuilder,
+	TextInputStyle,
+	type User,
+} from "discord.js";
 
 /**
  * Interaction to continue to the next page of the statistics when registering a new user
@@ -15,21 +27,34 @@ import { ActionRowBuilder, type ButtonInteraction, type Embed, EmbedBuilder, typ
  * @param dbTemplate {StatisticalTemplate}
  * @param ul {Translation}
  * @param interactionUser {User}
- * @returns 
+ * @returns
  */
-export async function continuePage(interaction: ButtonInteraction, dbTemplate: StatisticalTemplate, ul: Translation, interactionUser: User) {
-	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+export async function continuePage(
+	interaction: ButtonInteraction,
+	dbTemplate: StatisticalTemplate,
+	ul: Translation,
+	interactionUser: User
+) {
+	const isModerator = interaction.guild?.members.cache
+		.get(interactionUser.id)
+		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	if (!isModerator) {
 		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 		return;
 	}
-	const page = Number.isNaN(Number.parseInt(interaction.customId.replace("page", ""), 10)) ? 1 : Number.parseInt(interaction.customId.replace("page", ""), 10);
+	const page = Number.isNaN(Number.parseInt(interaction.customId.replace("page", ""), 10))
+		? 1
+		: Number.parseInt(interaction.customId.replace("page", ""), 10);
 	const embed = getEmbeds(ul, interaction.message, "user");
 	if (!embed || !dbTemplate.statistics) return;
 	const statsEmbed = getEmbeds(ul, interaction.message, "stats") ?? new EmbedBuilder();
-	const allTemplateStat = Object.keys(dbTemplate.statistics).map(stat => removeEmojiAccents(stat));
+	const allTemplateStat = Object.keys(dbTemplate.statistics).map((stat) =>
+		removeEmojiAccents(stat)
+	);
 
-	const statsAlreadySet = Object.keys(parseEmbedFields(statsEmbed.toJSON() as Embed)).filter(stat => allTemplateStat.includes(removeEmojiAccents(stat))).map(stat => removeEmojiAccents(stat));
+	const statsAlreadySet = Object.keys(parseEmbedFields(statsEmbed.toJSON() as Embed))
+		.filter((stat) => allTemplateStat.includes(removeEmojiAccents(stat)))
+		.map((stat) => removeEmojiAccents(stat));
 	if (statsAlreadySet.length === allTemplateStat.length) {
 		await reply(interaction, { content: ul("modals.alreadySet"), ephemeral: true });
 		return;
@@ -43,7 +68,11 @@ export async function continuePage(interaction: ButtonInteraction, dbTemplate: S
  * @param interaction {ModalSubmitInteraction}
  * @param ul {Translation}
  */
-export async function pageNumber(interaction: ModalSubmitInteraction, ul: Translation, db: Settings) {
+export async function pageNumber(
+	interaction: ModalSubmitInteraction,
+	ul: Translation,
+	db: Settings
+) {
 	const pageNumber = Number.parseInt(interaction.customId.replace("page", ""), 10);
 	if (Number.isNaN(pageNumber)) return;
 	const template = await getTemplateWithDB(interaction, db);
@@ -58,7 +87,8 @@ export async function pageNumber(interaction: ModalSubmitInteraction, ul: Transl
  * @param interaction {ModalSubmitInteraction}
  */
 export async function recordFirstPage(interaction: ModalSubmitInteraction, db: Settings) {
-	if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased()) return;
+	if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased())
+		return;
 	const template = await getTemplateWithDB(interaction, db);
 	if (!template) return;
 	await createEmbedFirstPage(interaction, template, db);
@@ -68,7 +98,11 @@ export async function recordFirstPage(interaction: ModalSubmitInteraction, db: S
  * @param interaction {ButtonInteraction}
  * @param template {StatisticalTemplate}
  */
-export async function showFirstPageModal(interaction: ButtonInteraction, template: StatisticalTemplate, havePrivate?: boolean) {
+export async function showFirstPageModal(
+	interaction: ButtonInteraction,
+	template: StatisticalTemplate,
+	havePrivate?: boolean
+) {
 	let nbOfPages = 1;
 	if (template.statistics) {
 		const nbOfStatistique = Object.keys(template.statistics).length;
@@ -80,53 +114,58 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
 	const modal = new ModalBuilder()
 		.setCustomId("firstPage")
 		.setTitle(ul("modals.firstPage", { page: nbOfPages + 1 }));
-	const charNameInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("charName")
-			.setLabel(ul("modals.charName.name"))
-			.setPlaceholder(ul("modals.charName.description"))
-			.setRequired(template.charName || false)
-			.setValue("")
-			.setStyle(TextInputStyle.Short)
-	);
-	const userIdInputs = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("userID")
-			.setLabel(ul("modals.user.name"))
-			.setPlaceholder(ul("modals.user.description"))
-			.setRequired(true)
-			.setValue(interaction.user.username ?? interaction.user.id)
-			.setStyle(TextInputStyle.Short)
-	);
-	const avatarInputs = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("avatar")
-			.setLabel(ul("modals.avatar.name"))
-			.setPlaceholder(ul("modals.avatar.description"))
-			.setRequired(false)
-			.setValue("")
-			.setStyle(TextInputStyle.Short)
-	);
-	const channelIdInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("channelId")
-			.setLabel(ul("modals.channel.name"))
-			.setPlaceholder(ul("modals.channel.description"))
-			.setRequired(false)
-			.setValue("")
-			.setStyle(TextInputStyle.Short)
-	);
-	const components = [charNameInput, userIdInputs, avatarInputs, channelIdInput];
-	if (havePrivate) {
-		const privateInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+	const charNameInput =
+		new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 			new TextInputBuilder()
-				.setCustomId("private")
-				.setLabel(ul("modals.private.name"))
-				.setPlaceholder(ul("modals.private.description"))
+				.setCustomId("charName")
+				.setLabel(ul("modals.charName.name"))
+				.setPlaceholder(ul("modals.charName.description"))
+				.setRequired(template.charName || false)
+				.setValue("")
+				.setStyle(TextInputStyle.Short)
+		);
+	const userIdInputs =
+		new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+			new TextInputBuilder()
+				.setCustomId("userID")
+				.setLabel(ul("modals.user.name"))
+				.setPlaceholder(ul("modals.user.description"))
+				.setRequired(true)
+				.setValue(interaction.user.username ?? interaction.user.id)
+				.setStyle(TextInputStyle.Short)
+		);
+	const avatarInputs =
+		new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+			new TextInputBuilder()
+				.setCustomId("avatar")
+				.setLabel(ul("modals.avatar.name"))
+				.setPlaceholder(ul("modals.avatar.description"))
 				.setRequired(false)
 				.setValue("")
 				.setStyle(TextInputStyle.Short)
 		);
+	const channelIdInput =
+		new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+			new TextInputBuilder()
+				.setCustomId("channelId")
+				.setLabel(ul("modals.channel.name"))
+				.setPlaceholder(ul("modals.channel.description"))
+				.setRequired(false)
+				.setValue("")
+				.setStyle(TextInputStyle.Short)
+		);
+	const components = [charNameInput, userIdInputs, avatarInputs, channelIdInput];
+	if (havePrivate) {
+		const privateInput =
+			new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+				new TextInputBuilder()
+					.setCustomId("private")
+					.setLabel(ul("modals.private.name"))
+					.setPlaceholder(ul("modals.private.description"))
+					.setRequired(false)
+					.setValue("")
+					.setStyle(TextInputStyle.Short)
+			);
 		components.push(privateInput);
 	}
 	modal.addComponents(components);
@@ -138,11 +177,16 @@ export async function showFirstPageModal(interaction: ButtonInteraction, templat
  * @param interaction {ModalSubmitInteraction}
  * @param ul {Translation}
  */
-export async function startRegisterUser(interaction: ButtonInteraction, template: StatisticalTemplate, interactionUser: User, ul: Translation, havePrivate?: boolean) {
-	const isModerator = interaction.guild?.members.cache.get(interactionUser.id)?.permissions.has(PermissionsBitField.Flags.ManageRoles);
-	if (isModerator)
-		await showFirstPageModal(interaction, template, havePrivate);
-	else
-		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
+export async function startRegisterUser(
+	interaction: ButtonInteraction,
+	template: StatisticalTemplate,
+	interactionUser: User,
+	ul: Translation,
+	havePrivate?: boolean
+) {
+	const isModerator = interaction.guild?.members.cache
+		.get(interactionUser.id)
+		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+	if (isModerator) await showFirstPageModal(interaction, template, havePrivate);
+	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }
-

@@ -12,7 +12,8 @@ import {
 	type Message,
 	SlashCommandBuilder,
 	TextChannel,
-	userMention} from "discord.js";
+	userMention,
+} from "discord.js";
 import i18next from "i18next";
 import moment from "moment";
 
@@ -31,7 +32,7 @@ export const diceRoll = {
 		.setNameLocalizations(cmdLn("roll.name"))
 		.setDescription(t("roll.description"))
 		.setDescriptionLocalizations(cmdLn("roll.description"))
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("roll.option.name"))
 				.setNameLocalizations(cmdLn("roll.option.name"))
@@ -45,17 +46,26 @@ export const diceRoll = {
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
 		const dice = option.getString(t("roll.option.name"), true);
-		await rollWithInteraction(interaction, dice, channel, client.settings);
+		await rollWithInteraction(
+			interaction,
+			dice,
+			channel,
+			client.settings,
+			undefined,
+			undefined,
+			undefined,
+			undefined
+		);
 	},
 };
 
 export const newScene = {
-	data : new SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName(t("scene.name"))
 		.setDescription(t("scene.description"))
 		.setDescriptionLocalizations(cmdLn("scene.description"))
 		.setNameLocalizations(cmdLn("scene.name"))
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("scene.option.name"))
 				.setNameLocalizations(cmdLn("scene.option.name"))
@@ -63,7 +73,7 @@ export const newScene = {
 				.setDescriptionLocalizations(cmdLn("scene.option.description"))
 				.setRequired(false)
 		)
-		.addBooleanOption(option =>
+		.addBooleanOption((option) =>
 			option
 				.setName(t("scene.time.name"))
 				.setNameLocalizations(cmdLn("scene.time.name"))
@@ -82,12 +92,23 @@ export const newScene = {
 		const bubble = option.getBoolean(t("scene.time.name"));
 		const ul = ln(interaction.locale as Locale);
 		if (!scene && !bubble) {
-			await reply(interaction,{ content: ul("scene.noScene"), ephemeral: true });
+			await reply(interaction, { content: ul("scene.noScene"), ephemeral: true });
 			return;
 		}
 		//archive old threads
-		if (channel instanceof TextChannel || channel.parent instanceof ForumChannel || !channel.name.startsWith("🎲")) {
-			const threads = channel instanceof TextChannel ? channel.threads.cache.filter(thread => thread.name.startsWith("🎲") && !thread.archived) : (channel.parent as ForumChannel).threads.cache.filter(thread => thread.name === `🎲 ${scene}`&& !thread.archived);
+		if (
+			channel instanceof TextChannel ||
+			channel.parent instanceof ForumChannel ||
+			!channel.name.startsWith("🎲")
+		) {
+			const threads =
+				channel instanceof TextChannel
+					? channel.threads.cache.filter(
+							(thread) => thread.name.startsWith("🎲") && !thread.archived
+						)
+					: (channel.parent as ForumChannel).threads.cache.filter(
+							(thread) => thread.name === `🎲 ${scene}` && !thread.archived
+						);
 			for (const thread of threads) {
 				await thread[1].setArchived(true);
 			}
@@ -99,27 +120,31 @@ export const newScene = {
 			if (threadName.includes("{{date}}"))
 				threadName = threadName.replace("{{date}}", moment().format("DD-MM-YYYY"));
 
-			const newThread = channel instanceof TextChannel ? await channel.threads.create({
-				name: threadName,
-				reason: ul("scene.reason"),
-			}) : await (channel.parent as ForumChannel).threads.create({
-				name: threadName,
-				message: {content: ul("scene.reason")},
-				appliedTags: [(await setTagsForRoll(channel.parent as ForumChannel)).id as string]
-			});
+			const newThread =
+				channel instanceof TextChannel
+					? await channel.threads.create({
+							name: threadName,
+							reason: ul("scene.reason"),
+						})
+					: await (channel.parent as ForumChannel).threads.create({
+							name: threadName,
+							message: { content: ul("scene.reason") },
+							appliedTags: [
+								(await setTagsForRoll(channel.parent as ForumChannel)).id as string,
+							],
+						});
 
 			const threadMention = channelMention(newThread.id);
-			const msgReply = await reply(interaction,{ content: ul("scene.interaction", {scene: threadMention}) });
+			const msgReply = await reply(interaction, {
+				content: ul("scene.interaction", { scene: threadMention }),
+			});
 			const time = client.settings.get(interaction.guild.id, "deleteAfter") ?? 180000;
 			deleteAfter(msgReply, time);
-			const rollID = allCommands.findKey(command => command.name === "roll");
+			const rollID = allCommands.findKey((command) => command.name === "roll");
 			const msgToEdit = await newThread.send("_ _");
 			const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${ul("scene.underscore")} ${scene}\n*roll: </roll:${rollID}>*`;
 			await msgToEdit.edit(msg);
 		}
 		return;
-	}
+	},
 };
-
-
-
