@@ -77,6 +77,11 @@ export const bulkAdd = {
 			interaction,
 			client.settings.has(interaction.guild!.id, "privateChannel")
 		);
+		const defaultChannel = client.settings.get(interaction.guild!.id, "managerId");
+		const privateChannel = client.settings.get(interaction.guild!.id, "privateChannel");
+		if (!defaultChannel) {
+			return reply(interaction, { content: ul("error.noDefaultChannel") });
+		}
 		const guildMembers = await interaction.guild?.members.fetch();
 		for (const [user, data] of Object.entries(members)) {
 			//we already parsed the user, so the cache should be up to date
@@ -163,7 +168,8 @@ export const bulkAdd = {
 					ul,
 					{ stats: !!statsEmbed, dice: !!diceEmbed, template: !!templateEmbed },
 					client.settings,
-					char.channel
+					char.channel ??
+						(char.private && privateChannel ? privateChannel : defaultChannel)
 				);
 				addAutoRole(interaction, member.id, !!diceEmbed, !!statsEmbed, client.settings);
 				await reply(interaction, {

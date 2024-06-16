@@ -3,13 +3,16 @@ import { ensureEmbed, getEmbeds } from "@utils/parse";
 import {
 	type ButtonInteraction,
 	EmbedBuilder,
+	type Locale,
 	type Message,
 	type ModalSubmitInteraction,
+	PermissionsBitField,
 	TextChannel,
 	ThreadChannel,
+	type User,
 } from "discord.js";
-import { findKeyFromTranslation } from "../localizations";
-import { title } from "../utils";
+import { findKeyFromTranslation, ln } from "../localizations";
+import { reply, title } from "../utils";
 import removeAccents from "remove-accents";
 
 /**
@@ -120,18 +123,58 @@ export function verifyIfEmbedInDB(
 		return char.charName == null && userName == null;
 	});
 	if (!charName) return { isInDb: false };
-	let defaultChannel = db.get(message.guild!.id, "managerId");
-	if (charName.isPrivate) defaultChannel = db.get(message.guild!.id, "privateChannel");
-	const ids: PersonnageIds = Array.isArray(charName.messageId)
-		? { channelId: charName.messageId[1], messageId: charName.messageId[0] }
-		: { messageId: charName.messageId };
-	if (ids.channelId)
-		return {
-			isInDb: message.channel.id === ids.channelId && message.id === ids.messageId,
-			coord: ids,
-		};
-	return {
-		isInDb: message.channelId === defaultChannel && message.id === ids.messageId,
-		coord: { messageId: ids.messageId, channelId: defaultChannel },
+	const ids: PersonnageIds = {
+		channelId: charName.messageId[1],
+		messageId: charName.messageId[0],
 	};
+	return {
+		isInDb: message.channel.id === ids.channelId && message.id === ids.messageId,
+		coord: ids,
+	};
+}
+
+export async function allowEdit(
+	interaction: ButtonInteraction,
+	db: Settings,
+	interactionUser: User
+) {
+	const ul = ln(interaction.locale as Locale);
+	const embed = ensureEmbed(interaction.message);
+	const user = embed.fields
+		.find((field) => findKeyFromTranslation(field.name) === "common.user")
+		?.value.replace("<@", "")
+		.replace(">", "");
+	const isSameUser = user === interactionUser.id;
+	const isModerator = interaction.guild?.members.cache
+		.get(interactionUser.id)
+		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+	const first = interaction.customId.includes("first");
+	const userName = embed.fields.find((field) =>
+		["common.character", "common.charName"].includes(findKeyFromTranslation(field.name))
+	);
+	const userNameValue =
+		userName && findKeyFromTranslation(userName?.value) === "common.noSet"
+			? undefined
+			: userName?.value;
+	if (!first && user) {
+		const { isInDb, coord } = verifyIfEmbedInDB(
+			db,
+			interaction.message,
+			user,
+			userNameValue
+		);
+		if (!isInDb) {
+			const urlNew = `https://discord.com/channels/${interaction.guild!.id}/${coord?.channelId}/${coord?.messageId}`;
+			await reply(interaction, {
+				content: ul("error.oldEmbed", { fiche: urlNew }),
+				ephemeral: true,
+			});
+			//delete the message
+			await interaction.message.delete();
+			return false;
+		}
+	}
+	if (isSameUser || isModerator) return true;
+	await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
+	return false;
 }

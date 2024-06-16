@@ -28,10 +28,9 @@ export const LINKS = {
 } as const;
 
 /**
- * - If is an array: `[messageId, channelId]`
- * - If is a string: `messageId` only
+ * `[messageId, channelId]`
  */
-export type UserMessageId = [string, string] | string;
+export type UserMessageId = [string, string];
 export type Settings = Enmap<string, GuildData, unknown>;
 export type Translation = TFunction<"translation", undefined>;
 export type DiscordChannel =
@@ -40,7 +39,7 @@ export type DiscordChannel =
 	| TextChannel
 	| NewsChannel
 	| undefined;
-export type PersonnageIds = { channelId?: string; messageId: string };
+export type PersonnageIds = { channelId: string; messageId: string };
 export type UserRegistration = {
 	userID: string;
 	isPrivate?: boolean;
@@ -57,6 +56,7 @@ export interface GuildData {
 	deleteAfter?: number;
 	timestamp?: boolean;
 	privateChannel?: string;
+	converted?: boolean;
 	autoRole?: {
 		dice?: string;
 		stats?: string;

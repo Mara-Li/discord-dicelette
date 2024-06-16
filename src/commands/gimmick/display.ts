@@ -4,7 +4,14 @@ import type { EClient } from "@main";
 import { filterChoices, haveAccess, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
-import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, type Locale, SlashCommandBuilder } from "discord.js";
+import {
+	type AutocompleteInteraction,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	EmbedBuilder,
+	type Locale,
+	SlashCommandBuilder,
+} from "discord.js";
 import i18next from "i18next";
 import type { PersonnageIds } from "@interface";
 
@@ -17,7 +24,7 @@ export const displayUser = {
 		.setNameLocalizations(cmdLn("display.title"))
 		.setDefaultMemberPermissions(0)
 		.setDescriptionLocalizations(cmdLn("display.description"))
-		.addUserOption(option =>
+		.addUserOption((option) =>
 			option
 				.setName(t("display.userLowercase"))
 				.setNameLocalizations(cmdLn("display.userLowercase"))
@@ -25,7 +32,7 @@ export const displayUser = {
 				.setDescriptionLocalizations(cmdLn("display.user"))
 				.setRequired(false)
 		)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("common.character"))
 				.setNameLocalizations(cmdLn("common.character"))
@@ -34,20 +41,22 @@ export const displayUser = {
 				.setRequired(false)
 				.setAutocomplete(true)
 		),
-	async autocomplete(interaction: AutocompleteInteraction, client: EClient): Promise<void> {
+	async autocomplete(
+		interaction: AutocompleteInteraction,
+		client: EClient
+	): Promise<void> {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		const choices: string[] = [];
 		let userID = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
-		const privateChannel = await searchUserChannel(client.settings, interaction, ln(interaction.locale), true);
 		if (typeof userID !== "string") userID = interaction.user.id;
-		const allowed = haveAccess(interaction, privateChannel, userID);
 		if (fixed.name === t("common.character")) {
 			const guildChars = guildData.user[userID];
 			if (!guildChars) return;
 			for (const data of guildChars) {
+				const allowed = haveAccess(interaction, data.messageId[1], userID);
 				if (data.charName) {
 					if (!data.isPrivate) choices.push(data.charName);
 					else if (allowed) choices.push(data.charName);
@@ -57,7 +66,7 @@ export const displayUser = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result) ?? result, value: result }))
+			filter.map((result) => ({ name: title(result) ?? result, value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -78,12 +87,23 @@ export const displayUser = {
 			return;
 		}
 		const userData = charData[user?.id ?? interaction.user.id];
-		const managerID: PersonnageIds = Array.isArray(userData.messageId) ? { channelId: userData.messageId[1], messageId: userData.messageId[0] } : { messageId: userData.messageId };
-		const thread = await searchUserChannel(client.settings, interaction, ul, userData?.isPrivate, managerID?.channelId);
-		if (!thread)
-			return await reply(interaction, ul("error.noThread"));
+		const managerID: PersonnageIds = {
+			channelId: userData.messageId[1],
+			messageId: userData.messageId[0],
+		};
+		const thread = await searchUserChannel(
+			client.settings,
+			interaction,
+			ul,
+			managerID?.channelId
+		);
+		if (!thread) return await reply(interaction, ul("error.noThread"));
 
-		const allowHidden = haveAccess(interaction, thread, user?.id ?? interaction.user.id);
+		const allowHidden = haveAccess(
+			interaction,
+			thread.id,
+			user?.id ?? interaction.user.id
+		);
 		if (!allowHidden && charData[user?.id ?? interaction.user.id]?.isPrivate) {
 			await reply(interaction, ul("error.private"));
 			return;
@@ -101,20 +121,30 @@ export const displayUser = {
 			}
 			const displayEmbed = new EmbedBuilder()
 				.setTitle(ul("embed.display"))
-				.setThumbnail(dataUserEmbeds?.toJSON().thumbnail?.url ?? user?.displayAvatarURL() ?? interaction.user.displayAvatarURL())
+				.setThumbnail(
+					dataUserEmbeds?.toJSON().thumbnail?.url ??
+						user?.displayAvatarURL() ??
+						interaction.user.displayAvatarURL()
+				)
 				.setColor("Gold")
 				.addFields({
 					name: ul("common.user"),
 					value: `<@${user?.id ?? interaction.user.id}>`,
-					inline: true
+					inline: true,
 				})
 				.addFields({
 					name: title(ul("common.character")),
-					value: title(charData[user?.id ?? interaction.user.id].charName) ?? ul("common.noSet"),
-					inline: true
+					value:
+						title(charData[user?.id ?? interaction.user.id].charName) ??
+						ul("common.noSet"),
+					inline: true,
 				});
-			const newStatEmbed: EmbedBuilder | undefined = statsFields ? createStatsEmbed(ul).addFields(statsFields) : undefined;
-			const newDiceEmbed = diceFields ? createDiceEmbed(ul).addFields(diceFields) : undefined;
+			const newStatEmbed: EmbedBuilder | undefined = statsFields
+				? createStatsEmbed(ul).addFields(statsFields)
+				: undefined;
+			const newDiceEmbed = diceFields
+				? createDiceEmbed(ul).addFields(diceFields)
+				: undefined;
 			const displayEmbeds: EmbedBuilder[] = [displayEmbed];
 			if (newStatEmbed) displayEmbeds.push(newStatEmbed);
 			if (newDiceEmbed) displayEmbeds.push(newDiceEmbed);
@@ -123,6 +153,5 @@ export const displayUser = {
 			await reply(interaction, ul("error.noMessage"));
 			return;
 		}
-
-	}
+	},
 };

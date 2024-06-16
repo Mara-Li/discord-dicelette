@@ -2,7 +2,14 @@ import { error as err, log } from "@console";
 import type { GuildData, PersonnageIds } from "@interface";
 import type { EClient } from "@main";
 import { sendLogs } from "@utils";
-import type { AnyThreadChannel, CommandInteraction, GuildTextBasedChannel, NonThreadGuildBasedChannel, ThreadChannel, User } from "discord.js";
+import type {
+	AnyThreadChannel,
+	CommandInteraction,
+	GuildTextBasedChannel,
+	NonThreadGuildBasedChannel,
+	ThreadChannel,
+	User,
+} from "discord.js";
 import type Enmap from "enmap";
 import removeAccents from "remove-accents";
 
@@ -21,13 +28,19 @@ export const DELETE_CHANNEL = (client: EClient): void => {
 	});
 };
 
-function deleteIfChannelOrThread(db: Enmap<string, GuildData, unknown>, guildID: string, channel: NonThreadGuildBasedChannel | AnyThreadChannel<boolean>) {
+function deleteIfChannelOrThread(
+	db: Enmap<string, GuildData, unknown>,
+	guildID: string,
+	channel: NonThreadGuildBasedChannel | AnyThreadChannel<boolean>
+) {
 	const channelID = channel.id;
 	cleanUserDB(db, channel);
-	if (db.get(guildID, "templateID.channelId") === channelID) db.delete(guildID, "templateID");
+	if (db.get(guildID, "templateID.channelId") === channelID)
+		db.delete(guildID, "templateID");
 	if (db.get(guildID, "logs") === channelID) db.delete(guildID, "logs");
 	if (db.get(guildID, "managerId") === channelID) db.delete(guildID, "managerId");
-	if (db.get(guildID, "privateChannel") === channelID) db.delete(guildID, "privateChannel");
+	if (db.get(guildID, "privateChannel") === channelID)
+		db.delete(guildID, "privateChannel");
 	if (db.get(guildID, "rollChannel") === channelID) db.delete(guildID, "rollChannel");
 }
 
@@ -56,29 +69,30 @@ export const DELETE_MESSAGE = (client: EClient): void => {
 			const messageId = message.id;
 			//search channelID in database and delete it
 			const guildID = message.guild.id;
-			log(`Message ${messageId} was deleted`)
+			log(`Message ${messageId} was deleted`);
 			const channel = message.channel;
 			if (channel.isDMBased()) return;
-			if (client.settings.get(guildID, "templateID.messageId") === messageId) client.settings.delete(guildID, "templateID");
-			const defaultChannel = client.settings.get(guildID, "managerId");
-			const privateChannel = client.settings.get(guildID, "privateChannel");
-			const isDefault = defaultChannel === channel.id;
-			const isPrivate = privateChannel === channel.id;
+			if (client.settings.get(guildID, "templateID.messageId") === messageId)
+				client.settings.delete(guildID, "templateID");
+
 			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0) {
 				for (const [user, values] of Object.entries(dbUser)) {
-					log(`checking value for user ${user}`)
+					log(`checking value for user ${user}`);
 					for (const [index, value] of values.entries()) {
-						log(`checking character ${value.charName}`, value.messageId, messageId, channel.id);
-						const persoId: PersonnageIds = Array.isArray(value.messageId) ? { messageId: value.messageId[0], channelId: value.messageId[1] } : { messageId: value.messageId };
+						log(
+							`checking character ${value.charName}`,
+							value.messageId,
+							messageId,
+							channel.id
+						);
+						const persoId: PersonnageIds = {
+							messageId: value.messageId[0],
+							channelId: value.messageId[1],
+						};
 						if (persoId.messageId === messageId && persoId.channelId === channel.id) {
-							log(`Deleted character ${value.charName} for user ${user}`)
+							log(`Deleted character ${value.charName} for user ${user}`);
 							values.splice(index, 1);
-						}
-						if (persoId.messageId === messageId) {
-							log(`Deleted character ${value.charName} for user ${user}`)
-							if (isPrivate && value.isPrivate) { values.splice(index, 1) };
-							if (isDefault && !value.isPrivate) values.splice(index, 1);
 						}
 					}
 					if (values.length === 0) delete dbUser[user];
@@ -103,7 +117,10 @@ export const ON_KICK = (client: EClient): void => {
 	});
 };
 
-function cleanUserDB(guildDB: Enmap<string, GuildData, unknown>, thread: GuildTextBasedChannel | ThreadChannel | NonThreadGuildBasedChannel) {
+function cleanUserDB(
+	guildDB: Enmap<string, GuildData, unknown>,
+	thread: GuildTextBasedChannel | ThreadChannel | NonThreadGuildBasedChannel
+) {
 	const dbUser = guildDB.get(thread.guild.id, "user");
 	if (!dbUser) return;
 	if (!thread.isTextBased()) return;
@@ -114,31 +131,32 @@ function cleanUserDB(guildDB: Enmap<string, GuildData, unknown>, thread: GuildTe
 
 	for (const [user, data] of Object.entries(dbUser)) {
 		log(`Checking user ${user}`);
-		const filterChar = data.filter(char => {
-			if (Array.isArray(char.messageId)) {
-				return char.messageId[1] !== thread.id;
-			}
-			if (isPrivate && char.isPrivate) return false;
-			if (publicDefault === thread.id) return false;
+		const filterChar = data.filter((char) => {
+			return char.messageId[1] !== thread.id;
 		});
-		log(`Deleted ${data.length - filterChar.length} characters for user ${user}`)
+		log(`Deleted ${data.length - filterChar.length} characters for user ${user}`);
 		if (filterChar.length === 0) guildDB.delete(thread.guild.id, `user.${user}`);
 		else guildDB.set(thread.guild.id, filterChar, `user.${user}`);
 	}
-
 }
 
 export function deleteUser(
 	interaction: CommandInteraction,
 	guildData: GuildData,
 	user?: User | null,
-	charName?: string,
+	charName?: string
 ) {
 	//delete the character from the database
-	const userCharIndex = guildData.user[user?.id ?? interaction.user.id].findIndex((char) => {
-		if (char.charName && charName) return removeAccents(char.charName).toLowerCase() === removeAccents(charName).toLowerCase();
-		return (charName == null && char.charName == null);
-	});
+	const userCharIndex = guildData.user[user?.id ?? interaction.user.id].findIndex(
+		(char) => {
+			if (char.charName && charName)
+				return (
+					removeAccents(char.charName).toLowerCase() ===
+					removeAccents(charName).toLowerCase()
+				);
+			return charName == null && char.charName == null;
+		}
+	);
 	if (userCharIndex === -1) {
 		return guildData;
 	}

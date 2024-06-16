@@ -1,4 +1,4 @@
-import { createStatsEmbed, getUserNameAndChar, verifyIfEmbedInDB } from "@database";
+import { allowEdit, createStatsEmbed, getUserNameAndChar } from "@database";
 import { evalOneCombinaison } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
 import {
@@ -12,7 +12,6 @@ import {
 import { editUserButtons } from "@utils/buttons";
 import { getTemplateWithDB } from "@utils/db";
 import {
-	ensureEmbed,
 	getEmbeds,
 	getEmbedsList,
 	parseEmbedFields,
@@ -27,13 +26,11 @@ import {
 	type ModalActionRowComponentBuilder,
 	ModalBuilder,
 	type ModalSubmitInteraction,
-	PermissionsBitField,
 	TextInputBuilder,
 	TextInputStyle,
 	type User,
 	userMention,
 } from "discord.js";
-import { findKeyFromTranslation } from "../../localizations";
 
 /**
  * Validate the stats and edit the embed with the new stats for editing
@@ -250,40 +247,6 @@ export async function triggerEditStats(
 	interactionUser: User,
 	db: Settings
 ) {
-	const embed = ensureEmbed(interaction.message);
-	const user = embed.fields
-		.find((field) => field.name === ul("common.user"))
-		?.value.replace("<@", "")
-		.replace(">", "");
-	const isSameUser = user === interactionUser.id;
-	const userName = embed.fields.find((field) =>
-		["common.character", "common.charName"].includes(findKeyFromTranslation(field.name))
-	);
-	const userNameValue =
-		userName && findKeyFromTranslation(userName?.value) === "common.noSet"
-			? undefined
-			: userName?.value;
-	if (user) {
-		const { isInDb, coord } = verifyIfEmbedInDB(
-			db,
-			interaction.message,
-			user,
-			userNameValue
-		);
-		if (!isInDb) {
-			const urlNew = `https://discord.com/channels/${interaction.guild!.id}/${coord?.channelId}/${coord?.messageId}`;
-			await reply(interaction, {
-				content: ul("error.oldEmbed", { fiche: urlNew }),
-				ephemeral: true,
-			});
-			//delete the message
-			await interaction.message.delete();
-			return;
-		}
-	}
-	const isModerator = interaction.guild?.members.cache
-		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
-	if (isSameUser || isModerator) showEditorStats(interaction, ul, db);
-	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
+	if (await allowEdit(interaction, db, interactionUser))
+		showEditorStats(interaction, ul, db);
 }

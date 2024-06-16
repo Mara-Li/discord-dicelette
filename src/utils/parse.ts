@@ -4,11 +4,19 @@ import type { StatisticalTemplate } from "@dicelette/core";
 import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findKeyFromTranslation, ln } from "@localization";
 import { removeEmojiAccents, searchUserChannel } from "@utils";
-import { type ButtonInteraction, type CommandInteraction, type Embed, EmbedBuilder, type Locale, type Message, type ModalSubmitInteraction } from "discord.js";
+import {
+	type ButtonInteraction,
+	type CommandInteraction,
+	type Embed,
+	EmbedBuilder,
+	type Locale,
+	type Message,
+	type ModalSubmitInteraction,
+} from "discord.js";
 
 /**
  * Ensure the embeds are present
- * @param {Message} message 
+ * @param {Message} message
  */
 export function ensureEmbed(message?: Message) {
 	const oldEmbeds = message?.embeds[0];
@@ -33,7 +41,12 @@ export function parseEmbed(interaction: ButtonInteraction | ModalSubmitInteracti
  * @param diceEmbed {EmbedBuilder}
  * @param templateEmbed {EmbedBuilder}
  */
-export function createEmbedsList(userDataEmbed: EmbedBuilder, statsEmbed?: EmbedBuilder, diceEmbed?: EmbedBuilder, templateEmbed?: EmbedBuilder) {
+export function createEmbedsList(
+	userDataEmbed: EmbedBuilder,
+	statsEmbed?: EmbedBuilder,
+	diceEmbed?: EmbedBuilder,
+	templateEmbed?: EmbedBuilder
+) {
 	const allEmbeds = [userDataEmbed];
 	if (statsEmbed) allEmbeds.push(statsEmbed);
 	if (diceEmbed) allEmbeds.push(diceEmbed);
@@ -47,20 +60,39 @@ export function createEmbedsList(userDataEmbed: EmbedBuilder, statsEmbed?: Embed
  * @param ul {Translation}
  * @param embedToReplace {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}
  */
-export function getEmbedsList(ul: Translation, embedToReplace: { which: "user" | "stats" | "damage" | "template", embed: EmbedBuilder }, message?: Message) {
-	const userDataEmbed = embedToReplace.which === "user" ? embedToReplace.embed : getEmbeds(ul, message, "user");
+export function getEmbedsList(
+	ul: Translation,
+	embedToReplace: {
+		which: "user" | "stats" | "damage" | "template";
+		embed: EmbedBuilder;
+	},
+	message?: Message
+) {
+	const userDataEmbed =
+		embedToReplace.which === "user"
+			? embedToReplace.embed
+			: getEmbeds(ul, message, "user");
 	if (!userDataEmbed) throw new Error("[error.noEmbed]");
-	const statsEmbed = embedToReplace.which === "stats" ? embedToReplace.embed : getEmbeds(ul, message, "stats");
-	const diceEmbed = embedToReplace.which === "damage" ? embedToReplace.embed : getEmbeds(ul, message, "damage");
-	const templateEmbed = embedToReplace.which === "template" ? embedToReplace.embed : getEmbeds(ul, message, "template");
+	const statsEmbed =
+		embedToReplace.which === "stats"
+			? embedToReplace.embed
+			: getEmbeds(ul, message, "stats");
+	const diceEmbed =
+		embedToReplace.which === "damage"
+			? embedToReplace.embed
+			: getEmbeds(ul, message, "damage");
+	const templateEmbed =
+		embedToReplace.which === "template"
+			? embedToReplace.embed
+			: getEmbeds(ul, message, "template");
 	return {
 		list: createEmbedsList(userDataEmbed, statsEmbed, diceEmbed, templateEmbed),
 		exists: {
 			user: !!userDataEmbed,
 			stats: !!statsEmbed,
 			damage: !!diceEmbed,
-			template: !!templateEmbed
-		}
+			template: !!templateEmbed,
+		},
 	};
 }
 
@@ -69,9 +101,13 @@ export function getEmbedsList(ul: Translation, embedToReplace: { which: "user" |
  * @param embeds {EmbedBuilder[]}
  * @param which {"user" | "stats" | "damage" | "template"}
  * @param ul {Translation}
-*/
-export function removeEmbedsFromList(embeds: EmbedBuilder[], which: "user" | "stats" | "damage" | "template", ul: Translation) {
-	return embeds.filter(embed => {
+ */
+export function removeEmbedsFromList(
+	embeds: EmbedBuilder[],
+	which: "user" | "stats" | "damage" | "template",
+	ul: Translation
+) {
+	return embeds.filter((embed) => {
 		if (which === "user") return embed.toJSON().title !== ul("embed.user");
 		if (which === "stats") return embed.toJSON().title !== ul("embed.stats");
 		if (which === "damage") return embed.toJSON().title !== ul("embed.dice");
@@ -89,7 +125,8 @@ export function parseEmbedFields(embed: Embed): { [name: string]: string } {
 	if (!fields) return {};
 	const parsedFields: { [name: string]: string } = {};
 	for (const field of fields) {
-		parsedFields[findKeyFromTranslation(removeBacktick(field.name))] = findKeyFromTranslation(removeBacktick(field.value));
+		parsedFields[findKeyFromTranslation(removeBacktick(field.name))] =
+			findKeyFromTranslation(removeBacktick(field.value));
 	}
 	return parsedFields;
 }
@@ -99,20 +136,30 @@ export function parseEmbedFields(embed: Embed): { [name: string]: string } {
  * @param message {Message}
  * @param which {"user" | "stats" | "damage" | "template"}
  */
-export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "stats" | "damage" | "template") {
+export function getEmbeds(
+	ul: Translation,
+	message?: Message,
+	which?: "user" | "stats" | "damage" | "template"
+) {
 	const allEmbeds = message?.embeds;
 	if (!allEmbeds) throw new Error(ul("error.noEmbed"));
 	for (const embed of allEmbeds) {
 		const embedJSON = embed.toJSON();
 		const titleKey = findKeyFromTranslation(embed.title ?? "");
 		const userKeys = ["embed.user", "embed.add", "embed.old"];
-		if (userKeys.includes(titleKey) && which === "user") return new EmbedBuilder(embedJSON);
-		if ((titleKey === "embed.stats" || titleKey === "common.statistic") && which === "stats") return new EmbedBuilder(embedJSON);
-		if (titleKey === "embed.dice" && which === "damage") return new EmbedBuilder(embedJSON);
-		if (titleKey === "embed.template" && which === "template") return new EmbedBuilder(embedJSON);
+		if (userKeys.includes(titleKey) && which === "user")
+			return new EmbedBuilder(embedJSON);
+		if (
+			(titleKey === "embed.stats" || titleKey === "common.statistic") &&
+			which === "stats"
+		)
+			return new EmbedBuilder(embedJSON);
+		if (titleKey === "embed.dice" && which === "damage")
+			return new EmbedBuilder(embedJSON);
+		if (titleKey === "embed.template" && which === "template")
+			return new EmbedBuilder(embedJSON);
 	}
 }
-
 
 /**
  * Update the template of existing user when the template is edited by moderation
@@ -121,13 +168,26 @@ export function getEmbeds(ul: Translation, message?: Message, which?: "user" | "
  * @param ul {Translation}
  * @param template {StatisticalTemplate}
  */
-export async function bulkEditTemplateUser(guildData: Settings, interaction: CommandInteraction, ul: Translation, template: StatisticalTemplate) {
+export async function bulkEditTemplateUser(
+	guildData: Settings,
+	interaction: CommandInteraction,
+	ul: Translation,
+	template: StatisticalTemplate
+) {
 	const users = guildData.get(interaction.guild!.id, "user");
 
 	for (const userID in users) {
 		for (const char of users[userID]) {
-			const managerId: PersonnageIds = Array.isArray(char.messageId) ? { channelId: char.messageId[1], messageId: char.messageId[0] } : { messageId: char.messageId };
-			const thread = await searchUserChannel(guildData, interaction, ul, char.isPrivate, managerId?.channelId);
+			const managerId: PersonnageIds = {
+				channelId: char.messageId[1],
+				messageId: char.messageId[0],
+			};
+			const thread = await searchUserChannel(
+				guildData,
+				interaction,
+				ul,
+				managerId.channelId
+			);
 			if (!thread) continue;
 			try {
 				const userMessages = await thread.messages.fetch(managerId.messageId);
@@ -138,21 +198,25 @@ export async function bulkEditTemplateUser(guildData: Settings, interaction: Com
 					newEmbed.addFields({
 						name: ul("common.dice"),
 						value: `\`${template.diceType}\``,
-						inline: true
+						inline: true,
 					});
 				if (template.critical?.success)
 					newEmbed.addFields({
 						name: ul("roll.critical.success"),
 						value: `\`${template.critical.success}\``,
-						inline: true
+						inline: true,
 					});
 				if (template.critical?.failure)
 					newEmbed.addFields({
 						name: ul("roll.critical.failure"),
 						value: `\`${template.critical.failure}\``,
-						inline: true
+						inline: true,
 					});
-				const listEmbed = getEmbedsList(ul, { which: "template", embed: newEmbed }, userMessages);
+				const listEmbed = getEmbedsList(
+					ul,
+					{ which: "template", embed: newEmbed },
+					userMessages
+				);
 				await userMessages.edit({ embeds: listEmbed.list });
 			} catch {
 				//pass
@@ -166,7 +230,10 @@ export async function bulkEditTemplateUser(guildData: Settings, interaction: Com
  * @param interaction {ButtonInteraction}
  * @param templateData {StatisticalTemplate}
  */
-export function getStatistiqueFields(interaction: ModalSubmitInteraction, templateData: StatisticalTemplate) {
+export function getStatistiqueFields(
+	interaction: ModalSubmitInteraction,
+	templateData: StatisticalTemplate
+) {
 	const ul = ln(interaction.locale as Locale);
 	const combinaisonFields: { [name: string]: string } = {};
 	const stats: { [name: string]: number } = {};
@@ -184,7 +251,8 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
 		const num = Number.parseInt(statValue, 10);
 		if (value.min && num < value.min) {
 			throw new Error(ul("error.mustBeGreater", { value: name, min: value.min }));
-		} if (value.max && num > value.max) {
+		}
+		if (value.max && num > value.max) {
 			throw new Error(ul("error.mustBeLower", { value: name, max: value.max }));
 		}
 		if (total) {
@@ -203,7 +271,7 @@ export function getStatistiqueFields(interaction: ModalSubmitInteraction, templa
  * Remove backtick in value
  * Used when parsing the user embed
  * @param text {string}
- * @returns 
+ * @returns
  */
 export function removeBacktick(text: string) {
 	return text.replace(/`/g, "");

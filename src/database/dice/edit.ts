@@ -1,6 +1,6 @@
-import { createDiceEmbed, getUserNameAndChar, verifyIfEmbedInDB } from "@database";
+import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice, roll } from "@dicelette/core";
-import type { Settings, Translation, UserRegistration } from "@interface";
+import type { Settings, Translation, UserMessageId, UserRegistration } from "@interface";
 import {
 	displayOldAndNewStats,
 	parseStatsString,
@@ -12,7 +12,6 @@ import {
 import { editUserButtons } from "@utils/buttons";
 import { registerUser } from "@utils/db";
 import {
-	ensureEmbed,
 	getEmbeds,
 	getEmbedsList,
 	parseEmbedFields,
@@ -27,13 +26,11 @@ import {
 	type ModalActionRowComponentBuilder,
 	ModalBuilder,
 	type ModalSubmitInteraction,
-	PermissionsBitField,
 	TextInputBuilder,
 	TextInputStyle,
 	type User,
 	userMention,
 } from "discord.js";
-import { findKeyFromTranslation } from "../../localizations";
 
 /**
  * Show the modal to **edit** the registered dice
@@ -163,6 +160,10 @@ export async function validateDiceEdit(
 	}
 	const diceEmbed = createDiceEmbed(ul).addFields(fieldsToAppend);
 	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul);
+	const messageID = [
+		interaction.message.id,
+		interaction.message.channelId,
+	] as UserMessageId;
 	if (!fieldsToAppend || fieldsToAppend.length === 0) {
 		//dice was removed
 		const embedsList = getEmbedsList(
@@ -179,9 +180,9 @@ export async function validateDiceEdit(
 			userID,
 			charName: userName,
 			damage: undefined,
-			msgId: [interaction.message.id, interaction.message.channelId],
+			msgId: messageID,
 		};
-		registerUser(userRegister, interaction, thread, db, false);
+		registerUser(userRegister, interaction, db, false);
 		await sendLogs(
 			ul("logs.dice.remove", {
 				user: userMention(interaction.user.id),
@@ -206,9 +207,9 @@ export async function validateDiceEdit(
 		userID,
 		charName: userName,
 		damage: skillDiceName,
-		msgId: interaction.message.id,
+		msgId: messageID,
 	};
-	registerUser(userRegister, interaction, thread, db, false);
+	registerUser(userRegister, interaction, db, false);
 	const embedsList = getEmbedsList(
 		ul,
 		{ which: "damage", embed: diceEmbed },
@@ -238,40 +239,6 @@ export async function initiateDiceEdit(
 	interactionUser: User,
 	db: Settings
 ) {
-	const embed = ensureEmbed(interaction.message);
-	const user = embed.fields
-		.find((field) => field.name === "common.user")
-		?.value.replace("<@", "")
-		.replace(">", "");
-	const isSameUser = interactionUser.id === interaction.user.id;
-	const isModerator = interaction.guild?.members.cache
-		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
-	const userName = embed.fields.find((field) =>
-		["common.character", "common.charName"].includes(findKeyFromTranslation(field.name))
-	);
-	const userNameValue =
-		userName && findKeyFromTranslation(userName?.value) === "common.noSet"
-			? undefined
-			: userName?.value;
-	if (user) {
-		const { isInDb, coord } = verifyIfEmbedInDB(
-			db,
-			interaction.message,
-			user,
-			userNameValue
-		);
-		if (!isInDb) {
-			const urlNew = `https://discord.com/channels/${interaction.guild!.id}/${coord?.channelId}/${coord?.messageId}`;
-			await reply(interaction, {
-				content: ul("error.oldEmbed", { fiche: urlNew }),
-				ephemeral: true,
-			});
-			//delete the message
-			await interaction.message.delete();
-			return;
-		}
-	}
-	if (isSameUser || isModerator) await showEditDice(interaction, ul);
-	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
+	if (await allowEdit(interaction, db, interactionUser))
+		await showEditDice(interaction, ul);
 }

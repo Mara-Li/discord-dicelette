@@ -31,19 +31,19 @@ program
 	.addOption(new Option("-g, --guild <id>", "Guild ID to manage"))
 	.addOption(new Option("-u, --user <id>", "User ID to manage"))
 	.addCommand(
-		new Command("get")
-			.description("Get data from the database")
-			.action(function (this: Command) { // Add type annotation for 'this'
-				getData(this.optsWithGlobals());
-			})
+		new Command("get").description("Get data from the database").action(function (
+			this: Command
+		) {
+			// Add type annotation for 'this'
+			getData(this.optsWithGlobals());
+		})
 	)
 	.addCommand(
-		new Command("delete")
-			.description("Delete data from the database")
-			.action(function (this: Command) {
-				deleteData(this.optsWithGlobals());
-			}
-			)
+		new Command("delete").description("Delete data from the database").action(function (
+			this: Command
+		) {
+			deleteData(this.optsWithGlobals());
+		})
 	)
 	.addCommand(
 		new Command("edit-guild")
@@ -55,14 +55,22 @@ program
 				editGuildData(opt.guild, opt.key, opt.value);
 			})
 	)
-	.addCommand(new Command("edit-user").description("Edit user data in the database")
-		.addOption(new Option("-k, --key <key>", "Key to set"))
-		.addOption(new Option("-v, --value <value>", "Value to set"))
-		.addOption(new Option("-c, --charName <charName>", "Character name to edit"))
-		.action(function (this: Command) {
-			const options = this.optsWithGlobals();
-			editUserData(options.guild, options.user, options.key, options.value, options.charName);
-		})
+	.addCommand(
+		new Command("edit-user")
+			.description("Edit user data in the database")
+			.addOption(new Option("-k, --key <key>", "Key to set"))
+			.addOption(new Option("-v, --value <value>", "Value to set"))
+			.addOption(new Option("-c, --charName <charName>", "Character name to edit"))
+			.action(function (this: Command) {
+				const options = this.optsWithGlobals();
+				editUserData(
+					options.guild,
+					options.user,
+					options.key,
+					options.value,
+					options.charName
+				);
+			})
 	);
 
 const db = new Enmap({
@@ -151,7 +159,9 @@ function editUser(
 	}
 	//find charName in the user data
 	const dataUser = user.find((data) => unicode(charName) === unicode(data?.charName));
-	const dataIndex = user.findIndex((data) => unicode(charName) === unicode(data?.charName));
+	const dataIndex = user.findIndex(
+		(data) => unicode(charName) === unicode(data?.charName)
+	);
 	if (!dataUser || dataIndex === -1) {
 		error(`User ${userId} not found in guild ${guildId} for provided data.`);
 		return;
@@ -163,8 +173,8 @@ function editUser(
 			error("damageName should be an array.");
 			return;
 		}
-	} else if (newValue && !(Array.isArray(newValue))) {
-		dataUser[key] = newValue;
+	} else if (key === "messageId" && Array.isArray(newValue)) {
+		dataUser[key] = newValue as [string, string];
 	} else {
 		error("Invalid value provided.");
 		return;
@@ -177,14 +187,12 @@ function getData(options: OptionValues) {
 	console.log(options);
 	if (!options.guild && !options.user) {
 		readAll();
-	}
-	else if (options.guild && !options.user) {
+	} else if (options.guild && !options.user) {
 		getGuild(options.guild);
 	} else if (options.guild && options.user) {
 		getDataUser(options.guild, options.user);
 	} else if (!options.guild && options.user) {
 		getAllDataForUser(options.user);
-
 	}
 }
 
@@ -212,10 +220,22 @@ function editGuildData(guildId: string, key: string, value: string) {
 	success(`Updated data for guild ${guildId}`);
 }
 
-function editUserData(guildId: string, userId: string, key: string, value: string, charName: string) {
+function editUserData(
+	guildId: string,
+	userId: string,
+	key: string,
+	value: string,
+	charName: string
+) {
 	const arrayValue = myParseArray(value);
 	if (["charName", "messageId", "damageName"].includes(key)) {
-		editUser(guildId, userId, key as "charName" | "messageId" | "damageName", arrayValue, charName);
+		editUser(
+			guildId,
+			userId,
+			key as "charName" | "messageId" | "damageName",
+			arrayValue,
+			charName
+		);
 	} else {
 		error("Invalid key provided.");
 	}

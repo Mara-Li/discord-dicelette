@@ -1,4 +1,4 @@
-import { createDiceEmbed, getUserNameAndChar, verifyIfEmbedInDB } from "@database";
+import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId } from "@interface";
 import { findKeyFromTranslation, lError, ln } from "@localization";
@@ -34,44 +34,8 @@ export async function executeAddDiceButton(
 	interactionUser: User,
 	db: Settings
 ) {
-	const embed = ensureEmbed(interaction.message);
-	const user = embed.fields
-		.find((field) => findKeyFromTranslation(field.name) === "common.user")
-		?.value.replace("<@", "")
-		.replace(">", "");
-	const isSameUser = user === interactionUser.id;
-	const isModerator = interaction.guild?.members.cache
-		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
-	const first = interaction.customId.includes("first");
-	const userName = embed.fields.find((field) =>
-		["common.character", "common.charName"].includes(findKeyFromTranslation(field.name))
-	);
-	const userNameValue =
-		userName && findKeyFromTranslation(userName?.value) === "common.noSet"
-			? undefined
-			: userName?.value;
-	if (!first && user) {
-		const { isInDb, coord } = verifyIfEmbedInDB(
-			db,
-			interaction.message,
-			user,
-			userNameValue
-		);
-		if (!isInDb) {
-			const urlNew = `https://discord.com/channels/${interaction.guild!.id}/${coord?.channelId}/${coord?.messageId}`;
-			await reply(interaction, {
-				content: ul("error.oldEmbed", { fiche: urlNew }),
-				ephemeral: true,
-			});
-			//delete the message
-			await interaction.message.delete();
-			return;
-		}
-	}
-	if (isSameUser || isModerator)
-		showDamageDiceModals(interaction, interaction.customId.includes("first"));
-	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
+	const allow = await allowEdit(interaction, db, interactionUser);
+	if (allow) showDamageDiceModals(interaction, interaction.customId.includes("first"));
 }
 
 /**
@@ -243,7 +207,7 @@ export async function registerDamageDice(
 			damage: damageName ? Object.keys(damageName) : undefined,
 			msgId: [interaction.message.id, interaction.message.channel.id],
 		};
-		registerUser(userRegister, interaction, thread, db, false);
+		registerUser(userRegister, interaction, db, false);
 		await interaction?.message?.edit({ embeds: allEmbeds, components: [components] });
 		await reply(interaction, { content: ul("modals.added.dice"), ephemeral: true });
 		await sendLogs(
