@@ -41,7 +41,10 @@ export default (client: EClient): void => {
 function convertDatabaseUser(db: Settings, guild: Guild) {
 	if (db.get(guild.id, "converted")) return;
 	const users = db.get(guild.id, "user");
-	if (!users) return;
+	if (!users) {
+		db.set(guild.id, true, "converted");
+		return;
+	}
 	const defaultChannel = db.get(guild.id, "managerId");
 	const privateChannel = db.get(guild.id, "privateChannel");
 	for (const [userId, userData] of Object.entries(users)) {
@@ -49,16 +52,21 @@ function convertDatabaseUser(db: Settings, guild: Guild) {
 		for (const index in userData) {
 			const data = userData[index];
 			if (!Array.isArray(data.messageId)) {
-				if (!privateChannel || !defaultChannel) {
-					console.error("Missing channel for the conversion");
-					//remove the user
-					db.delete(guild.id, `user.${userId}.${index}`);
-					continue;
-				}
-				if (data.isPrivate && privateChannel)
+				let toUpdate = false;
+				if (data.isPrivate && privateChannel) {
 					data.messageId = [data.messageId, privateChannel];
-				else if (defaultChannel) data.messageId = [data.messageId, defaultChannel];
-				db.set(guild.id, data, `user.${userId}.${index}`);
+					toUpdate = true;
+				} else if (defaultChannel) {
+					toUpdate = true;
+					data.messageId = [data.messageId, defaultChannel];
+				}
+				if (toUpdate) db.set(guild.id, data, `user.${userId}.${index}`);
+				else {
+					console.warn(
+						`No channel to update for ${userId}/${data.charName} => Deleting it`
+					);
+					db.delete(guild.id, `user.${userId}.${index}`);
+				}
 			}
 		}
 	}
