@@ -46,6 +46,7 @@ export default (client: EClient): void => {
 			}
 			convertDatabaseUser(client.settings, guild);
 		}
+		cleanData(client);
 	});
 };
 
@@ -74,6 +75,7 @@ function convertDatabaseUser(db: Settings, guild: Guild) {
 		for (const index in userData) {
 			const data = userData[index];
 			if (!Array.isArray(data.messageId)) {
+				if (!privateChannel && !defaultChannel) continue;
 				if (data.isPrivate && privateChannel)
 					data.messageId = [data.messageId, privateChannel];
 				else if (defaultChannel) data.messageId = [data.messageId, defaultChannel];
@@ -82,4 +84,19 @@ function convertDatabaseUser(db: Settings, guild: Guild) {
 		}
 	}
 	db.set(guild.id, true, "converted");
+}
+
+function cleanData(client: EClient) {
+	const guilds = client.guilds.cache;
+	const settings = client.settings;
+	//remove the guild that the bot is not in anymore
+	const toDelete = [];
+	for (const [guildId] of settings.entries()) {
+		if (!guilds.has(guildId)) {
+			console.log(`${guildId} is not in the guilds list anymore`);
+			toDelete.push(guildId);
+		}
+	}
+	const toDeleteStr = `-${toDelete.join("\n- ")}`;
+	fs.writeFileSync("toDelete.txt", toDeleteStr, "utf8");
 }
