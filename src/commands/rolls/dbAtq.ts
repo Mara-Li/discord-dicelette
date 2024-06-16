@@ -5,7 +5,13 @@ import type { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollDice } from "@utils/roll";
-import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, SlashCommandBuilder } from "discord.js";
+import {
+	type AutocompleteInteraction,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	type Locale,
+	SlashCommandBuilder,
+} from "discord.js";
 import i18next from "i18next";
 import removeAccents from "remove-accents";
 
@@ -18,7 +24,7 @@ export const dbd = {
 		.setNameLocalizations(cmdLn("rAtq.name"))
 		.setDescriptionLocalizations(cmdLn("rAtq.description"))
 		.setDefaultMemberPermissions(0)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("rAtq.atq_name.name"))
 				.setNameLocalizations(cmdLn("rAtq.atq_name.name"))
@@ -27,7 +33,7 @@ export const dbd = {
 				.setRequired(true)
 				.setAutocomplete(true)
 		)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("common.character"))
 				.setDescription(t("dbRoll.options.character"))
@@ -36,7 +42,7 @@ export const dbd = {
 				.setRequired(false)
 				.setAutocomplete(true)
 		)
-		.addNumberOption(option =>
+		.addNumberOption((option) =>
 			option
 				.setName(t("dbRoll.options.modificator.name"))
 				.setDescription(t("dbRoll.options.modificator.description"))
@@ -44,7 +50,7 @@ export const dbd = {
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.modificator.description"))
 				.setRequired(false)
 		)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("dbRoll.options.comments.name"))
 				.setDescription(t("dbRoll.options.comments.description"))
@@ -57,7 +63,10 @@ export const dbd = {
 		const focused = options.getFocused(true);
 		const db = client.settings.get(interaction.guild!.id);
 		if (!db || !db.templateID) return;
-		const user = client.settings.get(interaction.guild!.id, `user.${interaction.user.id}`);
+		const user = client.settings.get(
+			interaction.guild!.id,
+			`user.${interaction.user.id}`
+		);
 		if (!user) return;
 		let choices: string[] = [];
 		if (focused.name === t("rAtq.atq_name.name")) {
@@ -65,7 +74,11 @@ export const dbd = {
 
 			if (char) {
 				const values = user.find((data) => {
-					if (data.charName) return removeAccents(data.charName).toLowerCase() === removeAccents(char).toLowerCase();
+					if (data.charName)
+						return (
+							removeAccents(data.charName).toLowerCase() ===
+							removeAccents(char).toLowerCase()
+						);
 					return false;
 				});
 				if (values?.damageName) choices = values.damageName;
@@ -79,26 +92,32 @@ export const dbd = {
 		} else if (focused.name === t("common.character")) {
 			//if dice is set, get all characters that have this dice
 			const skill = options.getString(t("rAtq.atq_name.name"));
+			const allCharactersFromUser = user
+				.map((data) => data.charName ?? "")
+				.filter((data) => data.length > 0);
 			if (skill) {
 				const values = user.filter((data) => {
-					if (data.damageName) return data.damageName.map((data) => removeAccents(data).toLowerCase()).includes(removeAccents(skill).toLowerCase());
+					if (data.damageName)
+						return data.damageName
+							.map((data) => removeAccents(data).toLowerCase())
+							.includes(removeAccents(skill).toLowerCase());
 					return false;
 				});
-				choices = values.map((data) => data.charName ?? "").filter((data) => data.length > 0);
-
-			} else {
-				//get user characters 
-				const allCharactersFromUser = user
+				choices = values
 					.map((data) => data.charName ?? "")
 					.filter((data) => data.length > 0);
-
+				if (db.templateID.damageName?.includes(skill)) {
+					choices = allCharactersFromUser;
+				}
+			} else {
+				//get user characters
 				choices = allCharactersFromUser;
 			}
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result), value: result }))
+			filter.map((result) => ({ name: title(result), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -111,11 +130,23 @@ export const dbd = {
 		const charName = charOptions ? removeAccents(charOptions).toLowerCase() : undefined;
 		const ul = ln(interaction.locale as Locale);
 		try {
-			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, charName);
-			const serializedUserNameDB = userStatistique?.userName ? removeAccents(userStatistique.userName).toLowerCase() : undefined;
-			const serializedQueries = charName ? removeAccents(charName).toLowerCase() : undefined;
+			let userStatistique = await getUserFromMessage(
+				client.settings,
+				interaction.user.id,
+				interaction,
+				charName
+			);
+			const serializedUserNameDB = userStatistique?.userName
+				? removeAccents(userStatistique.userName).toLowerCase()
+				: undefined;
+			const serializedQueries = charName
+				? removeAccents(charName).toLowerCase()
+				: undefined;
 			if (charOptions && serializedUserNameDB !== serializedQueries) {
-				await reply(interaction, { content: ul("error.charName", { charName: title(charOptions) }), ephemeral: true });
+				await reply(interaction, {
+					content: ul("error.charName", { charName: title(charOptions) }),
+					ephemeral: true,
+				});
 				return;
 			}
 			if (!userStatistique && !charName) {
@@ -134,9 +165,11 @@ export const dbd = {
 			return await rollDice(interaction, client, userStatistique, options, ul, charName);
 		} catch (e) {
 			error(e);
-			await reply(interaction, { content: t("error.generic", { e: (e as Error) }), ephemeral: true });
+			await reply(interaction, {
+				content: t("error.generic", { e: e as Error }),
+				ephemeral: true,
+			});
 			return;
 		}
 	},
 };
-

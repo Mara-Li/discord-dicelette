@@ -64,12 +64,11 @@ function convertJSONToEnmap(Client: EClient) {
 }
 
 function convertDatabaseUser(db: Settings, guild: Guild) {
+	if (db.get(guild.id, "converted")) return;
 	const users = db.get(guild.id, "user");
-	log(`Converting ${guild.name}`);
 	if (!users) return;
 	const defaultChannel = db.get(guild.id, "managerId");
 	const privateChannel = db.get(guild.id, "privateChannel");
-	if (db.get(guild.id, "converted")) return;
 	for (const [userId, userData] of Object.entries(users)) {
 		log(`Converting ${userId} => ${JSON.stringify(userData)} in ${guild.name}`);
 		for (const index in userData) {
