@@ -31,7 +31,7 @@ export const LINKS = {
  * - If is an array: `[messageId, channelId]`
  * - If is a string: `messageId` only
  */
-export type UserMessageId = [string, string] | string;
+export type UserMessageId = [string, string];
 export type Settings = Enmap<string, GuildData, unknown>;
 export type Translation = TFunction<"translation", undefined>;
 export type DiscordChannel =
@@ -57,6 +57,7 @@ export interface GuildData {
 	deleteAfter?: number;
 	timestamp?: boolean;
 	privateChannel?: string;
+	converted?: boolean;
 	autoRole?: {
 		dice?: string;
 		stats?: string;
