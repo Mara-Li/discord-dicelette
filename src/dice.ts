@@ -49,7 +49,7 @@ export function parseResult(
 			const totSucc = output.compare
 				? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\``
 				: `= \`${total}\``;
-			msgSuccess += `\n  ${succ} — ${r
+			msgSuccess += `  ${succ} — ${r
 				.replaceAll(":", " ⟶")
 				.replaceAll(/ = (\S+)/g, totSucc)
 				.replaceAll("*", "\\*")}`;
@@ -63,7 +63,7 @@ export function parseResult(
 			.replaceAll("*", "\\*")}`;
 	}
 	const comment = output.comment
-		? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*`
+		? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*\n`
 		: "";
 	return `${comment}${msgSuccess}`;
 }

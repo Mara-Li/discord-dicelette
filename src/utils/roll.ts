@@ -61,7 +61,7 @@ export async function rollWithInteraction(
 		return;
 	}
 	const parser = parseResult(rollDice, ul, critical);
-	let mentionUser: string = userMention(user?.id ?? interaction.user.id);
+	let mentionUser: string = "\\" + userMention(user?.id ?? interaction.user.id);
 	const titleCharName = `__**${title(charName)}**__`;
 	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
 	const infoRollTotal = (mention?: boolean, time?: boolean) => {
@@ -81,7 +81,10 @@ export async function rollWithInteraction(
 			(db.get(interaction.guild.id, "disableThread") === true ||
 				db.get(interaction.guild.id, "rollChannel") === channel.id))
 	) {
-		await reply(interaction, { content: `${retrieveUser}${parser}` });
+		await reply(interaction, {
+			content: `${retrieveUser}${parser}`,
+			allowedMentions: { repliedUser: true },
+		});
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
@@ -100,6 +103,7 @@ export async function rollWithInteraction(
 	const idMessage = `↪ ${msgToEdit.url}`;
 	const inter = await reply(interaction, {
 		content: `${retrieveUser}${parser}\n\n${idMessage}`,
+		allowedMentions: { repliedUser: true },
 	});
 	const timer =
 		hasDB && db.get(interaction.guild.id, "deleteAfter")
