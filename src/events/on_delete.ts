@@ -125,9 +125,6 @@ function cleanUserDB(
 	if (!dbUser) return;
 	if (!thread.isTextBased()) return;
 	/** if private channel was deleted, delete only the private charactersheet */
-	const privateEnabled = guildDB.get(thread.guild.id, "privateChannel");
-	const isPrivate = privateEnabled === thread.id;
-	const publicDefault = guildDB.get(thread.guild.id, "managerId");
 
 	for (const [user, data] of Object.entries(dbUser)) {
 		log(`Checking user ${user}`);

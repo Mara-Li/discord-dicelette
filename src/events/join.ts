@@ -8,6 +8,7 @@ export default (client: EClient): void => {
 			for (const command of commandsList) {
 				await guild.commands.create(command.data);
 				log(`Command ${command.data.name} created in ${guild.name}`);
+				client.settings.set(guild.id, true, "converted");
 			}
 		} catch (e) {
 			error(e);
