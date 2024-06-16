@@ -1,5 +1,5 @@
 import { deleteAfter } from "@commands/rolls/base_roll";
-import { error } from "@console";
+import { error, log } from "@console";
 import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
 import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { Settings, Translation, UserData } from "@interface";
@@ -44,11 +44,12 @@ export async function rollWithInteraction(
 	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild)
 		return;
 	const ul = ln(interaction.guild.preferredLocale ?? interaction.locale);
-	const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
-	if (rollWithMessage) {
+	const comments = dice.match(DETECT_DICE_MESSAGE)?.[3];
+	if (comments) {
 		//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
-		dice = dice.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
+		dice = dice.replace(DETECT_DICE_MESSAGE, "$1");
 	}
+	log(dice);
 	//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
 	dice = dice.trim();
 	const rollDice = roll(dice.trim());
@@ -60,8 +61,14 @@ export async function rollWithInteraction(
 		});
 		return;
 	}
-	const parser = parseResult(rollDice, ul, critical);
-	let mentionUser: string = userMention(user?.id ?? interaction.user.id);
+	if (comments) {
+		rollDice.comment = comments;
+		rollDice.dice = `${dice} /* ${comments} */`;
+	}
+
+	const parser = parseResult(rollDice, ul, critical, !!infoRoll);
+	const userId = user?.id ?? interaction.user.id;
+	let mentionUser: string = userMention(userId);
 	const titleCharName = `__**${title(charName)}**__`;
 	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
 	const infoRollTotal = (mention?: boolean, time?: boolean) => {
@@ -81,7 +88,10 @@ export async function rollWithInteraction(
 			(db.get(interaction.guild.id, "disableThread") === true ||
 				db.get(interaction.guild.id, "rollChannel") === channel.id))
 	) {
-		await reply(interaction, { content: `${retrieveUser}${parser}` });
+		await reply(interaction, {
+			content: `${retrieveUser}${parser}`,
+			allowedMentions: { users: [userId] },
+		});
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
@@ -100,6 +110,7 @@ export async function rollWithInteraction(
 	const idMessage = `↪ ${msgToEdit.url}`;
 	const inter = await reply(interaction, {
 		content: `${retrieveUser}${parser}\n\n${idMessage}`,
+		allowedMentions: { users: [userId] },
 	});
 	const timer =
 		hasDB && db.get(interaction.guild.id, "deleteAfter")

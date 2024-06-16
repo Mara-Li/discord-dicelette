@@ -11,7 +11,8 @@ import { evaluate } from "mathjs";
 export function parseResult(
 	output: Resultat,
 	ul: Translation,
-	critical?: { failure?: number; success?: number }
+	critical?: { failure?: number; success?: number },
+	interaction?: boolean
 ) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
@@ -49,7 +50,7 @@ export function parseResult(
 			const totSucc = output.compare
 				? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\``
 				: `= \`${total}\``;
-			msgSuccess += `\n  ${succ} — ${r
+			msgSuccess += `  ${succ} — ${r
 				.replaceAll(":", " ⟶")
 				.replaceAll(/ = (\S+)/g, totSucc)
 				.replaceAll("*", "\\*")}`;
@@ -63,8 +64,10 @@ export function parseResult(
 			.replaceAll("*", "\\*")}`;
 	}
 	const comment = output.comment
-		? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*`
-		: "";
+		? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*\n`
+		: interaction
+			? "\n"
+			: "";
 	return `${comment}${msgSuccess}`;
 }
 

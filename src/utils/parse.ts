@@ -2,7 +2,7 @@
 import { createTemplateEmbed } from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { PersonnageIds, Settings, Translation } from "@interface";
-import { findKeyFromTranslation, ln } from "@localization";
+import { findln, ln } from "@localization";
 import { removeEmojiAccents, searchUserChannel } from "@utils";
 import {
 	type ButtonInteraction,
@@ -125,8 +125,9 @@ export function parseEmbedFields(embed: Embed): { [name: string]: string } {
 	if (!fields) return {};
 	const parsedFields: { [name: string]: string } = {};
 	for (const field of fields) {
-		parsedFields[findKeyFromTranslation(removeBacktick(field.name))] =
-			findKeyFromTranslation(removeBacktick(field.value));
+		parsedFields[findln(removeBacktick(field.name))] = findln(
+			removeBacktick(field.value)
+		);
 	}
 	return parsedFields;
 }
@@ -145,7 +146,7 @@ export function getEmbeds(
 	if (!allEmbeds) throw new Error(ul("error.noEmbed"));
 	for (const embed of allEmbeds) {
 		const embedJSON = embed.toJSON();
-		const titleKey = findKeyFromTranslation(embed.title ?? "");
+		const titleKey = findln(embed.title ?? "");
 		const userKeys = ["embed.user", "embed.add", "embed.old"];
 		if (userKeys.includes(titleKey) && which === "user")
 			return new EmbedBuilder(embedJSON);

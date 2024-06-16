@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.4.3](https://github.com/Dicelette/discord-dicelette/compare/1.4.2...1.4.3) (2024-06-16)
+
+
+### Bug Fixes
+
+* do not mention user in comments ([09a8279](https://github.com/Dicelette/discord-dicelette/commit/09a82795ca1bb2d650852fc0f8156472313050ae))
+* format error when pinging user in comments ([287baa9](https://github.com/Dicelette/discord-dicelette/commit/287baa9397167fd274059ab2d40dd246c7587667))
+
 ## [1.4.2](https://github.com/Dicelette/discord-dicelette/compare/1.4.1...1.4.2) (2024-06-16)
 
 
