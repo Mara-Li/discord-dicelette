@@ -3,7 +3,13 @@ import type { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
-import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+	type AutocompleteInteraction,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	PermissionFlagsBits,
+	SlashCommandBuilder,
+} from "discord.js";
 import i18next from "i18next";
 import removeAccents from "remove-accents";
 
@@ -16,13 +22,13 @@ export const mjRoll = {
 		.setDescription(t("mjRoll.description"))
 		.setDescriptionLocalizations(cmdLn("mjRoll.description"))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-		.addSubcommand(sub =>
+		.addSubcommand((sub) =>
 			sub
 				.setName(t("dbRoll.name"))
 				.setNameLocalizations(cmdLn("dbRoll.name"))
 				.setDescription(t("dbRoll.description"))
 				.setDescriptionLocalizations(cmdLn("dbRoll.description"))
-				.addUserOption(option =>
+				.addUserOption((option) =>
 					option
 						.setName(t("display.userLowercase"))
 						.setNameLocalizations(cmdLn("display.userLowercase"))
@@ -30,7 +36,7 @@ export const mjRoll = {
 						.setDescriptionLocalizations(cmdLn("mjRoll.user"))
 						.setRequired(true)
 				)
-				.addStringOption(option =>
+				.addStringOption((option) =>
 					option
 						.setName(t("common.statistic"))
 						.setNameLocalizations(cmdLn("common.statistic"))
@@ -39,7 +45,7 @@ export const mjRoll = {
 						.setRequired(true)
 						.setAutocomplete(true)
 				)
-				.addStringOption(option =>
+				.addStringOption((option) =>
 					option
 						.setName(t("common.character"))
 						.setNameLocalizations(cmdLn("common.character"))
@@ -49,7 +55,7 @@ export const mjRoll = {
 						.setAutocomplete(true)
 				)
 
-				.addStringOption(option =>
+				.addStringOption((option) =>
 					option
 						.setName(t("dbRoll.options.comments.name"))
 						.setDescription(t("dbRoll.options.comments.description"))
@@ -57,7 +63,7 @@ export const mjRoll = {
 						.setDescriptionLocalizations(cmdLn("dbRoll.options.comments.description"))
 						.setRequired(false)
 				)
-				.addStringOption(option =>
+				.addStringOption((option) =>
 					option
 						.setName(t("dbRoll.options.override.name"))
 						.setDescription(t("dbRoll.options.override.description"))
@@ -65,7 +71,7 @@ export const mjRoll = {
 						.setDescriptionLocalizations(cmdLn("dbRoll.options.override.description"))
 						.setRequired(false)
 				)
-				.addNumberOption(option =>
+				.addNumberOption((option) =>
 					option
 						.setName(t("dbRoll.options.modificator.name"))
 						.setDescription(t("dbRoll.options.modificator.description"))
@@ -74,13 +80,13 @@ export const mjRoll = {
 						.setRequired(false)
 				)
 		)
-		.addSubcommand(sub =>
+		.addSubcommand((sub) =>
 			sub
 				.setName(t("rAtq.name"))
 				.setDescription(t("rAtq.description"))
 				.setNameLocalizations(cmdLn("rAtq.name"))
 				.setDescriptionLocalizations(cmdLn("rAtq.description"))
-				.addUserOption(option =>
+				.addUserOption((option) =>
 					option
 						.setName(t("display.userLowercase"))
 						.setNameLocalizations(cmdLn("display.userLowercase"))
@@ -88,7 +94,7 @@ export const mjRoll = {
 						.setDescriptionLocalizations(cmdLn("mjRoll.user"))
 						.setRequired(true)
 				)
-				.addStringOption(option =>
+				.addStringOption((option) =>
 					option
 						.setName(t("rAtq.atq_name.name"))
 						.setNameLocalizations(cmdLn("rAtq.atq_name.name"))
@@ -97,7 +103,7 @@ export const mjRoll = {
 						.setRequired(true)
 						.setAutocomplete(true)
 				)
-				.addStringOption(option =>
+				.addStringOption((option) =>
 					option
 						.setName(t("common.character"))
 						.setNameLocalizations(cmdLn("common.character"))
@@ -106,7 +112,7 @@ export const mjRoll = {
 						.setRequired(false)
 						.setAutocomplete(true)
 				)
-				.addNumberOption(option =>
+				.addNumberOption((option) =>
 					option
 						.setName(t("dbRoll.options.modificator.name"))
 						.setDescription(t("dbRoll.options.modificator.description"))
@@ -114,14 +120,14 @@ export const mjRoll = {
 						.setDescriptionLocalizations(cmdLn("dbRoll.options.modificator.description"))
 						.setRequired(false)
 				)
-				.addStringOption(option =>
+				.addStringOption((option) =>
 					option
 						.setName(t("dbRoll.options.comments.name"))
 						.setDescription(t("dbRoll.options.comments.description"))
 						.setNameLocalizations(cmdLn("dbRoll.options.comments.name"))
 						.setDescriptionLocalizations(cmdLn("dbRoll.options.comments.description"))
 						.setRequired(false)
-				),
+				)
 		),
 	async autocomplete(interaction: AutocompleteInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
@@ -136,11 +142,9 @@ export const mjRoll = {
 			const guildChars = guildData.user[user];
 			if (!guildChars) return;
 			for (const data of guildChars) {
-				if (data.charName)
-					choices.push(data.charName);
+				if (data.charName) choices.push(data.charName);
 			}
-		}
-		else if (fixed.name === t("common.statistic")) {
+		} else if (fixed.name === t("common.statistic")) {
 			choices = guildData.templateID.statsName;
 		} else if (fixed.name === t("rAtq.atq_name.name")) {
 			const defaultDice = guildData.templateID.damageName;
@@ -148,14 +152,13 @@ export const mjRoll = {
 			if (!guildChars) return;
 			const character = options.getString(t("common.character"), false);
 			if (character) {
-				const char = guildChars.find(c => c.charName === character);
+				const char = guildChars.find((c) => c.charName === character);
 				if (char?.damageName) {
 					choices = char.damageName;
 				}
 			} else {
 				for (const data of guildChars) {
-					if (data.damageName)
-						choices.push(...data.damageName);
+					if (data.damageName) choices.push(...data.damageName);
 				}
 			}
 			choices.push(...defaultDice);
@@ -163,7 +166,7 @@ export const mjRoll = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result), value: result }))
+			filter.map((result) => ({ name: title(result), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -176,11 +179,23 @@ export const mjRoll = {
 		const user = options.getUser(t("display.userLowercase"), true);
 		const charName = options.getString(t("common.character"), false)?.toLowerCase();
 		let optionChar = options.getString(t("common.character")) ?? undefined;
-		let charData = await getUserFromMessage(client.settings, user.id, interaction, charName);
-		const serializedName = charData?.userName ? removeAccents(charData.userName).toLowerCase() : undefined;
-		const serializedNameQueries = charName ? removeAccents(charName).toLowerCase() : undefined;
+		let charData = await getUserFromMessage(
+			client.settings,
+			user.id,
+			interaction,
+			charName
+		);
+		const serializedName = charData?.userName
+			? removeAccents(charData.userName).toLowerCase()
+			: undefined;
+		const serializedNameQueries = charName
+			? removeAccents(charName).toLowerCase()
+			: undefined;
 		if (charName && serializedName !== serializedNameQueries) {
-			await reply(interaction, { content: ul("error.charName", { charName: title(charName) }), ephemeral: true });
+			await reply(interaction, {
+				content: ul("error.charName", { charName: title(charName) }),
+				ephemeral: true,
+			});
 			return;
 		}
 		if (!charData && !charName) {
@@ -195,8 +210,17 @@ export const mjRoll = {
 			return;
 		}
 		const subcommand = options.getSubcommand(true);
-		if (subcommand === ul("dbRoll.name")) return await rollStatistique(interaction, client, charData, options, ul, optionChar, user, true);
-		if (subcommand === ul("rAtq.name")) return await rollDice(interaction, client, charData, options, ul, optionChar, user, true);
-	}
+		if (subcommand === ul("dbRoll.name"))
+			return await rollStatistique(
+				interaction,
+				client,
+				charData,
+				options,
+				ul,
+				optionChar,
+				user
+			);
+		if (subcommand === ul("rAtq.name"))
+			return await rollDice(interaction, client, charData, options, ul, optionChar, user);
+	},
 };
-

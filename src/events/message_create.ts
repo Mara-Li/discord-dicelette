@@ -5,10 +5,16 @@ import { lError, ln } from "@localization";
 import type { EClient } from "@main";
 import { timestamp } from "@utils";
 import { findForumChannel, findThread } from "@utils/find";
-import { ChannelType, type ForumChannel, Locale, TextChannel, ThreadChannel, userMention } from "discord.js";
+import {
+	ChannelType,
+	type ForumChannel,
+	Locale,
+	TextChannel,
+	ThreadChannel,
+	userMention,
+} from "discord.js";
 
 import { parseResult } from "../dice";
-
 
 export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
 
@@ -44,7 +50,8 @@ export default (client: EClient): void => {
 			const channel = message.channel;
 			if (!result) return;
 			const parser = parseResult(result, ul);
-			if (channel.name.startsWith("🎲") ||
+			if (
+				channel.name.startsWith("🎲") ||
 				client.settings.get(message.guild.id, "disableThread") === true ||
 				client.settings.get(message.guild.id, "rollChannel") === channel.id
 			) {
@@ -58,18 +65,29 @@ export default (client: EClient): void => {
 				linkToOriginal = ` [↪ Source](${message.url})`;
 			}
 			const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
-			const thread = parentChannel instanceof TextChannel ?
-				await findThread(client.settings, parentChannel, ul) :
-				await findForumChannel(parentChannel as ForumChannel, channel as ThreadChannel, client.settings, ul);
+			const thread =
+				parentChannel instanceof TextChannel
+					? await findThread(client.settings, parentChannel, ul)
+					: await findForumChannel(
+							parentChannel as ForumChannel,
+							channel as ThreadChannel,
+							client.settings,
+							ul
+						);
 			const msgToEdit = await thread.send("_ _");
-			const signMessage = result.compare ? `${result.compare.sign} ${result.compare.value}` : "";
+			const signMessage = result.compare
+				? `${result.compare.sign} ${result.compare.value}`
+				: "";
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
 			const msg = `${authorMention} ${timestamp(client.settings, message.guild.id)}${linkToOriginal}\n${parser}`;
 			await msgToEdit.edit(msg);
 			const idMessage = `↪ ${msgToEdit.url}`;
-			const reply = deleteInput ?
-				await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` })
-				: await message.reply({ content: `${parser}\n\n${idMessage}`, allowedMentions: { repliedUser: false } });
+			const reply = deleteInput
+				? await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` })
+				: await message.reply({
+						content: `${parser}\n\n${idMessage}`,
+						allowedMentions: { repliedUser: false },
+					});
 			const timer = client.settings.get(message.guild.id, "deleteAfter") ?? 180000;
 			deleteAfter(reply, timer);
 			return;

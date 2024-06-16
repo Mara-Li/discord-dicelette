@@ -7,7 +7,16 @@ import { ln } from "@localization";
 import type { EClient } from "@main";
 import { reply, timestamp, title } from "@utils";
 import { findForumChannel, findThread } from "@utils/find";
-import { type CommandInteraction, type CommandInteractionOptionResolver, type ForumChannel, type TextBasedChannel, TextChannel, ThreadChannel, type User, userMention } from "discord.js";
+import {
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	type ForumChannel,
+	type TextBasedChannel,
+	TextChannel,
+	ThreadChannel,
+	type User,
+	userMention,
+} from "discord.js";
 import i18next from "i18next";
 import removeAccents from "remove-accents";
 
@@ -27,13 +36,13 @@ export async function rollWithInteraction(
 	dice: string,
 	channel: TextBasedChannel,
 	db: Settings,
-	critical?: { failure?: number, success?: number },
+	critical?: { failure?: number; success?: number },
 	user?: User,
 	charName?: string,
-	infoRoll?: string,
-	mention?: boolean,
+	infoRoll?: string
 ) {
-	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild) return;
+	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild)
+		return;
 	const ul = ln(interaction.guild.preferredLocale ?? interaction.locale);
 	const rollWithMessage = dice.match(DETECT_DICE_MESSAGE)?.[3];
 	if (rollWithMessage) {
@@ -45,7 +54,10 @@ export async function rollWithInteraction(
 	const rollDice = roll(dice.trim());
 	if (!rollDice) {
 		error("no valid dice :", dice.trim());
-		await reply(interaction, { content: ul("error.invalidDice.withDice", { dice }), ephemeral: true });
+		await reply(interaction, {
+			content: ul("error.invalidDice.withDice", { dice }),
+			ephemeral: true,
+		});
 		return;
 	}
 	const parser = parseResult(rollDice, ul, critical);
@@ -54,34 +66,48 @@ export async function rollWithInteraction(
 	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
 	const infoRollTotal = (mention?: boolean, time?: boolean) => {
 		let user = " ";
-		if (mention) user = mentionUser
+		if (mention) user = mentionUser;
 		else if (charName) user = titleCharName;
-		if (time) user += `${timestamp(db, interaction.guild!.id)}`
-		if (user.trim().length > 0) user += `${ul("common.space")}:\n  `
+		if (time) user += `${timestamp(db, interaction.guild!.id)}`;
+		if (user.trim().length > 0) user += `${ul("common.space")}:\n  `;
 		if (infoRoll) return `${user}[__${title(infoRoll)}__] `;
 		return user;
-	}
-	const retrieveUser = infoRollTotal(mention);
+	};
+	const retrieveUser = infoRollTotal(true);
 	const hasDB = db.has(interaction.guild.id);
-	if (channel.name.startsWith("🎲") || hasDB && (db.get(interaction.guild.id, "disableThread") === true || (db.get(interaction.guild.id, "rollChannel") === channel.id))) {
-		await reply(interaction, { content: `${infoRollTotal(true)}${parser}` });
+	if (
+		channel.name.startsWith("🎲") ||
+		(hasDB &&
+			(db.get(interaction.guild.id, "disableThread") === true ||
+				db.get(interaction.guild.id, "rollChannel") === channel.id))
+	) {
+		await reply(interaction, { content: `${retrieveUser}${parser}` });
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
-	const thread = parentChannel instanceof TextChannel ?
-		await findThread(db, parentChannel, ul) :
-		await findForumChannel(channel.parent as ForumChannel, channel as ThreadChannel, db, ul);
+	const thread =
+		parentChannel instanceof TextChannel
+			? await findThread(db, parentChannel, ul)
+			: await findForumChannel(
+					channel.parent as ForumChannel,
+					channel as ThreadChannel,
+					db,
+					ul
+				);
 
 	const msgToEdit = await thread.send("_ _");
 	await msgToEdit.edit(`${infoRollTotal(true, true)}${parser}`);
 	const idMessage = `↪ ${msgToEdit.url}`;
-	const inter = await reply(interaction, { content: `${retrieveUser}${parser}\n\n${idMessage}`, });
-	const timer = hasDB && db.get(interaction.guild.id, "deleteAfter") ? db.get(interaction.guild.id, "deleteAfter") as number : 180000;
+	const inter = await reply(interaction, {
+		content: `${retrieveUser}${parser}\n\n${idMessage}`,
+	});
+	const timer =
+		hasDB && db.get(interaction.guild.id, "deleteAfter")
+			? (db.get(interaction.guild.id, "deleteAfter") as number)
+			: 180000;
 	deleteAfter(inter, timer);
 	return;
-
 }
-
 
 export async function rollStatistique(
 	interaction: CommandInteraction,
@@ -90,8 +116,7 @@ export async function rollStatistique(
 	options: CommandInteractionOptionResolver,
 	ul: Translation,
 	optionChar?: string,
-	user?: User,
-	mention?: boolean
+	user?: User
 ) {
 	const statistique = options.getString(t("common.statistic"), true).toLowerCase();
 	//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
@@ -115,8 +140,9 @@ export async function rollStatistique(
 			dice += overrideMatch[0];
 		}
 	}
-	const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
-	const comparatorMatch = (/(?<sign>[><=!]+)(?<comparator>(\d+))/).exec(dice);
+	const modificatorString =
+		modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
+	const comparatorMatch = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(dice);
 	let comparator = "";
 	if (comparatorMatch) {
 		//remove from dice
@@ -124,15 +150,15 @@ export async function rollStatistique(
 		comparator = comparatorMatch[0];
 	}
 	const roll = `${replaceFormulaInDice(dice)}${modificatorString}${comparator} ${comments}`;
-	await rollWithInteraction(interaction,
+	await rollWithInteraction(
+		interaction,
 		roll,
 		interaction!.channel as TextBasedChannel,
 		client.settings,
 		template.critical,
 		user,
 		optionChar,
-		statistique,
-		mention
+		statistique
 	);
 }
 
@@ -143,20 +169,25 @@ export async function rollDice(
 	options: CommandInteractionOptionResolver,
 	ul: Translation,
 	charOptions?: string,
-	user?: User,
-	mention?: boolean,
+	user?: User
 ) {
-	const atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
+	const atq = removeAccents(
+		options.getString(t("rAtq.atq_name.name"), true).toLowerCase()
+	);
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	//search dice
 	let dice = userStatistique.damage?.[atq.toLowerCase()];
 	if (!dice) {
-		await reply(interaction, { content: ul("error.noDamage", { atq: title(atq), charName: charOptions ?? "" }), ephemeral: true });
+		await reply(interaction, {
+			content: ul("error.noDamage", { atq: title(atq), charName: charOptions ?? "" }),
+			ephemeral: true,
+		});
 		return;
 	}
 	dice = generateStatsDice(dice, userStatistique.stats);
 	const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
-	const modificatorString = modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
+	const modificatorString =
+		modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
 	const comparatorMatch = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(dice);
 	let comparator = "";
 	if (comparatorMatch) {
@@ -164,5 +195,14 @@ export async function rollDice(
 		comparator = comparatorMatch[0];
 	}
 	const roll = `${dice}${modificatorString}${comparator} ${comments}`;
-	await rollWithInteraction(interaction, roll, interaction.channel as TextBasedChannel, client.settings, undefined, user, charOptions, atq, mention);
+	await rollWithInteraction(
+		interaction,
+		roll,
+		interaction.channel as TextBasedChannel,
+		client.settings,
+		undefined,
+		user,
+		charOptions,
+		atq
+	);
 }

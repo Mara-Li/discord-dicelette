@@ -18,7 +18,7 @@
     "restart": "pm2 restart dicelette",
     "delete": "pm2 delete dicelette",
     "dev": "tsx watch src/index.ts",
-    "lint:fix": "pnpm biome lint --write src/",
+    "lint:fix": "pnpm biome format --write src/",
     "db": "tsx db-management.ts",
     "release": "commit-and-tag-version",
     "test": "vitest run",

@@ -3,7 +3,15 @@ import { LINKS, type Settings, type Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
-import { type ApplicationCommand, type Collection, type CommandInteraction, type CommandInteractionOptionResolver, type Locale, SlashCommandBuilder, type Snowflake } from "discord.js";
+import {
+	type ApplicationCommand,
+	type Collection,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	type Locale,
+	SlashCommandBuilder,
+	type Snowflake,
+} from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
 
@@ -15,35 +23,35 @@ export const help = {
 		.setNameLocalizations(cmdLn("help.name"))
 		.setDescription(t("help.description"))
 		.setDescriptionLocalizations(cmdLn("help.description"))
-		.addSubcommand(sub =>
+		.addSubcommand((sub) =>
 			sub
 				.setName(t("help.info.name"))
 				.setNameLocalizations(cmdLn("help.info.name"))
 				.setDescription(t("help.info.description"))
 				.setDescriptionLocalizations(cmdLn("help.info.description"))
 		)
-		.addSubcommand(sub =>
+		.addSubcommand((sub) =>
 			sub
 				.setName(t("help.bug.name"))
 				.setNameLocalizations(cmdLn("help.bug.name"))
 				.setDescription(t("help.bug.description"))
 				.setDescriptionLocalizations(cmdLn("help.bug.description"))
 		)
-		.addSubcommand(sub =>
+		.addSubcommand((sub) =>
 			sub
 				.setName(t("help.fr.name"))
 				.setNameLocalizations(cmdLn("help.fr.name"))
 				.setDescription(t("help.fr.description"))
 				.setDescriptionLocalizations(cmdLn("help.fr.description"))
 		)
-		.addSubcommand(sub =>
+		.addSubcommand((sub) =>
 			sub
 				.setName(t("help.admin.name"))
 				.setNameLocalizations(cmdLn("help.admin.name"))
 				.setDescription(t("help.admin.description"))
 				.setDescriptionLocalizations(cmdLn("help.admin.description"))
 		)
-		.addSubcommand(sub =>
+		.addSubcommand((sub) =>
 			sub
 				.setName(t("help.register.name"))
 				.setNameLocalizations(cmdLn("help.register.name"))
@@ -58,68 +66,89 @@ export const help = {
 		const commandsID = await interaction.guild?.commands.fetch();
 		if (!commandsID) return;
 		switch (subcommand) {
-			case (t("help.info.name")): {
-				const rollID = commandsID.findKey(command => command.name === "roll");
-				const sceneID = commandsID.findKey(command => command.name === "scene");
-				const msg = ul("help.message", { rollId: rollID, sceneId: sceneID, dbCMD: createHelpMessageDB(interaction.guild!.id, ul, client.settings, commandsID) });
+			case t("help.info.name"): {
+				const rollID = commandsID.findKey((command) => command.name === "roll");
+				const sceneID = commandsID.findKey((command) => command.name === "scene");
+				const msg = ul("help.message", {
+					rollId: rollID,
+					sceneId: sceneID,
+					dbCMD: createHelpMessageDB(
+						interaction.guild!.id,
+						ul,
+						client.settings,
+						commandsID
+					),
+				});
 				await reply(interaction, { content: dedent(msg) });
 				await interaction.followUp({ content: dedent(ul("help.diceNotation")) });
 				break;
 			}
-			case (t("help.bug.name")):
-				await reply(interaction, { content: dedent(ul("help.bug.message", { link: link.bug })) });
+			case t("help.bug.name"):
+				await reply(interaction, {
+					content: dedent(ul("help.bug.message", { link: link.bug })),
+				});
 				break;
-			case (t("help.fr.name")):
-				await reply(interaction, { content: dedent(ul("help.fr.message", { link: link.fr })) });
+			case t("help.fr.name"):
+				await reply(interaction, {
+					content: dedent(ul("help.fr.message", { link: link.fr })),
+				});
 				break;
-			case (t("help.register.name")): {
+			case t("help.register.name"): {
 				const helpDBCmd = getHelpDBCmd(commandsID);
 				await reply(interaction, {
-					content: dedent(ul("help.register.message", {
-						dbd: helpDBCmd?.[t("rAtq.name")],
-						dbroll: helpDBCmd?.[t("dbRoll.name")],
-						graph: helpDBCmd?.[t("graph.name")],
-						display: helpDBCmd?.[t("display.title")],
-					}))
+					content: dedent(
+						ul("help.register.message", {
+							dbd: helpDBCmd?.[t("rAtq.name")],
+							dbroll: helpDBCmd?.[t("dbRoll.name")],
+							graph: helpDBCmd?.[t("graph.name")],
+							display: helpDBCmd?.[t("display.title")],
+						})
+					),
 				});
 				break;
 			}
-			case (t("help.admin.name")): {
+			case t("help.admin.name"): {
 				const idsAdmin = getIDForAdminNoDB(commandsID);
 				await reply(interaction, {
-					content: dedent(ul("help.admin.messageNoDB", {
-						logs: idsAdmin?.[t("logs.name")],
-						disable: idsAdmin?.[t("disableThread.name")],
-						result: idsAdmin?.[t("changeThread.name")],
-						delete: idsAdmin?.[t("timer.name")],
-						display: idsAdmin?.[t("config.display.name")],
-						timestamp: idsAdmin?.[t("timestamp.name")],
-					}))
+					content: dedent(
+						ul("help.admin.messageNoDB", {
+							logs: idsAdmin?.[t("logs.name")],
+							disable: idsAdmin?.[t("disableThread.name")],
+							result: idsAdmin?.[t("changeThread.name")],
+							delete: idsAdmin?.[t("timer.name")],
+							display: idsAdmin?.[t("config.display.name")],
+							timestamp: idsAdmin?.[t("timestamp.name")],
+						})
+					),
 				});
-				const idsAdminDB = getIDForAdminDB(commandsID, client.settings, interaction.guild!.id);
+				const idsAdminDB = getIDForAdminDB(
+					commandsID,
+					client.settings,
+					interaction.guild!.id
+				);
 				if (!idsAdminDB) return;
 				await interaction.followUp({
-					content: dedent(ul("help.admin.messageDB", {
-						deleteChar: idsAdminDB?.[t("deleteChar.name")],
-						stat: idsAdminDB?.["auto_role statistic"],
-						dice: idsAdminDB?.["auto_role dice"],
-						gm: {
-							dBd: idsAdminDB?.["gm dbd"],
-							dbRoll: idsAdminDB?.["gm dbroll"],
-						},
-						dbroll: idsAdminDB?.[t("dbRoll.name")],
-						dbd: idsAdminDB?.[t("rAtq.name")],
-					}))
+					content: dedent(
+						ul("help.admin.messageDB", {
+							deleteChar: idsAdminDB?.[t("deleteChar.name")],
+							stat: idsAdminDB?.["auto_role statistic"],
+							dice: idsAdminDB?.["auto_role dice"],
+							gm: {
+								dBd: idsAdminDB?.["gm dbd"],
+								dbRoll: idsAdminDB?.["gm dbroll"],
+							},
+							dbroll: idsAdminDB?.[t("dbRoll.name")],
+							dbd: idsAdminDB?.[t("rAtq.name")],
+						})
+					),
 				});
 				break;
 			}
 		}
-	}
+	},
 };
 
-function getHelpDBCmd(
-	commandsID: Collection<string, ApplicationCommand<unknown>>,
-) {
+function getHelpDBCmd(commandsID: Collection<string, ApplicationCommand<unknown>>) {
 	const commandToFind = [
 		t("rAtq.name"),
 		t("dbRoll.name"),
@@ -128,7 +157,7 @@ function getHelpDBCmd(
 	];
 	const ids: { [key: string]: string | undefined } = {};
 	for (const cmd of commandToFind) {
-		ids[cmd] = commandsID.findKey(command => command.name === cmd);
+		ids[cmd] = commandsID.findKey((command) => command.name === cmd);
 	}
 	return ids;
 }
@@ -151,7 +180,7 @@ function createHelpMessageDB(
 
 function getIDForAdminNoDB(commandsID: Collection<string, ApplicationCommand<unknown>>) {
 	const ids: { [key: string]: string | undefined } = {};
-	const idConfig = commandsID.findKey(command => command.name === t("config.name"));
+	const idConfig = commandsID.findKey((command) => command.name === t("config.name"));
 	if (!idConfig) {
 		return;
 	}
@@ -164,31 +193,35 @@ function getIDForAdminNoDB(commandsID: Collection<string, ApplicationCommand<unk
 	return ids;
 }
 
-function getIDForAdminDB(commandsID: Collection<string, ApplicationCommand<unknown>>, db: Settings, guildID: Snowflake) {
+function getIDForAdminDB(
+	commandsID: Collection<string, ApplicationCommand<unknown>>,
+	db: Settings,
+	guildID: Snowflake
+) {
 	if (!db.has(guildID, "templateID")) return;
 	const commandToFind = [
 		t("deleteChar.name"),
 		t("config.name"),
 		t("mjRoll.name"),
 		t("dbRoll.name"),
-		t("rAtq.name")
+		t("rAtq.name"),
 	];
 	const ids: { [key: string]: string | undefined } = {};
 	for (const cmd of commandToFind) {
 		if (cmd === t("mjRoll.name")) {
-			const id = commandsID.findKey(command => command.name === cmd);
+			const id = commandsID.findKey((command) => command.name === cmd);
 			if (id) {
 				ids["gm dbd"] = id;
 				ids["gm dbroll"] = id;
 			}
 		} else if (cmd === t("config.name")) {
-			const id = commandsID.findKey(command => command.name === cmd);
+			const id = commandsID.findKey((command) => command.name === cmd);
 			if (id) {
 				ids["auto_role statistic"] = id;
 				ids["auto_role dice"] = id;
 			}
 		} else {
-			ids[cmd] = commandsID.findKey(command => command.name === cmd);
+			ids[cmd] = commandsID.findKey((command) => command.name === cmd);
 		}
 	}
 	return ids;

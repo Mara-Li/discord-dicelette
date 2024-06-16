@@ -4,9 +4,8 @@ import { default as i18next } from "i18next";
 import { resources } from "./init";
 import { ALL_TRANSLATION_KEYS } from "..";
 
-
 export function ln(userLang: Locale) {
-	const localeName = Object.entries(Locale).find(([name, abbr],) => {
+	const localeName = Object.entries(Locale).find(([name, abbr]) => {
 		return name === userLang || abbr === userLang;
 	});
 	return i18next.getFixedT(localeName?.[1] ?? "en");
@@ -29,7 +28,6 @@ export function lError(error: Error, interaction?: BaseInteraction, userLang?: L
 	}
 	errorMessage = errorMessage.trim().length > 0 ? `\`\`\`\n${errorMessage}\n\`\`\`` : "";
 	return `${msgError}\n${errorMessage}`;
-
 }
 
 /**
@@ -43,12 +41,14 @@ export function lError(error: Error, interaction?: BaseInteraction, userLang?: L
  * }
  * ```
  * @param key i18n key
- * @returns 
+ * @returns
  */
 export function cmdLn(key: string) {
 	const localized: LocalizationMap = {};
 	const allValidLocale = Object.entries(Locale);
-	const allTranslatedLanguages = Object.keys(resources).filter((lang) => !lang.includes("en"));
+	const allTranslatedLanguages = Object.keys(resources).filter(
+		(lang) => !lang.includes("en")
+	);
 	for (const [name, locale] of allValidLocale) {
 		if (allTranslatedLanguages.includes(locale)) {
 			const ul = ln(name as Locale);
@@ -63,12 +63,16 @@ interface JsonObject {
 	[key: string]: any;
 }
 
-export function flattenJson(obj: JsonObject, parentKey = '', result: JsonObject = {}): JsonObject {
+export function flattenJson(
+	obj: JsonObject,
+	parentKey = "",
+	result: JsonObject = {}
+): JsonObject {
 	for (const key in obj) {
 		// biome-ignore lint/suspicious/noPrototypeBuiltins: <explanation>
 		if (obj.hasOwnProperty(key)) {
 			const newKey = parentKey ? `${parentKey}.${key}` : key;
-			if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+			if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
 				flattenJson(obj[key], newKey, result);
 			} else {
 				result[newKey] = obj[key];

@@ -5,5 +5,11 @@ import { help } from "./help";
 import { ROLL_AUTO, ROLL_CMDLIST } from "./rolls/index";
 
 export const autCompleteCmd = [...ROLL_AUTO, ...GIMMICK, deleteChar];
-export const commandsList = [...ROLL_AUTO, ...ROLL_CMDLIST, ...GIMMICK, ...ADMIN, deleteChar, help
+export const commandsList = [
+	...ROLL_AUTO,
+	...ROLL_CMDLIST,
+	...GIMMICK,
+	...ADMIN,
+	deleteChar,
+	help,
 ];

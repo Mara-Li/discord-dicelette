@@ -4,7 +4,12 @@ import type { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollStatistique } from "@utils/roll";
-import { type AutocompleteInteraction, type CommandInteraction, type CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
+import {
+	type AutocompleteInteraction,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	SlashCommandBuilder,
+} from "discord.js";
 import i18next from "i18next";
 import removeAccents from "remove-accents";
 
@@ -17,7 +22,7 @@ export const dbRoll = {
 		.setDescription(t("dbRoll.description"))
 		.setDescriptionLocalizations(cmdLn("dbRoll.description"))
 		.setDefaultMemberPermissions(0)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("common.statistic"))
 				.setNameLocalizations(cmdLn("common.statistic"))
@@ -26,7 +31,7 @@ export const dbRoll = {
 				.setRequired(true)
 				.setAutocomplete(true)
 		)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("common.character"))
 				.setDescription(t("dbRoll.options.character"))
@@ -35,7 +40,7 @@ export const dbRoll = {
 				.setRequired(false)
 				.setAutocomplete(true)
 		)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("dbRoll.options.comments.name"))
 				.setDescription(t("dbRoll.options.comments.description"))
@@ -43,7 +48,7 @@ export const dbRoll = {
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.comments.description"))
 				.setRequired(false)
 		)
-		.addStringOption(option =>
+		.addStringOption((option) =>
 			option
 				.setName(t("dbRoll.options.override.name"))
 				.setDescription(t("dbRoll.options.override.description"))
@@ -51,7 +56,7 @@ export const dbRoll = {
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.override.description"))
 				.setRequired(false)
 		)
-		.addNumberOption(option =>
+		.addNumberOption((option) =>
 			option
 				.setName(t("dbRoll.options.modificator.name"))
 				.setDescription(t("dbRoll.options.modificator.description"))
@@ -69,8 +74,11 @@ export const dbRoll = {
 		if (focused.name === t("common.statistic")) {
 			choices = guildData.templateID.statsName;
 		} else if (focused.name === t("common.character")) {
-			//get user characters 
-			const userData = client.settings.get(interaction.guild!.id, `user.${interaction.user.id}`);
+			//get user characters
+			const userData = client.settings.get(
+				interaction.guild!.id,
+				`user.${interaction.user.id}`
+			);
 			if (!userData) return;
 			const allCharactersFromUser = userData
 				.map((data) => data.charName ?? "")
@@ -81,7 +89,7 @@ export const dbRoll = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map(result => ({ name: title(result), value: result }))
+			filter.map((result) => ({ name: title(result), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -94,11 +102,23 @@ export const dbRoll = {
 		const charName = optionChar ? removeAccents(optionChar.toLowerCase()) : undefined;
 
 		try {
-			let userStatistique = await getUserFromMessage(client.settings, interaction.user.id, interaction, charName);
-			const serializedNameDB = userStatistique?.userName ? removeAccents(userStatistique.userName.toLowerCase()) : undefined;
-			const serializedNameQueries = charName ? removeAccents(charName).toLowerCase() : undefined;
+			let userStatistique = await getUserFromMessage(
+				client.settings,
+				interaction.user.id,
+				interaction,
+				charName
+			);
+			const serializedNameDB = userStatistique?.userName
+				? removeAccents(userStatistique.userName.toLowerCase())
+				: undefined;
+			const serializedNameQueries = charName
+				? removeAccents(charName).toLowerCase()
+				: undefined;
 			if (optionChar && serializedNameDB !== serializedNameQueries) {
-				await reply(interaction, { content: ul("error.charName", { charName: title(optionChar) }), ephemeral: true });
+				await reply(interaction, {
+					content: ul("error.charName", { charName: title(optionChar) }),
+					ephemeral: true,
+				});
 				return;
 			}
 			if (!userStatistique && !charName) {
@@ -116,13 +136,18 @@ export const dbRoll = {
 				await reply(interaction, { content: ul("error.noStats"), ephemeral: true });
 				return;
 			}
-			return await rollStatistique(interaction, client, userStatistique, options, ul, optionChar);
-		}
-		catch (e) {
+			return await rollStatistique(
+				interaction,
+				client,
+				userStatistique,
+				options,
+				ul,
+				optionChar
+			);
+		} catch (e) {
 			error(e);
 			const msgError = lError(e as Error, interaction);
 			await reply(interaction, { content: msgError, ephemeral: true });
 		}
-	}
+	},
 };
-

@@ -2,9 +2,19 @@ import type { Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
-import { channelMention, ChannelType, type CommandInteraction, type CommandInteractionOptionResolver, EmbedBuilder, PermissionFlagsBits, roleMention, SlashCommandBuilder, TextChannel, ThreadChannel } from "discord.js";
+import {
+	channelMention,
+	ChannelType,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	EmbedBuilder,
+	PermissionFlagsBits,
+	roleMention,
+	SlashCommandBuilder,
+	TextChannel,
+	ThreadChannel,
+} from "discord.js";
 import i18next from "i18next";
-
 
 const t = i18next.getFixedT("en");
 export const adminConfig = {
@@ -15,50 +25,57 @@ export const adminConfig = {
 		.setDescription(t("config.description"))
 		.setDescriptionLocalizations(cmdLn("config.description"))
 		/* LOGS */
-		.addSubcommand(subcommand =>
+		.addSubcommand((subcommand) =>
 			subcommand
 				.setName(t("logs.name"))
 				.setNameLocalizations(cmdLn("logs.name"))
 				.setDescription(t("logs.description"))
 				.setDescriptionLocalizations(cmdLn("logs.description"))
 				.setNameLocalizations(cmdLn("logs.name"))
-				.addChannelOption(option =>
+				.addChannelOption((option) =>
 					option
 						.setName(t("common.channel"))
 						.setDescription(t("logs.options"))
 						.setDescriptionLocalizations(cmdLn("logs.options"))
 						.setNameLocalizations(cmdLn("common.channel"))
 						.setRequired(false)
-						.addChannelTypes(ChannelType.GuildText, ChannelType.PrivateThread, ChannelType.PublicThread)
+						.addChannelTypes(
+							ChannelType.GuildText,
+							ChannelType.PrivateThread,
+							ChannelType.PublicThread
+						)
 				)
 		)
 		/* RESULT CHANNEL */
-		.addSubcommand(subcommand =>
+		.addSubcommand((subcommand) =>
 			subcommand
 				.setName(t("changeThread.name"))
 				.setNameLocalizations(cmdLn("changeThread.name"))
 				.setDescription(t("changeThread.description"))
 				.setDescriptionLocalizations(cmdLn("changeThread.description"))
-				.addChannelOption(option =>
+				.addChannelOption((option) =>
 					option
 						.setName(t("common.channel"))
 						.setNameLocalizations(cmdLn("common.channel"))
 						.setDescription(t("changeThread.options"))
 						.setDescriptionLocalizations(cmdLn("changeThread.options"))
 						.setRequired(false)
-						.addChannelTypes(ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread)
+						.addChannelTypes(
+							ChannelType.GuildText,
+							ChannelType.PublicThread,
+							ChannelType.PrivateThread
+						)
 				)
 		)
 
-
 		/* DELETE AFTER */
-		.addSubcommand(subcommand =>
+		.addSubcommand((subcommand) =>
 			subcommand
 				.setName(t("timer.name"))
 				.setNameLocalizations(cmdLn("timer.name"))
 				.setDescription(t("timer.description"))
 				.setDescriptionLocalizations(cmdLn("timer.description"))
-				.addNumberOption(option =>
+				.addNumberOption((option) =>
 					option
 						.setName(t("timer.option.name"))
 						.setNameLocalizations(cmdLn("timer.option.name"))
@@ -71,13 +88,13 @@ export const adminConfig = {
 		)
 
 		/* DISABLE THREAD */
-		.addSubcommand(subcommand =>
+		.addSubcommand((subcommand) =>
 			subcommand
 				.setName(t("disableThread.name"))
 				.setNameLocalizations(cmdLn("disableThread.name"))
 				.setDescription(t("disableThread.description"))
 				.setDescriptionLocalizations(cmdLn("disableThread.description"))
-				.addBooleanOption(option =>
+				.addBooleanOption((option) =>
 					option
 						.setName(t("disableThread.options.name"))
 						.setNameLocalizations(cmdLn("disableThread.options.name"))
@@ -88,27 +105,27 @@ export const adminConfig = {
 		)
 
 		/* DISPLAY */
-		.addSubcommand(subcommand =>
+		.addSubcommand((subcommand) =>
 			subcommand
 				.setName(t("config.display.name"))
 				.setNameLocalizations(cmdLn("config.display.name"))
 				.setDescription(t("config.display.description"))
-				.setDescriptionLocalizations(cmdLn("config.display.description")),
+				.setDescriptionLocalizations(cmdLn("config.display.description"))
 		)
 		/* AUTO ROLE */
-		.addSubcommandGroup(group =>
+		.addSubcommandGroup((group) =>
 			group
 				.setName(t("autoRole.name"))
 				.setNameLocalizations(cmdLn("autoRole.name"))
 				.setDescription(t("autoRole.description"))
 				.setDescriptionLocalizations(cmdLn("autoRole.description"))
-				.addSubcommand(subcommand =>
+				.addSubcommand((subcommand) =>
 					subcommand
 						.setName(t("common.statistic"))
 						.setNameLocalizations(cmdLn("common.statistic"))
 						.setDescription(t("autoRole.stat.desc"))
 						.setDescriptionLocalizations(cmdLn("autoRole.stat.desc"))
-						.addRoleOption(option =>
+						.addRoleOption((option) =>
 							option
 								.setName(t("common.role"))
 								.setNameLocalizations(cmdLn("common.role"))
@@ -117,13 +134,13 @@ export const adminConfig = {
 								.setRequired(false)
 						)
 				)
-				.addSubcommand(subcommand =>
+				.addSubcommand((subcommand) =>
 					subcommand
 						.setName(t("common.dice"))
 						.setNameLocalizations(cmdLn("common.dice"))
 						.setDescription(t("autoRole.dice.desc"))
 						.setDescriptionLocalizations(cmdLn("autoRole.dice.desc"))
-						.addRoleOption(option =>
+						.addRoleOption((option) =>
 							option
 								.setName(t("common.role"))
 								.setNameLocalizations(cmdLn("common.role"))
@@ -135,19 +152,18 @@ export const adminConfig = {
 		)
 
 		/* TIMESTAMP */
-		.addSubcommand(sub =>
+		.addSubcommand((sub) =>
 			sub
 				.setName(t("timestamp.name"))
 				.setDescription(t("timestamp.description"))
 				.setDescriptionLocalizations(cmdLn("timestamp.description"))
 				.setNameLocalizations(cmdLn("timestamp.name"))
-				.addBooleanOption(option =>
+				.addBooleanOption((option) =>
 					option
 						.setName(t("disableThread.options.name"))
 						.setDescription(t("timestamp.options"))
 						.setRequired(true)
 				)
-
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
@@ -156,13 +172,14 @@ export const adminConfig = {
 		const subcommand = options.getSubcommand(true);
 		const subcommandGroup = options.getSubcommandGroup();
 		if (subcommandGroup && subcommandGroup === t("autoRole.name")) {
-			if (subcommand === t("common.statistic")) return stats(options, client, ul, interaction);
+			if (subcommand === t("common.statistic"))
+				return stats(options, client, ul, interaction);
 			if (subcommand === t("common.dice")) return dice(options, client, ul, interaction);
 		}
 		switch (subcommand) {
 			case t("logs.name"):
 				return await logs(interaction, client, ul, options);
-			case (t("changeThread.name")):
+			case t("changeThread.name"):
 				return await changeThread(interaction, client, ul, options);
 			case t("disableThread.name"):
 				return await disableThread(interaction, client, ul, options);
@@ -176,7 +193,12 @@ export const adminConfig = {
 	},
 };
 
-function stats(options: CommandInteractionOptionResolver, client: EClient, ul: Translation, interaction: CommandInteraction) {
+function stats(
+	options: CommandInteractionOptionResolver,
+	client: EClient,
+	ul: Translation,
+	interaction: CommandInteraction
+) {
 	const role = options.getRole(t("common.role"));
 	if (!role) {
 		//remove the role from the db
@@ -184,10 +206,18 @@ function stats(options: CommandInteractionOptionResolver, client: EClient, ul: T
 		return reply(interaction, { content: ul("autoRole.stat.remove"), ephemeral: true });
 	}
 	client.settings.set(interaction.guild!.id, role.id, "autoRole.stats");
-	return reply(interaction, { content: ul("autoRole.stat.set", { role: roleMention(role.id) }), ephemeral: true });
+	return reply(interaction, {
+		content: ul("autoRole.stat.set", { role: roleMention(role.id) }),
+		ephemeral: true,
+	});
 }
 
-function dice(options: CommandInteractionOptionResolver, client: EClient, ul: Translation, interaction: CommandInteraction) {
+function dice(
+	options: CommandInteractionOptionResolver,
+	client: EClient,
+	ul: Translation,
+	interaction: CommandInteraction
+) {
 	const role = options.getRole(t("common.role"));
 	if (!role) {
 		//remove the role from the db
@@ -195,39 +225,75 @@ function dice(options: CommandInteractionOptionResolver, client: EClient, ul: Tr
 		return reply(interaction, { content: ul("autoRole.dice.remove"), ephemeral: true });
 	}
 	client.settings.set(interaction.guild!.id, role.id, "autoRole.dice");
-	return reply(interaction, { content: ul("autoRole.dice.set", { role: roleMention(role.id) }), ephemeral: true });
+	return reply(interaction, {
+		content: ul("autoRole.dice.set", { role: roleMention(role.id) }),
+		ephemeral: true,
+	});
 }
 
-async function logs(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
+async function logs(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation,
+	options: CommandInteractionOptionResolver
+) {
 	const channel = options.getChannel(ul("common.channel"), true);
-	if (!channel || !(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) {
+	if (
+		!channel ||
+		(!(channel instanceof TextChannel) && !(channel instanceof ThreadChannel))
+	) {
 		const oldChan = client.settings.get(interaction.guild!.id, "logs");
 		client.settings.delete(interaction.guild!.id, "logs");
-		const msg = oldChan ? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}` : ".";
+		const msg = oldChan
+			? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}`
+			: ".";
 		await reply(interaction, { content: `${ul("logs.delete")}${msg}`, ephemeral: true });
 		return;
 	}
 	client.settings.set(interaction.guild!.id, channel.id, "logs");
-	await reply(interaction, { content: ul("logs.set", { channel: channel.name }), ephemeral: true });
+	await reply(interaction, {
+		content: ul("logs.set", { channel: channel.name }),
+		ephemeral: true,
+	});
 }
 
-async function changeThread(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
+async function changeThread(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation,
+	options: CommandInteractionOptionResolver
+) {
 	const channel = options.getChannel("channel", true);
 	if (!interaction.guild) return;
-	if (!channel || !(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) {
+	if (
+		!channel ||
+		(!(channel instanceof TextChannel) && !(channel instanceof ThreadChannel))
+	) {
 		const oldChan = client.settings.get(interaction.guild.id, "rollChannel");
-		const msg = oldChan ? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}` : ".";
+		const msg = oldChan
+			? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}`
+			: ".";
 		client.settings.delete(interaction.guild.id, "rollChannel");
-		await reply(interaction, { content: `${ul("changeThread.delete")}${msg}`, ephemeral: true });
+		await reply(interaction, {
+			content: `${ul("changeThread.delete")}${msg}`,
+			ephemeral: true,
+		});
 		return;
 	}
 	client.settings.set(interaction.guild.id, channel.id, "rollChannel");
-	await reply(interaction, ul("changeThread.set", { channel: channelMention(channel.id) }));
+	await reply(
+		interaction,
+		ul("changeThread.set", { channel: channelMention(channel.id) })
+	);
 	return;
-
 }
 
-async function disableThread(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
+async function disableThread(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation,
+	options: CommandInteractionOptionResolver
+) {
 	const toggle = options.getBoolean(t("disableThread.options.name"), true);
 	//toggle TRUE = disable thread creation
 	//toggle FALSE = enable thread creation
@@ -236,7 +302,9 @@ async function disableThread(interaction: CommandInteraction, client: EClient, u
 		client.settings.set(interaction.guild!.id, true, "disableThread");
 		if (rollChannel) {
 			const mention = `<#${rollChannel}>`;
-			const msg = ul("disableThread.disable.reply") + ul("disableThread.disable.mention", { mention });
+			const msg =
+				ul("disableThread.disable.reply") +
+				ul("disableThread.disable.mention", { mention });
 			await reply(interaction, msg);
 			return;
 		}
@@ -246,7 +314,8 @@ async function disableThread(interaction: CommandInteraction, client: EClient, u
 	client.settings.delete(interaction.guild!.id, "disableThread");
 	if (rollChannel) {
 		const mention = `<#${rollChannel}>`;
-		const msg = ul("disableThread.enable.reply") + ul("disableThread.enable.mention", { mention });
+		const msg =
+			ul("disableThread.enable.reply") + ul("disableThread.enable.mention", { mention });
 		await reply(interaction, msg);
 		return;
 	}
@@ -254,7 +323,12 @@ async function disableThread(interaction: CommandInteraction, client: EClient, u
 	return;
 }
 
-async function timer(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
+async function timer(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation,
+	options: CommandInteractionOptionResolver
+) {
 	if (!interaction.guild) return;
 	const timer = options.getNumber(t("timer.option.name"), true);
 	client.settings.set(interaction.guild.id, timer * 1000, "deleteAfter");
@@ -265,7 +339,11 @@ async function timer(interaction: CommandInteraction, client: EClient, ul: Trans
 	}
 }
 
-async function display(interaction: CommandInteraction, client: EClient, ul: Translation) {
+async function display(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation
+) {
 	const timer = client.settings.get(interaction.guild!.id, "deleteAfter");
 	const logs = client.settings.get(interaction.guild!.id, "logs");
 	const rollChannel = client.settings.get(interaction.guild!.id, "rollChannel");
@@ -361,7 +439,12 @@ async function display(interaction: CommandInteraction, client: EClient, ul: Tra
 	await interaction.reply({ embeds: [baseEmbed] });
 }
 
-async function timestamp(interaction: CommandInteraction, client: EClient, ul: Translation, options: CommandInteractionOptionResolver) {
+async function timestamp(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation,
+	options: CommandInteractionOptionResolver
+) {
 	const toggle = options.getBoolean(t("disableThread.options.name"), true);
 	client.settings.set(interaction.guild!.id, toggle, "timestamp");
 	if (toggle) {

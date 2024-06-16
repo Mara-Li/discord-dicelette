@@ -1,10 +1,10 @@
-import {error as err} from "@console";
+import { error as err } from "@console";
 import type { EClient } from "@main";
 import dotenv from "dotenv";
 
 dotenv.config({ path: ".env" });
 
-export const botError = (client	: EClient): void => {
+export const botError = (client: EClient): void => {
 	client.on("error", async (error) => {
 		err(error);
 		if (!process.env.OWNER_ID) return;
@@ -12,4 +12,3 @@ export const botError = (client	: EClient): void => {
 		dm.send(`An error has occurred:\n\`\`\`\n${error.message}\n\`\`\``);
 	});
 };
-
