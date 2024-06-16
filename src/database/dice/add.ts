@@ -1,7 +1,7 @@
 import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId } from "@interface";
-import { findKeyFromTranslation, lError, ln } from "@localization";
+import { findln, lError, ln } from "@localization";
 import { addAutoRole, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
@@ -96,7 +96,7 @@ export async function storeDamageDice(
 	const embed = ensureEmbed(interaction.message ?? undefined);
 	const user =
 		embed.fields
-			.find((field) => findKeyFromTranslation(field.name) === "common.user")
+			.find((field) => findln(field.name) === "common.user")
 			?.value.replace("<@", "")
 			.replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache

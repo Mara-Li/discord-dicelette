@@ -88,7 +88,7 @@ export function flattenJson(
  * @param embed {{[name: string]: string}}
  * @example : "Nom du personnage" => ""common.charName"
  */
-export function findKeyFromTranslation(translatedText: string) {
+export function findln(translatedText: string) {
 	const allLocales = Object.keys(resources);
 	for (const locale of allLocales) {
 		const ul = ln(locale as Locale);

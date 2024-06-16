@@ -11,7 +11,7 @@ import {
 	ThreadChannel,
 	type User,
 } from "discord.js";
-import { findKeyFromTranslation, ln } from "../localizations";
+import { findln, ln } from "../localizations";
 import { reply, title } from "../utils";
 import removeAccents from "remove-accents";
 
@@ -33,7 +33,7 @@ export async function getUserNameAndChar(
 	if (!userEmbed) throw new Error(ul("error.noEmbed"));
 	const userID = userEmbed
 		.toJSON()
-		.fields?.find((field) => findKeyFromTranslation(field.name) === "common.user")
+		.fields?.find((field) => findln(field.name) === "common.user")
 		?.value.replace("<@", "")
 		.replace(">", "");
 	if (!userID) throw new Error(ul("error.user"));
@@ -45,9 +45,7 @@ export async function getUserNameAndChar(
 		throw new Error(ul("error.noThread"));
 	let userName = userEmbed
 		.toJSON()
-		.fields?.find(
-			(field) => findKeyFromTranslation(field.name) === "common.character"
-		)?.value;
+		.fields?.find((field) => findln(field.name) === "common.character")?.value;
 	if (userName === ul("common.noSet")) userName = undefined;
 	return { userID, userName, thread: interaction.channel };
 }
@@ -141,7 +139,7 @@ export async function allowEdit(
 	const ul = ln(interaction.locale as Locale);
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields
-		.find((field) => findKeyFromTranslation(field.name) === "common.user")
+		.find((field) => findln(field.name) === "common.user")
 		?.value.replace("<@", "")
 		.replace(">", "");
 	const isSameUser = user === interactionUser.id;
@@ -150,12 +148,10 @@ export async function allowEdit(
 		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 	const first = interaction.customId.includes("first");
 	const userName = embed.fields.find((field) =>
-		["common.character", "common.charName"].includes(findKeyFromTranslation(field.name))
+		["common.character", "common.charName"].includes(findln(field.name))
 	);
 	const userNameValue =
-		userName && findKeyFromTranslation(userName?.value) === "common.noSet"
-			? undefined
-			: userName?.value;
+		userName && findln(userName?.value) === "common.noSet" ? undefined : userName?.value;
 	if (!first && user) {
 		const { isInDb, coord } = verifyIfEmbedInDB(
 			db,
