@@ -27,11 +27,11 @@ export default (client: EClient): void => {
 			let content = message.content;
 			//detect roll between bracket
 			const detectRoll = content.match(/\[(.*)\]/)?.[1];
-			const rollWithMessage = content.match(DETECT_DICE_MESSAGE)?.[3];
-			if (rollWithMessage && !detectRoll) {
+			const comments = content.match(DETECT_DICE_MESSAGE)?.[3];
+			if (comments && !detectRoll) {
 				const diceValue = content.match(/^\S*#?d\S+|\{.*\}/);
 				if (!diceValue) return;
-				content = content.replace(DETECT_DICE_MESSAGE, "$1 /* $3 */");
+				content = content.replace(DETECT_DICE_MESSAGE, "$1");
 			}
 			let deleteInput = true;
 			let result: Resultat | undefined;
@@ -43,19 +43,24 @@ export default (client: EClient): void => {
 			if (detectRoll) {
 				deleteInput = false;
 			}
+
 			//is a valid roll as we are in the function so we can work as always
 
 			const userLang = message.guild.preferredLocale ?? Locale.EnglishUS;
 			const ul = ln(userLang);
 			const channel = message.channel;
 			if (!result) return;
+			if (comments && !detectRoll && result) {
+				result.dice = `${result.dice} /* ${comments} */`;
+				result.comment = comments;
+			}
 			const parser = parseResult(result, ul);
 			if (
 				channel.name.startsWith("🎲") ||
 				client.settings.get(message.guild.id, "disableThread") === true ||
 				client.settings.get(message.guild.id, "rollChannel") === channel.id
 			) {
-				await message.reply({ content: parser, allowedMentions: { repliedUser: false } });
+				await message.reply({ content: parser, allowedMentions: { repliedUser: true } });
 				return;
 			}
 			let linkToOriginal = "";

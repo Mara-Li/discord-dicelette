@@ -63,10 +63,10 @@ export async function rollWithInteraction(
 	}
 	if (comments) {
 		rollDice.comment = comments;
-		rollDice.dice = `${dice} /* ${comments} `;
+		rollDice.dice = `${dice} /* ${comments} */`;
 	}
 
-	const parser = parseResult(rollDice, ul, critical);
+	const parser = parseResult(rollDice, ul, critical, !!infoRoll);
 	const userId = user?.id ?? interaction.user.id;
 	let mentionUser: string = userMention(userId);
 	const titleCharName = `__**${title(charName)}**__`;

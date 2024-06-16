@@ -11,7 +11,8 @@ import { evaluate } from "mathjs";
 export function parseResult(
 	output: Resultat,
 	ul: Translation,
-	critical?: { failure?: number; success?: number }
+	critical?: { failure?: number; success?: number },
+	interaction?: boolean
 ) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
@@ -64,7 +65,9 @@ export function parseResult(
 	}
 	const comment = output.comment
 		? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*\n`
-		: "";
+		: interaction
+			? "\n"
+			: "";
 	return `${comment}${msgSuccess}`;
 }
 
