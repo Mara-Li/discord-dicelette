@@ -16,6 +16,7 @@ jobs:
           username: ubuntu
           password: ${{ secrets.PASSWORD }}
           script: |
+            PATH=$PATH:/home/.local/share/nvm/v20.14.0/bin
             cd dicelette/
             git pull
             pnpm i
