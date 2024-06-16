@@ -68,6 +68,7 @@ function convertDatabaseUser(db: Settings, guild: Guild) {
 				}
 			}
 		}
+		if (userData.length === 0) db.delete(guild.id, `user.${userId}`);
 	}
 	db.set(guild.id, true, "converted");
 }
