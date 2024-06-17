@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.0](https://github.com/Dicelette/discord-dicelette/compare/1.5.0...1.6.0) (2024-06-17)
+
+
+### Features
+
+* handle by the core too much dice & stats ([b58f182](https://github.com/Dicelette/discord-dicelette/commit/b58f1824f706a93e20e417c59da024a60f3a37f9))
+* optimize error message and try/catch ([c2fa75d](https://github.com/Dicelette/discord-dicelette/commit/c2fa75da8cd2f931bebebddc21a3e1d8888428c5))
+
 ## [1.5.0](https://github.com/Dicelette/discord-dicelette/compare/1.4.3...1.5.0) (2024-06-17)
 
 
