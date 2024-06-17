@@ -316,7 +316,7 @@ export const registerTemplate = {
 		);
 		const msg = await channel.send({
 			content: "",
-			embeds: embeds,
+			embeds: embeds as EmbedBuilder[],
 			files: [
 				{
 					attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"),
