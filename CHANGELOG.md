@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.5.0](https://github.com/Dicelette/discord-dicelette/compare/1.4.3...1.5.0) (2024-06-17)
+
+
+### Features
+
+* capitalize each words instead of the first ([77a0ea8](https://github.com/Dicelette/discord-dicelette/commit/77a0ea8d8a0a5a4fa9776119430fe42240261518))
+
+
+### Bug Fixes
+
+* autorole not added in some condition ([0f92687](https://github.com/Dicelette/discord-dicelette/commit/0f92687ea42b50ab58282f7d37814d8e1c23f996))
+* error should be better to understand ([b4ac915](https://github.com/Dicelette/discord-dicelette/commit/b4ac915ed043b4ea73778ba11f8df5421ad3723e))
+
 ## [1.4.3](https://github.com/Dicelette/discord-dicelette/compare/1.4.2...1.4.3) (2024-06-16)
 
 
