@@ -1,5 +1,4 @@
-import { error } from "@console";
-import { cmdLn, lError, ln } from "@localization";
+import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
@@ -101,53 +100,47 @@ export const dbRoll = {
 		let optionChar = options.getString(t("common.character")) ?? undefined;
 		const charName = optionChar ? removeAccents(optionChar.toLowerCase()) : undefined;
 
-		try {
-			let userStatistique = await getUserFromMessage(
-				client.settings,
-				interaction.user.id,
-				interaction,
-				charName
-			);
-			const serializedNameDB = userStatistique?.userName
-				? removeAccents(userStatistique.userName.toLowerCase())
-				: undefined;
-			const serializedNameQueries = charName
-				? removeAccents(charName).toLowerCase()
-				: undefined;
-			if (optionChar && serializedNameDB !== serializedNameQueries) {
-				await reply(interaction, {
-					content: ul("error.charName", { charName: title(optionChar) }),
-					ephemeral: true,
-				});
-				return;
-			}
-			if (!userStatistique && !charName) {
-				//find the first character registered
-				const char = await getFirstRegisteredChar(client, interaction, ul);
-				userStatistique = char?.userStatistique;
-				optionChar = char?.optionChar;
-			}
-			if (!userStatistique) {
-				await reply(interaction, { content: ul("error.notRegistered"), ephemeral: true });
-				return;
-			}
-
-			if (!userStatistique.stats) {
-				await reply(interaction, { content: ul("error.noStats"), ephemeral: true });
-				return;
-			}
-			return await rollStatistique(
-				interaction,
-				client,
-				userStatistique,
-				options,
-				ul,
-				optionChar
-			);
-		} catch (e) {
-			error(e);
-			const msgError = lError(e as Error, interaction);
-			await reply(interaction, { content: msgError, ephemeral: true });
+		let userStatistique = await getUserFromMessage(
+			client.settings,
+			interaction.user.id,
+			interaction,
+			charName
+		);
+		const serializedNameDB = userStatistique?.userName
+			? removeAccents(userStatistique.userName.toLowerCase())
+			: undefined;
+		const serializedNameQueries = charName
+			? removeAccents(charName).toLowerCase()
+			: undefined;
+		if (optionChar && serializedNameDB !== serializedNameQueries) {
+			await reply(interaction, {
+				content: ul("error.charName", { charName: title(optionChar) }),
+				ephemeral: true,
+			});
+			return;
 		}
+		if (!userStatistique && !charName) {
+			//find the first character registered
+			const char = await getFirstRegisteredChar(client, interaction, ul);
+			userStatistique = char?.userStatistique;
+			optionChar = char?.optionChar;
+		}
+		if (!userStatistique) {
+			await reply(interaction, { content: ul("error.notRegistered"), ephemeral: true });
+			return;
+		}
+
+		if (!userStatistique.stats) {
+			await reply(interaction, { content: ul("error.noStats"), ephemeral: true });
+			return;
+		}
+		return await rollStatistique(
+			interaction,
+			client,
+			userStatistique,
+			options,
+			ul,
+			optionChar
+		);
 	},
 };

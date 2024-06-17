@@ -246,15 +246,18 @@ export const registerTemplate = {
 			.setTitle(ul("register.embed.title"))
 			.setDescription(ul("register.embed.description"))
 			.setThumbnail(
-				"https://github.com/Lisandra-dev/discord-dicelette-plus/blob/main/assets/template.png?raw=true"
+				"https://github.com/dicelette/discord-dicelette/blob/main/assets/template.png?raw=true"
 			)
 			.setColor("Random");
 
-		if (templateData.statistics && Object.keys(templateData.statistics).length >= 25) {
-			await reply(interaction, { content: ul("error.tooMuchStats"), ephemeral: true });
-			return;
-		}
+		//if there are ~25 stats we need to create an embed for it, so go to multiple embed, as user was done.
+		let statisticsEmbed: undefined | EmbedBuilder = undefined;
 		if (templateData.statistics) {
+			statisticsEmbed = new EmbedBuilder()
+				.setTitle(ul("embed.stats"))
+				.setThumbnail(
+					"https://github.com/dicelette/discord-dicelette/blob/main/assets/player.png?raw=true"
+				);
 			for (const [stat, value] of Object.entries(templateData.statistics)) {
 				const min = value.min;
 				const max = value.max;
@@ -265,13 +268,14 @@ export const registerTemplate = {
 				if (min) msg += `- Min${ul("common.space")}: \`${min}\`\n`;
 				if (max) msg += `- Max${ul("common.space")}: \`${max}\`\n`;
 				if (msg.length === 0) msg = ul("register.embed.noValue");
-				embedTemplate.addFields({
+				statisticsEmbed.addFields({
 					name: title(stat),
 					value: msg,
 					inline: true,
 				});
 			}
 		}
+
 		if (templateData.diceType)
 			embedTemplate.addFields({
 				name: ul("common.dice"),
@@ -293,18 +297,26 @@ export const registerTemplate = {
 				name: ul("common.total"),
 				value: `${ul("common.total")}${ul("common.space")}: \`${templateData.total}\``,
 			});
+		let diceEmbed: undefined | EmbedBuilder = undefined;
 		if (templateData.damage) {
-			const damage = Object.entries(templateData.damage)
-				.map(([name, value]) => `- ${name} : ${value}`)
-				.join("\n");
-			embedTemplate.addFields({
-				name: ul("register.embed.damage"),
-				value: damage,
-			});
+			diceEmbed = new EmbedBuilder()
+				.setTitle(ul("embed.dice"))
+				.setThumbnail(
+					"https://raw.githubusercontent.com/dicelette/discord-dicelette/main/assets/dice.png"
+				);
+			for (const [dice, value] of Object.entries(templateData.damage))
+				diceEmbed.addFields({
+					name: title(dice),
+					value: `${value}`,
+					inline: true,
+				});
 		}
+		const embeds = [embedTemplate, statisticsEmbed, diceEmbed].filter(
+			(embed) => embed !== undefined
+		);
 		const msg = await channel.send({
 			content: "",
-			embeds: [embedTemplate],
+			embeds: embeds,
 			files: [
 				{
 					attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"),

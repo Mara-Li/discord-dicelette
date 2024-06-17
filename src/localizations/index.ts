@@ -10,6 +10,7 @@ import {
 	EmptyObjectError,
 	TooManyDice,
 	NoStatisticsError,
+	TooManyStats,
 } from "@dicelette/core";
 
 export function ln(userLang: Locale) {
@@ -38,6 +39,9 @@ export function lError(error: Error, interaction?: BaseInteraction, userLang?: L
 	}
 	if (error instanceof NoStatisticsError) {
 		return ul("error.emptyStats");
+	}
+	if (error instanceof TooManyStats) {
+		return ul("error.tooMuchStats");
 	}
 	return ul("error.generic", { e: error });
 }

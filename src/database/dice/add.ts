@@ -1,7 +1,7 @@
 import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId } from "@interface";
-import { findln, lError, ln } from "@localization";
+import { findln, ln } from "@localization";
 import { addAutoRole, removeEmojiAccents, reply, sendLogs, title } from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
@@ -145,13 +145,8 @@ export async function registerDamageDice(
 		}
 	const user = getUserByEmbed(interaction.message, ul, first);
 	if (!user) throw new Error(ul("error.user")); //mean that there is no embed
-	try {
-		value = evalStatsDice(value, user.stats);
-	} catch (error) {
-		const errorMsg = lError(error as Error, interaction);
-		await reply(interaction, { content: errorMsg, ephemeral: true });
-		return;
-	}
+	value = evalStatsDice(value, user.stats);
+
 	if (
 		diceEmbed
 			.toJSON()
