@@ -32,7 +32,6 @@ import {
 	PermissionFlagsBits,
 	type PrivateThreadChannel,
 	type PublicThreadChannel,
-	roleMention,
 	StageChannel,
 	TextChannel,
 	VoiceChannel,
@@ -40,6 +39,7 @@ import {
 import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
+import { error } from "../console";
 /**
  * Set the tags for thread channel in forum
  * @param forum {ForumChannel}
@@ -380,6 +380,20 @@ export async function reply(
 		: await interaction.reply(options);
 }
 
+async function fetchDiceRole(diceEmbed: boolean, guild: Guild, role?: string) {
+	if (!diceEmbed || !role) return;
+	const diceRole = guild.roles.cache.get(role);
+	if (!diceRole) return await guild.roles.fetch(role);
+	return diceRole;
+}
+
+async function fetchStatsRole(statsEmbed: boolean, guild: Guild, role?: string) {
+	if (!statsEmbed || !role) return;
+	const statsRole = guild.roles.cache.get(role);
+	if (!statsRole) return await guild.roles.fetch(role);
+	return statsRole;
+}
+
 export async function addAutoRole(
 	interaction: BaseInteraction,
 	member: string,
@@ -390,24 +404,24 @@ export async function addAutoRole(
 	const autoRole = db.get(interaction.guild!.id, "autoRole");
 	if (!autoRole) return;
 	try {
-		const diceRole = autoRole.dice
-			? interaction.guild!.roles.cache.get(roleMention(autoRole.dice))
-			: undefined;
-		const statsRole = autoRole.stats
-			? interaction.guild!.roles.cache.get(roleMention(autoRole.stats))
-			: undefined;
-		if (diceEmbed && diceRole) {
-			await interaction
-				.guild!.members.cache.get(member)
-				?.roles.add(roleMention(diceRole.id));
+		let guildMember = interaction.guild!.members.cache.get(member);
+		if (!guildMember) {
+			//Use the fetch in case the member is not in the cache
+			guildMember = await interaction.guild!.members.fetch(member);
 		}
-		if (statsEmbed && statsRole) {
-			await interaction
-				.guild!.members.cache.get(member)
-				?.roles.add(roleMention(statsRole.id));
-		}
+		//fetch role
+		const diceRole = await fetchDiceRole(diceEmbed, interaction.guild!, autoRole.dice);
+		const statsRole = await fetchStatsRole(
+			statsEmbed,
+			interaction.guild!,
+			autoRole.stats
+		);
+
+		if (diceEmbed && diceRole) await guildMember.roles.add(diceRole);
+
+		if (statsEmbed && statsRole) await guildMember.roles.add(statsRole);
 	} catch (e) {
-		console.error("Error while adding role", e);
+		error("Error while adding role", e);
 		//delete the role from database so it will be skip next time
 		db.delete(interaction.guild!.id, "autoRole");
 		const dblogs = db.get(interaction.guild!.id, "logs");
