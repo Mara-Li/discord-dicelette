@@ -3,6 +3,14 @@ import { default as i18next } from "i18next";
 
 import { resources } from "./init";
 import { ALL_TRANSLATION_KEYS } from "..";
+import {
+	DiceTypeError,
+	FormulaError,
+	MaxGreater,
+	EmptyObjectError,
+	TooManyDice,
+	NoStatisticsError,
+} from "@dicelette/core";
 
 export function ln(userLang: Locale) {
 	const localeName = Object.entries(Locale).find(([name, abbr]) => {
@@ -12,22 +20,26 @@ export function ln(userLang: Locale) {
 }
 
 export function lError(error: Error, interaction?: BaseInteraction, userLang?: Locale) {
-	let errorMessage = error.message;
-	let errors: string[] = [];
-	//check if errorMessage is a list
-	const errorList = /\[(.*)\]/gi.exec(errorMessage);
-	if (errorList) {
-		errors = errorList?.[1].split(",");
-		errorMessage = errorMessage.replace(/\[(.*)\]/, "");
-	}
-	//get key from translation
 	const ul = ln(interaction?.locale ?? userLang ?? Locale.EnglishUS);
-	let msgError = "";
-	for (const error of errors) {
-		msgError += ul(error.trim());
+	if (error instanceof DiceTypeError) {
+		return ul("error.invalidDice.withDice", { dice: error.dice });
 	}
-	errorMessage = errorMessage.trim().length > 0 ? `\`\`\`\n${errorMessage}\n\`\`\`` : "";
-	return `${msgError}\n${errorMessage}`;
+	if (error instanceof FormulaError) {
+		return ul("error.invalidFormula", { formula: error.formula });
+	}
+	if (error instanceof MaxGreater) {
+		return ul("error.mustBeGreater", { max: error.max, value: error.value });
+	}
+	if (error instanceof EmptyObjectError) {
+		return ul("error.emptyDamage");
+	}
+	if (error instanceof TooManyDice) {
+		return ul("error.tooMuchDice");
+	}
+	if (error instanceof NoStatisticsError) {
+		return ul("error.emptyStats");
+	}
+	return ul("error.generic", { e: error });
 }
 
 /**

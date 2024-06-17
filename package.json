@@ -63,8 +63,7 @@
     "papaparse": "^5.4.1",
     "random-js": "^2.1.0",
     "remove-accents": "^0.5.0",
-    "ts-dedent": "^2.2.0",
-    "vitest-tsconfig-paths": "^3.4.1"
+    "ts-dedent": "^2.2.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.1",
@@ -80,7 +79,6 @@
     "json-colorizer": "^2.2.2",
     "parse-color": "^1.0.0",
     "sqlite3": "^5.1.7",
-    "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.8.10",
