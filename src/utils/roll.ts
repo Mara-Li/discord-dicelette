@@ -1,5 +1,4 @@
 import { deleteAfter } from "@commands/rolls/base_roll";
-import { error, log } from "@console";
 import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
 import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { Settings, Translation, UserData } from "@interface";
@@ -49,12 +48,10 @@ export async function rollWithInteraction(
 		//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
 		dice = dice.replace(DETECT_DICE_MESSAGE, "$1");
 	}
-	log(dice);
 	//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
 	dice = dice.trim();
 	const rollDice = roll(dice.trim());
 	if (!rollDice) {
-		error("no valid dice :", dice.trim());
 		await reply(interaction, {
 			content: ul("error.invalidDice.withDice", { dice }),
 			ephemeral: true,
