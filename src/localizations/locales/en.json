@@ -43,8 +43,7 @@
     "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
   },
   "button": {
-    "add": {
-    },
+    "add": {},
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -166,54 +165,49 @@
     "user": "⌈⌋ Sheet ⌈⌋"
   },
   "error": {
-    "channel": "The channel `{{-channel}}` does not exist on this server.",
-    "charName": "The character {{- charName}} is not registered.",
-    "emptyDamage": "You have no ability dice saved.",
-    "emptyStats": "This combination is invalid: no statistics exist!",
-    "generic": ":warning: An error has occurred:\n```\n{{- e.message}}\n```",
+    "channel": "## :warning: __Error__\nThe channel `{{-channel}}` does not exist on this server.",
+    "charName": "## :warning: __Error__\nThe character {{- charName}} is not registered.",
+    "emptyDamage": "## :warning: __Error__\nYou have no ability dice saved.",
+    "emptyStats": "## :warning: __Error__\nThis combination is invalid: no statistics exist!",
+    "generic": "{{- e.message}}",
     "invalidDice": {
-      "embeds": "No die embeds detected",
-      "withDice": "## :warning: __Error__ \nInvalid die: `{{-dice}}`",
-      "withoutDice": "Error: Invalid die"
+      "embeds": "## :warning: __Error__\nNo die embeds detected",
+      "withDice": "## :warning: __Error__\nInvalid die: `{{-dice}}`",
+      "withoutDice": "## :warning: __Error__\nInvalid die"
     },
-    "invalidFormula": "## :warning: __Error__ \nInvalid formula: `{{- formula}}`",
-    "mustBeGreater": "The {{- value}} value must be greater than {{- min}}",
-    "mustBeLower": "The {{- value}} value must be smaller than {{- max}}",
-    "noDamage": "{{- atq}} is not saved in {{- charName}}.",
-    "noDefaultChannel": "You must provide at least one default channel to save the records.",
-    "noDice": "You cannot issue this command without having a registered die type!",
-    "noEmbed": "No embeds found",
-    "noGuild": "No guilds found",
-    "noGuildData": "No data found for server {{-server}}.",
-    "noMessage": "No messages found.",
-    "noStats": "This command cannot be used: no statistics have been recorded.",
-    "noTemplate": "No template or channel configured",
-    "noTemplateId": "No messages found with data saved in database:\n- Channel: `{{-channelId}}`\n- Message ID: `{{- messageId}}`",
-    "noThread": "No valid channel found - Please re-register the template if the channel was deleted",
-    "notRegistered": "You are not registered",
-    "oldEmbed": "This record does not match the one in the database. \nYou will find the new sheet [here]({{- sheet}}).",
-    "private": "This character sheet is private! \nYou do not have permission to read it.",
-    "rollChannelNotFound": "The channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
-    "statNotFound": "Statistics not found! Did you make a typing error?",
-    "template": "You must provide a JSON file.",
-    "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",
-    "tooMuchStats": "You cannot have more than 25 statistics",
-    "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
-    "user": "User not found. \n\n- This may be a temporary error caused by updating the cache,\n\n- The record cannot be found because it has been deleted (or its channel) but the data has not been deleted from the database. \nIf so, you need to use the `/delete_char` command.",
-    "userChan": "You cannot choose the channel {{- chan}} without choosing a channel where to post the cards, because it will be impossible to create a thread there.",
-    "userNotRegistered": "{{- user}} is not registered."
+    "invalidFormula": "## :warning: __Error__\nInvalid formula: `{{- formula}}`",
+    "mustBeGreater": "## :warning: **An error has occurred**\nThe {{- value}} value must be greater than {{- min}}",
+    "mustBeLower": "## :warning: __Error__\nThe `{{- value}}` value must be smaller than `{{- max}}`",
+    "noDamage": "## :warning: __Error__\n`{{- atq}}` is not saved in `{{- charName}}`.",
+    "noDefaultChannel": "## :warning: __Error__\nYou must provide at least one default channel to save the records.",
+    "noDice": "## :warning: __Error__\nYou cannot issue this command without having a registered die type!",
+    "noEmbed": "## :warning: __Error__\nNo embeds found",
+    "noGuild": "## :warning: __Error__\nNo guilds found",
+    "noGuildData": "## :warning: __Error__\nNo data found for server {{-server}}.",
+    "noMessage": "## :warning: __Error__\nNo messages found.",
+    "noStats": "## :warning: __Error__\nThis command cannot be used: no statistics have been recorded.",
+    "noTemplate": "## :warning: __Error__\nNo template or channel configured",
+    "noTemplateId": "## :warning: __Error__\nNo messages found with data saved in database:\n- Channel: `{{-channelId}}`\n- Message ID: `{{- messageId}}`",
+    "noThread": "## :warning: __Error__\nNo valid channel found - Please re-register the template if the channel was deleted",
+    "notRegistered": "## :warning: __Error__\nYou are not registered",
+    "oldEmbed": "## :warning: __Error__\nThis record does not match the one in the database. \nYou will find the new sheet [here]({{- sheet}}).",
+    "private": "## :warning: __Error__\nThis character sheet is private! \nYou do not have permission to read it.",
+    "rollChannelNotFound": "## :warning: __Error__\nThe channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
+    "statNotFound": "## :warning: __Error__\nStatistics not found! Did you make a typing error?",
+    "template": "## :warning: __Error__\nYou must provide a JSON file.",
+    "tooMuchDice": "## :warning: __Error__\nToo many dice have been saved! You cannot have more than 25 dice saved.",
+    "tooMuchStats": "## :warning: __Error__\nToo many statistics have been saved! You cannot have more than 25 statistics",
+    "totalExceededBy": "## :warning: __Error__\nThe total of {{- value}} is exceeded by {{- max}}",
+    "user": "## :warning: __Error__\nUser not found. \n\n- This may be a temporary error caused by updating the cache,\n\n- The record cannot be found because it has been deleted (or its channel) but the data has not been deleted from the database. \nIf so, you need to use the `/delete_char` command.",
+    "userChan": "## :warning: __Error__\nYou cannot choose the channel {{- chan}} without choosing a channel where to post the character sheet, because it will be impossible to create a thread there.",
+    "userNotRegistered": "## :warning: __Error__\n{{- user}} is not registered."
   },
   "export": {
     "description": "Export all saved characters to a csv file",
-    "error": {
-      "noData": ""
-    },
     "name": "export",
     "options": {
       "desc": "Export only characters marked as private",
-      "name": "private_sheet_only",
-      "private": {
-      }
+      "name": "private_sheet_only"
     }
   },
   "generate": {

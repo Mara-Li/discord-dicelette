@@ -250,12 +250,10 @@ export function getStatistiqueFields(
 		const statValue = interaction.fields.getTextInputValue(name);
 		if (!statValue) continue;
 		const num = Number.parseInt(statValue, 10);
-		if (value.min && num < value.min) {
+		if (value.min && num < value.min)
 			throw new Error(ul("error.mustBeGreater", { value: name, min: value.min }));
-		}
-		if (value.max && num > value.max) {
+		if (value.max && num > value.max)
 			throw new Error(ul("error.mustBeLower", { value: name, max: value.max }));
-		}
 		if (total) {
 			total -= num;
 			if (total < 0) {

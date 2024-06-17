@@ -1,5 +1,5 @@
 import { evalCombinaison, type StatisticalTemplate } from "@dicelette/core";
-import { lError, ln } from "@localization";
+import { ln } from "@localization";
 import { removeEmojiAccents, reply, title } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { getEmbeds, getStatistiqueFields, removeBacktick } from "@utils/parse";
@@ -31,74 +31,62 @@ export async function embedStatistiques(
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
 	if (!userEmbed) return;
 	const statsEmbed = getEmbeds(ul, interaction.message, "stats");
-	try {
-		const { combinaisonFields, stats } = getStatistiqueFields(interaction, template);
-		//combine all embeds as one
-		userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
-		//add old fields
+	const { combinaisonFields, stats } = getStatistiqueFields(interaction, template);
+	//combine all embeds as one
+	userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
+	//add old fields
 
-		const statEmbeds = statsEmbed ?? new EmbedBuilder().setTitle(ul("embed.stats"));
-		for (const [stat, value] of Object.entries(stats)) {
+	const statEmbeds = statsEmbed ?? new EmbedBuilder().setTitle(ul("embed.stats"));
+	for (const [stat, value] of Object.entries(stats)) {
+		statEmbeds.addFields({
+			name: title(stat),
+			value: `\`${value}\``,
+			inline: true,
+		});
+	}
+	const statsWithoutCombinaison = template.statistics
+		? Object.keys(template.statistics)
+				.filter((stat) => !template.statistics![stat].combinaison)
+				.map((name) => removeEmojiAccents(name))
+		: [];
+	const embedObject = statEmbeds.toJSON();
+	const fields = embedObject.fields;
+	if (!fields) return;
+	const parsedFields: { [name: string]: string } = {};
+	for (const field of fields) {
+		parsedFields[removeEmojiAccents(field.name)] = removeBacktick(
+			field.value.toLowerCase()
+		);
+	}
+
+	const embedStats = Object.fromEntries(
+		Object.entries(parsedFields).filter(([key]) => statsWithoutCombinaison.includes(key))
+	);
+	if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
+		let combinaison: { [name: string]: number } = {};
+		combinaison = evalCombinaison(combinaisonFields, embedStats);
+		//add combinaison to the embed
+		for (const stat of Object.keys(combinaison)) {
 			statEmbeds.addFields({
 				name: title(stat),
-				value: `\`${value}\``,
+				value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
 				inline: true,
 			});
 		}
-		const statsWithoutCombinaison = template.statistics
-			? Object.keys(template.statistics)
-					.filter((stat) => !template.statistics![stat].combinaison)
-					.map((name) => removeEmojiAccents(name))
-			: [];
-		const embedObject = statEmbeds.toJSON();
-		const fields = embedObject.fields;
-		if (!fields) return;
-		const parsedFields: { [name: string]: string } = {};
-		for (const field of fields) {
-			parsedFields[removeEmojiAccents(field.name)] = removeBacktick(
-				field.value.toLowerCase()
-			);
-		}
 
-		const embedStats = Object.fromEntries(
-			Object.entries(parsedFields).filter(([key]) =>
-				statsWithoutCombinaison.includes(key)
-			)
-		);
-		if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
-			let combinaison: { [name: string]: number } = {};
-			try {
-				combinaison = evalCombinaison(combinaisonFields, embedStats);
-				//add combinaison to the embed
-				for (const stat of Object.keys(combinaison)) {
-					statEmbeds.addFields({
-						name: title(stat),
-						value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
-						inline: true,
-					});
-				}
-			} catch (error) {
-				const errorMsg = lError(error as Error, interaction);
-				await reply(interaction, { content: errorMsg, ephemeral: true });
-				return;
-			}
-			await interaction.message.edit({
-				embeds: [userEmbed, statEmbeds],
-				components: [registerDmgButton(ul)],
-			});
-			await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
-			return;
-		}
 		await interaction.message.edit({
 			embeds: [userEmbed, statEmbeds],
-			components: [continueCancelButtons(ul)],
+			components: [registerDmgButton(ul)],
 		});
 		await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
 		return;
-	} catch (error) {
-		const errorMsg = lError(error as Error, interaction);
-		await reply(interaction, { content: errorMsg, ephemeral: true });
 	}
+	await interaction.message.edit({
+		embeds: [userEmbed, statEmbeds],
+		components: [continueCancelButtons(ul)],
+	});
+	await reply(interaction, { content: ul("modals.added.stats"), ephemeral: true });
+	return;
 }
 
 /**
