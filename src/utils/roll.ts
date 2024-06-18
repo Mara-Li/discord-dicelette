@@ -79,11 +79,11 @@ export async function rollWithInteraction(
 	};
 	const retrieveUser = infoRollTotal(true);
 	const hasDB = db.has(interaction.guild.id);
+	const disableThread = db.get(interaction.guild.id, "disableThread");
 	if (
 		channel.name.startsWith("🎲") ||
-		(hasDB &&
-			(db.get(interaction.guild.id, "disableThread") === true ||
-				db.get(interaction.guild.id, "rollChannel") === channel.id))
+		disableThread ||
+		db.get(interaction.guild.id, "rollChannel") === channel.id
 	) {
 		await reply(interaction, {
 			content: `${retrieveUser}${parser}`,
@@ -125,7 +125,7 @@ export async function rollWithInteraction(
 		}
 		await rollog.edit(`${infoRollTotal(true, true)}${parser}${url}`);
 	}
-	deleteAfter(inter, timer);
+	if (!disableThread) deleteAfter(inter, timer);
 	return;
 }
 

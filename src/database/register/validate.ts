@@ -63,14 +63,14 @@ export async function createEmbedFirstPage(
 		interaction.fields.getTextInputValue("private")?.toLowerCase() === "x";
 	const avatar = interaction.fields.getTextInputValue("avatar");
 
-	let managerId = setting.get(interaction.guild!.id, "managerId");
+	let defaultSheetId = setting.get(interaction.guild!.id, "defaultSheetId");
 	if (isPrivate && setting.get(interaction.guild!.id, "privateChannel"))
-		managerId = setting.get(interaction.guild!.id, "privateChannel");
-	if (customChannel.length > 0) managerId = customChannel;
+		defaultSheetId = setting.get(interaction.guild!.id, "privateChannel");
+	if (customChannel.length > 0) defaultSheetId = customChannel;
 
 	const verifiedAvatar = verifyAvatarUrl(avatar);
-	const existChannel = managerId
-		? await interaction.guild?.channels.fetch(managerId)
+	const existChannel = defaultSheetId
+		? await interaction.guild?.channels.fetch(defaultSheetId)
 		: undefined;
 	if (!existChannel) {
 		reply(interaction, { content: ul("error.noThread"), ephemeral: true });
@@ -93,7 +93,7 @@ export async function createEmbedFirstPage(
 		embed.addFields({ name: "_ _", value: "_ _", inline: true });
 		embed.addFields({
 			name: title(ul("common.channel")),
-			value: `${channelMention(managerId as string)}`,
+			value: `${channelMention(defaultSheetId as string)}`,
 			inline: true,
 		});
 		embed.addFields({ name: "_ _", value: "_ _", inline: true });

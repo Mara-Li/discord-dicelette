@@ -93,18 +93,19 @@
     },
     "context": "Lien vers le contexte du dé",
     "damageName": "Liste des dés sauvegardés (global)",
+    "defaultSheetId": "Channel où seront envoyés les fiches",
     "description": "Permet de configurer le bot pour le serveur",
     "disableThread": "[Désactivation des threads]",
     "display": {
       "description": "Affiche la configuration du serveur",
       "name": "afficher"
     },
+    "linkToLog": "Lien vers le log du résultat de dés",
     "logLink": {
       "description": "Active le lien vers les logs dans le résultat du dé",
       "name": "lien_vers_log"
     },
     "logs": "Channel des logs d'administration",
-    "managerId": "Channel où seront envoyés les fiches",
     "name": "config",
     "privateChan": "Channel des personnages privés",
     "rollChannel": "Log global des résultats de dés",
@@ -146,6 +147,7 @@
   "disableThread": {
     "description": "Désactive/active la création automatique des threads et utilise le channel actuel pour les logs",
     "disable": {
+      "autoDelete": "L'auto-suppression des résultats a été désactivé.",
       "mention": "Le channel {{- mention}} ne recevra plus les logs des dés.",
       "reply": "La création automatique des threads a été désactivée : les résultats des dés seront maintenant conservés dans le channel où la commande a été utilisée.\n\nLes channels préfixés par `🎲` ne recevront plus les logs non plus."
     },

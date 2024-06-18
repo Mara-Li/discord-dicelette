@@ -344,18 +344,18 @@ export function getUserByEmbed(
 }
 
 /**
- * Register the managerId in the database
+ * Register the defaultSheetId in the database
  * @param {GuildData} guildData
  * @param {BaseInteraction} interaction
  * @param {string} channel
  */
-export function registerManagerID(
+export function registerdefaultSheetId(
 	guildData: Settings,
 	interaction: BaseInteraction,
 	channel?: string
 ) {
 	if (!channel || !interaction.guild) return;
-	guildData.set(interaction.guild.id, channel, "managerId");
+	guildData.set(interaction.guild.id, channel, "defaultSheetId");
 }
 
 export async function getFirstRegisteredChar(

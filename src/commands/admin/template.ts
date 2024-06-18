@@ -353,7 +353,7 @@ export const registerTemplate = {
 				statsName: statsName ?? [],
 				damageName: damageName ?? [],
 			};
-			if (userChan) json.managerId = userChan.id;
+			if (userChan) json.defaultSheetId = userChan.id;
 			if (privateChan) json.privateChannel = privateChan.id;
 			client.settings.set(guildId, json);
 		} else {

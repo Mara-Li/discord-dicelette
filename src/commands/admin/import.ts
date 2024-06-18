@@ -77,7 +77,7 @@ export const bulkAdd = {
 			interaction,
 			client.settings.has(interaction.guild!.id, "privateChannel")
 		);
-		const defaultChannel = client.settings.get(interaction.guild!.id, "managerId");
+		const defaultChannel = client.settings.get(interaction.guild!.id, "defaultSheetId");
 		const privateChannel = client.settings.get(interaction.guild!.id, "privateChannel");
 		if (!defaultChannel) {
 			return reply(interaction, { content: ul("error.noDefaultChannel") });

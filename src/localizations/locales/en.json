@@ -95,18 +95,19 @@
     },
     "context": "Link to the dice's context",
     "damageName": "Saved dice list (global)",
+    "defaultSheetId": "Character sheet channel",
     "description": "Allows you to configure the bot for the server",
     "disableThread": "[Disable threads]",
     "display": {
       "description": "Shows server configuration",
       "name": "display"
     },
+    "linkToLog": "",
     "logLink": {
       "description": "Activate the link to the logs in the die result",
       "name": "link_to_log"
     },
     "logs": "Administration logs channel",
-    "managerId": "Character sheet channel",
     "name": "config",
     "privateChan": "Private characters channel",
     "rollChannel": "Global log dice result",
@@ -148,6 +149,7 @@
   "disableThread": {
     "description": "Disable/enable automatic thread creation and use the current channel for logs",
     "disable": {
+      "autoDelete": "",
       "mention": "The {{- mention}} channel will no longer receive dice logs.",
       "reply": "Automatic thread creation has been disabled: dice results will now be kept in the channel where the command was used.\n\n\nChannels prefixed with `🎲` will no longer receive logs either."
     },

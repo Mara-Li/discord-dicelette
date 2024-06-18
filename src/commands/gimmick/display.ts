@@ -87,7 +87,7 @@ export const displayUser = {
 			return;
 		}
 		const userData = charData[user?.id ?? interaction.user.id];
-		const managerID: PersonnageIds = {
+		const defaultSheetId: PersonnageIds = {
 			channelId: userData.messageId[1],
 			messageId: userData.messageId[0],
 		};
@@ -95,7 +95,7 @@ export const displayUser = {
 			client.settings,
 			interaction,
 			ul,
-			managerID?.channelId
+			defaultSheetId?.channelId
 		);
 		if (!thread) return await reply(interaction, ul("error.noThread"));
 
@@ -109,7 +109,7 @@ export const displayUser = {
 			return;
 		}
 		try {
-			const userMessage = await thread?.messages.fetch(managerID.messageId);
+			const userMessage = await thread?.messages.fetch(defaultSheetId.messageId);
 			const statisticEmbed = getEmbeds(ul, userMessage, "stats");
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
 			const diceFields = diceEmbed?.toJSON().fields;

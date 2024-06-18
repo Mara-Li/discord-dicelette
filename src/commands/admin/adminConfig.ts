@@ -181,6 +181,10 @@ export const adminConfig = {
 						.setRequired(true)
 				)
 		)
+		/**
+		 * LOGS IN DICE RESULT
+		 * For the result interaction, not the logs
+		 */
 		.addSubcommand((sub) =>
 			sub
 				.setName(t("config.logLink.name"))
@@ -222,6 +226,8 @@ export const adminConfig = {
 				return await timestamp(interaction, client, ul, options);
 			case t("anchor.name"):
 				return await anchor(interaction, client, ul);
+			case t("config.logLink.name"):
+				return await linkToLog(interaction, client, ul);
 		}
 	},
 };
@@ -337,7 +343,10 @@ async function disableThread(
 			const mention = `<#${rollChannel}>`;
 			const msg =
 				ul("disableThread.disable.reply") +
-				ul("disableThread.disable.mention", { mention });
+				ul(
+					"disableThread.disable.mention",
+					{ mention } + ul("disableThread.disable.autoDelete")
+				);
 			await reply(interaction, msg);
 			return;
 		}
@@ -377,81 +386,78 @@ async function display(
 	client: EClient,
 	ul: Translation
 ) {
-	const timer = client.settings.get(interaction.guild!.id, "deleteAfter");
-	const logs = client.settings.get(interaction.guild!.id, "logs");
-	const rollChannel = client.settings.get(interaction.guild!.id, "rollChannel");
-	const disableThread = client.settings.get(interaction.guild!.id, "disableThread");
-	const autoRole = client.settings.get(interaction.guild!.id, "autoRole");
-	const managerId = client.settings.get(interaction.guild!.id, "managerId");
-	const privateChan = client.settings.get(interaction.guild!.id, "privateChannel");
-	const contextLink = client.settings.get(interaction.guild!.id, "context");
+	const guildSettings = client.settings.get(interaction.guild!.id);
+	if (!guildSettings) return;
+
 	const baseEmbed = new EmbedBuilder()
 		.setTitle(ul("config.title", { guild: interaction.guild!.name }))
 		.setThumbnail(interaction.guild!.iconURL() ?? "")
 		.setColor("Random");
-	if (timer) {
+	if (guildSettings.deleteAfter) {
 		baseEmbed.addFields({
 			name: ul("config.timer"),
-			value: `${timer / 1000}s`,
+			value: `${guildSettings.deleteAfter / 1000}s`,
 		});
 	}
 	baseEmbed.addFields({
 		name: ul("config.timestamp"),
-		value: client.settings.get(interaction.guild!.id, "timestamp")
-			? ul("common.enabled")
-			: ul("common.disabled"),
+		value: guildSettings.timestamp ? ul("common.enabled") : ul("common.disabled"),
 	});
 
-	if (logs) {
+	if (guildSettings.logs) {
 		baseEmbed.addFields({
 			name: ul("config.logs"),
 			value: `<#${logs}>`,
 		});
 	}
-	if (rollChannel) {
+	if (guildSettings.rollChannel) {
 		baseEmbed.addFields({
 			name: ul("config.rollChannel"),
-			value: `<#${rollChannel}>`,
+			value: `<#${guildSettings.rollChannel}>`,
 		});
 	}
-	if (disableThread) {
+	if (guildSettings.disableThread) {
 		baseEmbed.addFields({
 			name: ul("config.disableThread"),
 			value: "_ _",
 		});
 	}
-	if (autoRole?.dice) {
+	if (guildSettings.autoRole?.dice) {
 		baseEmbed.addFields({
 			name: ul("config.autoRole.dice"),
-			value: `<@&${autoRole.dice}>`,
+			value: `<@&${guildSettings.autoRole.dice}>`,
 		});
 	}
-	if (autoRole?.stats) {
+	if (guildSettings.autoRole?.stats) {
 		baseEmbed.addFields({
 			name: ul("config.autoRole.stats"),
-			value: `<@&${autoRole.stats}>`,
+			value: `<@&${guildSettings.autoRole?.stats}>`,
 		});
 	}
 
-	if (managerId) {
+	if (guildSettings.defaultSheetId) {
 		baseEmbed.addFields({
-			name: ul("config.managerId"),
-			value: `<#${managerId}>`,
+			name: ul("config.defaultSheetId"),
+			value: `<#${guildSettings.defaultSheetId}>`,
 		});
 	}
-	if (privateChan) {
+	if (guildSettings.privateChannel) {
 		baseEmbed.addFields({
 			name: ul("config.privateChan"),
-			value: `<#${privateChan}>`,
+			value: `<#${guildSettings.privateChannel}>`,
 		});
 	}
 	baseEmbed.addFields({
 		name: ul("config.context"),
-		value: contextLink ? ul("common.enabled") : ul("common.disabled"),
+		value: guildSettings.context ? ul("common.enabled") : ul("common.disabled"),
+	});
+	baseEmbed.addFields({
+		name: ul("config.linkToLog"),
+		value: guildSettings.linkToLogs ? ul("common.enabled") : ul("common.disabled"),
 	});
 
-	if (client.settings.has(interaction.guild!.id, "templateID")) {
-		const templateID = client.settings.get(interaction.guild!.id, "templateID");
+	if (guildSettings.templateID) {
+		const templateID = guildSettings.templateID;
 		const { channelId, messageId, statsName, damageName } = templateID ?? {};
 		if (messageId && messageId.length > 0 && channelId && channelId.length > 0) {
 			const messageLink = `https://discord.com/channels/${interaction.guild!.id}/${channelId}/${messageId}`;

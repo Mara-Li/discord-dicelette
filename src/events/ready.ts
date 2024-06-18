@@ -44,7 +44,7 @@ function convertDatabaseUser(db: Settings, guild: Guild) {
 		db.set(guild.id, true, "converted");
 		return;
 	}
-	const defaultChannel = db.get(guild.id, "managerId");
+	const defaultChannel = db.get(guild.id, "defaultSheetId");
 	const privateChannel = db.get(guild.id, "privateChannel");
 	for (const [userId, userData] of Object.entries(users)) {
 		for (const index in userData) {

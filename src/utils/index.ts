@@ -7,7 +7,7 @@ import {
 	type UserRegistration,
 } from "@interface";
 import { editUserButtons } from "@utils/buttons";
-import { registerManagerID, registerUser } from "@utils/db";
+import { registerdefaultSheetId, registerUser } from "@utils/db";
 import { parseEmbedFields, removeBacktick } from "@utils/parse";
 import {
 	type AnyThreadChannel,
@@ -85,7 +85,7 @@ export function title(str?: string | null) {
 }
 
 /**
- * Repost the character sheet in the thread / channel selected with `guildData.managerId`
+ * Repost the character sheet in the thread / channel selected with `guildData.defaultSheetId`
  * @param embed {EmbedBuilder[]}
  * @param interaction {BaseInteraction}
  * @param userTemplate {UserData}
@@ -119,7 +119,7 @@ export async function repostInThread(
 				name: "📝 • [STATS]",
 				autoArchiveDuration: 10080,
 			})) as AnyThreadChannel;
-			registerManagerID(guildData, interaction, thread.id);
+			registerdefaultSheetId(guildData, interaction, thread.id);
 		}
 	}
 	if (!thread) {
