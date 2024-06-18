@@ -173,7 +173,27 @@ export const adminConfig = {
 				.setDescriptionLocalizations(cmdLn("anchor.description"))
 				.setNameLocalizations(cmdLn("anchor.name"))
 				.addBooleanOption((option) =>
-					option.setName(t("disableThread.options.name")).setRequired(true)
+					option
+						.setName(t("disableThread.options.name"))
+						.setDescription(t("anchor.options"))
+						.setNameLocalizations(cmdLn("disableThread.options.name"))
+						.setDescriptionLocalizations(cmdLn("anchor.options"))
+						.setRequired(true)
+				)
+		)
+		.addSubcommand((sub) =>
+			sub
+				.setName(t("config.logLink.name"))
+				.setDescription(t("config.logLink.description"))
+				.setDescriptionLocalizations(cmdLn("config.logLink.description"))
+				.setNameLocalizations(cmdLn("config.logLink.name"))
+				.addBooleanOption((option) =>
+					option
+						.setName(t("disableThread.options.name"))
+						.setDescription(t("linkToLog.options"))
+						.setNameLocalizations(cmdLn("disableThread.options.name"))
+						.setDescriptionLocalizations(cmdLn("linkToLog.options"))
+						.setRequired(true)
 				)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -489,4 +509,21 @@ async function anchor(interaction: CommandInteraction, client: EClient, ul: Tran
 		});
 	}
 	return await reply(interaction, { content: ul("common.disabled"), ephemeral: true });
+}
+
+async function linkToLog(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation
+) {
+	const options = interaction.options as CommandInteractionOptionResolver;
+	const toggle = options.getBoolean(t("disableThread.options.name"), true);
+	client.settings.set(interaction.guild!.id, toggle, "linkToLogs");
+	if (toggle) {
+		return await reply(interaction, {
+			content: ul("linkToLog.enabled"),
+			ephemeral: true,
+		});
+	}
+	return await reply(interaction, { content: ul("linkToLog.disabled"), ephemeral: true });
 }

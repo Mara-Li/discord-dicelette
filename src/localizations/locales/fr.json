@@ -5,7 +5,8 @@
       "logs": "Les logs de dés renverrons maintenant vers une \"ancre\" qui permet d'obtenir le contexte du dé (l'ancre est un message vide).",
       "noDelete": "Les logs de dés mettront maintenant un lien vers le dé original."
     },
-    "name": "contexte"
+    "name": "contexte",
+    "options": "Activer/désactiver l'ancre de contexte"
   },
   "autoRole": {
     "description": "Ajoute automatiquement un rôle quand une fiche est validée.",
@@ -97,6 +98,10 @@
     "display": {
       "description": "Affiche la configuration du serveur",
       "name": "afficher"
+    },
+    "logLink": {
+      "description": "Active le lien vers les logs dans le résultat du dé",
+      "name": "lien_vers_log"
     },
     "logs": "Channel des logs d'administration",
     "managerId": "Channel où seront envoyés les fiches",
@@ -309,6 +314,11 @@
       "message": "Le bot permet de configurer un modèle (\"modèle de serveur\") qui permet ensuite de créer des fiches de personnages ainsi que de retenir des dés. \n\nLes données restent intégralement sur votre serveur, et le modèle est pensé pour être adaptable à l'infini (ou presque !).\n\nVous trouverez [ici](<https://dicelette.github.io/docs/model/register>) toutes les informations afin de configurer le modèle et enregistrer les fiches, afin de pouvoir utiliser les commandes </dbroll:{{- dbroll}}>, </dbd:{{- dbd}}>, ou encore </graph:{{- graph}}>.",
       "name": "enregistrer"
     }
+  },
+  "linkToLog": {
+    "disabled": "Les liens vers les logs des dés sont désactivés.",
+    "enabled": "Les liens vers les logs de dés sont maintenant activés.",
+    "options": "Active/désactive l'option"
   },
   "logs": {
     "delete": "Les logs ne seront plus envoyés",

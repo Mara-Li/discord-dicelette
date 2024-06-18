@@ -1,11 +1,12 @@
 {
   "anchor": {
-    "description": "",
+    "description": "Allows you to add a link to the message closest to the die",
     "enabled": {
       "logs": "",
       "noDelete": "Dice logs will now link to the original die."
     },
-    "name": ""
+    "name": "context",
+    "options": "Enable/disable context anchor"
   },
   "autoRole": {
     "description": "Automatically adds a role when a record is validated.",
@@ -99,6 +100,10 @@
     "display": {
       "description": "Shows server configuration",
       "name": "display"
+    },
+    "logLink": {
+      "description": "Activate the link to the logs in the die result",
+      "name": "link_to_log"
     },
     "logs": "Administration logs channel",
     "managerId": "Character sheet channel",
@@ -311,6 +316,11 @@
       "message": "The bot allows you to configure a model (\"server model\") which then allows you to create character sheets as well as retain dice.\n\nThe data remains entirely on your server, and the model is designed to be infinitely adaptable (or almost!).\n\nYou will find [here](<https://dicelette.github.io/docs/model/register/en/>) all the information to configure the model and save the forms, in order to be able to use the commands </dbd:{{- \ndbd}}>, </dbroll:{{-dbroll}}>, or </graph:{{-graph}}>.",
       "name": "register"
     }
+  },
+  "linkToLog": {
+    "disabled": "Links to dice logs are disabled.",
+    "enabled": "Links to dice logs are now enabled.",
+    "options": "Enables/disables the option"
   },
   "logs": {
     "delete": "Logs will no longer be sent",

@@ -102,17 +102,29 @@ export async function rollWithInteraction(
 					ul
 				);
 
-	const msgToEdit = await thread.send("_ _");
-	await msgToEdit.edit(`${infoRollTotal(true, true)}${parser}`);
-	const idMessage = `↪ ${msgToEdit.url}`;
+	const rollog = await thread.send("_ _");
+	await rollog.edit(`${infoRollTotal(true, true)}${parser}`);
+	const rollLogEnabled = db.get(interaction.guild.id, "linkToLogs");
+	const rollogUrl = rollLogEnabled ? `\n\n↪ ${rollog.url}` : "";
 	const inter = await reply(interaction, {
-		content: `${retrieveUser}${parser}\n\n${idMessage}`,
+		content: `${retrieveUser}${parser}${rollogUrl}`,
 		allowedMentions: { users: [userId] },
 	});
-	const timer =
-		hasDB && db.get(interaction.guild.id, "deleteAfter")
-			? (db.get(interaction.guild.id, "deleteAfter") as number)
-			: 180000;
+	const anchor = db.get(interaction.guild.id, "context");
+	const dbTime = db.get(interaction.guild.id, "deleteAfter");
+	const timer = dbTime ? dbTime : 180000;
+
+	let url = "";
+	if (anchor) {
+		url = `\n-# ↪ [Contexte](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${inter.id}>)`;
+		if (timer && timer > 0) {
+			const messagesBefore = await channel.messages.fetch({ before: inter.id, limit: 1 });
+			const messageBefore = messagesBefore.first();
+			if (messagesBefore)
+				url = `\n-# ↪ [Contexte](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${messageBefore!.id}>)`;
+		}
+		await rollog.edit(`${infoRollTotal(true, true)}${parser}${url}`);
+	}
 	deleteAfter(inter, timer);
 	return;
 }

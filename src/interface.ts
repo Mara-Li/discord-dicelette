@@ -62,6 +62,7 @@ export interface GuildData {
 		stats?: string;
 	};
 	context?: boolean;
+	linkToLogs?: boolean;
 	templateID: {
 		channelId: string;
 		messageId: string;
