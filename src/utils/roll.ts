@@ -78,7 +78,6 @@ export async function rollWithInteraction(
 		return user;
 	};
 	const retrieveUser = infoRollTotal(true);
-	const hasDB = db.has(interaction.guild.id);
 	const disableThread = db.get(interaction.guild.id, "disableThread");
 	if (
 		channel.name.startsWith("🎲") ||
