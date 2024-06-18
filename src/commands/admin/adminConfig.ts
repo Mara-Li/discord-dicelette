@@ -164,6 +164,17 @@ export const adminConfig = {
 						.setDescription(t("timestamp.options"))
 						.setRequired(true)
 				)
+		)
+		/* ANCHOR */
+		.addSubcommand((sub) =>
+			sub
+				.setName(t("anchor.name"))
+				.setDescription(t("anchor.description"))
+				.setDescriptionLocalizations(cmdLn("anchor.description"))
+				.setNameLocalizations(cmdLn("anchor.name"))
+				.addBooleanOption((option) =>
+					option.setName(t("disableThread.options.name")).setRequired(true)
+				)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
@@ -189,6 +200,8 @@ export const adminConfig = {
 				return await display(interaction, client, ul);
 			case t("timestamp.name"):
 				return await timestamp(interaction, client, ul, options);
+			case t("anchor.name"):
+				return await anchor(interaction, client, ul);
 		}
 	},
 };
@@ -351,7 +364,7 @@ async function display(
 	const autoRole = client.settings.get(interaction.guild!.id, "autoRole");
 	const managerId = client.settings.get(interaction.guild!.id, "managerId");
 	const privateChan = client.settings.get(interaction.guild!.id, "privateChannel");
-	const timestamp = client.settings.get(interaction.guild!.id, "timestamp");
+	const contextLink = client.settings.get(interaction.guild!.id, "context");
 	const baseEmbed = new EmbedBuilder()
 		.setTitle(ul("config.title", { guild: interaction.guild!.name }))
 		.setThumbnail(interaction.guild!.iconURL() ?? "")
@@ -362,12 +375,13 @@ async function display(
 			value: `${timer / 1000}s`,
 		});
 	}
-	if (timestamp) {
-		baseEmbed.addFields({
-			name: ul("config.timestamp"),
-			value: "_ _",
-		});
-	}
+	baseEmbed.addFields({
+		name: ul("config.timestamp"),
+		value: client.settings.get(interaction.guild!.id, "timestamp")
+			? ul("common.enabled")
+			: ul("common.disabled"),
+	});
+
 	if (logs) {
 		baseEmbed.addFields({
 			name: ul("config.logs"),
@@ -411,6 +425,10 @@ async function display(
 			value: `<#${privateChan}>`,
 		});
 	}
+	baseEmbed.addFields({
+		name: ul("config.context"),
+		value: contextLink ? ul("common.enabled") : ul("common.disabled"),
+	});
 
 	if (client.settings.has(interaction.guild!.id, "templateID")) {
 		const templateID = client.settings.get(interaction.guild!.id, "templateID");
@@ -452,4 +470,23 @@ async function timestamp(
 	} else {
 		await reply(interaction, { content: ul("timestamp.disabled"), ephemeral: true });
 	}
+}
+
+async function anchor(interaction: CommandInteraction, client: EClient, ul: Translation) {
+	const options = interaction.options as CommandInteractionOptionResolver;
+	const toggle = options.getBoolean(t("disableThread.options.name"), true);
+	client.settings.set(interaction.guild!.id, toggle, "context");
+	const deleteLogs = client.settings.get(interaction.guild!.id, "deleteAfter") === 0;
+	if (toggle) {
+		if (deleteLogs)
+			return await reply(interaction, {
+				content: ul("anchor.enabled.noDelete"),
+				ephemeral: true,
+			});
+		return await reply(interaction, {
+			content: ul("anchor.enabled.logs"),
+			ephemeral: true,
+		});
+	}
+	return await reply(interaction, { content: ul("common.disabled"), ephemeral: true });
 }

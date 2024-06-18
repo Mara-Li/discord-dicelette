@@ -1,4 +1,12 @@
 {
+  "anchor": {
+    "description": "",
+    "enabled": {
+      "logs": "",
+      "noDelete": "Dice logs will now link to the original die."
+    },
+    "name": ""
+  },
   "autoRole": {
     "description": "Automatically adds a role when a record is validated.",
     "dice": {
@@ -43,7 +51,8 @@
     "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
   },
   "button": {
-    "add": {},
+    "add": {
+    },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -66,6 +75,8 @@
     "character": "character",
     "default": "Default",
     "dice": "dice",
+    "disabled": "Disabled",
+    "enabled": "Enabled",
     "isPrivate": "Private character",
     "noSet": "/",
     "page": "Page {{- nb}}",
@@ -81,6 +92,7 @@
       "dice": "[Auto Role] Dice",
       "stats": "[Automatic Role] Statistics"
     },
+    "context": "Link to the dice's context",
     "damageName": "Saved dice list (global)",
     "description": "Allows you to configure the bot for the server",
     "disableThread": "[Disable threads]",
@@ -204,6 +216,9 @@
   },
   "export": {
     "description": "Export all saved characters to a csv file",
+    "error": {
+      "noData": ""
+    },
     "name": "export",
     "options": {
       "desc": "Export only characters marked as private",

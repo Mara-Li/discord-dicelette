@@ -61,6 +61,7 @@ export interface GuildData {
 		dice?: string;
 		stats?: string;
 	};
+	context?: boolean;
 	templateID: {
 		channelId: string;
 		messageId: string;

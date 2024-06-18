@@ -1,4 +1,12 @@
 {
+  "anchor": {
+    "description": "Permet d'ajouter un lien vers le message le plus proche du dé",
+    "enabled": {
+      "logs": "Les logs de dés renverrons maintenant vers une \"ancre\" qui permet d'obtenir le contexte du dé (l'ancre est un message vide).",
+      "noDelete": "Les logs de dés mettront maintenant un lien vers le dé original."
+    },
+    "name": "contexte"
+  },
   "autoRole": {
     "description": "Ajoute automatiquement un rôle quand une fiche est validée.",
     "dice": {
@@ -65,6 +73,8 @@
     "character": "personnage",
     "default": "Défaut",
     "dice": "dé",
+    "disabled": "Désactivé",
+    "enabled": "Activé",
     "isPrivate": "Personnage privé",
     "noSet": "/",
     "page": "Page {{- nb}}",
@@ -80,6 +90,7 @@
       "dice": "[Rôle automatique] Dés",
       "stats": "[Rôle automatique] Statistiques"
     },
+    "context": "Lien vers le contexte du dé",
     "damageName": "Liste des dés sauvegardés (global)",
     "description": "Permet de configurer le bot pour le serveur",
     "disableThread": "[Désactivation des threads]",
