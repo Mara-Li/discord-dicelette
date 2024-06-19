@@ -23,32 +23,6 @@
       "set": "{{- role}} sera maintenant ajouté aux joueurs quand leurs statistiques seront validées."
     }
   },
-  "import": {
-    "all_success": "Tous les utilisateurs ont été enregistrés.",
-    "success": "{{- user}} a bien été ajouté.",
-    "description": "Ajouter plusieurs personnages d'un coup",
-    "errors": {
-      "duplicate_charName": "Le personnage {{- charName}} (de {{- user}}) existe déjà dans la base .",
-      "global": "Les erreurs suivantes ont été trouvées :",
-      "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.\n\nLes colonnes :\n- {{- name}} \nest/sont manquante(s).",
-      "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
-      "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !",
-      "missing_header": "Votre CSV n'a pas de noms de colonnes !",
-      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}",
-      "no_user": "Aucun membre n'existe sur ce serveur.",
-      "user_not_found": "{{- user}} n'a pas été trouvé sur le serveur. Il est possible que le cache ne soit pas à jour, ou qu'il y ait une erreur dans l'ID ou l'username."
-    },
-    "name": "import",
-    "options": {
-      "description": "Le fichier CSV à importer",
-      "name": "csv"
-    }
-  },
-  "csv_generation": {
-    "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
-    "name": "csv",
-    "success": "Voici votre fichier CSV ! Attention, par défaut, le délimiteur utilisé est `;`. N'oubliez pas de le préciser à l'import dans votre logiciel (excel/google sheet...).\nPrécisons que vous devez vous-même calculer les combinaisons !"
-  },
   "button": {
     "cancel": "Annuler",
     "continue": "Continuer",
@@ -135,6 +109,11 @@
       "title": "Affichage des timestamps"
     },
     "title": "Configuration de {{- guild}}"
+  },
+  "csv_generation": {
+    "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
+    "name": "csv",
+    "success": "Voici votre fichier CSV ! Attention, par défaut, le délimiteur utilisé est `;`. N'oubliez pas de le préciser à l'import dans votre logiciel (excel/google sheet...).\nPrécisons que vous devez vous-même calculer les combinaisons !"
   },
   "dbRoll": {
     "description": "Lance un dé avec une statistique enregistrée",
@@ -229,6 +208,7 @@
     "notRegistered": "## :warning: __Erreur__\nVous n'êtes pas enregistré !",
     "oldEmbed": "## :warning: __Erreur__\nCette fiche ne correspond pas à celle dans la base de données. Vous trouverez la nouvelle fiche [ici](<{{- fiche}}>).",
     "private": "## :warning: __Erreur__\nCette fiche est privée ! Vous n'avez pas la permissions pour la lire.",
+    "public": "## :warning: __Erreur__\nVous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "rollChannelNotFound": "## :warning: __Erreur__\nLe channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
     "statNotFound": "## :warning: __Erreur__\nStatistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "template": "## :warning: __Erreur__\nVous devez fournir un fichier JSON.",
@@ -236,7 +216,6 @@
     "tooMuchStats": "## :warning: __Erreur__\nTrop de statistiques ont été fournies ! Vous ne pouvez pas avoir plus de 25 statistiques.",
     "totalExceededBy": "## :warning: __Erreur__\nLe total de `{{- value}}` est dépassé de `{{- max}}`.",
     "user": "## :warning: __Erreur__\nUtilisateur introuvable.\n- Il peut s'agir d'une erreur temporaire causé par la mise à jour du cache,\n- La fiche est introuvable car elle a été supprimé (ou son channel) mais les données n'ont pas été supprimé de la base de données. Si tel est le cas, vous devez utiliser la commande `/supprimer_char`.",
-    "public": "## :warning: __Erreur__\nVous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "userNotRegistered": "## :warning: __Erreur__\n{{- user}} n'est pas enregistré."
   },
   "export": {
@@ -336,6 +315,27 @@
       "message": "Le bot permet de configurer un modèle (\"modèle de serveur\") qui permet ensuite de créer des fiches de personnages ainsi que de retenir des dés. \n\nLes données restent intégralement sur votre serveur, et le modèle est pensé pour être adaptable à l'infini (ou presque !).\n\nVous trouverez [ici](<https://dicelette.github.io/docs/model/register>) toutes les informations afin de configurer le modèle et enregistrer les fiches, afin de pouvoir utiliser les commandes </dbroll:{{- dbroll}}>, </dbd:{{- dbd}}>, ou encore </graph:{{- graph}}>.",
       "name": "enregistrer"
     }
+  },
+  "import": {
+    "all_success": "Tous les utilisateurs ont été enregistrés.",
+    "description": "Ajouter plusieurs personnages d'un coup",
+    "errors": {
+      "duplicate_charName": "Le personnage {{- charName}} (de {{- user}}) existe déjà dans la base .",
+      "global": "Les erreurs suivantes ont été trouvées :",
+      "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.\n\nLes colonnes :\n- {{- name}} \nest/sont manquante(s).",
+      "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
+      "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !",
+      "missing_header": "Votre CSV n'a pas de noms de colonnes !",
+      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}",
+      "no_user": "Aucun membre n'existe sur ce serveur.",
+      "user_not_found": "{{- user}} n'a pas été trouvé sur le serveur. Il est possible que le cache ne soit pas à jour, ou qu'il y ait une erreur dans l'ID ou l'username."
+    },
+    "name": "import",
+    "options": {
+      "description": "Le fichier CSV à importer",
+      "name": "csv"
+    },
+    "success": "{{- user}} a bien été ajouté."
   },
   "linkToLog": {
     "disabled": "Les liens vers les logs des dés sont désactivés.",
@@ -438,15 +438,15 @@
       "channel": "Le channel où le modèle et les utilisateurs seront enregistrés",
       "private": {
         "description": "Permet de choisir un channel dans lequel les fiches “privées” seront envoyées",
-        "name": "private_channel"
+        "name": "channel_privé"
+      },
+      "public": {
+        "description": "Permet de choisir un channel dans lequel les fiches “publiques” seront envoyées",
+        "name": "channel_public"
       },
       "template": {
         "description": "Le modèle à enregistrer",
         "name": "template"
-      },
-      "public": {
-        "description": "Permet de choisir un channel dans lequel les fiches “publiques” seront envoyées",
-        "name": "public_channel"
       }
     }
   },
