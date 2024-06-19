@@ -236,7 +236,7 @@
     "tooMuchStats": "## :warning: __Erreur__\nTrop de statistiques ont été fournies ! Vous ne pouvez pas avoir plus de 25 statistiques.",
     "totalExceededBy": "## :warning: __Erreur__\nLe total de `{{- value}}` est dépassé de `{{- max}}`.",
     "user": "## :warning: __Erreur__\nUtilisateur introuvable.\n- Il peut s'agir d'une erreur temporaire causé par la mise à jour du cache,\n- La fiche est introuvable car elle a été supprimé (ou son channel) mais les données n'ont pas été supprimé de la base de données. Si tel est le cas, vous devez utiliser la commande `/supprimer_char`.",
-    "userChan": "## :warning: __Erreur__\nVous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
+    "public": "## :warning: __Erreur__\nVous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "userNotRegistered": "## :warning: __Erreur__\n{{- user}} n'est pas enregistré."
   },
   "export": {
@@ -436,17 +436,17 @@
     "name": "enregistrer",
     "options": {
       "channel": "Le channel où le modèle et les utilisateurs seront enregistrés",
-      "hider": {
-        "description": "Permet de choisir un channel dans lequel les personnages \"privés\" seront envoyés",
-        "name": "personnage_privé"
+      "private": {
+        "description": "Permet de choisir un channel dans lequel les fiches “privées” seront envoyées",
+        "name": "private_channel"
       },
       "template": {
         "description": "Le modèle à enregistrer",
         "name": "template"
       },
-      "userChan": {
-        "description": "Permet de choisir un channel dans lequel les fiches seront envoyés et gérées",
-        "name": "user_chan"
+      "public": {
+        "description": "Permet de choisir un channel dans lequel les fiches “publiques” seront envoyées",
+        "name": "public_channel"
       }
     }
   },

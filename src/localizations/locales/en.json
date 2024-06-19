@@ -237,7 +237,7 @@
     "tooMuchStats": "## :warning: __Error__\nToo many statistics have been saved! You cannot have more than 25 statistics",
     "totalExceededBy": "## :warning: __Error__\nThe total of {{- value}} is exceeded by {{- max}}",
     "user": "## :warning: __Error__\nUser not found. \n\n- This may be a temporary error caused by updating the cache,\n\n- The record cannot be found because it has been deleted (or its channel) but the data has not been deleted from the database. \nIf so, you need to use the `/delete_char` command.",
-    "userChan": "## :warning: __Error__\nYou cannot choose the channel {{- chan}} without choosing a channel where to post the character sheet, because it will be impossible to create a thread there.",
+    "public": "## :warning: __Error__\nYou cannot choose the channel {{- chan}} without choosing a channel where to post the character sheet, because it will be impossible to create a thread there.",
     "userNotRegistered": "## :warning: __Error__\n{{- user}} is not registered."
   },
   "export": {
@@ -437,17 +437,17 @@
     "name": "register",
     "options": {
       "channel": "The channel where the template and users will be registered",
-      "hider": {
+      "private": {
         "description": "Allows you to choose a channel in which the “private” characters will be sent",
-        "name": "private_character"
+        "name": "private_channel"
       },
       "template": {
         "description": "The template to be registered",
         "name": "template"
       },
-      "userChan": {
-        "description": "Allows you to choose a channel in which the files will be sent and managed",
-        "name": "user_chan"
+      "public": {
+        "description": "Allows you to choose a channel in which the “public” characters will be sent",
+        "name": "public_channel"
       }
     }
   },
