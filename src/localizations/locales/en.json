@@ -23,7 +23,7 @@
       "set": "{{- role}} will now be added to players when their stats are validated."
     }
   },
-  "bulk_add": {
+  "import": {
     "all_success": "All users have been registered.",
     "description": "Add multiple characters at once",
     "errors": {
@@ -42,18 +42,15 @@
       "description": "The CSV file to import",
       "name": "csv"
     },
-    "user": {
-      "success": "{{- user}} has been added."
-    }
+    "success": "{{- user}} has been added."
   },
-  "bulk_add_template": {
+  "csv_generation": {
     "description": "Used to generate the CSV file for the add_mass command.",
     "name": "csv",
     "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
   },
   "button": {
-    "add": {
-    },
+    "add": {},
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",

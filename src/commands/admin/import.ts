@@ -43,28 +43,28 @@ export type CSVRow = {
  */
 export const bulkAdd = {
 	data: new SlashCommandBuilder()
-		.setName(t("bulk_add.name"))
+		.setName(t("import.name"))
 		.setDMPermission(false)
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-		.setNameLocalizations(cmdLn("bulk_add.name"))
-		.setDescription(t("bulk_add.description"))
-		.setDescriptionLocalizations(cmdLn("bulk_add.description"))
+		.setNameLocalizations(cmdLn("import.name"))
+		.setDescription(t("import.description"))
+		.setDescriptionLocalizations(cmdLn("import.description"))
 		.addAttachmentOption((option) =>
 			option
-				.setName(t("bulk_add.options.name"))
-				.setNameLocalizations(cmdLn("bulk_add.options.name"))
-				.setDescription(t("bulk_add.options.description"))
-				.setDescriptionLocalizations(cmdLn("bulk_add.options.description"))
+				.setName(t("import.options.name"))
+				.setNameLocalizations(cmdLn("import.options.name"))
+				.setDescription(t("import.options.description"))
+				.setDescriptionLocalizations(cmdLn("import.options.description"))
 				.setRequired(true)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		const options = interaction.options as CommandInteractionOptionResolver;
-		const csvFile = options.getAttachment(t("bulk_add.options.name"), true);
+		const csvFile = options.getAttachment(t("import.options.name"), true);
 		const ul = ln(interaction.guild?.preferredLocale ?? interaction.locale);
 		await interaction.deferReply({ ephemeral: true });
 		const ext = csvFile.name.split(".").pop()?.toLowerCase() ?? "";
 		if (!ext || ext !== "csv") {
-			return reply(interaction, { content: ul("bulk_add.errors.invalid_file", { ext }) });
+			return reply(interaction, { content: ul("import.errors.invalid_file", { ext }) });
 		}
 		/** download the file using paparse */
 		const guildTemplate = await getTemplateWithDB(interaction, client.settings);
@@ -173,13 +173,12 @@ export const bulkAdd = {
 				);
 				addAutoRole(interaction, member.id, !!diceEmbed, !!statsEmbed, client.settings);
 				await reply(interaction, {
-					content: ul("bulk_add.user.success", { user: userMention(member.id) }),
+					content: ul("import.success", { user: userMention(member.id) }),
 				});
 			}
 		}
-		let msg = ul("bulk_add.all_success");
-		if (errors.length > 0)
-			msg += `\n${ul("bulk_add.errors.global")}\n${errors.join("\n")}`;
+		let msg = ul("import.all_success");
+		if (errors.length > 0) msg += `\n${ul("import.errors.global")}\n${errors.join("\n")}`;
 		await reply(interaction, { content: msg });
 		return;
 	},
@@ -191,12 +190,12 @@ export const bulkAdd = {
 
 export const bulkAddTemplate = {
 	data: new SlashCommandBuilder()
-		.setName(t("bulk_add_template.name"))
+		.setName(t("csv_generation.name"))
 		.setDMPermission(false)
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-		.setNameLocalizations(cmdLn("bulk_add_template.name"))
-		.setDescription(t("bulk_add_template.description"))
-		.setDescriptionLocalizations(cmdLn("bulk_add_template.description")),
+		.setNameLocalizations(cmdLn("csv_generation.name"))
+		.setDescription(t("csv_generation.description"))
+		.setDescriptionLocalizations(cmdLn("csv_generation.description")),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
 		const ul = ln(interaction.locale);
@@ -216,7 +215,7 @@ export const bulkAddTemplate = {
 		const csvText = `\ufeff${header.join(";")}\n`;
 		const buffer = Buffer.from(csvText, "utf-8");
 		await interaction.reply({
-			content: ul("bulk_add_template.success"),
+			content: ul("csv_generation.success"),
 			files: [{ attachment: buffer, name: "template.csv" }],
 		});
 	},
@@ -266,7 +265,7 @@ export async function parseCSV(
 			if (!dataHeader) {
 				console.error("Error while parsing CSV, missing header");
 				if (interaction)
-					await reply(interaction, { content: ul("bulk_add.errors.missing_header") });
+					await reply(interaction, { content: ul("import.errors.missing_header") });
 				error = "Missing header";
 				return;
 			}
@@ -278,7 +277,7 @@ export async function parseCSV(
 				console.error("Error while parsing CSV, missing header values", missingHeader);
 				if (interaction)
 					await reply(interaction, {
-						content: ul("bulk_add.errors.headers", { name: missingHeader.join("\n- ") }),
+						content: ul("import.errors.headers", { name: missingHeader.join("\n- ") }),
 					});
 				error = "Missing header values";
 				return;
@@ -336,7 +335,7 @@ async function step(
 		let userID: string | undefined = user;
 		const allMembers = await interaction?.guild?.members.fetch();
 		if (!allMembers) {
-			const msg = ul("bulk_add.errors.no_user");
+			const msg = ul("import.errors.no_user");
 			errors.push(msg);
 			continue;
 		}
@@ -349,7 +348,7 @@ async function step(
 					member.user.tag === user
 			);
 			if (!guildMember || !guildMember.user) {
-				const msg = ul("bulk_add.errors.user_not_found", { user });
+				const msg = ul("import.errors.user_not_found", { user });
 				await reply(interaction, { content: msg });
 				errors.push(msg);
 				continue;
@@ -361,7 +360,7 @@ async function step(
 		if (!members[userID]) members[userID] = [];
 		if (guildTemplate.charName && !charName) {
 			if (interaction) {
-				const msg = ul("bulk_add.errors.missing_charName", { user: userMention(userID) });
+				const msg = ul("import.errors.missing_charName", { user: userMention(userID) });
 				await reply(interaction, { content: msg });
 				errors.push(msg);
 			}
@@ -378,7 +377,7 @@ async function step(
 			})
 		) {
 			if (interaction) {
-				const msg = ul("bulk_add.errors.duplicate_charName", {
+				const msg = ul("import.errors.duplicate_charName", {
 					user: userMention(userID),
 					charName: charName ?? ul("common.default"),
 				});
@@ -396,7 +395,7 @@ async function step(
 			);
 			if (emptyStats.length > 0) {
 				if (interaction) {
-					const msg = ul("bulk_add.errors.missing_stats", {
+					const msg = ul("import.errors.missing_stats", {
 						user: userMention(userID),
 						stats: emptyStats.join("\n- "),
 					});

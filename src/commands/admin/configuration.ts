@@ -15,10 +15,10 @@ import {
 	ThreadChannel,
 } from "discord.js";
 import i18next from "i18next";
-import dedent from "ts-dedent";
+import { dedent } from "ts-dedent";
 
 const t = i18next.getFixedT("en");
-export const adminConfig = {
+export const configuration = {
 	data: new SlashCommandBuilder()
 		.setName(t("config.name"))
 		.setNameLocalizations(cmdLn("config.name"))
@@ -396,7 +396,7 @@ async function display(
 	};
 
 	const dpChan = (settings?: string) => {
-		if (!settings) return ul("common.disabled");
+		if (!settings) return ul("common.no");
 		return `<#${settings}>`;
 	};
 
@@ -406,12 +406,12 @@ async function display(
 
 	const dpTimer = (settings?: number) => {
 		if (!settings || settings === 0 || guildSettings.disableThread)
-			return ul("common.disabled");
+			return ul("common.no");
 		return `${settings / 1000}s `;
 	};
 
 	const dpRole = (settings?: string) => {
-		if (!settings) return ul("common.disabled");
+		if (!settings) return ul("common.no");
 		return `<@&${settings}>`;
 	};
 

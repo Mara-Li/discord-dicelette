@@ -132,7 +132,6 @@ export const deleteChar = {
 			? undefined
 			: charName;
 		const userData = charData[user?.id ?? interaction.user.id];
-		const isPrivate = userData.isPrivate;
 		const defaultSheetId: PersonnageIds = {
 			channelId: userData.messageId[1],
 			messageId: userData.messageId[0],

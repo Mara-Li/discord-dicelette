@@ -23,8 +23,9 @@
       "set": "{{- role}} sera maintenant ajouté aux joueurs quand leurs statistiques seront validées."
     }
   },
-  "bulk_add": {
+  "import": {
     "all_success": "Tous les utilisateurs ont été enregistrés.",
+    "success": "{{- user}} a bien été ajouté.",
     "description": "Ajouter plusieurs personnages d'un coup",
     "errors": {
       "duplicate_charName": "Le personnage {{- charName}} (de {{- user}}) existe déjà dans la base .",
@@ -41,12 +42,9 @@
     "options": {
       "description": "Le fichier CSV à importer",
       "name": "csv"
-    },
-    "user": {
-      "success": "{{- user}} a bien été ajouté."
     }
   },
-  "bulk_add_template": {
+  "csv_generation": {
     "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
     "name": "csv",
     "success": "Voici votre fichier CSV ! Attention, par défaut, le délimiteur utilisé est `;`. N'oubliez pas de le préciser à l'import dans votre logiciel (excel/google sheet...).\nPrécisons que vous devez vous-même calculer les combinaisons !"
