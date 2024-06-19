@@ -432,7 +432,7 @@ async function display(
 			{
 				name: ul("config.sheet"),
 				value: dedent(`
-					${dpTitle("config.defaultSheet")} ${dpChan(guildSettings.defaultSheetId)}
+					${dpTitle("config.defaultSheet")} ${dpChan(guildSettings.managerId)}
 					${dpTitle("config.privateChan")} ${dpChan(guildSettings.privateChannel)}
 					`),
 			},

@@ -63,7 +63,7 @@ export async function createEmbedFirstPage(
 		interaction.fields.getTextInputValue("private")?.toLowerCase() === "x";
 	const avatar = interaction.fields.getTextInputValue("avatar");
 
-	let defaultSheetId = setting.get(interaction.guild!.id, "defaultSheetId");
+	let defaultSheetId = setting.get(interaction.guild!.id, "managerId");
 	if (isPrivate && setting.get(interaction.guild!.id, "privateChannel"))
 		defaultSheetId = setting.get(interaction.guild!.id, "privateChannel");
 	if (customChannel.length > 0) defaultSheetId = customChannel;

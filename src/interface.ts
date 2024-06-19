@@ -66,7 +66,7 @@ export interface GuildData {
 	/**
 	 * The default channel for the character sheet
 	 */
-	defaultSheetId?: string;
+	managerId?: string;
 	/**
 	 * Disable the autodeletion of the dice result
 	 */
