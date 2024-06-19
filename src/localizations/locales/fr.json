@@ -75,8 +75,8 @@
     "default": "Défaut",
     "dice": "dé",
     "disabled": "Désactivé",
-    "enabled": "Activé",
     "isPrivate": "Personnage privé",
+    "no": "✕",
     "noSet": "/",
     "page": "Page {{- nb}}",
     "role": "rôle",
@@ -87,32 +87,55 @@
     "yes": "✓"
   },
   "config": {
-    "autoRole": {
-      "dice": "[Rôle automatique] Dés",
-      "stats": "[Rôle automatique] Statistiques"
+    "admin": {
+      "desc": "Permet de consigner toutes les modifications et créations de personnages dans un channel.",
+      "title": "Administration"
     },
-    "context": "Lien vers le contexte du dé",
+    "autoRole": {
+      "dice": "Dés",
+      "stats": "Statistiques",
+      "title": "Rôles automatiques"
+    },
+    "context": {
+      "desc": "Permet d'afficher un lien vers le message précédent le lancer de dé, ou le lancer lui-même, en fonction des paramètres d'auto-suppression.",
+      "title": "Lien vers le contexte du dé"
+    },
     "damageName": "Liste des dés sauvegardés (global)",
-    "defaultSheetId": "Channel où seront envoyés les fiches",
+    "defaultSheet": "Channel par défaut",
     "description": "Permet de configurer le bot pour le serveur",
-    "disableThread": "[Désactivation des threads]",
+    "disableThread": {
+      "desc": "Désactive la sauvegarde globale et l'auto-suppression des résultats, laissant donc le lancer de dés là où il a été fait.",
+      "title": "Désactivation des fils de résultats"
+    },
     "display": {
       "description": "Affiche la configuration du serveur",
       "name": "afficher"
     },
-    "linkToLog": "Lien vers le log du résultat de dés",
+    "displayResult": "Affichage des résultats",
+    "linkToLog": "Lien vers la sauvegarde du résultat de dés",
+    "links": "Liens",
     "logLink": {
       "description": "Active le lien vers les logs dans le résultat du dé",
       "name": "lien_vers_log"
     },
-    "logs": "Channel des logs d'administration",
+    "logs": "Journalisation",
     "name": "config",
     "privateChan": "Channel des personnages privés",
-    "rollChannel": "Log global des résultats de dés",
+    "result": {
+      "desc": "Permet de sauvegarder tous les résultats de lancer dans un seul et même channel.",
+      "title": "Sauvegarde des résultats"
+    },
+    "sheet": "Fiches",
     "statsName": "Nom des statistiques",
-    "templateID": "Lien vers la template",
-    "timer": "Délais avant suppression",
-    "timestamp": "[Affichage des timestamps]",
+    "template": "Configuration du modèle",
+    "timer": {
+      "desc": "À la fin du timer, le lancer de dés sera supprimé mais sont résultats sera sauvegardé dans le channel approprié.",
+      "title": "Délais avant suppression"
+    },
+    "timestamp": {
+      "desc": "Affichage de l'heure/date du lancer dans l'agrégateur des résultats.",
+      "title": "Affichage des timestamps"
+    },
     "title": "Configuration de {{- guild}}"
   },
   "dbRoll": {
@@ -189,8 +212,7 @@
     "generic": "{{- e.message}}",
     "invalidDice": {
       "embeds": "## :warning: __Erreur__\nAucun embed de dé détecté",
-      "withDice": "## :warning: __Erreur__\nDé invalide : `{{- dice}}`",
-      "withoutDice": "## :warning: __Erreur__\nErreur : Dé invalide"
+      "withDice": "## :warning: __Erreur__\nDé invalide : `{{- dice}}`"
     },
     "invalidFormula": "## :warning: __Erreur__  \nFormule invalide : `{{- formula}}`",
     "mustBeGreater": "## :warning: **Une erreur est survenue**\nLa valeur `{{- value}}` doit être plus grande que `{{- min}}`.",

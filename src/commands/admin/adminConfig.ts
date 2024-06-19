@@ -15,6 +15,7 @@ import {
 	ThreadChannel,
 } from "discord.js";
 import i18next from "i18next";
+import dedent from "ts-dedent";
 
 const t = i18next.getFixedT("en");
 export const adminConfig = {
@@ -389,98 +390,108 @@ async function display(
 	const guildSettings = client.settings.get(interaction.guild!.id);
 	if (!guildSettings) return;
 
+	const dpBool = (settings?: boolean) => {
+		if (settings) return ul("common.yes");
+		return ul("common.no");
+	};
+
+	const dpChan = (settings?: string) => {
+		if (!settings) return ul("common.disabled");
+		return `<#${settings}>`;
+	};
+
+	const dpTitle = (title?: string) => {
+		return `- **__${ul(title)}__**${ul("common.space")}:`;
+	};
+
+	const dpTimer = (settings?: number) => {
+		if (!settings || settings === 0 || guildSettings.disableThread)
+			return ul("common.disabled");
+		return `${settings / 1000}s `;
+	};
+
+	const dpRole = (settings?: string) => {
+		if (!settings) return ul("common.disabled");
+		return `<@&${settings}>`;
+	};
+
 	const baseEmbed = new EmbedBuilder()
 		.setTitle(ul("config.title", { guild: interaction.guild!.name }))
 		.setThumbnail(interaction.guild!.iconURL() ?? "")
-		.setColor("Random");
-	if (guildSettings.deleteAfter) {
-		baseEmbed.addFields({
-			name: ul("config.timer"),
-			value: `${guildSettings.deleteAfter / 1000}s`,
-		});
-	}
-	baseEmbed.addFields({
-		name: ul("config.timestamp"),
-		value: guildSettings.timestamp ? ul("common.enabled") : ul("common.disabled"),
-	});
-
-	if (guildSettings.logs) {
-		baseEmbed.addFields({
-			name: ul("config.logs"),
-			value: `<#${logs}>`,
-		});
-	}
-	if (guildSettings.rollChannel) {
-		baseEmbed.addFields({
-			name: ul("config.rollChannel"),
-			value: `<#${guildSettings.rollChannel}>`,
-		});
-	}
-	if (guildSettings.disableThread) {
-		baseEmbed.addFields({
-			name: ul("config.disableThread"),
-			value: "_ _",
-		});
-	}
-	if (guildSettings.autoRole?.dice) {
-		baseEmbed.addFields({
-			name: ul("config.autoRole.dice"),
-			value: `<@&${guildSettings.autoRole.dice}>`,
-		});
-	}
-	if (guildSettings.autoRole?.stats) {
-		baseEmbed.addFields({
-			name: ul("config.autoRole.stats"),
-			value: `<@&${guildSettings.autoRole?.stats}>`,
-		});
-	}
-
-	if (guildSettings.defaultSheetId) {
-		baseEmbed.addFields({
-			name: ul("config.defaultSheetId"),
-			value: `<#${guildSettings.defaultSheetId}>`,
-		});
-	}
-	if (guildSettings.privateChannel) {
-		baseEmbed.addFields({
-			name: ul("config.privateChan"),
-			value: `<#${guildSettings.privateChannel}>`,
-		});
-	}
-	baseEmbed.addFields({
-		name: ul("config.context"),
-		value: guildSettings.context ? ul("common.enabled") : ul("common.disabled"),
-	});
-	baseEmbed.addFields({
-		name: ul("config.linkToLog"),
-		value: guildSettings.linkToLogs ? ul("common.enabled") : ul("common.disabled"),
-	});
-
+		.setColor("Random")
+		.addFields(
+			{
+				name: ul("config.logs"),
+				value: dedent(`
+				${dpTitle("config.admin.title")} ${dpChan(guildSettings.logs)}
+				 ${ul("config.admin.desc")}
+				${dpTitle("config.result.title")} ${dpChan(guildSettings.rollChannel)}
+				 ${ul("config.result.desc")} 
+			`),
+			},
+			{
+				name: ul("config.sheet"),
+				value: dedent(`
+					${dpTitle("config.defaultSheet")} ${dpChan(guildSettings.defaultSheetId)}
+					${dpTitle("config.privateChan")} ${dpChan(guildSettings.privateChannel)}
+					`),
+			},
+			{
+				name: ul("config.displayResult"),
+				value: dedent(`
+					${dpTitle("config.timestamp.title")} ${dpBool(guildSettings.timestamp)}
+					 ${ul("config.timestamp.desc")}
+					${dpTitle("config.timer.title")} ${dpTimer(guildSettings.deleteAfter)}
+					 ${ul("config.timer.desc")}
+					${dpTitle("config.disableThread.title")} ${dpBool(guildSettings.disableThread)}
+					 ${ul("config.disableThread.desc")}
+					`),
+			},
+			{
+				name: ul("config.links"),
+				value: dedent(`
+					${dpTitle("config.context.title")} ${dpBool(guildSettings.context)}
+					 ${ul("config.context.desc")}
+					${dpTitle("config.linkToLog")} ${dpBool(guildSettings.linkToLogs)}
+				`),
+			},
+			{
+				name: ul("config.autoRole.title"),
+				value: dedent(`
+					${dpTitle("config.autoRole.dice")} ${dpRole(guildSettings.autoRole?.dice)}
+					${dpTitle("config.autoRole.stats")} ${dpRole(guildSettings.autoRole?.stats)}
+				`),
+			}
+		);
+	let templateEmbed: undefined | EmbedBuilder = undefined;
 	if (guildSettings.templateID) {
 		const templateID = guildSettings.templateID;
 		const { channelId, messageId, statsName, damageName } = templateID ?? {};
 		if (messageId && messageId.length > 0 && channelId && channelId.length > 0) {
-			const messageLink = `https://discord.com/channels/${interaction.guild!.id}/${channelId}/${messageId}`;
-			baseEmbed.addFields({
-				name: ul("config.templateID"),
-				value: messageLink,
-			});
-		}
-		if (statsName && statsName.length > 0) {
-			baseEmbed.addFields({
-				name: ul("config.statsName"),
-				value: `- ${statsName.join("\n- ")}`,
-			});
-		}
-		if (damageName && damageName.length > 0) {
-			baseEmbed.addFields({
-				name: ul("config.damageName"),
-				value: `- ${damageName.join("\n- ")}`,
-			});
+			templateEmbed = new EmbedBuilder()
+				.setTitle(ul("config.template"))
+				.setColor("Random")
+				.setURL(
+					`https://discord.com/channels/${interaction.guild!.id}/${channelId}/${messageId}`
+				);
+
+			if (statsName && statsName.length > 0) {
+				templateEmbed.addFields({
+					name: ul("config.statsName"),
+					value: `- ${statsName.join("\n- ")}`,
+				});
+			}
+			if (damageName && damageName.length > 0) {
+				templateEmbed.addFields({
+					name: ul("config.damageName"),
+					value: `- ${damageName.join("\n- ")}`,
+				});
+			}
 		}
 	}
-
-	await interaction.reply({ embeds: [baseEmbed] });
+	const embeds = [baseEmbed];
+	if (templateEmbed) embeds.push(templateEmbed);
+	await interaction.reply({ embeds });
 }
 
 async function timestamp(
