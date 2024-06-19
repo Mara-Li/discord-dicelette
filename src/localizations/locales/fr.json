@@ -100,6 +100,7 @@
     "sheet": "Fiches",
     "statsName": "Nom des statistiques",
     "template": "Configuration du modèle",
+    "templateMessage": "Lien vers le modèle",
     "timer": {
       "desc": "À la fin du timer, le lancer de dés sera supprimé mais sont résultats sera sauvegardé dans le channel approprié.",
       "title": "Délais avant suppression"

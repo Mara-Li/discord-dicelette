@@ -471,9 +471,13 @@ async function display(
 			templateEmbed = new EmbedBuilder()
 				.setTitle(ul("config.template"))
 				.setColor("Random")
-				.setURL(
-					`https://discord.com/channels/${interaction.guild!.id}/${channelId}/${messageId}`
-				);
+				.setThumbnail(
+					"https://github.com/Dicelette/discord-dicelette/blob/main/assets/communication.png?raw=true"
+				)
+				.addFields({
+					name: ul("config.templateMessage"),
+					value: `https://discord.com/channels/${interaction.guild!.id}/${channelId}/${messageId}`,
+				});
 
 			if (statsName && statsName.length > 0) {
 				templateEmbed.addFields({
