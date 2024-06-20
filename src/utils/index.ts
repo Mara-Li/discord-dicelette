@@ -164,7 +164,7 @@ export function removeEmojiAccents(dice: string) {
  */
 export function timestamp(settings: Settings, guildID: string) {
 	if (settings.get(guildID, "timestamp"))
-		return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
+		return ` • <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
 	return "";
 }
 
