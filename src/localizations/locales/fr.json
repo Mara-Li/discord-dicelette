@@ -92,7 +92,7 @@
     "links": "Liens",
     "logLink": {
       "description": "Active le lien vers les logs dans le résultat du dé",
-      "name": "lien_vers_log"
+      "name": "lien_sauvegarde"
     },
     "logs": "Journalisation",
     "name": "config",

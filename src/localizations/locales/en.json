@@ -92,7 +92,7 @@
     "links": "Links",
     "logLink": {
       "description": "Activate the link to the logs in the die result",
-      "name": "link_to_log"
+      "name": "save_link"
     },
     "logs": "Logging",
     "name": "config",
