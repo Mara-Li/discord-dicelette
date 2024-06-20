@@ -1,5 +1,20 @@
 # Changelog
 
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [1.6.0](https://github.com/Dicelette/discord-dicelette/compare/1.5.1...1.6.0) (2024-06-20)
+
+
+### Features
+
+* add commands config anchor ([8246805](https://github.com/Dicelette/discord-dicelette/commit/8246805637ef9695e1317159308d80cbe21921fa))
+* **config:** disable logs + anchor ([026dc9d](https://github.com/Dicelette/discord-dicelette/commit/026dc9d87f047408e203503c6080512da69e7b96))
+
+
+### Bug Fixes
+
+* set manager on the wrong name ([f9a4422](https://github.com/Dicelette/discord-dicelette/commit/f9a4422b1d91ff32abdc8f5f8f287d718f90422a))
+
 ## [1.5.0](https://github.com/Dicelette/discord-dicelette/compare/1.4.3...1.5.0) (2024-06-17)
 
 
