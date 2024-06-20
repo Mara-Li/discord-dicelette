@@ -122,8 +122,8 @@ export const configuration = {
 				.setDescriptionLocalizations(cmdLn("autoRole.description"))
 				.addSubcommand((subcommand) =>
 					subcommand
-						.setName(t("common.statistic"))
-						.setNameLocalizations(cmdLn("common.statistic"))
+						.setName(t("common.statistics"))
+						.setNameLocalizations(cmdLn("common.statistics"))
 						.setDescription(t("autoRole.stat.desc"))
 						.setDescriptionLocalizations(cmdLn("autoRole.stat.desc"))
 						.addRoleOption((option) =>
@@ -208,7 +208,7 @@ export const configuration = {
 		const subcommand = options.getSubcommand(true);
 		const subcommandGroup = options.getSubcommandGroup();
 		if (subcommandGroup && subcommandGroup === t("autoRole.name")) {
-			if (subcommand === t("common.statistic"))
+			if (subcommand === t("common.statistics"))
 				return stats(options, client, ul, interaction);
 			if (subcommand === t("common.dice")) return dice(options, client, ul, interaction);
 		}
@@ -446,7 +446,7 @@ async function display(
 				name: ul("config.autoRole"),
 				value: dedent(`
 					${title(dpTitle("common.dice"))} ${dp(guildSettings.autoRole?.dice, "role")}
-					${title(dpTitle("common.statistic"))} ${dp(guildSettings.autoRole?.stats, "role")}
+					${title(dpTitle("common.statistics"))} ${dp(guildSettings.autoRole?.stats, "role")}
 				`),
 			}
 		);
