@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.1](https://github.com/Dicelette/discord-dicelette/compare/1.6.0...1.6.1) (2024-06-20)
+
+
+### Bug Fixes
+
+* typo ([ad08682](https://github.com/Dicelette/discord-dicelette/commit/ad08682a63b699d69b219773a54c337a07182d17))
+
 ## [1.6.0](https://github.com/Dicelette/discord-dicelette/compare/1.5.1...1.6.0) (2024-06-20)
 
 
