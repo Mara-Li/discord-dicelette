@@ -49,18 +49,60 @@ export type UserRegistration = {
 };
 
 export interface GuildData {
+	/**
+	 * Save a channel to send every long related to the sheet edit
+	 */
 	logs?: string;
+	/**
+	 * Allow to send every result into a specific channel
+	 */
 	rollChannel?: string;
+	/**
+	 * Disable the thread creation for roll
+	 * - Disable roll channel
+	 * - Disable the autodeletion
+	 */
 	disableThread?: boolean;
+	/**
+	 * The default channel for the character sheet
+	 */
 	managerId?: string;
+	/**
+	 * Disable the autodeletion of the dice result
+	 */
 	deleteAfter?: number;
+	/**
+	 * Add a timestamp to the log result
+	 */
 	timestamp?: boolean;
+	/**
+	 * Private chan for private sheet (default)
+	 */
 	privateChannel?: string;
+	/**
+	 * If the guild was converted for the userMessageId
+	 */
 	converted?: boolean;
+	/**
+	 * Auto role when a user is created or edited
+	 */
 	autoRole?: {
 		dice?: string;
 		stats?: string;
 	};
+	/**
+	 * In the logs, add a context link to the message. The link will change depending of the autodeletion:
+	 * - If disabled, the link will be the result interaction
+	 * - If enabled, the link will be the message before the interaction
+	 */
+	context?: boolean;
+	/**
+	 * In the result dice interaction, add a link to the logs receipt
+	 */
+	linkToLogs?: boolean;
+	/**
+	 * The template ID for the guild
+	 */
 	templateID: {
 		channelId: string;
 		messageId: string;
@@ -70,10 +112,6 @@ export interface GuildData {
 	user: {
 		[userID: string]: {
 			charName?: string | null;
-			/**
-			 * Can be an array if the character sheet is saved in another channel than the default
-			 * It will be always 2 elements: the messageId and the channelId
-			 */
 			messageId: UserMessageId;
 			damageName?: string[];
 			isPrivate?: boolean;

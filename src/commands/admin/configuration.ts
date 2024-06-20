@@ -15,9 +15,10 @@ import {
 	ThreadChannel,
 } from "discord.js";
 import i18next from "i18next";
+import { dedent } from "ts-dedent";
 
 const t = i18next.getFixedT("en");
-export const adminConfig = {
+export const configuration = {
 	data: new SlashCommandBuilder()
 		.setName(t("config.name"))
 		.setNameLocalizations(cmdLn("config.name"))
@@ -164,6 +165,41 @@ export const adminConfig = {
 						.setDescription(t("timestamp.options"))
 						.setRequired(true)
 				)
+		)
+		/* ANCHOR */
+		.addSubcommand((sub) =>
+			sub
+				.setName(t("anchor.name"))
+				.setDescription(t("anchor.description"))
+				.setDescriptionLocalizations(cmdLn("anchor.description"))
+				.setNameLocalizations(cmdLn("anchor.name"))
+				.addBooleanOption((option) =>
+					option
+						.setName(t("disableThread.options.name"))
+						.setDescription(t("anchor.options"))
+						.setNameLocalizations(cmdLn("disableThread.options.name"))
+						.setDescriptionLocalizations(cmdLn("anchor.options"))
+						.setRequired(true)
+				)
+		)
+		/**
+		 * LOGS IN DICE RESULT
+		 * For the result interaction, not the logs
+		 */
+		.addSubcommand((sub) =>
+			sub
+				.setName(t("config.logLink.name"))
+				.setDescription(t("config.logLink.description"))
+				.setDescriptionLocalizations(cmdLn("config.logLink.description"))
+				.setNameLocalizations(cmdLn("config.logLink.name"))
+				.addBooleanOption((option) =>
+					option
+						.setName(t("disableThread.options.name"))
+						.setDescription(t("linkToLog.options"))
+						.setNameLocalizations(cmdLn("disableThread.options.name"))
+						.setDescriptionLocalizations(cmdLn("linkToLog.options"))
+						.setRequired(true)
+				)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
@@ -189,6 +225,10 @@ export const adminConfig = {
 				return await display(interaction, client, ul);
 			case t("timestamp.name"):
 				return await timestamp(interaction, client, ul, options);
+			case t("anchor.name"):
+				return await anchor(interaction, client, ul);
+			case t("config.logLink.name"):
+				return await linkToLog(interaction, client, ul);
 		}
 	},
 };
@@ -304,7 +344,10 @@ async function disableThread(
 			const mention = `<#${rollChannel}>`;
 			const msg =
 				ul("disableThread.disable.reply") +
-				ul("disableThread.disable.mention", { mention });
+				ul(
+					"disableThread.disable.mention",
+					{ mention } + ul("disableThread.disable.autoDelete")
+				);
 			await reply(interaction, msg);
 			return;
 		}
@@ -344,99 +387,111 @@ async function display(
 	client: EClient,
 	ul: Translation
 ) {
-	const timer = client.settings.get(interaction.guild!.id, "deleteAfter");
-	const logs = client.settings.get(interaction.guild!.id, "logs");
-	const rollChannel = client.settings.get(interaction.guild!.id, "rollChannel");
-	const disableThread = client.settings.get(interaction.guild!.id, "disableThread");
-	const autoRole = client.settings.get(interaction.guild!.id, "autoRole");
-	const managerId = client.settings.get(interaction.guild!.id, "managerId");
-	const privateChan = client.settings.get(interaction.guild!.id, "privateChannel");
-	const timestamp = client.settings.get(interaction.guild!.id, "timestamp");
+	const guildSettings = client.settings.get(interaction.guild!.id);
+	if (!guildSettings) return;
+
+	const dpBool = (settings?: boolean) => {
+		if (settings) return ul("common.yes");
+		return ul("common.no");
+	};
+
+	const dpTitle = (title?: string) => {
+		return `- **__${ul(title)}__**${ul("common.space")}:`;
+	};
+
+	const dpTimer = (settings?: number) => {
+		if (!settings || settings === 0 || guildSettings.disableThread)
+			return ul("common.no");
+		return `${settings / 1000}s `;
+	};
+
+	const dp = (type: "role" | "chan", settings?: string) => {
+		if (!settings) return ul("common.no");
+		if (type === "role") return `<@&${settings}>`;
+		return `<@#${settings}>`;
+	};
+
 	const baseEmbed = new EmbedBuilder()
 		.setTitle(ul("config.title", { guild: interaction.guild!.name }))
 		.setThumbnail(interaction.guild!.iconURL() ?? "")
-		.setColor("Random");
-	if (timer) {
-		baseEmbed.addFields({
-			name: ul("config.timer"),
-			value: `${timer / 1000}s`,
-		});
-	}
-	if (timestamp) {
-		baseEmbed.addFields({
-			name: ul("config.timestamp"),
-			value: "_ _",
-		});
-	}
-	if (logs) {
-		baseEmbed.addFields({
-			name: ul("config.logs"),
-			value: `<#${logs}>`,
-		});
-	}
-	if (rollChannel) {
-		baseEmbed.addFields({
-			name: ul("config.rollChannel"),
-			value: `<#${rollChannel}>`,
-		});
-	}
-	if (disableThread) {
-		baseEmbed.addFields({
-			name: ul("config.disableThread"),
-			value: "_ _",
-		});
-	}
-	if (autoRole?.dice) {
-		baseEmbed.addFields({
-			name: ul("config.autoRole.dice"),
-			value: `<@&${autoRole.dice}>`,
-		});
-	}
-	if (autoRole?.stats) {
-		baseEmbed.addFields({
-			name: ul("config.autoRole.stats"),
-			value: `<@&${autoRole.stats}>`,
-		});
-	}
-
-	if (managerId) {
-		baseEmbed.addFields({
-			name: ul("config.managerId"),
-			value: `<#${managerId}>`,
-		});
-	}
-	if (privateChan) {
-		baseEmbed.addFields({
-			name: ul("config.privateChan"),
-			value: `<#${privateChan}>`,
-		});
-	}
-
-	if (client.settings.has(interaction.guild!.id, "templateID")) {
-		const templateID = client.settings.get(interaction.guild!.id, "templateID");
+		.setColor("Random")
+		.addFields(
+			{
+				name: ul("config.logs"),
+				value: dedent(`
+				${dpTitle("config.admin.title")} ${dp("chan", guildSettings.logs)}
+				 ${ul("config.admin.desc")}
+				${dpTitle("config.result.title")} ${dp("chan", guildSettings.rollChannel)}
+				 ${ul("config.result.desc")} 
+			`),
+			},
+			{
+				name: ul("config.sheet"),
+				value: dedent(`
+					${dpTitle("config.defaultSheet")} ${dp("chan", guildSettings.managerId)}
+					${dpTitle("config.privateChan")} ${dp("chan", guildSettings.privateChannel)}
+					`),
+			},
+			{
+				name: ul("config.displayResult"),
+				value: dedent(`
+					${dpTitle("config.timestamp.title")} ${dpBool(guildSettings.timestamp)}
+					 ${ul("config.timestamp.desc")}
+					${dpTitle("config.timer.title")} ${dpTimer(guildSettings.deleteAfter)}
+					 ${ul("config.timer.desc")}
+					${dpTitle("config.disableThread.title")} ${dpBool(guildSettings.disableThread)}
+					 ${ul("config.disableThread.desc")}
+					`),
+			},
+			{
+				name: ul("config.links"),
+				value: dedent(`
+					${dpTitle("config.context.title")} ${dpBool(guildSettings.context)}
+					 ${ul("config.context.desc")}
+					${dpTitle("config.linkToLog")} ${dpBool(guildSettings.linkToLogs)}
+				`),
+			},
+			{
+				name: ul("config.autoRole.title"),
+				value: dedent(`
+					${dpTitle("config.autoRole.dice")} ${dp("role", guildSettings.autoRole?.dice)}
+					${dpTitle("config.autoRole.stats")} ${dp("role", guildSettings.autoRole?.stats)}
+				`),
+			}
+		);
+	let templateEmbed: undefined | EmbedBuilder = undefined;
+	if (guildSettings.templateID) {
+		const templateID = guildSettings.templateID;
 		const { channelId, messageId, statsName, damageName } = templateID ?? {};
 		if (messageId && messageId.length > 0 && channelId && channelId.length > 0) {
-			const messageLink = `https://discord.com/channels/${interaction.guild!.id}/${channelId}/${messageId}`;
-			baseEmbed.addFields({
-				name: ul("config.templateID"),
-				value: messageLink,
-			});
-		}
-		if (statsName && statsName.length > 0) {
-			baseEmbed.addFields({
-				name: ul("config.statsName"),
-				value: `- ${statsName.join("\n- ")}`,
-			});
-		}
-		if (damageName && damageName.length > 0) {
-			baseEmbed.addFields({
-				name: ul("config.damageName"),
-				value: `- ${damageName.join("\n- ")}`,
-			});
+			templateEmbed = new EmbedBuilder()
+				.setTitle(ul("config.template"))
+				.setColor("Random")
+				.setThumbnail(
+					"https://github.com/Dicelette/discord-dicelette/blob/main/assets/communication.png?raw=true"
+				)
+				.addFields({
+					name: ul("config.templateMessage"),
+					value: `https://discord.com/channels/${interaction.guild!.id}/${channelId}/${messageId}`,
+				});
+
+			if (statsName && statsName.length > 0) {
+				templateEmbed.addFields({
+					name: ul("config.statsName"),
+					value: `- ${statsName.join("\n- ")}`,
+				});
+			}
+			if (damageName && damageName.length > 0) {
+				templateEmbed.addFields({
+					name: ul("config.damageName"),
+					value: `- ${damageName.join("\n- ")}`,
+				});
+			}
 		}
 	}
-
-	await interaction.reply({ embeds: [baseEmbed] });
+	const embeds = [baseEmbed];
+	if (templateEmbed) embeds.push(templateEmbed);
+	await interaction.reply({ embeds });
 }
 
 async function timestamp(
@@ -452,4 +507,40 @@ async function timestamp(
 	} else {
 		await reply(interaction, { content: ul("timestamp.disabled"), ephemeral: true });
 	}
+}
+
+async function anchor(interaction: CommandInteraction, client: EClient, ul: Translation) {
+	const options = interaction.options as CommandInteractionOptionResolver;
+	const toggle = options.getBoolean(t("disableThread.options.name"), true);
+	client.settings.set(interaction.guild!.id, toggle, "context");
+	const deleteLogs = client.settings.get(interaction.guild!.id, "deleteAfter") === 0;
+	if (toggle) {
+		if (deleteLogs)
+			return await reply(interaction, {
+				content: ul("anchor.enabled.noDelete"),
+				ephemeral: true,
+			});
+		return await reply(interaction, {
+			content: ul("anchor.enabled.logs"),
+			ephemeral: true,
+		});
+	}
+	return await reply(interaction, { content: ul("common.disabled"), ephemeral: true });
+}
+
+async function linkToLog(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation
+) {
+	const options = interaction.options as CommandInteractionOptionResolver;
+	const toggle = options.getBoolean(t("disableThread.options.name"), true);
+	client.settings.set(interaction.guild!.id, toggle, "linkToLogs");
+	if (toggle) {
+		return await reply(interaction, {
+			content: ul("linkToLog.enabled"),
+			ephemeral: true,
+		});
+	}
+	return await reply(interaction, { content: ul("linkToLog.disabled"), ephemeral: true });
 }

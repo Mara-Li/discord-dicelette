@@ -349,7 +349,7 @@ export function getUserByEmbed(
  * @param {BaseInteraction} interaction
  * @param {string} channel
  */
-export function registerManagerID(
+export function setDefaultManagerId(
 	guildData: Settings,
 	interaction: BaseInteraction,
 	channel?: string
