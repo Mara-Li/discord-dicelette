@@ -6,7 +6,6 @@ import { getEmbeds, getStatistiqueFields, removeBacktick } from "@utils/parse";
 import {
 	ActionRowBuilder,
 	type ButtonInteraction,
-	EmbedBuilder,
 	type Locale,
 	type ModalActionRowComponentBuilder,
 	ModalBuilder,
@@ -14,12 +13,13 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 } from "discord.js";
+import { createStatsEmbed } from "..";
 
 /**
  * Embed to display the statistics when adding a new user
  * @param interaction {ModalSubmitInteraction}
  * @param template {StatisticalTemplate}
- * @param page {number}
+ * @param page {number=2}
  */
 export async function embedStatistiques(
 	interaction: ModalSubmitInteraction,
@@ -36,7 +36,7 @@ export async function embedStatistiques(
 	userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
 	//add old fields
 
-	const statEmbeds = statsEmbed ?? new EmbedBuilder().setTitle(ul("embed.stats"));
+	const statEmbeds = statsEmbed ?? createStatsEmbed(ul);
 	for (const [stat, value] of Object.entries(stats)) {
 		statEmbeds.addFields({
 			name: title(stat),

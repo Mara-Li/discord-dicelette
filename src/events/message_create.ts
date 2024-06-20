@@ -66,8 +66,17 @@ export default (client: EClient): void => {
 			let linkToOriginal = "";
 			if (deleteInput) {
 				message.delete();
+				if (client.settings.get(message.guild.id, "context")) {
+					const messagesBefore = await channel.messages.fetch({
+						before: message.id,
+						limit: 1,
+					});
+					const messageBefore = messagesBefore.first();
+					if (messagesBefore)
+						linkToOriginal = `\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${message.guild.id}/${message.channel!.id}/${messageBefore!.id}>)`;
+				}
 			} else {
-				linkToOriginal = ` [↪ Source](${message.url})`;
+				linkToOriginal = `\n-# ↪ [${ul("common.context")}] (<${message.url}>)`;
 			}
 			const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 			const thread =
@@ -84,14 +93,16 @@ export default (client: EClient): void => {
 				? `${result.compare.sign} ${result.compare.value}`
 				: "";
 			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
-			const msg = `${authorMention} ${timestamp(client.settings, message.guild.id)}${linkToOriginal}\n${parser}`;
+			const msg = `${authorMention}${timestamp(client.settings, message.guild.id)}\n${parser}${linkToOriginal}`;
 			await msgToEdit.edit(msg);
-			const idMessage = `↪ ${msgToEdit.url}`;
+			const idMessage = client.settings.get(message.guild.id, "linkToLogs")
+				? `\n\n↪ ${msgToEdit.url}`
+				: "";
 			const reply = deleteInput
-				? await channel.send({ content: `${authorMention}\n${parser}\n\n${idMessage}` })
+				? await channel.send({ content: `${authorMention}\n${parser}${idMessage}` })
 				: await message.reply({
-						content: `${parser}\n\n${idMessage}`,
-						allowedMentions: { repliedUser: false },
+						content: `${parser}${idMessage}`,
+						allowedMentions: { repliedUser: true },
 					});
 			const timer = client.settings.get(message.guild.id, "deleteAfter") ?? 180000;
 			deleteAfter(reply, timer);

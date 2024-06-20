@@ -1,7 +1,7 @@
 import type { Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { reply } from "@utils";
+import { reply, title } from "@utils";
 import {
 	channelMention,
 	ChannelType,
@@ -435,22 +435,18 @@ async function display(
 					 ${ul("config.timestamp.desc")}
 					${dpTitle("config.timer.title")} ${dp(guildSettings.deleteAfter)}
 					 ${ul("config.timer.desc")}
-					
-					`),
-			},
-			{
-				name: ul("config.links"),
-				value: dedent(`
 					${dpTitle("config.context.title")} ${dp(guildSettings.context)}
 					 ${ul("config.context.desc")}
-					${dpTitle("config.linkToLog")} ${dp(guildSettings.linkToLogs)}
-				`),
+					${dpTitle("config.linkToLog.title")} ${dp(guildSettings.linkToLogs)}
+					 ${ul("config.linkToLog.desc")}
+					`),
 			},
+
 			{
-				name: ul("config.autoRole.title"),
+				name: ul("config.autoRole"),
 				value: dedent(`
-					${dpTitle("config.autoRole.dice")} ${dp(guildSettings.autoRole?.dice, "role")}
-					${dpTitle("config.autoRole.stats")} ${dp(guildSettings.autoRole?.stats, "role")}
+					${title(dpTitle("common.dice"))} ${dp(guildSettings.autoRole?.dice, "role")}
+					${title(dpTitle("common.statistic"))} ${dp(guildSettings.autoRole?.stats, "role")}
 				`),
 			}
 		);
@@ -520,7 +516,7 @@ async function anchor(interaction: CommandInteraction, client: EClient, ul: Tran
 			ephemeral: true,
 		});
 	}
-	return await reply(interaction, { content: ul("common.disabled"), ephemeral: true });
+	return await reply(interaction, { content: ul("context.disabled"), ephemeral: true });
 }
 
 async function linkToLog(

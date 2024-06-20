@@ -164,8 +164,38 @@ export function removeEmojiAccents(dice: string) {
  */
 export function timestamp(settings: Settings, guildID: string) {
 	if (settings.get(guildID, "timestamp"))
-		return `• <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
+		return ` • <t:${moment().unix()}:d>-<t:${moment().unix()}:t>`;
 	return "";
+}
+
+export class NoEmbed extends Error {
+	constructor() {
+		super();
+		this.name = "NoEmbed";
+	}
+}
+
+export class InvalidCsvContent extends Error {
+	file?: string;
+	constructor(file?: string) {
+		super();
+		this.name = "InvalidCsvContent";
+		this.file = file;
+	}
+}
+
+export class InvalidURL extends Error {
+	constructor(url?: string) {
+		super(url);
+		this.name = "InvalidURL";
+	}
+}
+
+export class NoChannel extends Error {
+	constructor() {
+		super();
+		this.name = "NoChannel";
+	}
 }
 
 /**

@@ -115,12 +115,12 @@ export async function rollWithInteraction(
 
 	let url = "";
 	if (anchor) {
-		url = `\n-# ↪ [Contexte](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${inter.id}>)`;
+		url = `\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${inter.id}>)`;
 		if (timer && timer > 0) {
 			const messagesBefore = await channel.messages.fetch({ before: inter.id, limit: 1 });
 			const messageBefore = messagesBefore.first();
 			if (messagesBefore)
-				url = `\n-# ↪ [Contexte](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${messageBefore!.id}>)`;
+				url = `\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${messageBefore!.id}>)`;
 		}
 		await rollog.edit(`${infoRollTotal(true, true)}${parser}${url}`);
 	}

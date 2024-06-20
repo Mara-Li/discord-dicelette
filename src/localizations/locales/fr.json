@@ -2,7 +2,7 @@
   "anchor": {
     "description": "Permet d'ajouter un lien vers le message le plus proche du dé",
     "enabled": {
-      "logs": "Les logs de dés renverrons maintenant vers une \"ancre\" qui permet d'obtenir le contexte du dé (l'ancre est un message vide).",
+      "logs": "Les logs de dés renverrons maintenant vers une \"ancre\" qui permet d'obtenir le contexte du dé (l'ancre est le message précédent le dé).",
       "noDelete": "Les logs de dés mettront maintenant un lien vers le dé original."
     },
     "name": "contexte",
@@ -44,9 +44,9 @@
     "channel": "channel",
     "charName": "Nom du personnage",
     "character": "personnage",
+    "context": "Contexte",
     "default": "Défaut",
     "dice": "dé",
-    "disabled": "Désactivé",
     "isPrivate": "Personnage privé",
     "no": "✕",
     "noSet": "/",
@@ -63,14 +63,10 @@
       "desc": "Permet de consigner toutes les modifications et créations de personnages dans un channel.",
       "title": "Administration"
     },
-    "autoRole": {
-      "dice": "Dés",
-      "stats": "Statistiques",
-      "title": "Rôles automatiques"
-    },
+    "autoRole": "Rôles automatiques",
     "context": {
-      "desc": "Permet d'afficher un lien vers le message précédent le lancer de dé, ou le lancer lui-même, en fonction des paramètres d'auto-suppression.",
-      "title": "Lien vers le contexte du dé"
+      "desc": "Dans la sauvegarde du résultat, permet d'afficher un lien vers le message précédent le lancer de dé, ou le lancer lui-même, en fonction des paramètres d'auto-suppression.",
+      "title": "[Sauvegarde du résultat] Lien vers le contexte du dé"
     },
     "damageName": "Liste des dés sauvegardés (global)",
     "defaultSheet": "Channel par défaut",
@@ -84,11 +80,13 @@
       "name": "afficher"
     },
     "displayResult": "Affichage des résultats",
-    "linkToLog": "Lien vers la sauvegarde du résultat de dés",
-    "links": "Liens",
+    "linkToLog": {
+      "desc": "Dans le résultat du dé, permet d'afficher un lien vers la sauvegarde du résultat.",
+      "title": "[Résultat] Lien vers la sauvegarde du résultat de dés"
+    },
     "logLink": {
       "description": "Active le lien vers les logs dans le résultat du dé",
-      "name": "lien_vers_log"
+      "name": "lien_sauvegarde"
     },
     "logs": "Journalisation",
     "name": "config",
@@ -110,6 +108,9 @@
       "title": "Affichage des timestamps"
     },
     "title": "Configuration de {{- guild}}"
+  },
+  "context": {
+    "disabled": "L'ajout d'un lien vers le contexte est désactivé."
   },
   "csv_generation": {
     "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
@@ -178,13 +179,13 @@
       "stats": "Statistiques modifiées"
     },
     "old": "Joueur enregistré",
-    "stats": "Statistiques",
     "template": "Modèle",
     "user": "⌈⌋ Fiche ⌈⌋"
   },
   "error": {
     "channel": "## :warning: __Erreur__\nLe channel `{{-channel}}` n'existe pas sur ce serveur.",
     "charName": "## :warning: __Erreur__\nLe personnage {{- charName}} n'est pas enregistré.",
+    "csvContent": "## :warning: __Erreur__\nLe contenu du {{- fichier}} est invalide.",
     "emptyDamage": "## :warning: __Erreur__\nVous n'avez pas de dés de capacités enregistrés.",
     "emptyStats": "## :warning: __Erreur__\nCette combinaison est invalide : aucune statistiques n'existent !",
     "generic": "{{- e.message}}",

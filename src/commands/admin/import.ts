@@ -8,7 +8,15 @@ import type { StatisticalTemplate } from "@dicelette/core";
 import type { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { addAutoRole, removeEmojiAccents, reply, repostInThread, title } from "@utils";
+import {
+	addAutoRole,
+	InvalidCsvContent,
+	InvalidURL,
+	removeEmojiAccents,
+	reply,
+	repostInThread,
+	title,
+} from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
 import {
@@ -244,7 +252,7 @@ export async function parseCSV(
 
 	const csvText = url.startsWith("https://") ? await readCSV(url) : url;
 	if (!csvText || csvText.length === 0) {
-		throw new Error("Invalid CSV content");
+		throw new InvalidCsvContent("url");
 	}
 	let error: string | undefined = undefined;
 	let csvData: CSVRow[] = [];
@@ -289,7 +297,7 @@ export async function parseCSV(
 		throw new Error(error);
 	}
 	if (csvData.length === 0) {
-		throw new Error("Invalid CSV content");
+		throw new InvalidCsvContent("url");
 	}
 	return await step(csvData, guildTemplate, interaction, allowPrivate);
 }
@@ -302,7 +310,7 @@ export async function parseCSV(
 async function readCSV(url: string): Promise<string> {
 	const response = await fetch(url);
 	if (!response.ok) {
-		throw new Error("Invalid URL");
+		throw new InvalidURL(url);
 	}
 	return response.text();
 }

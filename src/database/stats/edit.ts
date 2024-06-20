@@ -1,5 +1,5 @@
 import { allowEdit, createStatsEmbed, getUserNameAndChar } from "@database";
-import { evalOneCombinaison } from "@dicelette/core";
+import { evalOneCombinaison, FormulaError } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
 import {
 	displayOldAndNewStats,
@@ -87,7 +87,7 @@ export async function editStats(
 			//we need to get the result of the combinaison
 			const combinaison = Number.parseInt(evalOneCombinaison(value, stats), 10);
 			if (Number.isNaN(combinaison)) {
-				throw new Error(`[error.invalidFormula] ${value}`);
+				throw new FormulaError(value);
 			}
 			embedsStatsFields.push({
 				name: title(name),
