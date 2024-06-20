@@ -417,6 +417,8 @@ async function display(
 				 ${ul("config.admin.desc")}
 				${dpTitle("config.result.title")} ${dp(guildSettings.rollChannel, "chan")}
 				 ${ul("config.result.desc")} 
+				${dpTitle("config.disableThread.title")} ${dp(guildSettings.disableThread)}
+				 ${ul("config.disableThread.desc")}
 			`),
 			},
 			{
@@ -433,8 +435,7 @@ async function display(
 					 ${ul("config.timestamp.desc")}
 					${dpTitle("config.timer.title")} ${dp(guildSettings.deleteAfter)}
 					 ${ul("config.timer.desc")}
-					${dpTitle("config.disableThread.title")} ${dp(guildSettings.disableThread)}
-					 ${ul("config.disableThread.desc")}
+					
 					`),
 			},
 			{
