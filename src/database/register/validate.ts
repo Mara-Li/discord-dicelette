@@ -1,5 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
+import {
+	createDiceEmbed,
+	createStatsEmbed,
+	createTemplateEmbed,
+	createUserEmbed,
+} from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
@@ -230,9 +234,7 @@ export async function validateUser(
 	};
 	let templateEmbed: EmbedBuilder | undefined = undefined;
 	if (template.diceType || template.critical) {
-		templateEmbed = new EmbedBuilder()
-			.setTitle(ul("embed.template"))
-			.setColor("DarkerGrey");
+		templateEmbed = createTemplateEmbed(ul);
 		if (template.diceType)
 			templateEmbed.addFields({
 				name: title(ul("common.dice")),

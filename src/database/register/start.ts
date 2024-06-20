@@ -10,7 +10,6 @@ import {
 	ActionRowBuilder,
 	type ButtonInteraction,
 	type Embed,
-	EmbedBuilder,
 	type Locale,
 	type ModalActionRowComponentBuilder,
 	ModalBuilder,
@@ -20,6 +19,7 @@ import {
 	TextInputStyle,
 	type User,
 } from "discord.js";
+import { createStatsEmbed } from "@database";
 
 /**
  * Interaction to continue to the next page of the statistics when registering a new user
@@ -47,7 +47,7 @@ export async function continuePage(
 		: Number.parseInt(interaction.customId.replace("page", ""), 10);
 	const embed = getEmbeds(ul, interaction.message, "user");
 	if (!embed || !dbTemplate.statistics) return;
-	const statsEmbed = getEmbeds(ul, interaction.message, "stats") ?? new EmbedBuilder();
+	const statsEmbed = getEmbeds(ul, interaction.message, "stats") ?? createStatsEmbed(ul);
 	const allTemplateStat = Object.keys(dbTemplate.statistics).map((stat) =>
 		removeEmojiAccents(stat)
 	);
@@ -55,7 +55,6 @@ export async function continuePage(
 	const statsAlreadySet = Object.keys(parseEmbedFields(statsEmbed.toJSON() as Embed))
 		.filter((stat) => allTemplateStat.includes(removeEmojiAccents(stat)))
 		.map((stat) => removeEmojiAccents(stat));
-	console.log(statsEmbed);
 	if (statsAlreadySet.length === allTemplateStat.length) {
 		await reply(interaction, { content: ul("modals.alreadySet"), ephemeral: true });
 		return;
