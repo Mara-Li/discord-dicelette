@@ -185,6 +185,7 @@
   "error": {
     "channel": "## :warning: __Erreur__\nLe channel `{{-channel}}` n'existe pas sur ce serveur.",
     "charName": "## :warning: __Erreur__\nLe personnage {{- charName}} n'est pas enregistré.",
+    "csvContent": "## :warning: __Erreur__\nLe contenu du {{- fichier}} est invalide.",
     "emptyDamage": "## :warning: __Erreur__\nVous n'avez pas de dés de capacités enregistrés.",
     "emptyStats": "## :warning: __Erreur__\nCette combinaison est invalide : aucune statistiques n'existent !",
     "generic": "{{- e.message}}",

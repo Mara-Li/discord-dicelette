@@ -12,7 +12,7 @@ import {
 	NoStatisticsError,
 	TooManyStats,
 } from "@dicelette/core";
-import { UserError } from "../utils";
+import { InvalidCsvContent, NoChannel, NoEmbed } from "../utils";
 
 export function ln(userLang: Locale) {
 	const localeName = Object.entries(Locale).find(([name, abbr]) => {
@@ -44,8 +44,14 @@ export function lError(error: Error, interaction?: BaseInteraction, userLang?: L
 	if (error instanceof TooManyStats) {
 		return ul("error.tooMuchStats");
 	}
-	if (error instanceof UserError) {
-		return ul("error.user");
+	if (error instanceof NoEmbed) {
+		return ul("error.noEmbed");
+	}
+	if (error instanceof InvalidCsvContent) {
+		return ul("error.csvContent", { fichier: error.file });
+	}
+	if (error instanceof NoChannel) {
+		return ul("error.channel", { channel: "" });
 	}
 	return ul("error.generic", { e: error });
 }

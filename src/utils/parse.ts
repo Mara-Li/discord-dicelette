@@ -3,7 +3,7 @@ import { createTemplateEmbed } from "@database";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findln, ln } from "@localization";
-import { removeEmojiAccents, searchUserChannel } from "@utils";
+import { NoEmbed, removeEmojiAccents, searchUserChannel } from "@utils";
 import {
 	type ButtonInteraction,
 	type CommandInteraction,
@@ -20,7 +20,7 @@ import {
  */
 export function ensureEmbed(message?: Message) {
 	const oldEmbeds = message?.embeds[0];
-	if (!oldEmbeds || !oldEmbeds?.fields) throw new Error("[error.noEmbed]");
+	if (!oldEmbeds || !oldEmbeds?.fields) throw new NoEmbed();
 	return oldEmbeds;
 }
 
@@ -72,7 +72,7 @@ export function getEmbedsList(
 		embedToReplace.which === "user"
 			? embedToReplace.embed
 			: getEmbeds(ul, message, "user");
-	if (!userDataEmbed) throw new Error("[error.noEmbed]");
+	if (!userDataEmbed) throw new NoEmbed();
 	const statsEmbed =
 		embedToReplace.which === "stats"
 			? embedToReplace.embed

@@ -5,6 +5,8 @@ import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import {
 	addAutoRole,
+	NoChannel,
+	NoEmbed,
 	removeEmoji,
 	removeEmojiAccents,
 	reply,
@@ -47,7 +49,7 @@ export async function createEmbedFirstPage(
 	const ul = ln(interaction.locale as Locale);
 	const channel = interaction.channel;
 	if (!channel) {
-		throw new Error("No channel found");
+		throw new NoChannel();
 	}
 	const userFromField = interaction.fields.getTextInputValue("userID");
 	const user = (
@@ -124,7 +126,7 @@ export async function validateUser(
 ) {
 	const ul = ln(interaction.locale as Locale);
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
-	if (!userEmbed) throw new Error("No user embed found");
+	if (!userEmbed) throw new NoEmbed();
 	const oldEmbedsFields = parseEmbedFields(userEmbed.toJSON() as Embed);
 	let userID = oldEmbedsFields?.["common.user"];
 	let charName: string | undefined = oldEmbedsFields?.["common.charName"];
