@@ -146,7 +146,7 @@ export async function editStats(
 			{ which: "stats", embed: newEmbedStats },
 			interaction.message
 		);
-		const toAdd = removeEmbedsFromList(list, "stats", ul);
+		const toAdd = removeEmbedsFromList(list, "stats");
 		const components = editUserButtons(ul, false, exists.damage);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await reply(interaction, { content: ul("modals.removed.stats"), ephemeral: true });
@@ -222,7 +222,7 @@ export async function showEditorStats(
 
 	const modal = new ModalBuilder()
 		.setCustomId("editStats")
-		.setTitle(title(ul("common.statistic")));
+		.setTitle(title(ul("common.statistics")));
 	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("allStats")

@@ -171,7 +171,7 @@ export async function validateDiceEdit(
 			{ which: "damage", embed: diceEmbed },
 			interaction.message
 		);
-		const toAdd = removeEmbedsFromList(embedsList.list, "damage", ul);
+		const toAdd = removeEmbedsFromList(embedsList.list, "damage");
 		const components = editUserButtons(ul, embedsList.exists.stats, false);
 		await interaction.message.edit({ embeds: toAdd, components: [components] });
 		await reply(interaction, { content: ul("modals.removed.dice"), ephemeral: true });

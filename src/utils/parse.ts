@@ -104,15 +104,16 @@ export function getEmbedsList(
  */
 export function removeEmbedsFromList(
 	embeds: EmbedBuilder[],
-	which: "user" | "stats" | "damage" | "template",
-	ul: Translation
+	which: "user" | "stats" | "damage" | "template"
 ) {
 	return embeds.filter((embed) => {
 		const embedTitle = embed.toJSON().title;
 		if (!embedTitle) return false;
 		const title = findln(embedTitle);
-		if (which === "user") return title !== "embed.user";
-		if (which === "stats") return title !== "common.statistic";
+		if (which === "user")
+			return title !== "embed.user" && title !== "embed.add" && title !== "embed.old";
+		if (which === "stats")
+			return title !== "common.statistic" && title !== "common.statistics";
 		if (which === "damage") return title !== "embed.dice";
 		if (which === "template") return title !== "embed.template";
 	});
@@ -151,9 +152,10 @@ export function getEmbeds(
 		const embedJSON = embed.toJSON();
 		const titleKey = findln(embed.title ?? "");
 		const userKeys = ["embed.user", "embed.add", "embed.old"];
+		const statsKeys = ["common.statistic", "common.statistics"];
 		if (userKeys.includes(titleKey) && which === "user")
 			return new EmbedBuilder(embedJSON);
-		if (titleKey === "common.statistic" && which === "stats")
+		if (statsKeys.includes(titleKey) && which === "stats")
 			return new EmbedBuilder(embedJSON);
 		if (titleKey === "embed.dice" && which === "damage")
 			return new EmbedBuilder(embedJSON);
