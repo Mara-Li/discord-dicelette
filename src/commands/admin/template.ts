@@ -254,7 +254,7 @@ export const registerTemplate = {
 		let statisticsEmbed: undefined | EmbedBuilder = undefined;
 		if (templateData.statistics) {
 			statisticsEmbed = new EmbedBuilder()
-				.setTitle(ul("embed.stats"))
+				.setTitle(title(ul("common.statistic")))
 				.setThumbnail(
 					"https://github.com/dicelette/discord-dicelette/blob/main/assets/player.png?raw=true"
 				);

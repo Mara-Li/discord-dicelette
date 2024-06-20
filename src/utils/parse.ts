@@ -108,10 +108,13 @@ export function removeEmbedsFromList(
 	ul: Translation
 ) {
 	return embeds.filter((embed) => {
-		if (which === "user") return embed.toJSON().title !== ul("embed.user");
-		if (which === "stats") return embed.toJSON().title !== ul("embed.stats");
-		if (which === "damage") return embed.toJSON().title !== ul("embed.dice");
-		if (which === "template") return embed.toJSON().title !== ul("embed.template");
+		const embedTitle = embed.toJSON().title;
+		if (!embedTitle) return false;
+		const title = findln(embedTitle);
+		if (which === "user") return title !== "embed.user";
+		if (which === "stats") return title !== "common.statistic";
+		if (which === "damage") return title !== "embed.dice";
+		if (which === "template") return title !== "embed.template";
 	});
 }
 
@@ -150,10 +153,7 @@ export function getEmbeds(
 		const userKeys = ["embed.user", "embed.add", "embed.old"];
 		if (userKeys.includes(titleKey) && which === "user")
 			return new EmbedBuilder(embedJSON);
-		if (
-			(titleKey === "embed.stats" || titleKey === "common.statistic") &&
-			which === "stats"
-		)
+		if (titleKey === "common.statistic" && which === "stats")
 			return new EmbedBuilder(embedJSON);
 		if (titleKey === "embed.dice" && which === "damage")
 			return new EmbedBuilder(embedJSON);

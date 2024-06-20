@@ -19,7 +19,7 @@ import {
  * Embed to display the statistics when adding a new user
  * @param interaction {ModalSubmitInteraction}
  * @param template {StatisticalTemplate}
- * @param page {number}
+ * @param page {number=2}
  */
 export async function embedStatistiques(
 	interaction: ModalSubmitInteraction,
@@ -36,7 +36,8 @@ export async function embedStatistiques(
 	userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
 	//add old fields
 
-	const statEmbeds = statsEmbed ?? new EmbedBuilder().setTitle(ul("embed.stats"));
+	const statEmbeds =
+		statsEmbed ?? new EmbedBuilder().setTitle(title(ul("common.statistic")));
 	for (const [stat, value] of Object.entries(stats)) {
 		statEmbeds.addFields({
 			name: title(stat),

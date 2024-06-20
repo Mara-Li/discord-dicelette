@@ -12,6 +12,7 @@ import {
 	NoStatisticsError,
 	TooManyStats,
 } from "@dicelette/core";
+import { UserError } from "../utils";
 
 export function ln(userLang: Locale) {
 	const localeName = Object.entries(Locale).find(([name, abbr]) => {
@@ -42,6 +43,9 @@ export function lError(error: Error, interaction?: BaseInteraction, userLang?: L
 	}
 	if (error instanceof TooManyStats) {
 		return ul("error.tooMuchStats");
+	}
+	if (error instanceof UserError) {
+		return ul("error.user");
 	}
 	return ul("error.generic", { e: error });
 }

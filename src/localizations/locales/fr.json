@@ -47,7 +47,6 @@
     "context": "Contexte",
     "default": "Défaut",
     "dice": "dé",
-    "disabled": "Désactivé",
     "isPrivate": "Personnage privé",
     "no": "✕",
     "noSet": "/",
@@ -64,11 +63,7 @@
       "desc": "Permet de consigner toutes les modifications et créations de personnages dans un channel.",
       "title": "Administration"
     },
-    "autoRole": {
-      "dice": "Dés",
-      "stats": "Statistiques",
-      "title": "Rôles automatiques"
-    },
+    "autoRole": "Rôles automatiques",
     "context": {
       "desc": "Dans la sauvegarde du résultat, permet d'afficher un lien vers le message précédent le lancer de dé, ou le lancer lui-même, en fonction des paramètres d'auto-suppression.",
       "title": "[Sauvegarde du résultat] Lien vers le contexte du dé"
@@ -89,7 +84,6 @@
       "desc": "Dans le résultat du dé, permet d'afficher un lien vers la sauvegarde du résultat.",
       "title": "[Résultat] Lien vers la sauvegarde du résultat de dés"
     },
-    "links": "Liens",
     "logLink": {
       "description": "Active le lien vers les logs dans le résultat du dé",
       "name": "lien_sauvegarde"
@@ -185,7 +179,6 @@
       "stats": "Statistiques modifiées"
     },
     "old": "Joueur enregistré",
-    "stats": "Statistiques",
     "template": "Modèle",
     "user": "⌈⌋ Fiche ⌈⌋"
   },

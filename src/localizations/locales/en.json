@@ -47,9 +47,8 @@
     "context": "Context",
     "default": "Default",
     "dice": "dice",
-    "disabled": "Disabled",
     "isPrivate": "Private character",
-    "no": "",
+    "no": "✕",
     "noSet": "/",
     "page": "Page {{- nb}}",
     "role": "role",
@@ -64,11 +63,7 @@
       "desc": "Allows to log all character modifications and creations in a channel.",
       "title": "Administration"
     },
-    "autoRole": {
-      "dice": "Dice",
-      "stats": "Statistics",
-      "title": "Automatic roles"
-    },
+    "autoRole": "Automatic roles",
     "context": {
       "desc": "In saving the result, allows you to display a link to the message preceding the die roll, or the roll itself, depending on the auto-deletion settings.",
       "title": "[Save dice result] Link to die context"
@@ -89,7 +84,6 @@
       "desc": "In the result of the dice, allows you to display a link to saving the result.",
       "title": "[Result] Link to save dice result"
     },
-    "links": "Links",
     "logLink": {
       "description": "Activate the link to the logs in the die result",
       "name": "save_link"
@@ -116,7 +110,7 @@
     "title": "{{- guild}} configuration"
   },
   "context": {
-    "disabled": ""
+    "disabled": "Adding a link to context is disabled."
   },
   "csv_generation": {
     "description": "Used to generate the CSV file for the add_mass command.",
@@ -185,7 +179,6 @@
       "stats": "Modified statistics"
     },
     "old": "Registered player",
-    "stats": "Statistics",
     "template": "Model",
     "user": "⌈⌋ Sheet ⌈⌋"
   },

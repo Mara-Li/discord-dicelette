@@ -1,7 +1,7 @@
 import type { Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { reply } from "@utils";
+import { reply, title } from "@utils";
 import {
 	channelMention,
 	ChannelType,
@@ -443,10 +443,10 @@ async function display(
 			},
 
 			{
-				name: ul("config.autoRole.title"),
+				name: ul("config.autoRole"),
 				value: dedent(`
-					${dpTitle("config.autoRole.dice")} ${dp(guildSettings.autoRole?.dice, "role")}
-					${dpTitle("config.autoRole.stats")} ${dp(guildSettings.autoRole?.stats, "role")}
+					${title(dpTitle("common.dice"))} ${dp(guildSettings.autoRole?.dice, "role")}
+					${title(dpTitle("common.statistic"))} ${dp(guildSettings.autoRole?.stats, "role")}
 				`),
 			}
 		);

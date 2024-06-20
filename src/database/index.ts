@@ -93,7 +93,7 @@ export function createUserEmbed(
  * @param ul {Translation}
  */
 export function createStatsEmbed(ul: Translation) {
-	return new EmbedBuilder().setTitle(ul("embed.stats")).setColor("Aqua");
+	return new EmbedBuilder().setTitle(title(ul("common.statistic"))).setColor("Aqua");
 }
 
 /**

@@ -55,6 +55,7 @@ export async function continuePage(
 	const statsAlreadySet = Object.keys(parseEmbedFields(statsEmbed.toJSON() as Embed))
 		.filter((stat) => allTemplateStat.includes(removeEmojiAccents(stat)))
 		.map((stat) => removeEmojiAccents(stat));
+	console.log(statsEmbed);
 	if (statsAlreadySet.length === allTemplateStat.length) {
 		await reply(interaction, { content: ul("modals.alreadySet"), ephemeral: true });
 		return;

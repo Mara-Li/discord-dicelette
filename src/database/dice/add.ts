@@ -2,7 +2,14 @@ import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId } from "@interface";
 import { findln, ln } from "@localization";
-import { addAutoRole, removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import {
+	addAutoRole,
+	removeEmojiAccents,
+	reply,
+	sendLogs,
+	title,
+	UserError,
+} from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed, getEmbeds, removeBacktick } from "@utils/parse";
@@ -182,7 +189,7 @@ export async function registerDamageDice(
 	);
 	if (!first) {
 		const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
-		if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed
+		if (!userEmbed) throw new UserError(""); //mean that there is no embed
 		const statsEmbed = getEmbeds(ul, interaction.message ?? undefined, "stats");
 		const templateEmbed = getEmbeds(ul, interaction.message ?? undefined, "template");
 		const allEmbeds = [userEmbed];
@@ -222,7 +229,7 @@ export async function registerDamageDice(
 	//remove the old dice embed
 	//add the new dice embed
 	const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
-	if (!userEmbed) throw new Error("[error.noUser]"); //mean that there is no embed
+	if (!userEmbed) throw new UserError(""); //mean that there is no embed
 	const statsEmbed = getEmbeds(ul, interaction.message ?? undefined, "stats");
 	const allEmbeds = [userEmbed];
 	if (statsEmbed) allEmbeds.push(statsEmbed);

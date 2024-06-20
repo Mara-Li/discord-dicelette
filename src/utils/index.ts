@@ -168,6 +168,13 @@ export function timestamp(settings: Settings, guildID: string) {
 	return "";
 }
 
+export class UserError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "UserError";
+	}
+}
+
 /**
  * Verify if an array is equal to another
  * @param array1 {string[]|undefined}
