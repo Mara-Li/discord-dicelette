@@ -520,7 +520,7 @@ async function anchor(interaction: CommandInteraction, client: EClient, ul: Tran
 			ephemeral: true,
 		});
 	}
-	return await reply(interaction, { content: ul("common.disabled"), ephemeral: true });
+	return await reply(interaction, { content: ul("context.disabled"), ephemeral: true });
 }
 
 async function linkToLog(

@@ -73,10 +73,10 @@ export default (client: EClient): void => {
 					});
 					const messageBefore = messagesBefore.first();
 					if (messagesBefore)
-						linkToOriginal = `\n-# ↪ [Contexte](<https://discord.com/channels/${message.guild.id}/${message.channel!.id}/${messageBefore!.id}>)`;
+						linkToOriginal = `\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${message.guild.id}/${message.channel!.id}/${messageBefore!.id}>)`;
 				}
 			} else {
-				linkToOriginal = `\n-# ↪ [Contexte] (<${message.url}>)`;
+				linkToOriginal = `\n-# ↪ [${ul("common.context")}] (<${message.url}>)`;
 			}
 			const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 			const thread =

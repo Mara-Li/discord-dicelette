@@ -44,6 +44,7 @@
     "channel": "channel",
     "charName": "character name",
     "character": "character",
+    "context": "Context",
     "default": "Default",
     "dice": "dice",
     "disabled": "Disabled",
@@ -110,6 +111,9 @@
       "title": "Displaying timestamps"
     },
     "title": "{{- guild}} configuration"
+  },
+  "context": {
+    "disabled": ""
   },
   "csv_generation": {
     "description": "Used to generate the CSV file for the add_mass command.",

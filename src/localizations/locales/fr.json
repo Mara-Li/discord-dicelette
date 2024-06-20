@@ -44,6 +44,7 @@
     "channel": "channel",
     "charName": "Nom du personnage",
     "character": "personnage",
+    "context": "Contexte",
     "default": "Défaut",
     "dice": "dé",
     "disabled": "Désactivé",
@@ -110,6 +111,9 @@
       "title": "Affichage des timestamps"
     },
     "title": "Configuration de {{- guild}}"
+  },
+  "context": {
+    "disabled": "L'ajout d'un lien vers le contexte est désactivé."
   },
   "csv_generation": {
     "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
