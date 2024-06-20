@@ -390,25 +390,19 @@ async function display(
 	const guildSettings = client.settings.get(interaction.guild!.id);
 	if (!guildSettings) return;
 
-	const dpBool = (settings?: boolean) => {
-		if (settings) return ul("common.yes");
-		return ul("common.no");
-	};
-
 	const dpTitle = (title?: string) => {
 		return `- **__${ul(title)}__**${ul("common.space")}:`;
 	};
 
-	const dpTimer = (settings?: number) => {
-		if (!settings || settings === 0 || guildSettings.disableThread)
-			return ul("common.no");
-		return `${settings / 1000}s `;
-	};
-
-	const dp = (type: "role" | "chan", settings?: string) => {
+	const dp = (settings?: string | boolean | number, type?: "role" | "chan") => {
 		if (!settings) return ul("common.no");
+		if (typeof settings === "boolean") return ul("common.yes");
+		if (typeof settings === "number") {
+			if (settings === 0 || guildSettings.disableThread) return ul("common.no");
+			return `${settings / 1000}s `;
+		}
 		if (type === "role") return `<@&${settings}>`;
-		return `<@#${settings}>`;
+		return `<#${settings}>`;
 	};
 
 	const baseEmbed = new EmbedBuilder()
@@ -419,43 +413,43 @@ async function display(
 			{
 				name: ul("config.logs"),
 				value: dedent(`
-				${dpTitle("config.admin.title")} ${dp("chan", guildSettings.logs)}
+				${dpTitle("config.admin.title")} ${dp(guildSettings.logs, "chan")}
 				 ${ul("config.admin.desc")}
-				${dpTitle("config.result.title")} ${dp("chan", guildSettings.rollChannel)}
+				${dpTitle("config.result.title")} ${dp(guildSettings.rollChannel, "chan")}
 				 ${ul("config.result.desc")} 
 			`),
 			},
 			{
 				name: ul("config.sheet"),
 				value: dedent(`
-					${dpTitle("config.defaultSheet")} ${dp("chan", guildSettings.managerId)}
-					${dpTitle("config.privateChan")} ${dp("chan", guildSettings.privateChannel)}
+					${dpTitle("config.defaultSheet")} ${dp(guildSettings.managerId, "chan")}
+					${dpTitle("config.privateChan")} ${dp(guildSettings.privateChannel, "chan")}
 					`),
 			},
 			{
 				name: ul("config.displayResult"),
 				value: dedent(`
-					${dpTitle("config.timestamp.title")} ${dpBool(guildSettings.timestamp)}
+					${dpTitle("config.timestamp.title")} ${dp(guildSettings.timestamp)}
 					 ${ul("config.timestamp.desc")}
-					${dpTitle("config.timer.title")} ${dpTimer(guildSettings.deleteAfter)}
+					${dpTitle("config.timer.title")} ${dp(guildSettings.deleteAfter)}
 					 ${ul("config.timer.desc")}
-					${dpTitle("config.disableThread.title")} ${dpBool(guildSettings.disableThread)}
+					${dpTitle("config.disableThread.title")} ${dp(guildSettings.disableThread)}
 					 ${ul("config.disableThread.desc")}
 					`),
 			},
 			{
 				name: ul("config.links"),
 				value: dedent(`
-					${dpTitle("config.context.title")} ${dpBool(guildSettings.context)}
+					${dpTitle("config.context.title")} ${dp(guildSettings.context)}
 					 ${ul("config.context.desc")}
-					${dpTitle("config.linkToLog")} ${dpBool(guildSettings.linkToLogs)}
+					${dpTitle("config.linkToLog")} ${dp(guildSettings.linkToLogs)}
 				`),
 			},
 			{
 				name: ul("config.autoRole.title"),
 				value: dedent(`
-					${dpTitle("config.autoRole.dice")} ${dp("role", guildSettings.autoRole?.dice)}
-					${dpTitle("config.autoRole.stats")} ${dp("role", guildSettings.autoRole?.stats)}
+					${dpTitle("config.autoRole.dice")} ${dp(guildSettings.autoRole?.dice, "role")}
+					${dpTitle("config.autoRole.stats")} ${dp(guildSettings.autoRole?.stats, "role")}
 				`),
 			}
 		);
