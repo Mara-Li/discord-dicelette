@@ -24,8 +24,6 @@
     }
   },
   "button": {
-    "add": {
-    },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
