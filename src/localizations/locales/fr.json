@@ -2,7 +2,7 @@
   "anchor": {
     "description": "Permet d'ajouter un lien vers le message le plus proche du dé",
     "enabled": {
-      "logs": "Les logs de dés renverrons maintenant vers une \"ancre\" qui permet d'obtenir le contexte du dé (l'ancre est un message vide).",
+      "logs": "Les logs de dés renverrons maintenant vers une \"ancre\" qui permet d'obtenir le contexte du dé (l'ancre est le message précédent le dé).",
       "noDelete": "Les logs de dés mettront maintenant un lien vers le dé original."
     },
     "name": "contexte",
@@ -70,8 +70,8 @@
       "title": "Rôles automatiques"
     },
     "context": {
-      "desc": "Permet d'afficher un lien vers le message précédent le lancer de dé, ou le lancer lui-même, en fonction des paramètres d'auto-suppression.",
-      "title": "Lien vers le contexte du dé"
+      "desc": "Dans la sauvegarde du résultat, permet d'afficher un lien vers le message précédent le lancer de dé, ou le lancer lui-même, en fonction des paramètres d'auto-suppression.",
+      "title": "[Sauvegarde du résultat] Lien vers le contexte du dé"
     },
     "damageName": "Liste des dés sauvegardés (global)",
     "defaultSheet": "Channel par défaut",
@@ -85,7 +85,10 @@
       "name": "afficher"
     },
     "displayResult": "Affichage des résultats",
-    "linkToLog": "Lien vers la sauvegarde du résultat de dés",
+    "linkToLog": {
+      "desc": "Dans le résultat du dé, permet d'afficher un lien vers la sauvegarde du résultat.",
+      "title": "[Résultat] Lien vers la sauvegarde du résultat de dés"
+    },
     "links": "Liens",
     "logLink": {
       "description": "Active le lien vers les logs dans le résultat du dé",

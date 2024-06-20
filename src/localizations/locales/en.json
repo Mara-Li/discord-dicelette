@@ -2,7 +2,7 @@
   "anchor": {
     "description": "Allows you to add a link to the message closest to the die",
     "enabled": {
-      "logs": "The dice logs will now return to an \"anchor\" which allows you to obtain the context of the dice (the anchor is an empty message).",
+      "logs": "The dice logs will now return to an \"anchor\" which allows you to obtain the context of the die (the anchor is the message preceding the die).",
       "noDelete": "Dice logs will now link to the original die."
     },
     "name": "context",
@@ -70,8 +70,8 @@
       "title": "Automatic roles"
     },
     "context": {
-      "desc": "Allows you to display a link to the message preceding the die roll, or the roll itself, depending on the auto-delete settings.",
-      "title": "Link to the dice's context"
+      "desc": "In saving the result, allows you to display a link to the message preceding the die roll, or the roll itself, depending on the auto-deletion settings.",
+      "title": "[Save dice result] Link to die context"
     },
     "damageName": "Saved dice list (global)",
     "defaultSheet": "Default channel",
@@ -85,7 +85,10 @@
       "name": "display"
     },
     "displayResult": "Displaying results",
-    "linkToLog": "Link to save dice result",
+    "linkToLog": {
+      "desc": "In the result of the dice, allows you to display a link to saving the result.",
+      "title": "[Result] Link to save dice result"
+    },
     "links": "Links",
     "logLink": {
       "description": "Activate the link to the logs in the die result",

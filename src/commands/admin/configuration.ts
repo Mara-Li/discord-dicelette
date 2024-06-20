@@ -435,17 +435,13 @@ async function display(
 					 ${ul("config.timestamp.desc")}
 					${dpTitle("config.timer.title")} ${dp(guildSettings.deleteAfter)}
 					 ${ul("config.timer.desc")}
-					
-					`),
-			},
-			{
-				name: ul("config.links"),
-				value: dedent(`
 					${dpTitle("config.context.title")} ${dp(guildSettings.context)}
 					 ${ul("config.context.desc")}
-					${dpTitle("config.linkToLog")} ${dp(guildSettings.linkToLogs)}
-				`),
+					${dpTitle("config.linkToLog.title")} ${dp(guildSettings.linkToLogs)}
+					 ${ul("config.linkToLog.desc")}
+					`),
 			},
+
 			{
 				name: ul("config.autoRole.title"),
 				value: dedent(`
