@@ -395,11 +395,6 @@ async function display(
 		return ul("common.no");
 	};
 
-	const dpChan = (settings?: string) => {
-		if (!settings) return ul("common.no");
-		return `<#${settings}>`;
-	};
-
 	const dpTitle = (title?: string) => {
 		return `- **__${ul(title)}__**${ul("common.space")}:`;
 	};
@@ -410,9 +405,10 @@ async function display(
 		return `${settings / 1000}s `;
 	};
 
-	const dpRole = (settings?: string) => {
+	const dp = (type: "role" | "chan", settings?: string) => {
 		if (!settings) return ul("common.no");
-		return `<@&${settings}>`;
+		if (type === "role") return `<@&${settings}>`;
+		return `<@#${settings}>`;
 	};
 
 	const baseEmbed = new EmbedBuilder()
@@ -423,17 +419,17 @@ async function display(
 			{
 				name: ul("config.logs"),
 				value: dedent(`
-				${dpTitle("config.admin.title")} ${dpChan(guildSettings.logs)}
+				${dpTitle("config.admin.title")} ${dp("chan", guildSettings.logs)}
 				 ${ul("config.admin.desc")}
-				${dpTitle("config.result.title")} ${dpChan(guildSettings.rollChannel)}
+				${dpTitle("config.result.title")} ${dp("chan", guildSettings.rollChannel)}
 				 ${ul("config.result.desc")} 
 			`),
 			},
 			{
 				name: ul("config.sheet"),
 				value: dedent(`
-					${dpTitle("config.defaultSheet")} ${dpChan(guildSettings.managerId)}
-					${dpTitle("config.privateChan")} ${dpChan(guildSettings.privateChannel)}
+					${dpTitle("config.defaultSheet")} ${dp("chan", guildSettings.managerId)}
+					${dpTitle("config.privateChan")} ${dp("chan", guildSettings.privateChannel)}
 					`),
 			},
 			{
@@ -458,8 +454,8 @@ async function display(
 			{
 				name: ul("config.autoRole.title"),
 				value: dedent(`
-					${dpTitle("config.autoRole.dice")} ${dpRole(guildSettings.autoRole?.dice)}
-					${dpTitle("config.autoRole.stats")} ${dpRole(guildSettings.autoRole?.stats)}
+					${dpTitle("config.autoRole.dice")} ${dp("role", guildSettings.autoRole?.dice)}
+					${dpTitle("config.autoRole.stats")} ${dp("role", guildSettings.autoRole?.stats)}
 				`),
 			}
 		);
