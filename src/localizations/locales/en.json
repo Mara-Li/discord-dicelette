@@ -1,4 +1,13 @@
 {
+  "anchor": {
+    "description": "Allows you to add a link to the message closest to the die",
+    "enabled": {
+      "logs": "The dice logs will now return to an \"anchor\" which allows you to obtain the context of the dice (the anchor is an empty message).",
+      "noDelete": "Dice logs will now link to the original die."
+    },
+    "name": "context",
+    "options": "Enable/disable context anchor"
+  },
   "autoRole": {
     "description": "Automatically adds a role when a record is validated.",
     "dice": {
@@ -14,36 +23,7 @@
       "set": "{{- role}} will now be added to players when their stats are validated."
     }
   },
-  "bulk_add": {
-    "all_success": "",
-    "description": "Add multiple characters at once",
-    "errors": {
-      "duplicate_charName": "The character {{- charName}} (from {{- user}}) already exists in the database.",
-      "global": "The following errors were found:",
-      "headers": "The column names do not match your model. \nPlease refer to the documentation and your template to check the column names.\n\n\nThe columns :\n- {{-name}}\nis/are missing.",
-      "invalid_file": "The file must be a CSV file. \nYou have provided a {{-ext}} file.",
-      "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!",
-      "missing_header": "",
-      "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}",
-      "no_user": "No members exist on this server.",
-      "user_not_found": "{{- user}} was not found on the server. \nIt is possible that the cache is not up to date, or that there is an error in the ID or username."
-    },
-    "name": "import",
-    "options": {
-      "description": "The CSV file to import",
-      "name": "csv"
-    },
-    "user": {
-      "success": "{{- user}} has been added."
-    }
-  },
-  "bulk_add_template": {
-    "description": "Used to generate the CSV file for the add_mass command.",
-    "name": "csv",
-    "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
-  },
   "button": {
-    "add": {},
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -66,7 +46,9 @@
     "character": "character",
     "default": "Default",
     "dice": "dice",
+    "disabled": "Disabled",
     "isPrivate": "Private character",
+    "no": "",
     "noSet": "/",
     "page": "Page {{- nb}}",
     "role": "role",
@@ -77,27 +59,62 @@
     "yes": "✓"
   },
   "config": {
+    "admin": {
+      "desc": "Allows to log all character modifications and creations in a channel.",
+      "title": "Administration"
+    },
     "autoRole": {
-      "dice": "[Auto Role] Dice",
-      "stats": "[Automatic Role] Statistics"
+      "dice": "Dice",
+      "stats": "Statistics",
+      "title": "Automatic roles"
+    },
+    "context": {
+      "desc": "Allows you to display a link to the message preceding the die roll, or the roll itself, depending on the auto-delete settings.",
+      "title": "Link to the dice's context"
     },
     "damageName": "Saved dice list (global)",
+    "defaultSheet": "Default channel",
     "description": "Allows you to configure the bot for the server",
-    "disableThread": "[Disable threads]",
+    "disableThread": {
+      "desc": "Disables global saving and auto-deletion of results, leaving the dice roll where it was done.",
+      "title": "Disabling results threads"
+    },
     "display": {
       "description": "Shows server configuration",
       "name": "display"
     },
-    "logs": "Administration logs channel",
-    "managerId": "Character sheet channel",
+    "displayResult": "Displaying results",
+    "linkToLog": "Link to save dice result",
+    "links": "Links",
+    "logLink": {
+      "description": "Activate the link to the logs in the die result",
+      "name": "link_to_log"
+    },
+    "logs": "Logging",
     "name": "config",
     "privateChan": "Private characters channel",
-    "rollChannel": "Global log dice result",
+    "result": {
+      "desc": "Allows you to save all dice results in a single channel.",
+      "title": "Saving results"
+    },
+    "sheet": "Sheet",
     "statsName": "Name of statistics",
-    "templateID": "Link to template",
-    "timer": "Time before deletion",
-    "timestamp": "[Displaying timestamps]",
+    "template": "Model setup",
+    "templateMessage": "Link to model",
+    "timer": {
+      "desc": "At the end of the timer, the dice roll will be deleted but its results will be saved in the appropriate channel.",
+      "title": "Time before deletion"
+    },
+    "timestamp": {
+      "desc": "Display of the time/date in the dice result aggregator.",
+      "title": "Displaying timestamps"
+    },
     "title": "{{- guild}} configuration"
+  },
+  "csv_generation": {
+    "description": "Used to generate the CSV file for the add_mass command.",
+    "name": "csv",
+    "success": "Here is your CSV file! \nPlease note, by default, the delimiter used is `;`. \nDon't forget to specify it when importing into your software (excel/google sheet...).\n\nPlease note that you must calculate the combinations yourself!"
   },
   "dbRoll": {
     "description": "Roll a die with a recorded statistic",
@@ -131,6 +148,7 @@
   "disableThread": {
     "description": "Disable/enable automatic thread creation and use the current channel for logs",
     "disable": {
+      "autoDelete": "Auto-deletion of results has been disabled.",
       "mention": "The {{- mention}} channel will no longer receive dice logs.",
       "reply": "Automatic thread creation has been disabled: dice results will now be kept in the channel where the command was used.\n\n\nChannels prefixed with `🎲` will no longer receive logs either."
     },
@@ -159,7 +177,7 @@
       "dice": "Edited dices",
       "stats": "Modified statistics"
     },
-    "old": "",
+    "old": "Registered player",
     "stats": "Statistics",
     "template": "Model",
     "user": "⌈⌋ Sheet ⌈⌋"
@@ -172,8 +190,7 @@
     "generic": "{{- e.message}}",
     "invalidDice": {
       "embeds": "## :warning: __Error__\nNo die embeds detected",
-      "withDice": "## :warning: __Error__\nInvalid die: `{{-dice}}`",
-      "withoutDice": "## :warning: __Error__\nInvalid die"
+      "withDice": "## :warning: __Error__\nInvalid die: `{{-dice}}`"
     },
     "invalidFormula": "## :warning: __Error__\nInvalid formula: `{{- formula}}`",
     "mustBeGreater": "## :warning: **An error has occurred**\nThe {{- value}} value must be greater than {{- min}}",
@@ -192,6 +209,7 @@
     "notRegistered": "## :warning: __Error__\nYou are not registered",
     "oldEmbed": "## :warning: __Error__\nThis record does not match the one in the database. \nYou will find the new sheet [here]({{- sheet}}).",
     "private": "## :warning: __Error__\nThis character sheet is private! \nYou do not have permission to read it.",
+    "public": "## :warning: __Error__\nYou cannot choose the channel {{- chan}} without choosing a channel where to post the character sheet, because it will be impossible to create a thread there.",
     "rollChannelNotFound": "## :warning: __Error__\nThe channel configured by the `/result_channel` command was not found. \nUsing the default configuration.",
     "statNotFound": "## :warning: __Error__\nStatistics not found! Did you make a typing error?",
     "template": "## :warning: __Error__\nYou must provide a JSON file.",
@@ -199,11 +217,13 @@
     "tooMuchStats": "## :warning: __Error__\nToo many statistics have been saved! You cannot have more than 25 statistics",
     "totalExceededBy": "## :warning: __Error__\nThe total of {{- value}} is exceeded by {{- max}}",
     "user": "## :warning: __Error__\nUser not found. \n\n- This may be a temporary error caused by updating the cache,\n\n- The record cannot be found because it has been deleted (or its channel) but the data has not been deleted from the database. \nIf so, you need to use the `/delete_char` command.",
-    "userChan": "## :warning: __Error__\nYou cannot choose the channel {{- chan}} without choosing a channel where to post the character sheet, because it will be impossible to create a thread there.",
     "userNotRegistered": "## :warning: __Error__\n{{- user}} is not registered."
   },
   "export": {
     "description": "Export all saved characters to a csv file",
+    "error": {
+      "noData": "No users are registered."
+    },
     "name": "export",
     "options": {
       "desc": "Export only characters marked as private",
@@ -297,6 +317,32 @@
       "name": "register"
     }
   },
+  "import": {
+    "all_success": "All users have been registered.",
+    "description": "Add multiple characters at once",
+    "errors": {
+      "duplicate_charName": "The character {{- charName}} (from {{- user}}) already exists in the database.",
+      "global": "The following errors were found:",
+      "headers": "The column names do not match your model. \nPlease refer to the documentation and your template to check the column names.\n\n\nThe columns :\n- {{-name}}\nis/are missing.",
+      "invalid_file": "The file must be a CSV file. \nYou have provided a {{-ext}} file.",
+      "missing_charName": "Character name is missing for {{- user}}. \nHowever, it is mandatory in the template!",
+      "missing_header": "Your CSV has no column names!",
+      "missing_stats": "Missing statistics for {{- user}}.\n\nThe missing statistics are:\n\n- {{-stats}}",
+      "no_user": "No members exist on this server.",
+      "user_not_found": "{{- user}} was not found on the server. \nIt is possible that the cache is not up to date, or that there is an error in the ID or username."
+    },
+    "name": "import",
+    "options": {
+      "description": "The CSV file to import",
+      "name": "csv"
+    },
+    "success": "{{- user}} has been added."
+  },
+  "linkToLog": {
+    "disabled": "Links to dice logs are disabled.",
+    "enabled": "Links to dice logs are now enabled.",
+    "options": "Enables/disables the option"
+  },
   "logs": {
     "delete": "Logs will no longer be sent",
     "description": "Choose a channel where to send error logs",
@@ -357,7 +403,7 @@
     "noPermission": "You do not have permissions to do this",
     "private": {
       "description": "If this record is private, put \"x\".",
-      "name": ""
+      "name": "Private character sheet"
     },
     "removed": {
       "dice": "The dice have been removed from the user",
@@ -391,17 +437,17 @@
     "name": "register",
     "options": {
       "channel": "The channel where the template and users will be registered",
-      "hider": {
+      "private": {
         "description": "Allows you to choose a channel in which the “private” characters will be sent",
-        "name": "private_character"
+        "name": "private_channel"
+      },
+      "public": {
+        "description": "Allows you to choose a channel in which the “public” characters will be sent",
+        "name": "public_channel"
       },
       "template": {
         "description": "The template to be registered",
         "name": "template"
-      },
-      "userChan": {
-        "description": "Allows you to choose a channel in which the files will be sent and managed",
-        "name": "user_chan"
       }
     }
   },

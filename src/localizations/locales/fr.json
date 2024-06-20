@@ -1,4 +1,13 @@
 {
+  "anchor": {
+    "description": "Permet d'ajouter un lien vers le message le plus proche du dé",
+    "enabled": {
+      "logs": "Les logs de dés renverrons maintenant vers une \"ancre\" qui permet d'obtenir le contexte du dé (l'ancre est un message vide).",
+      "noDelete": "Les logs de dés mettront maintenant un lien vers le dé original."
+    },
+    "name": "contexte",
+    "options": "Activer/désactiver l'ancre de contexte"
+  },
   "autoRole": {
     "description": "Ajoute automatiquement un rôle quand une fiche est validée.",
     "dice": {
@@ -13,34 +22,6 @@
       "remove": "Aucun rôle ne sera ajouté aux joueurs quand leurs statistiques sont enregistrées.",
       "set": "{{- role}} sera maintenant ajouté aux joueurs quand leurs statistiques seront validées."
     }
-  },
-  "bulk_add": {
-    "all_success": "Tous les utilisateurs ont été enregistrés.",
-    "description": "Ajouter plusieurs personnages d'un coup",
-    "errors": {
-      "duplicate_charName": "Le personnage {{- charName}} (de {{- user}}) existe déjà dans la base .",
-      "global": "Les erreurs suivantes ont été trouvées :",
-      "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.\n\nLes colonnes :\n- {{- name}} \nest/sont manquante(s).",
-      "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
-      "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !",
-      "missing_header": "Votre CSV n'a pas de noms de colonnes !",
-      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}",
-      "no_user": "Aucun membre n'existe sur ce serveur.",
-      "user_not_found": "{{- user}} n'a pas été trouvé sur le serveur. Il est possible que le cache ne soit pas à jour, ou qu'il y ait une erreur dans l'ID ou l'username."
-    },
-    "name": "import",
-    "options": {
-      "description": "Le fichier CSV à importer",
-      "name": "csv"
-    },
-    "user": {
-      "success": "{{- user}} a bien été ajouté."
-    }
-  },
-  "bulk_add_template": {
-    "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
-    "name": "csv",
-    "success": "Voici votre fichier CSV ! Attention, par défaut, le délimiteur utilisé est `;`. N'oubliez pas de le préciser à l'import dans votre logiciel (excel/google sheet...).\nPrécisons que vous devez vous-même calculer les combinaisons !"
   },
   "button": {
     "cancel": "Annuler",
@@ -65,7 +46,9 @@
     "character": "personnage",
     "default": "Défaut",
     "dice": "dé",
+    "disabled": "Désactivé",
     "isPrivate": "Personnage privé",
+    "no": "✕",
     "noSet": "/",
     "page": "Page {{- nb}}",
     "role": "rôle",
@@ -76,27 +59,62 @@
     "yes": "✓"
   },
   "config": {
+    "admin": {
+      "desc": "Permet de consigner toutes les modifications et créations de personnages dans un channel.",
+      "title": "Administration"
+    },
     "autoRole": {
-      "dice": "[Rôle automatique] Dés",
-      "stats": "[Rôle automatique] Statistiques"
+      "dice": "Dés",
+      "stats": "Statistiques",
+      "title": "Rôles automatiques"
+    },
+    "context": {
+      "desc": "Permet d'afficher un lien vers le message précédent le lancer de dé, ou le lancer lui-même, en fonction des paramètres d'auto-suppression.",
+      "title": "Lien vers le contexte du dé"
     },
     "damageName": "Liste des dés sauvegardés (global)",
+    "defaultSheet": "Channel par défaut",
     "description": "Permet de configurer le bot pour le serveur",
-    "disableThread": "[Désactivation des threads]",
+    "disableThread": {
+      "desc": "Désactive la sauvegarde globale et l'auto-suppression des résultats, laissant donc le lancer de dés là où il a été fait.",
+      "title": "Désactivation des fils de résultats"
+    },
     "display": {
       "description": "Affiche la configuration du serveur",
       "name": "afficher"
     },
-    "logs": "Channel des logs d'administration",
-    "managerId": "Channel où seront envoyés les fiches",
+    "displayResult": "Affichage des résultats",
+    "linkToLog": "Lien vers la sauvegarde du résultat de dés",
+    "links": "Liens",
+    "logLink": {
+      "description": "Active le lien vers les logs dans le résultat du dé",
+      "name": "lien_vers_log"
+    },
+    "logs": "Journalisation",
     "name": "config",
     "privateChan": "Channel des personnages privés",
-    "rollChannel": "Log global des résultats de dés",
+    "result": {
+      "desc": "Permet de sauvegarder tous les résultats de lancer dans un seul et même channel.",
+      "title": "Sauvegarde des résultats"
+    },
+    "sheet": "Fiches",
     "statsName": "Nom des statistiques",
-    "templateID": "Lien vers la template",
-    "timer": "Délais avant suppression",
-    "timestamp": "[Affichage des timestamps]",
+    "template": "Configuration du modèle",
+    "templateMessage": "Lien vers le modèle",
+    "timer": {
+      "desc": "À la fin du timer, le lancer de dés sera supprimé mais sont résultats sera sauvegardé dans le channel approprié.",
+      "title": "Délais avant suppression"
+    },
+    "timestamp": {
+      "desc": "Affichage de l'heure/date du lancer dans l'agrégateur des résultats.",
+      "title": "Affichage des timestamps"
+    },
     "title": "Configuration de {{- guild}}"
+  },
+  "csv_generation": {
+    "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
+    "name": "csv",
+    "success": "Voici votre fichier CSV ! Attention, par défaut, le délimiteur utilisé est `;`. N'oubliez pas de le préciser à l'import dans votre logiciel (excel/google sheet...).\nPrécisons que vous devez vous-même calculer les combinaisons !"
   },
   "dbRoll": {
     "description": "Lance un dé avec une statistique enregistrée",
@@ -130,6 +148,7 @@
   "disableThread": {
     "description": "Désactive/active la création automatique des threads et utilise le channel actuel pour les logs",
     "disable": {
+      "autoDelete": "L'auto-suppression des résultats a été désactivé.",
       "mention": "Le channel {{- mention}} ne recevra plus les logs des dés.",
       "reply": "La création automatique des threads a été désactivée : les résultats des dés seront maintenant conservés dans le channel où la commande a été utilisée.\n\nLes channels préfixés par `🎲` ne recevront plus les logs non plus."
     },
@@ -171,8 +190,7 @@
     "generic": "{{- e.message}}",
     "invalidDice": {
       "embeds": "## :warning: __Erreur__\nAucun embed de dé détecté",
-      "withDice": "## :warning: __Erreur__\nDé invalide : `{{- dice}}`",
-      "withoutDice": "## :warning: __Erreur__\nErreur : Dé invalide"
+      "withDice": "## :warning: __Erreur__\nDé invalide : `{{- dice}}`"
     },
     "invalidFormula": "## :warning: __Erreur__  \nFormule invalide : `{{- formula}}`",
     "mustBeGreater": "## :warning: **Une erreur est survenue**\nLa valeur `{{- value}}` doit être plus grande que `{{- min}}`.",
@@ -191,6 +209,7 @@
     "notRegistered": "## :warning: __Erreur__\nVous n'êtes pas enregistré !",
     "oldEmbed": "## :warning: __Erreur__\nCette fiche ne correspond pas à celle dans la base de données. Vous trouverez la nouvelle fiche [ici](<{{- fiche}}>).",
     "private": "## :warning: __Erreur__\nCette fiche est privée ! Vous n'avez pas la permissions pour la lire.",
+    "public": "## :warning: __Erreur__\nVous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "rollChannelNotFound": "## :warning: __Erreur__\nLe channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
     "statNotFound": "## :warning: __Erreur__\nStatistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "template": "## :warning: __Erreur__\nVous devez fournir un fichier JSON.",
@@ -198,7 +217,6 @@
     "tooMuchStats": "## :warning: __Erreur__\nTrop de statistiques ont été fournies ! Vous ne pouvez pas avoir plus de 25 statistiques.",
     "totalExceededBy": "## :warning: __Erreur__\nLe total de `{{- value}}` est dépassé de `{{- max}}`.",
     "user": "## :warning: __Erreur__\nUtilisateur introuvable.\n- Il peut s'agir d'une erreur temporaire causé par la mise à jour du cache,\n- La fiche est introuvable car elle a été supprimé (ou son channel) mais les données n'ont pas été supprimé de la base de données. Si tel est le cas, vous devez utiliser la commande `/supprimer_char`.",
-    "userChan": "## :warning: __Erreur__\nVous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
     "userNotRegistered": "## :warning: __Erreur__\n{{- user}} n'est pas enregistré."
   },
   "export": {
@@ -299,6 +317,32 @@
       "name": "enregistrer"
     }
   },
+  "import": {
+    "all_success": "Tous les utilisateurs ont été enregistrés.",
+    "description": "Ajouter plusieurs personnages d'un coup",
+    "errors": {
+      "duplicate_charName": "Le personnage {{- charName}} (de {{- user}}) existe déjà dans la base .",
+      "global": "Les erreurs suivantes ont été trouvées :",
+      "headers": "Le nom des colonnes ne correspondent pas à votre modèle. Merci de vous référez à la documentation et votre template pour vérifier le nom des colonnes.\n\nLes colonnes :\n- {{- name}} \nest/sont manquante(s).",
+      "invalid_file": "Le fichier doit être un fichier CSV. \nVous avez fourni un fichier {{-ext}}.",
+      "missing_charName": "Le nom du personnage est manquant pour {{- user}}. Il est pourtant obligatoire dans la template !",
+      "missing_header": "Votre CSV n'a pas de noms de colonnes !",
+      "missing_stats": "Il manque des statistiques pour {{- user}}. \nLes statistiques manquantes sont :\n- {{- stats}}",
+      "no_user": "Aucun membre n'existe sur ce serveur.",
+      "user_not_found": "{{- user}} n'a pas été trouvé sur le serveur. Il est possible que le cache ne soit pas à jour, ou qu'il y ait une erreur dans l'ID ou l'username."
+    },
+    "name": "import",
+    "options": {
+      "description": "Le fichier CSV à importer",
+      "name": "csv"
+    },
+    "success": "{{- user}} a bien été ajouté."
+  },
+  "linkToLog": {
+    "disabled": "Les liens vers les logs des dés sont désactivés.",
+    "enabled": "Les liens vers les logs de dés sont maintenant activés.",
+    "options": "Active/désactive l'option"
+  },
   "logs": {
     "delete": "Les logs ne seront plus envoyés",
     "description": "Choisir un channel où envoyer les logs d'erreurs",
@@ -393,17 +437,17 @@
     "name": "enregistrer",
     "options": {
       "channel": "Le channel où le modèle et les utilisateurs seront enregistrés",
-      "hider": {
-        "description": "Permet de choisir un channel dans lequel les personnages \"privés\" seront envoyés",
-        "name": "personnage_privé"
+      "private": {
+        "description": "Permet de choisir un channel dans lequel les fiches “privées” seront envoyées",
+        "name": "channel_privé"
+      },
+      "public": {
+        "description": "Permet de choisir un channel dans lequel les fiches “publiques” seront envoyées",
+        "name": "channel_public"
       },
       "template": {
         "description": "Le modèle à enregistrer",
         "name": "template"
-      },
-      "userChan": {
-        "description": "Permet de choisir un channel dans lequel les fiches seront envoyés et gérées",
-        "name": "user_chan"
       }
     }
   },

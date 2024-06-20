@@ -184,10 +184,10 @@ export const registerTemplate = {
 		)
 		.addChannelOption((option) =>
 			option
-				.setName(t("register.options.userChan.name"))
-				.setDescription(t("register.options.userChan.description"))
-				.setNameLocalizations(cmdLn("register.options.userChan.name"))
-				.setDescriptionLocalizations(cmdLn("register.options.userChan.description"))
+				.setName(t("register.options.public.name"))
+				.setDescription(t("register.options.public.description"))
+				.setNameLocalizations(cmdLn("register.options.public.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.public.description"))
 				.setRequired(false)
 				.addChannelTypes(
 					ChannelType.PublicThread,
@@ -197,10 +197,10 @@ export const registerTemplate = {
 		)
 		.addChannelOption((option) =>
 			option
-				.setName(t("register.options.hider.name"))
-				.setDescription(t("register.options.hider.description"))
-				.setNameLocalizations(cmdLn("register.options.hider.name"))
-				.setDescriptionLocalizations(cmdLn("register.options.hider.description"))
+				.setName(t("register.options.private.name"))
+				.setDescription(t("register.options.private.description"))
+				.setNameLocalizations(cmdLn("register.options.private.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.private.description"))
 				.setRequired(false)
 				.addChannelTypes(
 					ChannelType.PublicThread,
@@ -224,14 +224,14 @@ export const registerTemplate = {
 		const templateData = verifyTemplateValue(res);
 		const guildId = interaction.guild.id;
 		const channel = options.getChannel(t("common.channel"), true);
-		const userChan = options.getChannel(t("register.options.userChan.name"), false);
-		const privateChan = options.getChannel(t("register.options.hider.name"), false);
+		const publicChannel = options.getChannel(t("register.options.public.name"), false);
+		const privateChannel = options.getChannel(t("register.options.private.name"), false);
 		if (
 			(!(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) ||
-			(!userChan && !(channel instanceof TextChannel))
+			(!publicChannel && !(channel instanceof TextChannel))
 		) {
 			await reply(interaction, {
-				content: ul("error.userChan", { chan: channelMention(channel.id) }),
+				content: ul("error.public", { chan: channelMention(channel.id) }),
 				ephemeral: true,
 			});
 			return;
@@ -353,8 +353,8 @@ export const registerTemplate = {
 				statsName: statsName ?? [],
 				damageName: damageName ?? [],
 			};
-			if (userChan) json.managerId = userChan.id;
-			if (privateChan) json.privateChannel = privateChan.id;
+			if (publicChannel) json.managerId = publicChannel.id;
+			if (privateChannel) json.privateChannel = privateChannel.id;
 			client.settings.set(guildId, json);
 		} else {
 			const newData: GuildData = {

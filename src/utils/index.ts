@@ -7,7 +7,7 @@ import {
 	type UserRegistration,
 } from "@interface";
 import { editUserButtons } from "@utils/buttons";
-import { registerManagerID, registerUser } from "@utils/db";
+import { setDefaultManagerId, registerUser } from "@utils/db";
 import { parseEmbedFields, removeBacktick } from "@utils/parse";
 import {
 	type AnyThreadChannel,
@@ -119,7 +119,7 @@ export async function repostInThread(
 				name: "📝 • [STATS]",
 				autoArchiveDuration: 10080,
 			})) as AnyThreadChannel;
-			registerManagerID(guildData, interaction, thread.id);
+			setDefaultManagerId(guildData, interaction, thread.id);
 		}
 	}
 	if (!thread) {
