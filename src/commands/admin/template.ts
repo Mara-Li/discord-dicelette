@@ -278,7 +278,7 @@ export const registerTemplate = {
 
 		if (templateData.diceType)
 			embedTemplate.addFields({
-				name: ul("common.dice"),
+				name: title(ul("common.dice")),
 				value: `\`${templateData.diceType}\``,
 			});
 		let msgComparator = "";
@@ -295,7 +295,7 @@ export const registerTemplate = {
 		if (templateData.total)
 			embedTemplate.addFields({
 				name: ul("common.total"),
-				value: `${ul("common.total")}${ul("common.space")}: \`${templateData.total}\``,
+				value: `\`${templateData.total}\``,
 			});
 		let diceEmbed: undefined | EmbedBuilder = undefined;
 		if (templateData.damage) {
