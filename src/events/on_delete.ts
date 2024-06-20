@@ -38,8 +38,7 @@ function deleteIfChannelOrThread(
 	if (db.get(guildID, "templateID.channelId") === channelID)
 		db.delete(guildID, "templateID");
 	if (db.get(guildID, "logs") === channelID) db.delete(guildID, "logs");
-	if (db.get(guildID, "defaultSheetId") === channelID)
-		db.delete(guildID, "defaultSheetId");
+	if (db.get(guildID, "managerId") === channelID) db.delete(guildID, "managerId");
 	if (db.get(guildID, "privateChannel") === channelID)
 		db.delete(guildID, "privateChannel");
 	if (db.get(guildID, "rollChannel") === channelID) db.delete(guildID, "rollChannel");

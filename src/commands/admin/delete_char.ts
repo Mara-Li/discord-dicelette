@@ -132,17 +132,12 @@ export const deleteChar = {
 			? undefined
 			: charName;
 		const userData = charData[user?.id ?? interaction.user.id];
-		const defaultSheetId: PersonnageIds = {
+		const sheetLocation: PersonnageIds = {
 			channelId: userData.messageId[1],
 			messageId: userData.messageId[0],
 		};
 		const userChannel: DiscordChannel | undefined = Array.isArray(userData.messageId)
-			? await searchUserChannel(
-					client.settings,
-					interaction,
-					ul,
-					defaultSheetId.channelId
-				)
+			? await searchUserChannel(client.settings, interaction, ul, sheetLocation.channelId)
 			: undefined;
 
 		if (!userChannel) {
@@ -154,7 +149,7 @@ export const deleteChar = {
 			);
 			return;
 		}
-		const messageID = defaultSheetId.messageId;
+		const messageID = sheetLocation.messageId;
 		const msg = `${userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${title(charName)})*` : ""}`;
 		try {
 			//search for the message and delete it

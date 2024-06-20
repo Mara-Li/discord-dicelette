@@ -179,7 +179,7 @@ export async function bulkEditTemplateUser(
 
 	for (const userID in users) {
 		for (const char of users[userID]) {
-			const defaultSheetId: PersonnageIds = {
+			const sheetLocation: PersonnageIds = {
 				channelId: char.messageId[1],
 				messageId: char.messageId[0],
 			};
@@ -187,11 +187,11 @@ export async function bulkEditTemplateUser(
 				guildData,
 				interaction,
 				ul,
-				defaultSheetId.channelId
+				sheetLocation.channelId
 			);
 			if (!thread) continue;
 			try {
-				const userMessages = await thread.messages.fetch(defaultSheetId.messageId);
+				const userMessages = await thread.messages.fetch(sheetLocation.messageId);
 				const templateEmbed = getEmbeds(ul, userMessages, "template");
 				if (!templateEmbed) continue;
 				const newEmbed = createTemplateEmbed(ul);
