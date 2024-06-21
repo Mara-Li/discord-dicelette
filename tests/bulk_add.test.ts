@@ -5,9 +5,9 @@ import { parseCSV } from "../src/commands/admin/import";
 import type { UserData } from "../src/interface";
 import {
 	expectedResult,
-	expectedResult_WithSkills,
+	clonedExpectedResultWithSkills,
 	guildTemplate,
-	guildTemplate_noUserName,
+	cloneWithoutUserName,
 } from "./constant.tests";
 
 describe("parseCSV", () => {
@@ -28,7 +28,7 @@ describe("parseCSV", () => {
 	it("should skip the empty charname", async () => {
 		const csv = readFileSync("tests/data/empty_char.csv", "utf-8");
 		const result = await parseCSV(csv, guildTemplate);
-		const expectedClean = JSON.parse(JSON.stringify(expectedResult)) as {
+		const expectedClean = structuredClone(expectedResult) as {
 			[id: string]: UserData[];
 		};
 		expectedClean.truc = [];
@@ -37,7 +37,7 @@ describe("parseCSV", () => {
 	it("should skip the empty stats", async () => {
 		const csv = readFileSync("tests/data/empty_stats.csv", "utf-8");
 		const result = await parseCSV(csv, guildTemplate);
-		const expectedClean = JSON.parse(JSON.stringify(expectedResult)) as {
+		const expectedClean = structuredClone(expectedResult) as {
 			[id: string]: UserData[];
 		};
 		expectedClean.truc = [];
@@ -55,7 +55,7 @@ describe("parseCSV", () => {
 	it("should pass the quoted as it was a normal value", async () => {
 		const csv = readFileSync("tests/data/quoted.csv", "utf-8");
 		const result = await parseCSV(csv, guildTemplate);
-		const expected = JSON.parse(JSON.stringify(expectedResult)) as {
+		const expected = structuredClone(expectedResult) as {
 			[id: string]: UserData[];
 		};
 		expected["12548784545"] = [
@@ -72,13 +72,13 @@ describe("parseCSV", () => {
 describe("parseCSV with no userName", () => {
 	it("should pass", async () => {
 		const csv = readFileSync("tests/data/should_pass.csv", "utf-8");
-		const result = await parseCSV(csv, guildTemplate_noUserName);
+		const result = await parseCSV(csv, cloneWithoutUserName);
 		expect(result).toEqual(expectedResult);
 	});
 	it("should pass even with empty charname", async () => {
 		const csv = readFileSync("tests/data/noUserName/should_pass.csv", "utf-8");
-		const result = await parseCSV(csv, guildTemplate_noUserName);
-		const expected = JSON.parse(JSON.stringify(expectedResult)) as {
+		const result = await parseCSV(csv, cloneWithoutUserName);
+		const expected = structuredClone(expectedResult) as {
 			[id: string]: UserData[];
 		};
 		expected.truc[0].userName = null;
@@ -86,8 +86,8 @@ describe("parseCSV with no userName", () => {
 	});
 	it("should allow isPrivate", async () => {
 		const csv = readFileSync("tests/data/noUserName/private.csv", "utf-8");
-		const result = await parseCSV(csv, guildTemplate_noUserName, undefined, true);
-		const expected = JSON.parse(JSON.stringify(expectedResult)) as {
+		const result = await parseCSV(csv, cloneWithoutUserName, undefined, true);
+		const expected = structuredClone(expectedResult) as {
 			[id: string]: UserData[];
 		};
 		expected.truc[0].userName = null;
@@ -101,6 +101,6 @@ describe("parseCSV with skills", () => {
 	it("should pass", async () => {
 		const csv = readFileSync("tests/data/skills/should_pass.csv", "utf-8");
 		const result = await parseCSV(csv, guildTemplate);
-		expect(result).toEqual(expectedResult_WithSkills);
+		expect(result).toEqual(clonedExpectedResultWithSkills);
 	});
 });
