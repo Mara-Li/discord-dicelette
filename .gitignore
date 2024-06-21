@@ -139,3 +139,6 @@ enmap.sqlite-*
 # DATABASE
 .env**
 database_*
+data_backups/
+db.zip
+toDelete.txt
