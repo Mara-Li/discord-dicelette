@@ -143,8 +143,16 @@ export async function rollStatistique(
 	const override = options.getString(t("dbRoll.options.override.name"));
 	const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 	const userStat = userStatistique.stats?.[removeAccents(statistique)];
+	if (!userStat) {
+		throw new Error(
+			ul("error.noStat", {
+				stat: title(statistique),
+				char: title(optionChar ? ` ${optionChar}` : ""),
+			})
+		);
+	}
 	const template = userStatistique.template;
-	let dice = template.diceType?.replaceAll("$", userStat!.toString());
+	let dice = template.diceType?.replaceAll("$", userStat.toString());
 	if (!dice) {
 		await reply(interaction, { content: ul("error.noDice"), ephemeral: true });
 		return;
