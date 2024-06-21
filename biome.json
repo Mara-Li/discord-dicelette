@@ -92,6 +92,16 @@
           }
         }
       }
+    },
+    {
+      "include": ["tests/constant.tests.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
     }
   ],
   "formatter": {
