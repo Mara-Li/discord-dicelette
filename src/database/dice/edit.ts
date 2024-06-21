@@ -151,7 +151,7 @@ export async function validateDiceEdit(
 			fieldsToAppend.find(
 				(f) => removeEmojiAccents(f.name) === removeEmojiAccents(name)
 			) ||
-			dice === "X" ||
+			dice.toLowerCase() === "x" ||
 			dice.trim().length === 0 ||
 			dice === "0"
 		)

@@ -112,7 +112,7 @@ export async function editStats(
 			const name = field.name.toLowerCase();
 			if (
 				field.value !== "0" &&
-				field.value !== "X" &&
+				field.value.toLowerCase() !== "x" &&
 				field.value.trim().length > 0 &&
 				embedsStatsFields.find(
 					(field) => removeEmojiAccents(field.name) === removeEmojiAccents(name)
