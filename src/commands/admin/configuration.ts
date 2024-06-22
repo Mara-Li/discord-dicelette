@@ -304,12 +304,16 @@ async function changeThread(
 	options: CommandInteractionOptionResolver
 ) {
 	const channel = options.getChannel("channel");
+	const oldChan = client.settings.get(interaction.guild!.id, "rollChannel");
+	if (!channel && !oldChan) {
+		await reply(interaction, { content: ul("changeThread.noChan"), ephemeral: true });
+		return;
+	}
 	if (!interaction.guild) return;
 	if (
 		!channel ||
 		(!(channel instanceof TextChannel) && !(channel instanceof ThreadChannel))
 	) {
-		const oldChan = client.settings.get(interaction.guild.id, "rollChannel");
 		const msg = oldChan
 			? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}`
 			: ".";
@@ -390,8 +394,9 @@ async function display(
 	const guildSettings = client.settings.get(interaction.guild!.id);
 	if (!guildSettings) return;
 
-	const dpTitle = (title?: string) => {
-		return `- **__${ul(title)}__**${ul("common.space")}:`;
+	const dpTitle = (content?: string, toUpperCase?: boolean) => {
+		if (toUpperCase) return `- **__${title(ul(content))}__**${ul("common.space")}:`;
+		return `- **__${ul(content)}__**${ul("common.space")}:`;
 	};
 
 	const dp = (settings?: string | boolean | number, type?: "role" | "chan") => {
@@ -445,8 +450,8 @@ async function display(
 			{
 				name: ul("config.autoRole"),
 				value: dedent(`
-					${title(dpTitle("common.dice"))} ${dp(guildSettings.autoRole?.dice, "role")}
-					${title(dpTitle("common.statistics"))} ${dp(guildSettings.autoRole?.stats, "role")}
+					${dpTitle("common.dice", true)} ${dp(guildSettings.autoRole?.dice, "role")}
+					${dpTitle("common.statistics", true)} ${dp(guildSettings.autoRole?.stats, "role")}
 				`),
 			}
 		);

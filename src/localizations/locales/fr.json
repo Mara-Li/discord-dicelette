@@ -37,6 +37,7 @@
     "delete": "Les résultats des dés ne seront plus envoyés",
     "description": "Enregistrer un channel pour y envoyer les résultats des dés ",
     "name": "result_channel",
+    "noChan": "Aucun channel de sauvegarde n'est paramétré. Annulation de la commande.",
     "options": "Channel des résultats",
     "set": "Le channel {{- channel}} a été enregistré pour y envoyer les résultats des dés."
   },
