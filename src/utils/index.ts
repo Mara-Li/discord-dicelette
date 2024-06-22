@@ -107,7 +107,9 @@ export async function repostInThread(
 	if (!channel || channel instanceof CategoryChannel) return;
 	if (!guildData)
 		throw new Error(
-			ul("error.generic", { e: "No server data found in database for this server." })
+			ul("error.generic.e", {
+				e: "No server data found in database for this server.",
+			})
 		);
 	let thread = await searchUserChannel(guildData, interaction, ul, threadId);
 	if (!thread && channel instanceof TextChannel) {

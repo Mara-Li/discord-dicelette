@@ -111,7 +111,8 @@ export default (client: EClient): void => {
 			error(e);
 			if (!message.guild) return;
 			const msgError = lError(e as Error, undefined, message?.guild?.preferredLocale);
-			await message.reply({ content: msgError });
+			if (msgError.length === 0) return;
+			await message.channel.send({ content: msgError });
 			const logsId = client.settings.get(message.guild.id, "logs");
 			if (logsId) {
 				const logs = await message.guild.channels.fetch(logsId);

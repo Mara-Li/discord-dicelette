@@ -310,9 +310,9 @@ export const graph = {
 			}
 			await reply(interaction, { content: titleUser(), files: [image] });
 		} catch (error) {
-			await reply(interaction, ul("error.generic", { e: error as Error }));
+			await reply(interaction, ul("error.generic.e", { e: error as Error }));
 			sendLogs(
-				ul("error.generic", { e: error as Error }),
+				ul("error.generic.e", { e: error as Error }),
 				interaction.guild,
 				client.settings
 			);

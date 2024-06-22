@@ -166,7 +166,7 @@ export const dbd = {
 		} catch (e) {
 			error(e);
 			await reply(interaction, {
-				content: t("error.generic", { e: e as Error }),
+				content: t("error.generic.e", { e: e as Error }),
 				ephemeral: true,
 			});
 			return;

@@ -62,6 +62,7 @@ export default (client: EClient): void => {
 			error(e);
 			if (!interaction.guild) return;
 			const msgError = lError(e as Error, interaction);
+			if (msgError.length === 0) return;
 			if (
 				interaction.isButton() ||
 				interaction.isModalSubmit() ||

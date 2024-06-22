@@ -191,7 +191,10 @@
     "discord": "## [DISCORD] :warning: __Erreur__ : \n- **Code** : `{{- code}}`\n- **Source** : `{{- stack}}`\n\nMerci de signaler le bug sur [le serveur officiel](https://discord.gg/2PUqwWeQYZ).",
     "emptyDamage": "## :warning: __Erreur__\nVous n'avez pas de dés de capacités enregistrés.",
     "emptyStats": "## :warning: __Erreur__\nCette combinaison est invalide : aucune statistiques n'existent !",
-    "generic": "{{- e.message}}",
+    "generic": {
+      "e": "{{- e.message}}",
+      "withWarning": "## [{{- e.name}}] :warning: __Erreur__ :\n`{{- e.message}}`"
+    },
     "invalidDice": {
       "embeds": "## :warning: __Erreur__\nAucun embed de dé détecté",
       "withDice": "## :warning: __Erreur__\nDé invalide : `{{- dice}}`"
