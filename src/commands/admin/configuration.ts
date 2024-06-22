@@ -303,7 +303,7 @@ async function changeThread(
 	ul: Translation,
 	options: CommandInteractionOptionResolver
 ) {
-	const channel = options.getChannel("channel", true);
+	const channel = options.getChannel("channel");
 	if (!interaction.guild) return;
 	if (
 		!channel ||
