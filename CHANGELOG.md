@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.5](https://github.com/Dicelette/discord-dicelette/compare/1.6.4...1.6.5) (2024-06-22)
+
+
+### Bug Fixes
+
+* available tags crashing ([efb10dd](https://github.com/Dicelette/discord-dicelette/commit/efb10dd5f2b970213633f3c3d585a0807fef6c39))
+* can't remove result_channel ([514417b](https://github.com/Dicelette/discord-dicelette/commit/514417b472750a90fb8c2affe5d9be8bf480345f))
+* catch delete error ([df75694](https://github.com/Dicelette/discord-dicelette/commit/df756940a277e87410eab29b9b94b1fd0d49cf03))
+* throw an error if stats not found on a selected char ([6226433](https://github.com/Dicelette/discord-dicelette/commit/622643399a676d4d7dea135827dabde91ce3a909))
+
 ## [1.6.4](https://github.com/Dicelette/discord-dicelette/compare/1.6.3...1.6.4) (2024-06-20)
 
 ## [1.6.3](https://github.com/Dicelette/discord-dicelette/compare/1.6.2...1.6.3) (2024-06-20)
