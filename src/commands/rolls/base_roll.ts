@@ -119,7 +119,6 @@ export const newScene = {
 
 			if (threadName.includes("{{date}}"))
 				threadName = threadName.replace("{{date}}", moment().format("DD-MM-YYYY"));
-
 			const newThread =
 				channel instanceof TextChannel
 					? await channel.threads.create({

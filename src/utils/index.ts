@@ -50,9 +50,8 @@ export async function setTagsForRoll(forum: ForumChannel) {
 	const diceRollTag = allTags.find(
 		(tag) => tag.name === "Dice Roll" && tag.emoji?.name === "🪡"
 	);
-	if (diceRollTag) {
-		return diceRollTag;
-	}
+	if (diceRollTag) return diceRollTag;
+
 	const availableTags: GuildForumTagData[] = allTags.map((tag) => {
 		return {
 			id: tag.id,
@@ -66,7 +65,8 @@ export async function setTagsForRoll(forum: ForumChannel) {
 		emoji: { id: null, name: "🪡" },
 	});
 	await forum.setAvailableTags(availableTags);
-	return availableTags.find(
+
+	return forum.availableTags.find(
 		(tag) => tag.name === "Dice Roll" && tag.emoji?.name === "🪡"
 	) as GuildForumTagData;
 }
