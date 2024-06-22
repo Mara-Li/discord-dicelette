@@ -1,4 +1,9 @@
-import { type BaseInteraction, Locale, type LocalizationMap } from "discord.js";
+import {
+	type BaseInteraction,
+	DiscordAPIError,
+	Locale,
+	type LocalizationMap,
+} from "discord.js";
 import { default as i18next } from "i18next";
 
 import { resources } from "./init";
@@ -13,6 +18,7 @@ import {
 	TooManyStats,
 } from "@dicelette/core";
 import { InvalidCsvContent, NoChannel, NoEmbed } from "../utils";
+import { error } from "../console";
 
 export function ln(userLang: Locale) {
 	const localeName = Object.entries(Locale).find(([name, abbr]) => {
@@ -21,39 +27,40 @@ export function ln(userLang: Locale) {
 	return i18next.getFixedT(localeName?.[1] ?? "en");
 }
 
-export function lError(error: Error, interaction?: BaseInteraction, userLang?: Locale) {
+export function lError(e: Error, interaction?: BaseInteraction, userLang?: Locale) {
 	const ul = ln(interaction?.locale ?? userLang ?? Locale.EnglishUS);
-	if (error instanceof DiceTypeError) {
-		return ul("error.invalidDice.withDice", { dice: error.dice });
+	if (e instanceof DiceTypeError)
+		return ul("error.invalidDice.withDice", { dice: e.dice });
+
+	if (e instanceof FormulaError)
+		return ul("error.invalidFormula", { formula: e.formula });
+
+	if (e instanceof MaxGreater)
+		return ul("error.mustBeGreater", { max: e.max, value: e.value });
+
+	if (e instanceof EmptyObjectError) return ul("error.emptyDamage");
+
+	if (e instanceof TooManyDice) return ul("error.tooMuchDice");
+
+	if (e instanceof NoStatisticsError) return ul("error.emptyStats");
+
+	if (e instanceof TooManyStats) return ul("error.tooMuchStats");
+
+	if (e instanceof NoEmbed) return ul("error.noEmbed");
+
+	if (e instanceof InvalidCsvContent) return ul("error.csvContent", { fichier: e.file });
+
+	if (e instanceof NoChannel) return ul("error.channel", { channel: "" });
+
+	if (e instanceof DiscordAPIError) {
+		if (e.method === "DELETE") {
+			error("Error while deleting message", e);
+			return "";
+		}
+		return ul("error.discord", { code: e.code, stack: e.stack });
 	}
-	if (error instanceof FormulaError) {
-		return ul("error.invalidFormula", { formula: error.formula });
-	}
-	if (error instanceof MaxGreater) {
-		return ul("error.mustBeGreater", { max: error.max, value: error.value });
-	}
-	if (error instanceof EmptyObjectError) {
-		return ul("error.emptyDamage");
-	}
-	if (error instanceof TooManyDice) {
-		return ul("error.tooMuchDice");
-	}
-	if (error instanceof NoStatisticsError) {
-		return ul("error.emptyStats");
-	}
-	if (error instanceof TooManyStats) {
-		return ul("error.tooMuchStats");
-	}
-	if (error instanceof NoEmbed) {
-		return ul("error.noEmbed");
-	}
-	if (error instanceof InvalidCsvContent) {
-		return ul("error.csvContent", { fichier: error.file });
-	}
-	if (error instanceof NoChannel) {
-		return ul("error.channel", { channel: "" });
-	}
-	return ul("error.generic", { e: error });
+
+	return ul("error.generic", { e: e });
 }
 
 /**

@@ -160,7 +160,7 @@ export const deleteChar = {
 			await reply(interaction, ul("deleteChar.success", { user: msg }));
 			client.settings.set(interaction.guildId as string, newGuildData);
 		} catch (e) {
-			error(e);
+			error(e, "deleteChar: no message found - No problem");
 			//no message found, delete the character from the database
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);

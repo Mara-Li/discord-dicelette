@@ -14,6 +14,7 @@ import {
 import { findln, ln } from "../localizations";
 import { reply, title } from "../utils";
 import removeAccents from "remove-accents";
+import { warn } from "../console";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found
@@ -166,7 +167,11 @@ export async function allowEdit(
 				ephemeral: true,
 			});
 			//delete the message
-			await interaction.message.delete();
+			try {
+				await interaction.message.delete();
+			} catch (e) {
+				warn("Error while deleting message", e, "allowEdit");
+			}
 			return false;
 		}
 	}

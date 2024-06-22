@@ -1,4 +1,4 @@
-import { error } from "@console";
+import { error, warn } from "@console";
 import {
 	type Critical,
 	type Statistic,
@@ -344,7 +344,7 @@ export const registerTemplate = {
 					);
 					await msg.delete();
 				} catch (e) {
-					error(e);
+					warn(e, "registerTemplate: delete message");
 				}
 			}
 			json.templateID = {

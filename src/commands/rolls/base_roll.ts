@@ -19,10 +19,13 @@ import moment from "moment";
 
 const t = i18next.getFixedT("en");
 
-export function deleteAfter(message: InteractionResponse | Message, time: number): void {
+export async function deleteAfter(
+	message: InteractionResponse | Message,
+	time: number
+): Promise<void> {
 	if (time === 0) return;
-	setTimeout(() => {
-		message.delete();
+	setTimeout(async () => {
+		await message.delete();
 	}, time);
 }
 
@@ -138,7 +141,7 @@ export const newScene = {
 				content: ul("scene.interaction", { scene: threadMention }),
 			});
 			const time = client.settings.get(interaction.guild.id, "deleteAfter") ?? 180000;
-			deleteAfter(msgReply, time);
+			await deleteAfter(msgReply, time);
 			const rollID = allCommands.findKey((command) => command.name === "roll");
 			const msgToEdit = await newThread.send("_ _");
 			const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${ul("scene.underscore")} ${scene}\n*roll: </roll:${rollID}>*`;

@@ -188,6 +188,7 @@
     "channel": "## :warning: __Error__\nThe channel `{{-channel}}` does not exist on this server.",
     "charName": "## :warning: __Error__\nThe character {{- charName}} is not registered.",
     "csvContent": "## :warning: __Error__\nThe content of {{- fichier}} is invalid.",
+    "discord": "",
     "emptyDamage": "## :warning: __Error__\nYou have no ability dice saved.",
     "emptyStats": "## :warning: __Error__\nThis combination is invalid: no statistics exist!",
     "generic": "{{- e.message}}",

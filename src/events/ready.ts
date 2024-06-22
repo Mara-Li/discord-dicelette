@@ -22,9 +22,9 @@ export default (client: EClient): void => {
 			log(`Registering commands for ${guild.name}`);
 
 			// biome-ignore lint/complexity/noForEach: forEach is fine here
-			guild.client.application.commands.cache.forEach((command) => {
+			guild.client.application.commands.cache.forEach(async (command) => {
 				log(`Deleting ${command.name}`);
-				command.delete();
+				await command.delete();
 			});
 
 			await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, guild.id), {

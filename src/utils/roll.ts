@@ -124,7 +124,7 @@ export async function rollWithInteraction(
 		}
 		await rollog.edit(`${infoRollTotal(true, true)}${parser}${url}`);
 	}
-	if (!disableThread) deleteAfter(inter, timer);
+	if (!disableThread) await deleteAfter(inter, timer);
 	return;
 }
 

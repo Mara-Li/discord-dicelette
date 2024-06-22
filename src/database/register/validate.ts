@@ -30,6 +30,7 @@ import {
 	type User,
 	userMention,
 } from "discord.js";
+import { warn } from "../../console";
 
 function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;
@@ -267,7 +268,11 @@ export async function validateUser(
 		db,
 		channelToPost.replace("<#", "").replace(">", "")
 	);
-	await interaction.message.delete();
+	try {
+		await interaction.message.delete();
+	} catch (e) {
+		warn(e, "validateUser: can't delete the message");
+	}
 	await addAutoRole(interaction, userID, !!statsEmbed, !!diceEmbed, db);
 	await reply(interaction, { content: ul("modals.finished"), ephemeral: true });
 	return;

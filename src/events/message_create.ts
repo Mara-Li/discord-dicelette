@@ -65,7 +65,7 @@ export default (client: EClient): void => {
 			}
 			let linkToOriginal = "";
 			if (deleteInput) {
-				message.delete();
+				await message.delete();
 				if (client.settings.get(message.guild.id, "context")) {
 					const messagesBefore = await channel.messages.fetch({
 						before: message.id,
@@ -105,7 +105,7 @@ export default (client: EClient): void => {
 						allowedMentions: { repliedUser: true },
 					});
 			const timer = client.settings.get(message.guild.id, "deleteAfter") ?? 180000;
-			deleteAfter(reply, timer);
+			await deleteAfter(reply, timer);
 			return;
 		} catch (e) {
 			error(e);
