@@ -19,13 +19,25 @@ import moment from "moment";
 
 const t = i18next.getFixedT("en");
 
+/**
+ * Deletes a given message after a specified time delay.
+ * If the time delay is zero, the function exits immediately.
+ * Uses setTimeout to schedule the deletion and handles any errors silently.
+ * @param message - An instance of InteractionResponse or Message that needs to be deleted.
+ * @param time - A number representing the delay in milliseconds before the message is deleted.
+ */
 export async function deleteAfter(
 	message: InteractionResponse | Message,
 	time: number
 ): Promise<void> {
 	if (time === 0) return;
+
 	setTimeout(async () => {
-		await message.delete();
+		try {
+			await message.delete();
+		} catch (error) {
+			// Can't delete message, probably because the message was already deleted; ignoring the error.
+		}
 	}, time);
 }
 
