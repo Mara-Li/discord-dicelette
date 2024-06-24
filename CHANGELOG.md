@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.6.6](https://github.com/Dicelette/discord-dicelette/compare/1.6.5...1.6.6) (2024-06-24)
+
+
+### Bug Fixes
+
+* crash / unhandled error when message not found ([33cabc2](https://github.com/Dicelette/discord-dicelette/commit/33cabc2d5ef87a18e6c0749317cf7d69ce1018c3))
+
 ## [1.6.5](https://github.com/Dicelette/discord-dicelette/compare/1.6.4...1.6.5) (2024-06-22)
 
 
