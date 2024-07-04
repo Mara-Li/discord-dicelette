@@ -207,7 +207,7 @@
     "noDice": "## :warning: __Erreur__\nVous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
     "noEmbed": "## :warning: __Erreur__\nAucun embed trouvé",
     "noGuild": "## :warning: __Erreur__\n Aucun serveur n'a été trouvé.",
-    "noGuildData": "## :warning: __Erreur__\nAucune donnée trouvée pour le serveur {{- serveur }}.",
+    "noGuildData": "## :warning: __Erreur__\nAucune donnée trouvée pour le serveur {{- server }}.",
     "noMessage": "## :warning: __Erreur__\nAucun message trouvé.",
     "noStat": "## :warning: __Erreur__\nLa statistique `{{- stat}}` est introuvable sur le personnage sélectionné{{- char}}.",
     "noStats": "## :warning: __Erreur__\nCette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",

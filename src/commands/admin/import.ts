@@ -407,8 +407,8 @@ async function step(
 						user: userMention(userID),
 						stats: emptyStats.join("\n- "),
 					});
-					await reply(interaction, { content: msg.content });
-					errors.push(msg.content);
+					await reply(interaction, { content: msg });
+					errors.push(msg);
 				}
 				console.warn(`Missing stats for ${user}. Missing: ${emptyStats.join("\n- ")}`);
 				continue;
