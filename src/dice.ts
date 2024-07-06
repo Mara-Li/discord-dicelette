@@ -73,7 +73,6 @@ export function parseResult(
 			: "";
 	const dicesResult = / {2}(?<entry>.*) ⟶ (?<calc>.*) =/;
 	const matches = dicesResult.exec(msgSuccess);
-	console.log(matches);
 	if (matches) {
 		if (matches?.groups?.entry) {
 			const entry = matches.groups.entry.replaceAll("\\*", "×");
