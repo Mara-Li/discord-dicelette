@@ -71,7 +71,7 @@ export function parseResult(
 		: interaction
 			? "\n"
 			: "";
-	const dicesResult = / {2}(?<entry>.*) ⟶ (?<calc>.*) =/;
+	const dicesResult = /(?<entry>\S+) ⟶ (?<calc>.*) =/;
 	const matches = dicesResult.exec(msgSuccess);
 	if (matches) {
 		if (matches?.groups?.entry) {
