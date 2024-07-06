@@ -64,10 +64,26 @@ export function parseResult(
 			.replaceAll("*", "\\*")}`;
 	}
 	const comment = output.comment
-		? `*${output.comment.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "").trim()}*\n`
+		? `*${output.comment
+				.replaceAll(/(\\\*|#|\*\/|\/\*)/g, "")
+				.replaceAll("×", "*")
+				.trim()}*\n`
 		: interaction
 			? "\n"
 			: "";
+	const dicesResult = / {2}(?<entry>.*) ⟶ (?<calc>.*) =/;
+	const matches = dicesResult.exec(msgSuccess);
+	console.log(matches);
+	if (matches) {
+		if (matches?.groups?.entry) {
+			const entry = matches.groups.entry.replaceAll("\\*", "×");
+			msgSuccess = msgSuccess.replace(matches.groups.entry, `\`${entry}\``);
+		}
+		if (matches?.groups?.calc) {
+			const calc = matches.groups.calc.replaceAll("\\*", "×");
+			msgSuccess = msgSuccess.replace(matches.groups.calc, `\`${calc}\``);
+		}
+	}
 	return `${comment}${msgSuccess}`;
 }
 

@@ -27,7 +27,7 @@ export default (client: EClient): void => {
 			let content = message.content;
 			//detect roll between bracket
 			const detectRoll = content.match(/\[(.*)\]/)?.[1];
-			const comments = content.match(DETECT_DICE_MESSAGE)?.[3];
+			const comments = content.match(DETECT_DICE_MESSAGE)?.[3].replaceAll("*", "\\*");
 			if (comments && !detectRoll) {
 				const diceValue = content.match(/^\S*#?d\S+|\{.*\}/);
 				if (!diceValue) return;
