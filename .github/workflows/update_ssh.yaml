@@ -13,7 +13,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
-          username: ubuntu
+          username: lili
           password: ${{ secrets.PASSWORD }}
           script: |
             set PATH $PATH:/home/.local/share/nvm/v20.14.0/bin
