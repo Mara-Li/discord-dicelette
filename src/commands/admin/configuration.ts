@@ -399,12 +399,13 @@ async function display(
 		return `- **__${ul(content)}__**${ul("common.space")}:`;
 	};
 
-	const dp = (settings?: string | boolean | number, type?: "role" | "chan") => {
+	const dp = (settings?: string | boolean | number, type?: "role" | "chan" | "timer") => {
+		if (!settings && type === "timer") return "`180`s (`3`min)";
 		if (!settings) return ul("common.no");
 		if (typeof settings === "boolean") return ul("common.yes");
 		if (typeof settings === "number") {
 			if (settings === 0 || guildSettings.disableThread) return ul("common.no");
-			return `${settings / 1000}s `;
+			return `\`${settings / 1000}\`s (\`${settings / 60000}\`min)`;
 		}
 		if (type === "role") return `<@&${settings}>`;
 		return `<#${settings}>`;
@@ -438,7 +439,7 @@ async function display(
 				value: dedent(`
 					${dpTitle("config.timestamp.title")} ${dp(guildSettings.timestamp)}
 					 ${ul("config.timestamp.desc")}
-					${dpTitle("config.timer.title")} ${dp(guildSettings.deleteAfter)}
+					${dpTitle("config.timer.title")} ${dp(guildSettings.deleteAfter, "timer")}
 					 ${ul("config.timer.desc")}
 					${dpTitle("config.context.title")} ${dp(guildSettings.context)}
 					 ${ul("config.context.desc")}
