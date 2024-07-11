@@ -104,7 +104,7 @@ export async function rollWithInteraction(
 	const rollog = await thread.send("_ _");
 	await rollog.edit(`${infoRollTotal(true, true)}${parser}`);
 	const rollLogEnabled = db.get(interaction.guild.id, "linkToLogs");
-	const rollogUrl = rollLogEnabled ? `\n\n↪ ${rollog.url}` : "";
+	const rollogUrl = rollLogEnabled ? `\n\n-#↪ ${rollog.url}` : "";
 	const inter = await reply(interaction, {
 		content: `${retrieveUser}${parser}${rollogUrl}`,
 		allowedMentions: { users: [userId] },
