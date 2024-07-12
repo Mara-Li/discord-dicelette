@@ -230,6 +230,7 @@
     "noGuild": "## :warning: __Erreur__\n Aucun serveur n'a été trouvé.",
     "noGuildData": "## :warning: __Erreur__\nAucune donnée trouvée pour le serveur {{- server }}.",
     "noMessage": "## :warning: __Erreur__\nAucun message trouvé.",
+    "noPermission": "Vous n'avez pas les permissions pour changer l'image d'un autre utilisateur. Seuls les personnes ayant les autorisations \"GÉRER LES RÔLES\" peuvent utiliser cette commande pour d'autres joueurs.",
     "noStat": "## :warning: __Erreur__\nLa statistique `{{- stat}}` est introuvable sur le personnage sélectionné{{- char}}.",
     "noStats": "## :warning: __Erreur__\nCette commande ne peut pas être utilisé : aucune statistique n'a été enregistrée.",
     "noTemplate": "## :warning: __Erreur__\nAucun modèle ou channel configuré",
