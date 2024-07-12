@@ -148,7 +148,12 @@ export const editAvatar = {
 				await message.edit({ embeds: embedsList.list, components: [buttons] });
 			}
 			await message.edit({ embeds: embedsList.list });
-			await reply(interaction, ul("edit_avatar.success"));
+			const nameMention = `<@${user?.id ?? interaction.user.id}>${charName ? ` (${charName})` : ""}`;
+			const msgLink = message.url;
+			await reply(interaction, {
+				content: ul("edit_avatar.success", { name: nameMention, link: msgLink }),
+				ephemeral: true,
+			});
 		} catch (error) {
 			await reply(interaction, ul("error.user"));
 		}

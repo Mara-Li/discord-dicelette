@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.5](https://github.com/Dicelette/discord-dicelette/compare/1.7.4...1.7.5) (2024-07-12)
+
+
+### Bug Fixes
+
+* adjust message when editing avatar ([504fed0](https://github.com/Dicelette/discord-dicelette/commit/504fed0db5522b7d72217ffcc0d8469e4003fb47))
+
 ## [1.7.4](https://github.com/Dicelette/discord-dicelette/compare/1.7.3...1.7.4) (2024-07-12)
 
 

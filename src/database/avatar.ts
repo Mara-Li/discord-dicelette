@@ -13,6 +13,7 @@ import type { Translation, Settings } from "@interface";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
 import { reply } from "@utils";
 import { verifyAvatarUrl } from "./register/validate";
+import { findln } from "../localizations";
 
 export async function initiateAvatarEdit(
 	interaction: ButtonInteraction,
@@ -59,5 +60,17 @@ export async function validateAvatarEdit(
 	embed.setThumbnail(avatar);
 	const embedsList = getEmbedsList(ul, { which: "user", embed }, interaction.message);
 	await interaction.message.edit({ embeds: embedsList.list });
-	await reply(interaction, ul("modals.avatar.success"));
+	const user = embed
+		.toJSON()
+		.fields?.find((field) => findln(field.name) === "common.user")?.value;
+	const charName = embed
+		.toJSON()
+		.fields?.find((field) => findln(field.name) === "common.character")?.value;
+	const nameMention =
+		!charName || findln(charName) === "common.noSet" ? user : `${user} (${charName})`;
+	const msgLink = interaction.message.url;
+	await reply(interaction, {
+		content: ul("edit_avatar.success", { name: nameMention, link: msgLink }),
+		ephemeral: true,
+	});
 }

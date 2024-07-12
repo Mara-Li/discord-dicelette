@@ -185,7 +185,7 @@
       "name": "message_url"
     },
     "name": "edit_avatar",
-    "success": "Avatar changed!",
+    "success": "Avatar changed for {{- name}} ([link to the file]({{-link}}))!",
     "url": {
       "desc": "Link to the image to put (no discord link!)",
       "name": "avatar_url"
