@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.4](https://github.com/Dicelette/discord-dicelette/compare/1.7.3...1.7.4) (2024-07-12)
+
+
+### Bug Fixes
+
+* permission for edit image ([1fce371](https://github.com/Dicelette/discord-dicelette/commit/1fce37182465581d42eb2f11c2277a642eebf3ef))
+
 ## [1.7.3](https://github.com/Dicelette/discord-dicelette/compare/1.7.2...1.7.3) (2024-07-12)
 
 

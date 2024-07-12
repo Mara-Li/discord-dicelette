@@ -4,6 +4,7 @@ import {
 	SlashCommandBuilder,
 	type CommandInteraction,
 	type CommandInteractionOptionResolver,
+	PermissionsBitField,
 } from "discord.js";
 import type { EClient } from "@main";
 import i18next from "i18next";
@@ -82,6 +83,14 @@ export const editAvatar = {
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
+		const isModerator = interaction.guild?.members.cache
+			.get(interaction.user.id)
+			?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+
+		if (user && user.id !== interaction.user.id && !isModerator) {
+			await reply(interaction, ul("error.noPermission"));
+			return;
+		}
 		const charName = options.getString(t("common.character"))?.toLowerCase();
 		const charData = await getDatabaseChar(interaction, client, t);
 		if (!charData) {

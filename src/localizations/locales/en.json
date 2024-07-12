@@ -230,6 +230,7 @@
     "noGuild": "## :warning: __Error__\nNo guilds found",
     "noGuildData": "## :warning: __Error__\nNo data found for server {{-server}}.",
     "noMessage": "## :warning: __Error__\nNo messages found.",
+    "noPermission": "You do not have permissions to change another user's image. \nOnly people with \"MANAGE ROLES\" permissions can use this command for other players.",
     "noStat": "## :warning: __Error__\nThe statistic `{{- stat}}` cannot be found on the selected char{{- char}}.",
     "noStats": "## :warning: __Error__\nThis command cannot be used: no statistics have been recorded.",
     "noTemplate": "## :warning: __Error__\nNo template or channel configured",
