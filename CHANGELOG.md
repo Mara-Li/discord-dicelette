@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.3](https://github.com/Dicelette/discord-dicelette/compare/1.7.2...1.7.3) (2024-07-12)
+
+
+### Bug Fixes
+
+* forgot translation between things ([52e6f0d](https://github.com/Dicelette/discord-dicelette/commit/52e6f0d8629cef4a4b2ee205389f95fcba172b4a))
+
 ## [1.7.2](https://github.com/Dicelette/discord-dicelette/compare/1.7.1...1.7.2) (2024-07-12)
 
 
