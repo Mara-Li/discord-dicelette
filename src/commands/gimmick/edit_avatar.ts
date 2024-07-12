@@ -23,15 +23,6 @@ export const editAvatar = {
 		.setNameLocalizations(cmdLn("edit_avatar.name"))
 		.setDescription(t("edit_avatar.desc"))
 		.setDescriptionLocalizations(cmdLn("edit_avatar.desc"))
-		.addUserOption((option) =>
-			option
-				.setName(t("display.userLowercase"))
-				.setNameLocalizations(cmdLn("display.userLowercase"))
-				.setDescription(t("deleteChar.user"))
-				.setDescriptionLocalizations(cmdLn("deleteChar.user"))
-				.setRequired(true)
-		)
-
 		.addStringOption((option) =>
 			option
 				.setName(t("edit_avatar.url.name"))
@@ -39,6 +30,13 @@ export const editAvatar = {
 				.setDescription(t("edit_avatar.url.desc"))
 				.setDescriptionLocalizations(cmdLn("edit_avatar.url.desc"))
 				.setRequired(true)
+		)
+		.addUserOption((option) =>
+			option
+				.setName(t("display.userLowercase"))
+				.setNameLocalizations(cmdLn("display.userLowercase"))
+				.setDescription(t("deleteChar.user"))
+				.setDescriptionLocalizations(cmdLn("deleteChar.user"))
 		)
 		.addStringOption((option) =>
 			option
