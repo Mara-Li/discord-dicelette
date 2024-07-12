@@ -35,15 +35,15 @@ export const editAvatar = {
 			option
 				.setName(t("display.userLowercase"))
 				.setNameLocalizations(cmdLn("display.userLowercase"))
-				.setDescription(t("deleteChar.user"))
-				.setDescriptionLocalizations(cmdLn("deleteChar.user"))
+				.setDescription(t("edit_avatar.user"))
+				.setDescriptionLocalizations(cmdLn("edit_avatar.user"))
 		)
 		.addStringOption((option) =>
 			option
 				.setName(t("common.character"))
 				.setNameLocalizations(cmdLn("common.character"))
-				.setDescriptionLocalizations(cmdLn("deleteChar.character"))
-				.setDescription(t("deleteChar.character"))
+				.setDescriptionLocalizations(cmdLn("edit_avatar.character"))
+				.setDescription(t("edit_avatar.character"))
 				.setAutocomplete(true)
 		),
 	async autocomplete(interaction: AutocompleteInteraction, client: EClient) {
