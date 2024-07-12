@@ -96,7 +96,7 @@ export default (client: EClient): void => {
 			const msg = `${authorMention}${timestamp(client.settings, message.guild.id)}\n${parser}${linkToOriginal}`;
 			await msgToEdit.edit(msg);
 			const idMessage = client.settings.get(message.guild.id, "linkToLogs")
-				? `\n\n-#↪ ${msgToEdit.url}`
+				? `\n\n-# ↪ ${msgToEdit.url}`
 				: "";
 			const reply = deleteInput
 				? await channel.send({ content: `${authorMention}\n${parser}${idMessage}` })
