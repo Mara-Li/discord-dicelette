@@ -116,7 +116,7 @@ export const editAvatar = {
 		}
 		try {
 			const imageURL = options.getString(t("edit_avatar.url.name"), true);
-			if (imageURL.includes("media.discordapp.net"))
+			if (imageURL.match(/(cdn|media)\.discordapp\.net/gi))
 				return await reply(interaction, ul("edit_avatar.error.discord"));
 			if (!verifyAvatarUrl(imageURL))
 				return await reply(interaction, ul("edit_avatar.error.url"));

@@ -49,7 +49,7 @@ export async function validateAvatarEdit(
 ) {
 	if (!interaction.message) return;
 	const avatar = interaction.fields.getTextInputValue("avatar");
-	if (avatar.includes("media.discordapp.net"))
+	if (avatar.match(/(cdn|media)\.discordapp\.net/gi))
 		return await reply(interaction, ul("edit_avatar.error.discord"));
 	if (!verifyAvatarUrl(avatar))
 		return await reply(interaction, ul("edit_avatar.error.url"));
