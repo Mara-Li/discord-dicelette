@@ -32,7 +32,7 @@ import {
 } from "discord.js";
 import { warn } from "../../console";
 
-function verifyAvatarUrl(url: string) {
+export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;
 	if (url.match(/^(http(s?):)([/|.|\w|\s|-])*\.(?:jpe?g|gifv?|png|webp|gif)$/gi))
 		return url;

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.0](https://github.com/Dicelette/discord-dicelette/compare/1.6.6...1.7.0) (2024-07-12)
+
+
+### Features
+
+* adjust displaying result ([075e0cc](https://github.com/Dicelette/discord-dicelette/commit/075e0cc743a6227fcabfcae7f0c504cf3738a300))
+* allow to edit avatar of embeds ([58b5f6b](https://github.com/Dicelette/discord-dicelette/commit/58b5f6b35ee515b62bb24025110cabda2ed83c22))
+
+
+### Bug Fixes
+
+* displaying of delete after was wrong if default settings is applied ([71df774](https://github.com/Dicelette/discord-dicelette/commit/71df77434845a58353454029ae1d965b1d6198f2))
+* empty message ([567cd2a](https://github.com/Dicelette/discord-dicelette/commit/567cd2ab0bf95c5082dfecb1e08271917694530f))
+
 ## [1.6.6](https://github.com/Dicelette/discord-dicelette/compare/1.6.5...1.6.6) (2024-06-24)
 
 

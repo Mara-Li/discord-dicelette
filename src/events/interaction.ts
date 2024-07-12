@@ -26,6 +26,7 @@ import {
 	TextChannel,
 	type User,
 } from "discord.js";
+import { initiateAvatarEdit, validateAvatarEdit } from "../database/avatar";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
@@ -93,17 +94,15 @@ async function modalSubmit(
 	interactionUser: User,
 	db: Settings
 ) {
-	if (interaction.customId.includes("damageDice")) {
+	if (interaction.customId.includes("damageDice"))
 		await storeDamageDice(interaction, ul, interactionUser, db);
-	} else if (interaction.customId.includes("page")) {
-		await pageNumber(interaction, ul, db);
-	} else if (interaction.customId === "editStats") {
-		await editStats(interaction, ul, db);
-	} else if (interaction.customId === "firstPage") {
-		await recordFirstPage(interaction, db);
-	} else if (interaction.customId === "editDice") {
+	else if (interaction.customId.includes("page")) await pageNumber(interaction, ul, db);
+	else if (interaction.customId === "editStats") await editStats(interaction, ul, db);
+	else if (interaction.customId === "firstPage") await recordFirstPage(interaction, db);
+	else if (interaction.customId === "editDice")
 		await validateDiceEdit(interaction, ul, db);
-	}
+	else if (interaction.customId === "editAvatar")
+		await validateAvatarEdit(interaction, ul);
 }
 
 /**
@@ -140,6 +139,8 @@ async function buttonSubmit(
 		await cancel(interaction, ul, interactionUser);
 	else if (interaction.customId === "edit_dice")
 		await initiateDiceEdit(interaction, ul, interactionUser, db);
+	else if (interaction.customId === "avatar")
+		await initiateAvatarEdit(interaction, ul, interactionUser, db);
 }
 
 /**

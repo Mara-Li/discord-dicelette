@@ -24,16 +24,23 @@ export function editUserButtons(ul: Translation, stats?: boolean, dice?: boolean
 		.setLabel(ul("button.edit.dice"))
 		.setEmoji("📝")
 		.setStyle(ButtonStyle.Secondary);
+	const avatar = new ButtonBuilder()
+		.setCustomId("avatar")
+		.setLabel(ul("button.avatar"))
+		.setEmoji("🖼️")
+		.setStyle(ButtonStyle.Danger);
 
 	if (stats && dice)
 		return new ActionRowBuilder<ButtonBuilder>().addComponents([
+			avatar,
 			editUser,
 			editDice,
 			addDice,
 		]);
-	const components = [addDice];
+	const components = [avatar];
 	if (stats) components.push(editUser);
 	if (dice) components.push(editDice);
+	components.push(addDice);
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(components);
 }
 
