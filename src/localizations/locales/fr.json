@@ -24,6 +24,7 @@
     }
   },
   "button": {
+    "avatar": "Modifier l'image",
     "cancel": "Annuler",
     "continue": "Continuer",
     "dice": "Enregistrer un dé",
@@ -171,6 +172,24 @@
     "title": "afficher",
     "user": "L'utilisateur à afficher",
     "userLowercase": "joueur"
+  },
+  "edit_avatar": {
+    "desc": "Modifier l'avatar d'une fiche de personnage",
+    "error": {
+      "discord": "Il n'est pas possible d'utiliser une image discord, car les liens sont actualisés régulièrement.",
+      "url": "L'image fournie est invalide."
+    },
+    "msg": {
+      "desc": "Lien du message contenant la fiche",
+      "name": "message_url"
+    },
+    "name": "edit_avatar",
+    "success": "Avatar changé !",
+    "url": {
+      "desc": "Lien vers l'image à mettre (pas de lien discord!)",
+      "name": "avatar_url"
+    },
+    "url_desc": "Lien vers la fiche"
   },
   "embed": {
     "add": "Enregistrement de l'utilisateur",
@@ -381,7 +400,8 @@
     "alreadySet": "Toutes les statistiques sont déjà définies",
     "avatar": {
       "description": "Le lien vers l'image du personnage (par défaut, utilise l'avatar de l'utilisateur)",
-      "name": "Avatar"
+      "name": "Avatar",
+      "success": "L'avatar du personnage a bien été mis à jour !"
     },
     "channel": {
       "description": "Permet de poster la fiche ailleurs que dans les channels par défaut.",

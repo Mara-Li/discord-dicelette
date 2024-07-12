@@ -24,6 +24,7 @@
     }
   },
   "button": {
+    "avatar": "Edit image",
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
@@ -171,6 +172,24 @@
     "title": "display",
     "user": "The user to display",
     "userLowercase": "player"
+  },
+  "edit_avatar": {
+    "desc": "Edit the avatar of a character sheet",
+    "error": {
+      "discord": "It is not possible to use a discord image, as the links are updated regularly.",
+      "url": "The image provided is invalid."
+    },
+    "msg": {
+      "desc": "Link to the message containing the file",
+      "name": "message_url"
+    },
+    "name": "edit_avatar",
+    "success": "Avatar changed!",
+    "url": {
+      "desc": "Link to the image to put (no discord link!)",
+      "name": "avatar_url"
+    },
+    "url_desc": "Link to the file"
   },
   "embed": {
     "add": "User registration",
@@ -381,7 +400,8 @@
     "alreadySet": "All statistics are already defined",
     "avatar": {
       "description": "The link to the character image (by default, uses the user's avatar)",
-      "name": "Avatar"
+      "name": "Avatar",
+      "success": ""
     },
     "channel": {
       "description": "Allows you to post the file elsewhere than in the default channels",
