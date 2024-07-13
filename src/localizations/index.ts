@@ -58,11 +58,10 @@ export function lError(e: Error, interaction?: BaseInteraction, userLang?: Local
 			error("Error while deleting message", e);
 			return "";
 		}
+		if (e.code === 50001) return ul("error.missingPermission");
 		return ul("error.discord", { code: e.code, stack: e.stack });
 	}
-	if (e.message.includes(":warning:")) {
-		return ul("error.generic.e", { e });
-	}
+	if (e.message.includes(":warning:")) return ul("error.generic.e", { e });
 	return ul("error.generic.withWarning", { e });
 }
 
