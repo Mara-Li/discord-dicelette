@@ -221,6 +221,7 @@
       "withDice": "## :warning: __Error__\nInvalid die: `{{-dice}}`"
     },
     "invalidFormula": "## :warning: __Error__\nInvalid formula: `{{- formula}}`",
+    "missingPermission": "## [DISCORD] :warning: __Erreur__ : **MISSING PERMISSIONS**\nThe bot does not have the permissions to perform the requested action. Check that it has access to the requested channel/thread!",
     "mustBeGreater": "## :warning: **An error has occurred**\nThe {{- value}} value must be greater than {{- min}}",
     "mustBeLower": "## :warning: __Error__\nThe `{{- value}}` value must be smaller than `{{- max}}`",
     "noDamage": "## :warning: __Error__\n`{{- atq}}` is not saved in `{{- charName}}`.",

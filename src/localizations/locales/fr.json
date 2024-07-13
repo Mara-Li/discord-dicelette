@@ -221,6 +221,7 @@
       "withDice": "## :warning: __Erreur__\nDé invalide : `{{- dice}}`"
     },
     "invalidFormula": "## :warning: __Erreur__  \nFormule invalide : `{{- formula}}`",
+    "missingPermission": "## [DISCORD] :warning: __Erreur__ : **PERMISSIONS MANQUANTES**\nLe bot n'a pas les permissions pour faire l'action demandées. Vérifié qu'il a bien accès au channel/thread demandé !\n",
     "mustBeGreater": "## :warning: **Une erreur est survenue**\nLa valeur `{{- value}}` doit être plus grande que `{{- min}}`.",
     "mustBeLower": "## :warning: __Erreur__\nLa valeur `{{- value}}` doit être plus petite que `{{- max}}`",
     "noDamage": "## :warning: __Erreur__\n`{{- atq}}` n'est pas enregistré pour {{- charName}}.",
