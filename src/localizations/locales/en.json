@@ -175,10 +175,9 @@
   },
   "edit_avatar": {
     "character": "The name of the character to modify",
+    "default": "",
     "desc": "Edit the avatar of a character sheet",
     "error": {
-      "discord": "It is not possible to use a discord image, as the links are updated regularly.",
-      "url": "The image provided is invalid."
     },
     "msg": {
       "desc": "Link to the message containing the file",
@@ -206,6 +205,10 @@
     "user": "⌈⌋ Sheet ⌈⌋"
   },
   "error": {
+    "avatar": {
+      "discord": "It is not possible to use a discord image, as the links are updated regularly.",
+      "url": "The image provided is invalid: it must contain the image format (`JPG`/`JPEG`/`PNG`/`WEBP`/`GIF`/`GIFV`) and be an `https` link."
+    },
     "channel": "## :warning: __Error__\nThe channel `{{-channel}}` does not exist on this server.",
     "charName": "## :warning: __Error__\nThe character {{- charName}} is not registered.",
     "csvContent": "## :warning: __Error__\nThe content of {{- fichier}} is invalid.",

@@ -175,10 +175,9 @@
   },
   "edit_avatar": {
     "character": "Le nom du personnage à modifier",
+    "default": "L'image utilisée sera votre avatar actuel !",
     "desc": "Modifier l'avatar d'une fiche de personnage",
     "error": {
-      "discord": "Il n'est pas possible d'utiliser une image discord, car les liens sont actualisés régulièrement.",
-      "url": "L'image fournie est invalide."
     },
     "msg": {
       "desc": "Lien du message contenant la fiche",
@@ -206,6 +205,10 @@
     "user": "⌈⌋ Fiche ⌈⌋"
   },
   "error": {
+    "avatar": {
+      "discord": "Il n'est pas possible d'utiliser une image discord, car les liens sont actualisés régulièrement.",
+      "url": "L'image fournie est invalide : elle doit contenir le format de l'image (`JPG`/`JPEG`/`PNG`/`WEBP`/`GIF`/`GIFV`)et être un lien en `https`."
+    },
     "channel": "## :warning: __Erreur__\nLe channel `{{-channel}}` n'existe pas sur ce serveur.",
     "charName": "## :warning: __Erreur__\nLe personnage {{- charName}} n'est pas enregistré.",
     "csvContent": "## :warning: __Erreur__\nLe contenu du {{- fichier}} est invalide.",

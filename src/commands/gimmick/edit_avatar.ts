@@ -124,9 +124,9 @@ export const editAvatar = {
 		try {
 			const imageURL = options.getString(t("edit_avatar.url.name"), true);
 			if (imageURL.match(/(cdn|media)\.discordapp\.net/gi))
-				return await reply(interaction, ul("edit_avatar.error.discord"));
+				return await reply(interaction, ul("error.avatar.discord"));
 			if (!verifyAvatarUrl(imageURL))
-				return await reply(interaction, ul("edit_avatar.error.url"));
+				return await reply(interaction, ul("error.avatar.url"));
 			const message = await thread.messages.fetch(sheetLocation.messageId);
 			const embed = getEmbeds(ul, message, "user");
 			if (!embed) throw new Error(ul("error.noEmbed"));
