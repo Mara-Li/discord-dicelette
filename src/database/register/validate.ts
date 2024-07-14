@@ -34,8 +34,7 @@ import { warn } from "../../console";
 
 export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;
-	if (url.match(/^(http(s?):)([/|.|\w|\s|-])*\.(?:jpe?g|gifv?|png|webp|gif)$/gi))
-		return url;
+	if (url.match(/^(https:)([/|.|\w|\s|-])*\.(?:jpe?g|gifv?|png|webp)$/gi)) return url;
 	return false;
 }
 
@@ -109,6 +108,9 @@ export async function createEmbedFirstPage(
 	//add continue button
 	if (template.statistics) {
 		await reply(interaction, {
+			content: verifiedAvatar
+				? ""
+				: `:warning: **${ul("error.avatar.url")}** *${ul("edit_avatar.default")}*`,
 			embeds: [embed],
 			components: [continueCancelButtons(ul)],
 		});

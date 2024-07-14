@@ -51,9 +51,8 @@ export async function validateAvatarEdit(
 	if (!interaction.message) return;
 	const avatar = interaction.fields.getTextInputValue("avatar");
 	if (avatar.match(/(cdn|media)\.discordapp\.net/gi))
-		return await reply(interaction, ul("edit_avatar.error.discord"));
-	if (!verifyAvatarUrl(avatar))
-		return await reply(interaction, ul("edit_avatar.error.url"));
+		return await reply(interaction, ul("error.avatar.discord"));
+	if (!verifyAvatarUrl(avatar)) return await reply(interaction, ul("error.avatar.url"));
 
 	const embed = getEmbeds(ul, interaction.message, "user");
 	if (!embed) throw new Error(ul("error.noEmbed"));
