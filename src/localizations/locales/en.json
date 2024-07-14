@@ -525,7 +525,7 @@
       "description": "Time (in seconds) before deletion, set to 0 to disable.",
       "name": "time"
     },
-    "success": "Messages will now be deleted after {{- time}} seconds."
+    "success": "Messages will now be deleted after {{- timer}} seconds."
   },
   "timestamp": {
     "description": "Display or name the time in the die roll log",

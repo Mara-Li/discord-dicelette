@@ -3,7 +3,9 @@ import type {
 	NewsChannel,
 	PrivateThreadChannel,
 	PublicThreadChannel,
+	StageChannel,
 	TextChannel,
+	VoiceChannel,
 } from "discord.js";
 import type Enmap from "enmap";
 import type { TFunction } from "i18next";
@@ -47,6 +49,14 @@ export type UserRegistration = {
 	damage?: string[];
 	msgId: UserMessageId;
 };
+
+export type DiscordTextChannel =
+	| TextChannel
+	| NewsChannel
+	| StageChannel
+	| PrivateThreadChannel
+	| PublicThreadChannel<boolean>
+	| VoiceChannel;
 
 export interface GuildData {
 	/**

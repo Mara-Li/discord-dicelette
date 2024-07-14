@@ -525,7 +525,7 @@
       "description": "Temps (en seconde) avant suppression, mettez à 0 pour désactiver.",
       "name": "temps"
     },
-    "success": "Les messages seront maintenant supprimés après {{- time}} secondes."
+    "success": "Les messages seront maintenant supprimés après {{- timer}} secondes."
   },
   "timestamp": {
     "description": "Affiche ou nom l'heure dans le log de lancer de dé",

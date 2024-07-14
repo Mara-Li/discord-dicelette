@@ -4,7 +4,7 @@ import { COMMENT_REGEX, type Resultat, roll } from "@dicelette/core";
 import { lError, ln } from "@localization";
 import type { EClient } from "@main";
 import { timestamp } from "@utils";
-import { findForumChannel, findThread } from "@utils/find";
+import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import {
 	ChannelType,
 	type ForumChannel,
@@ -67,12 +67,8 @@ export default (client: EClient): void => {
 			if (deleteInput) {
 				await message.delete();
 				if (client.settings.get(message.guild.id, "context")) {
-					const messagesBefore = await channel.messages.fetch({
-						before: message.id,
-						limit: 1,
-					});
-					const messageBefore = messagesBefore.first();
-					if (messagesBefore)
+					const messageBefore = await findMessageBefore(channel, message, client);
+					if (messageBefore)
 						linkToOriginal = `\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${message.guild.id}/${message.channel!.id}/${messageBefore!.id}>)`;
 				}
 			} else {

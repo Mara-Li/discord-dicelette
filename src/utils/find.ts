@@ -1,6 +1,31 @@
-import type { Settings, Translation } from "@interface";
+import type { DiscordTextChannel, Settings, Translation } from "@interface";
 import { sendLogs, setTagsForRoll } from "@utils";
-import { type ForumChannel, TextChannel, ThreadChannel } from "discord.js";
+import {
+	type Client,
+	type ForumChannel,
+	type InteractionResponse,
+	type Message,
+	TextChannel,
+	ThreadChannel,
+} from "discord.js";
+
+export async function findMessageBefore(
+	channel: DiscordTextChannel,
+	inter: Message | InteractionResponse,
+	client: Client
+) {
+	let messagesBefore = await channel.messages.fetch({ before: inter.id, limit: 1 });
+	let messageBefore = messagesBefore.first();
+	while (messageBefore && messageBefore.author.username === client.user?.username) {
+		messagesBefore = await channel.messages.fetch({
+			before: messageBefore.id,
+			limit: 1,
+		});
+		messageBefore = messagesBefore.first();
+	}
+	return messageBefore;
+}
+
 /**
  * Find a thread by their data or create it for roll
  * @param channel {TextChannel}
