@@ -142,3 +142,13 @@ database_*
 data_backups/
 db.zip
 toDelete.txt
+.env
+.env~
+data/
+data_backups/
+db.zip
+dist/
+git.zip
+node_modules/
+pnpm-lock.yaml
+toDelete.txt
