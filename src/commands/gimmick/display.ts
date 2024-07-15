@@ -5,6 +5,7 @@ import { filterChoices, haveAccess, reply, searchUserChannel, title } from "@uti
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
 import {
+	type APIEmbedField,
 	type AutocompleteInteraction,
 	type CommandInteraction,
 	type CommandInteractionOptionResolver,
@@ -140,7 +141,7 @@ export const displayUser = {
 					inline: true,
 				});
 			const newStatEmbed: EmbedBuilder | undefined = statsFields
-				? createStatsEmbed(ul).addFields(statsFields)
+				? createStatsEmbed(ul).addFields(keepResultOnlyInFormula(statsFields))
 				: undefined;
 			const newDiceEmbed = diceFields
 				? createDiceEmbed(ul).addFields(diceFields)
@@ -155,3 +156,15 @@ export const displayUser = {
 		}
 	},
 };
+
+function keepResultOnlyInFormula(fields: APIEmbedField[]) {
+	const newFields: APIEmbedField[] = [];
+	for (const field of fields) {
+		let value = field.value as string;
+		if (value.includes("= ")) {
+			value = `\`${value.split("= ")[1]}\``;
+		}
+		newFields.push({ ...field, value });
+	}
+	return newFields;
+}
