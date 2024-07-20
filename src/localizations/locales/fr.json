@@ -49,6 +49,7 @@
     "context": "Contexte",
     "default": "Défaut",
     "dice": "dé",
+    "error": "Erreur",
     "isPrivate": "Personnage privé",
     "no": "✕",
     "noSet": "/",
@@ -177,7 +178,8 @@
     "character": "Le nom du personnage à modifier",
     "default": "L'image utilisée sera votre avatar actuel !",
     "desc": "Modifier l'avatar d'une fiche de personnage",
-    "error": {},
+    "error": {
+    },
     "msg": {
       "desc": "Lien du message contenant la fiche",
       "name": "message_url"

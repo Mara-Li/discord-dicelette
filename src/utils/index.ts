@@ -40,6 +40,7 @@ import { evaluate } from "mathjs";
 import moment from "moment";
 import removeAccents from "remove-accents";
 import { error } from "../console";
+import { findln } from "../localizations";
 /**
  * Set the tags for thread channel in forum
  * @param forum {ForumChannel}
@@ -416,10 +417,13 @@ export async function reply(
 }
 
 export const embedError = (error: string, ul: Translation) => {
+	const stack = findln(error);
 	return new EmbedBuilder()
-		.setTitle(`⚠️ ${ul("common.error")}`)
 		.setDescription(error)
-		.setColor("Red");
+		.setColor("Red")
+		.setFooter({ text: stack.replace("error.", "") })
+		.setAuthor({ name: ul("common.error"), iconURL: "https://i.imgur.com/2ulUJCc.png" })
+		.setTimestamp();
 };
 
 async function fetchDiceRole(diceEmbed: boolean, guild: Guild, role?: string) {
