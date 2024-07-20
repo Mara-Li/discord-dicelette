@@ -1,5 +1,5 @@
 import { log } from "@console";
-import type { UserData } from "@interface";
+import type { PersonnageIds, UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import {
@@ -7,10 +7,11 @@ import {
 	haveAccess,
 	removeEmojiAccents,
 	reply,
+	searchUserChannel,
 	sendLogs,
 	title,
 } from "@utils";
-import { getDatabaseChar, getTemplateWithDB, getUserFromMessage } from "@utils/db";
+import { getDatabaseChar, getTemplateWithDB, getUserByEmbed, getUserFromMessage } from "@utils/db";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import {
 	AttachmentBuilder,
@@ -228,22 +229,56 @@ export const graph = {
 		}
 		try {
 			if (!interaction.guild || !interaction.channel) return;
-			const userId = user?.id ?? interaction.user.id;
-			const charName = charData[userId].charName;
-			const userStatistique = await getUserFromMessage(
+			let userId = user?.id ?? interaction.user.id;
+			let userData = charData[userId];
+			if (!charData[userId]) {
+				const findChara = Object.values(charData).find( (data) => data.charName?.toLowerCase() === charName?.toLowerCase());
+				
+				if (!findChara) {
+					await reply(interaction, ul("error.user"));
+					return;
+				}
+				userData = findChara;
+			}
+			const sheetLocation: PersonnageIds = {
+				channelId: userData.messageId[1],
+				messageId: userData.messageId[0],
+			};
+			const thread = await searchUserChannel(
 				client.settings,
-				userId,
 				interaction,
-				charName,
-				{ integrateCombinaison: false, allowAccess: false }
+				ul,
+				sheetLocation?.channelId
 			);
-			if (!userStatistique || !userStatistique.stats) {
-				await reply(interaction, ul("error.notRegistered"));
+			if (!thread) return await reply(interaction, ul("error.noThread"));
+			
+			const allowHidden = haveAccess(
+				interaction,
+				thread.id,
+				userId
+			);
+			if (!allowHidden && charData[userId]?.isPrivate) {
+				await reply(interaction, ul("error.private"));
 				return;
+			}
+			const message = await thread.messages.fetch(sheetLocation.messageId);
+			const userStatistique = getUserByEmbed(
+				message,
+				ul,
+				undefined,
+				false
+			);
+			if (!userStatistique) {
+				await reply(interaction, ul("error.user"));
+				return;
+			}
+			if (!userStatistique.stats) {
+				await reply(interaction, ul("error.noStats"));
+				return
 			}
 			const titleUser = () => {
 				let msg = "# ";
-				if (charName) msg += `${title(charName)} `;
+				if (userData.charName) msg += `${title(userData.charName)} `;
 				msg += `⌈${userMention(userId)}⌋ `;
 				return msg;
 			};

@@ -1,9 +1,10 @@
 import { createDiceEmbed, createStatsEmbed } from "@database";
-import { cmdLn, ln } from "@localization";
+import { cmdLn, findln, ln } from "@localization";
 import type { EClient } from "@main";
 import { filterChoices, haveAccess, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
+import { error } from "@console";
 import {
 	type APIEmbedField,
 	type AutocompleteInteraction,
@@ -87,7 +88,16 @@ export const displayUser = {
 			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
 			return;
 		}
-		const userData = charData[user?.id ?? interaction.user.id];
+		
+		let userData = charData?.[user?.id ?? interaction.user.id];
+		if (!userData) { /* search based on the character name */
+			const findChara = Object.values(charData).find((data) => data.charName === charName);
+			if (!findChara) {
+				await reply(interaction, ul("error.user"));
+				return;
+			}
+			userData = findChara;
+		}
 		const sheetLocation: PersonnageIds = {
 			channelId: userData.messageId[1],
 			messageId: userData.messageId[0],
@@ -120,6 +130,8 @@ export const displayUser = {
 				await reply(interaction, ul("error.user"));
 				return;
 			}
+			const jsonDataUser = dataUserEmbeds!.toJSON().fields!.find(x =>findln(x.name) === findln("common.user"));
+			const jsonDataChar = dataUserEmbeds!.toJSON().fields!.find(x =>findln(x.name) === findln("common.character"));
 			const displayEmbed = new EmbedBuilder()
 				.setTitle(ul("embed.display"))
 				.setThumbnail(
@@ -130,13 +142,14 @@ export const displayUser = {
 				.setColor("Gold")
 				.addFields({
 					name: ul("common.user"),
-					value: `<@${user?.id ?? interaction.user.id}>`,
+					value: jsonDataUser?.value ?? `<@${user?.id ?? interaction.user.id}>`,
 					inline: true,
 				})
 				.addFields({
 					name: title(ul("common.character")),
 					value:
-						title(charData[user?.id ?? interaction.user.id].charName) ??
+						jsonDataChar?.value ??
+						title(userData.charName) ??
 						ul("common.noSet"),
 					inline: true,
 				});
@@ -150,7 +163,8 @@ export const displayUser = {
 			if (newStatEmbed) displayEmbeds.push(newStatEmbed);
 			if (newDiceEmbed) displayEmbeds.push(newDiceEmbed);
 			await reply(interaction, { embeds: displayEmbeds });
-		} catch (error) {
+		} catch (e) {
+			error(e);
 			await reply(interaction, ul("error.noMessage"));
 			return;
 		}
