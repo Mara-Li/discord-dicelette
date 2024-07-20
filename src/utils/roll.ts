@@ -4,7 +4,7 @@ import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import type { EClient } from "@main";
-import { reply, timestamp, title } from "@utils";
+import { embedError, reply, timestamp, title } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import {
 	type CommandInteraction,
@@ -53,7 +53,7 @@ export async function rollWithInteraction(
 	const rollDice = roll(dice.trim());
 	if (!rollDice) {
 		await reply(interaction, {
-			content: ul("error.invalidDice.withDice", { dice }),
+			embeds: [embedError(ul("error.invalidDice.withDice", { dice }), ul)],
 			ephemeral: true,
 		});
 		return;
@@ -205,7 +205,12 @@ export async function rollDice(
 	let dice = userStatistique.damage?.[atq.toLowerCase()];
 	if (!dice) {
 		await reply(interaction, {
-			content: ul("error.noDamage", { atq: title(atq), charName: charOptions ?? "" }),
+			embeds: [
+				embedError(
+					ul("error.noDamage", { atq: title(atq), charName: charOptions ?? "" }),
+					ul
+				),
+			],
 			ephemeral: true,
 		});
 		return;

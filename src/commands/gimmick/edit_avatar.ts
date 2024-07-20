@@ -9,7 +9,14 @@ import {
 import type { EClient } from "@main";
 import i18next from "i18next";
 import { cmdLn, ln } from "@localization";
-import { filterChoices, haveAccess, reply, searchUserChannel, title } from "@utils";
+import {
+	embedError,
+	filterChoices,
+	haveAccess,
+	reply,
+	searchUserChannel,
+	title,
+} from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import type { PersonnageIds } from "@interface";
 import { getEmbeds, getEmbedsList } from "../../utils/parse";
@@ -79,7 +86,7 @@ export const editAvatar = {
 		const guildData = client.settings.get(interaction.guildId as string);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
-			await reply(interaction, ul("error.noTemplate"));
+			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
@@ -88,7 +95,7 @@ export const editAvatar = {
 			?.permissions.has(PermissionsBitField.Flags.ManageRoles);
 
 		if (user && user.id !== interaction.user.id && !isModerator) {
-			await reply(interaction, ul("error.noPermission"));
+			await reply(interaction, { embeds: [embedError(ul("error.noPermission"), ul)] });
 			return;
 		}
 		const charName = options.getString(t("common.character"))?.toLowerCase();
@@ -96,7 +103,9 @@ export const editAvatar = {
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
 			if (charName) userName += ` (${charName})`;
-			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
+			await reply(interaction, {
+				embeds: [embedError(ul("error.userNotRegistered", { user: userName }), ul)],
+			});
 			return;
 		}
 		const userData = charData[user?.id ?? interaction.user.id];
@@ -110,7 +119,8 @@ export const editAvatar = {
 			ul,
 			sheetLocation?.channelId
 		);
-		if (!thread) return await reply(interaction, ul("error.noThread"));
+		if (!thread)
+			return await reply(interaction, { embeds: [embedError(ul("error.noThread"), ul)] });
 
 		const allowHidden = haveAccess(
 			interaction,
@@ -118,15 +128,19 @@ export const editAvatar = {
 			user?.id ?? interaction.user.id
 		);
 		if (!allowHidden && charData[user?.id ?? interaction.user.id]?.isPrivate) {
-			await reply(interaction, ul("error.private"));
+			await reply(interaction, { embeds: [embedError(ul("error.private"), ul)] });
 			return;
 		}
 		try {
 			const imageURL = options.getString(t("edit_avatar.url.name"), true);
 			if (imageURL.match(/(cdn|media)\.discordapp\.net/gi))
-				return await reply(interaction, ul("error.avatar.discord"));
+				return await reply(interaction, {
+					embeds: [embedError(ul("error.avatar.discord"), ul)],
+				});
 			if (!verifyAvatarUrl(imageURL))
-				return await reply(interaction, ul("error.avatar.url"));
+				return await reply(interaction, {
+					embeds: [embedError(ul("error.avatar.url"), ul)],
+				});
 			const message = await thread.messages.fetch(sheetLocation.messageId);
 			const embed = getEmbeds(ul, message, "user");
 			if (!embed) throw new Error(ul("error.noEmbed"));
@@ -155,7 +169,7 @@ export const editAvatar = {
 				ephemeral: true,
 			});
 		} catch (error) {
-			await reply(interaction, ul("error.user"));
+			await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
 		}
 	},
 };

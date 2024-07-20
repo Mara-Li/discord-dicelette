@@ -9,6 +9,7 @@ import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import {
 	addAutoRole,
+	embedError,
 	NoChannel,
 	NoEmbed,
 	removeEmoji,
@@ -60,7 +61,7 @@ export async function createEmbedFirstPage(
 		await interaction!.guild!.members.fetch({ query: userFromField })
 	).first();
 	if (!user) {
-		reply(interaction, { content: ul("error.user"), ephemeral: true });
+		reply(interaction, { embeds: [embedError(ul("error.user"), ul)], ephemeral: true });
 		return;
 	}
 	const customChannel = interaction.fields.getTextInputValue("channelId");
@@ -79,7 +80,10 @@ export async function createEmbedFirstPage(
 		? await interaction.guild?.channels.fetch(sheetId)
 		: undefined;
 	if (!existChannel) {
-		reply(interaction, { content: ul("error.noThread"), ephemeral: true });
+		reply(interaction, {
+			embeds: [embedError(ul("error.noThread"), ul)],
+			ephemeral: true,
+		});
 		return;
 	}
 	const embed = new EmbedBuilder()
@@ -145,7 +149,7 @@ export async function validateUser(
 		);
 		if (!channel) {
 			await reply(interaction, {
-				content: ul("error.channel", { channel: channelToPost }),
+				embeds: [embedError(ul("error.channel", { channel: channelToPost }), ul)],
 				ephemeral: true,
 			});
 			return;
@@ -153,7 +157,10 @@ export async function validateUser(
 	}
 	if (charName && charName === "common.noSet") charName = undefined;
 	if (!userID) {
-		await reply(interaction, { content: ul("error.user"), ephemeral: true });
+		await reply(interaction, {
+			embeds: [embedError(ul("error.user"), ul)],
+			ephemeral: true,
+		});
 		return;
 	}
 	userID = userID.replace("<@", "").replace(">", "");

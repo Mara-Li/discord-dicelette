@@ -14,7 +14,7 @@ import {
 } from "@register/start";
 import { validateUserButton } from "@register/validate";
 import { editStats, triggerEditStats } from "@stats/edit";
-import { reply } from "@utils";
+import { embedError, reply } from "@utils";
 import { getTemplate, getTemplateWithDB } from "@utils/db";
 import { ensureEmbed } from "@utils/parse";
 import {
@@ -52,7 +52,9 @@ export default (client: EClient): void => {
 					? template
 					: await getTemplateWithDB(interaction, client.settings);
 				if (!template) {
-					await interaction.channel?.send({ content: ul("error.noTemplate") });
+					await interaction.channel?.send({
+						embeds: [embedError(ul("error.noTemplate"), ul)],
+					});
 					return;
 				}
 				await buttonSubmit(interaction, ul, interactionUser, template, client.settings);

@@ -1,6 +1,6 @@
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { filterChoices, reply, title } from "@utils";
+import { embedError, filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollStatistique } from "@utils/roll";
 import {
@@ -114,7 +114,7 @@ export const dbRoll = {
 			: undefined;
 		if (optionChar && serializedNameDB !== serializedNameQueries) {
 			await reply(interaction, {
-				content: ul("error.charName", { charName: title(optionChar) }),
+				embeds: [embedError(ul("error.charName", { charName: title(optionChar) }), ul)],
 				ephemeral: true,
 			});
 			return;
@@ -126,12 +126,18 @@ export const dbRoll = {
 			optionChar = char?.optionChar;
 		}
 		if (!userStatistique) {
-			await reply(interaction, { content: ul("error.notRegistered"), ephemeral: true });
+			await reply(interaction, {
+				embeds: [embedError(ul("error.notRegistered"), ul)],
+				ephemeral: true,
+			});
 			return;
 		}
 
 		if (!userStatistique.stats) {
-			await reply(interaction, { content: ul("error.noStats"), ephemeral: true });
+			await reply(interaction, {
+				embeds: [embedError(ul("error.noStats"), ul)],
+				ephemeral: true,
+			});
 			return;
 		}
 		return await rollStatistique(

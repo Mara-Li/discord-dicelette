@@ -2,7 +2,15 @@ import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@database";
 import { evalStatsDice } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId } from "@interface";
 import { findln, ln } from "@localization";
-import { addAutoRole, NoEmbed, removeEmojiAccents, reply, sendLogs, title } from "@utils";
+import {
+	addAutoRole,
+	embedError,
+	NoEmbed,
+	removeEmojiAccents,
+	reply,
+	sendLogs,
+	title,
+} from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed, getEmbeds, removeBacktick } from "@utils/parse";
@@ -90,7 +98,7 @@ export async function storeDamageDice(
 ) {
 	const template = await getTemplateWithDB(interaction, db);
 	if (!template) {
-		await reply(interaction, { content: ul("error.noTemplate") });
+		await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 		return;
 	}
 	const embed = ensureEmbed(interaction.message ?? undefined);

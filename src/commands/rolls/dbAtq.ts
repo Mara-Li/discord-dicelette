@@ -2,7 +2,7 @@
 import { error } from "@console";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { filterChoices, reply, title } from "@utils";
+import { embedError, filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollDice } from "@utils/roll";
 import {
@@ -144,7 +144,9 @@ export const dbd = {
 				: undefined;
 			if (charOptions && serializedUserNameDB !== serializedQueries) {
 				await reply(interaction, {
-					content: ul("error.charName", { charName: title(charOptions) }),
+					embeds: [
+						embedError(ul("error.charName", { charName: title(charOptions) }), ul),
+					],
 					ephemeral: true,
 				});
 				return;
@@ -155,11 +157,17 @@ export const dbd = {
 				charOptions = char?.optionChar ?? null;
 			}
 			if (!userStatistique) {
-				await reply(interaction, { content: ul("error.notRegistered"), ephemeral: true });
+				await reply(interaction, {
+					embeds: [embedError(ul("error.notRegistered"), ul)],
+					ephemeral: true,
+				});
 				return;
 			}
 			if (!userStatistique.damage) {
-				await reply(interaction, { content: ul("error.emptyDamage"), ephemeral: true });
+				await reply(interaction, {
+					embeds: [embedError(ul("error.emptyDamage"), ul)],
+					ephemeral: true,
+				});
 				return;
 			}
 			return await rollDice(interaction, client, userStatistique, options, ul, charName);

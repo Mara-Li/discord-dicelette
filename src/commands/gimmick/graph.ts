@@ -3,6 +3,7 @@ import type { PersonnageIds, UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import {
+	embedError,
 	filterChoices,
 	haveAccess,
 	removeEmojiAccents,
@@ -11,7 +12,7 @@ import {
 	sendLogs,
 	title,
 } from "@utils";
-import { getDatabaseChar, getTemplateWithDB, getUserByEmbed, getUserFromMessage } from "@utils/db";
+import { getDatabaseChar, getTemplateWithDB, getUserByEmbed } from "@utils/db";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import {
 	AttachmentBuilder,
@@ -210,12 +211,12 @@ export const graph = {
 		let max = options.getNumber(t("graph.max.name")) ?? undefined;
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
-			await reply(interaction, ul("error.noTemplate"));
+			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;
 		}
 		const serverTemplate = await getTemplateWithDB(interaction, client.settings);
 		if (!guildData.templateID.statsName || !serverTemplate?.statistics) {
-			await reply(interaction, ul("error.noStats"));
+			await reply(interaction, { embeds: [embedError(ul("error.noStats"), ul)] });
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
@@ -224,18 +225,22 @@ export const graph = {
 		let userName = `<@${user?.id ?? interaction.user.id}>`;
 		if (charName) userName += ` (${charName})`;
 		if (!charData) {
-			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
+			await reply(interaction, {
+				embeds: [embedError(ul("error.userNotRegistered", { user: userName }), ul)],
+			});
 			return;
 		}
 		try {
 			if (!interaction.guild || !interaction.channel) return;
-			let userId = user?.id ?? interaction.user.id;
+			const userId = user?.id ?? interaction.user.id;
 			let userData = charData[userId];
 			if (!charData[userId]) {
-				const findChara = Object.values(charData).find( (data) => data.charName?.toLowerCase() === charName?.toLowerCase());
-				
+				const findChara = Object.values(charData).find(
+					(data) => data.charName?.toLowerCase() === charName?.toLowerCase()
+				);
+
 				if (!findChara) {
-					await reply(interaction, ul("error.user"));
+					await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
 					return;
 				}
 				userData = findChara;
@@ -250,31 +255,25 @@ export const graph = {
 				ul,
 				sheetLocation?.channelId
 			);
-			if (!thread) return await reply(interaction, ul("error.noThread"));
-			
-			const allowHidden = haveAccess(
-				interaction,
-				thread.id,
-				userId
-			);
+			if (!thread)
+				return await reply(interaction, {
+					embeds: [embedError(ul("error.noThread"), ul)],
+				});
+
+			const allowHidden = haveAccess(interaction, thread.id, userId);
 			if (!allowHidden && charData[userId]?.isPrivate) {
-				await reply(interaction, ul("error.private"));
+				await reply(interaction, { embeds: [embedError(ul("error.private"), ul)] });
 				return;
 			}
 			const message = await thread.messages.fetch(sheetLocation.messageId);
-			const userStatistique = getUserByEmbed(
-				message,
-				ul,
-				undefined,
-				false
-			);
+			const userStatistique = getUserByEmbed(message, ul, undefined, false);
 			if (!userStatistique) {
-				await reply(interaction, ul("error.user"));
+				await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
 				return;
 			}
 			if (!userStatistique.stats) {
-				await reply(interaction, ul("error.noStats"));
-				return
+				await reply(interaction, { embeds: [embedError(ul("error.noStats"), ul)] });
+				return;
 			}
 			const titleUser = () => {
 				let msg = "# ";
@@ -340,12 +339,14 @@ export const graph = {
 				max
 			);
 			if (!image) {
-				await reply(interaction, ul("error.noMessage"));
+				await reply(interaction, { embeds: [embedError(ul("error.noMessage"), ul)] });
 				return;
 			}
 			await reply(interaction, { content: titleUser(), files: [image] });
 		} catch (error) {
-			await reply(interaction, ul("error.generic.e", { e: error as Error }));
+			await reply(interaction, {
+				embeds: [embedError(ul("error.generic.e", { e: error as Error }), ul)],
+			});
 			sendLogs(
 				ul("error.generic.e", { e: error as Error }),
 				interaction.guild,

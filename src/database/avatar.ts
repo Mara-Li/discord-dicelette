@@ -11,7 +11,7 @@ import {
 import { allowEdit } from "@database";
 import type { Translation, Settings } from "@interface";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
-import { reply } from "@utils";
+import { embedError, reply } from "@utils";
 import { verifyAvatarUrl } from "./register/validate";
 import { findln } from "../localizations";
 
@@ -51,8 +51,11 @@ export async function validateAvatarEdit(
 	if (!interaction.message) return;
 	const avatar = interaction.fields.getTextInputValue("avatar");
 	if (avatar.match(/(cdn|media)\.discordapp\.net/gi))
-		return await reply(interaction, ul("error.avatar.discord"));
-	if (!verifyAvatarUrl(avatar)) return await reply(interaction, ul("error.avatar.url"));
+		return await reply(interaction, {
+			embeds: [embedError(ul("error.avatar.discord"), ul)],
+		});
+	if (!verifyAvatarUrl(avatar))
+		return await reply(interaction, { embeds: [embedError(ul("error.avatar.url"), ul)] });
 
 	const embed = getEmbeds(ul, interaction.message, "user");
 	if (!embed) throw new Error(ul("error.noEmbed"));

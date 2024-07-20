@@ -8,7 +8,14 @@ import type {
 } from "@interface";
 import { ln } from "@localization";
 import type { EClient } from "@main";
-import { haveAccess, removeEmojiAccents, reply, searchUserChannel, title } from "@utils";
+import {
+	embedError,
+	haveAccess,
+	removeEmojiAccents,
+	reply,
+	searchUserChannel,
+	title,
+} from "@utils";
 import { ensureEmbed, getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
 import {
 	type BaseInteraction,
@@ -45,7 +52,7 @@ export async function getDatabaseChar(
 	const guildData = client.settings.get(interaction.guildId as string);
 	const ul = ln(interaction.locale as Locale);
 	if (!guildData) {
-		await reply(interaction, ul("error.noTemplate"));
+		await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 		return undefined;
 	}
 	const user = options.getUser(t("display.userLowercase"));
@@ -368,7 +375,10 @@ export async function getFirstRegisteredChar(
 		`user.${interaction.user.id}`
 	);
 	if (!userData) {
-		await reply(interaction, { content: ul("error.notRegistered"), ephemeral: true });
+		await reply(interaction, {
+			embeds: [embedError(ul("error.notRegistered"), ul)],
+			ephemeral: true,
+		});
 		return;
 	}
 	const firstChar = userData[0];

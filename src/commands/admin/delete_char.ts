@@ -2,7 +2,7 @@ import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { filterChoices, reply, searchUserChannel, title } from "@utils";
+import { embedError, filterChoices, reply, searchUserChannel, title } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import {
 	type AutocompleteInteraction,
@@ -77,7 +77,7 @@ export const deleteChar = {
 		const guildData = client.settings.get(interaction.guildId as string);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
-			await reply(interaction, ul("error.noTemplate"));
+			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
@@ -125,7 +125,9 @@ export const deleteChar = {
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
 			if (charName) userName += ` (${charName})`;
-			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
+			await reply(interaction, {
+				embeds: [embedError(ul("error.userNotRegistered", { user: userName }), ul)],
+			});
 			return;
 		}
 		charName = charName.includes(ul("common.default").toLowerCase())

@@ -1,4 +1,4 @@
-import { error, warn } from "@console";
+import { warn } from "@console";
 import {
 	type Critical,
 	type Statistic,
@@ -8,7 +8,7 @@ import {
 import type { GuildData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { downloadTutorialImages, reply, title } from "@utils";
+import { downloadTutorialImages, embedError, reply, title } from "@utils";
 import { bulkEditTemplateUser } from "@utils/parse";
 import {
 	ActionRowBuilder,
@@ -217,7 +217,10 @@ export const registerTemplate = {
 		const template = options.getAttachment(t("register.options.template.name"), true);
 		//fetch the template
 		if (!template.contentType?.includes("json")) {
-			await reply(interaction, { content: ul("error.template"), ephemeral: true });
+			await reply(interaction, {
+				embeds: [embedError(ul("error.template"), ul)],
+				ephemeral: true,
+			});
 			return;
 		}
 		const res = await fetch(template.url).then((res) => res.json());
@@ -231,7 +234,9 @@ export const registerTemplate = {
 			(!publicChannel && !(channel instanceof TextChannel))
 		) {
 			await reply(interaction, {
-				content: ul("error.public", { chan: channelMention(channel.id) }),
+				embeds: [
+					embedError(ul("error.public", { chan: channelMention(channel.id) }), ul),
+				],
 				ephemeral: true,
 			});
 			return;

@@ -1,7 +1,14 @@
 import { createDiceEmbed, createStatsEmbed } from "@database";
 import { cmdLn, findln, ln } from "@localization";
 import type { EClient } from "@main";
-import { filterChoices, haveAccess, reply, searchUserChannel, title } from "@utils";
+import {
+	embedError,
+	filterChoices,
+	haveAccess,
+	reply,
+	searchUserChannel,
+	title,
+} from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
 import { error } from "@console";
@@ -76,7 +83,7 @@ export const displayUser = {
 		const guildData = client.settings.get(interaction.guildId as string);
 		const ul = ln(interaction.locale as Locale);
 		if (!guildData) {
-			await reply(interaction, ul("error.noTemplate"));
+			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
@@ -85,15 +92,20 @@ export const displayUser = {
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
 			if (charName) userName += ` (${charName})`;
-			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
+			await reply(interaction, {
+				embeds: [embedError(ul("error.userNotRegistered", { user: userName }), ul)],
+			});
 			return;
 		}
-		
+
 		let userData = charData?.[user?.id ?? interaction.user.id];
-		if (!userData) { /* search based on the character name */
-			const findChara = Object.values(charData).find((data) => data.charName === charName);
+		if (!userData) {
+			/* search based on the character name */
+			const findChara = Object.values(charData).find(
+				(data) => data.charName === charName
+			);
 			if (!findChara) {
-				await reply(interaction, ul("error.user"));
+				await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
 				return;
 			}
 			userData = findChara;
@@ -108,7 +120,8 @@ export const displayUser = {
 			ul,
 			sheetLocation?.channelId
 		);
-		if (!thread) return await reply(interaction, ul("error.noThread"));
+		if (!thread)
+			return await reply(interaction, { embeds: [embedError(ul("error.noThread"), ul)] });
 
 		const allowHidden = haveAccess(
 			interaction,
@@ -116,7 +129,7 @@ export const displayUser = {
 			user?.id ?? interaction.user.id
 		);
 		if (!allowHidden && charData[user?.id ?? interaction.user.id]?.isPrivate) {
-			await reply(interaction, ul("error.private"));
+			await reply(interaction, { embeds: [embedError(ul("error.private"), ul)] });
 			return;
 		}
 		try {
@@ -127,11 +140,15 @@ export const displayUser = {
 			const statsFields = statisticEmbed?.toJSON().fields;
 			const dataUserEmbeds = getEmbeds(ul, userMessage, "user");
 			if (!statisticEmbed && !diceEmbed && !diceFields && !statsFields) {
-				await reply(interaction, ul("error.user"));
+				await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
 				return;
 			}
-			const jsonDataUser = dataUserEmbeds!.toJSON().fields!.find(x =>findln(x.name) === findln("common.user"));
-			const jsonDataChar = dataUserEmbeds!.toJSON().fields!.find(x =>findln(x.name) === findln("common.character"));
+			const jsonDataUser = dataUserEmbeds!
+				.toJSON()
+				.fields!.find((x) => findln(x.name) === findln("common.user"));
+			const jsonDataChar = dataUserEmbeds!
+				.toJSON()
+				.fields!.find((x) => findln(x.name) === findln("common.character"));
 			const displayEmbed = new EmbedBuilder()
 				.setTitle(ul("embed.display"))
 				.setThumbnail(
@@ -147,10 +164,7 @@ export const displayUser = {
 				})
 				.addFields({
 					name: title(ul("common.character")),
-					value:
-						jsonDataChar?.value ??
-						title(userData.charName) ??
-						ul("common.noSet"),
+					value: jsonDataChar?.value ?? title(userData.charName) ?? ul("common.noSet"),
 					inline: true,
 				});
 			const newStatEmbed: EmbedBuilder | undefined = statsFields
@@ -165,7 +179,7 @@ export const displayUser = {
 			await reply(interaction, { embeds: displayEmbeds });
 		} catch (e) {
 			error(e);
-			await reply(interaction, ul("error.noMessage"));
+			await reply(interaction, { embeds: [embedError(ul("error.noMessage"), ul)] });
 			return;
 		}
 	},

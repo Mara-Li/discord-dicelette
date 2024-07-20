@@ -3,7 +3,7 @@ import type { Settings, Translation } from "@interface";
 import { ln } from "@localization";
 import { createEmbedFirstPage } from "@register/validate";
 import { embedStatistiques, showStatistiqueModal } from "@stats/add";
-import { removeEmojiAccents, reply } from "@utils";
+import { embedError, removeEmojiAccents, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { getEmbeds, parseEmbedFields } from "@utils/parse";
 import {
@@ -77,7 +77,7 @@ export async function pageNumber(
 	if (Number.isNaN(pageNumber)) return;
 	const template = await getTemplateWithDB(interaction, db);
 	if (!template) {
-		await reply(interaction, { content: ul("error.noTemplate") });
+		await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 		return;
 	}
 	await embedStatistiques(interaction, template, pageNumber);

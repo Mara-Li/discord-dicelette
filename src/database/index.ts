@@ -12,7 +12,7 @@ import {
 	type User,
 } from "discord.js";
 import { findln, ln } from "../localizations";
-import { reply, title } from "../utils";
+import { embedError, reply, title } from "../utils";
 import removeAccents from "remove-accents";
 import { warn } from "../console";
 
@@ -163,7 +163,7 @@ export async function allowEdit(
 		if (!isInDb) {
 			const urlNew = `https://discord.com/channels/${interaction.guild!.id}/${coord?.channelId}/${coord?.messageId}`;
 			await reply(interaction, {
-				content: ul("error.oldEmbed", { fiche: urlNew }),
+				embeds: [embedError(ul("error.oldEmbed", { fiche: urlNew }), ul)],
 				ephemeral: true,
 			});
 			//delete the message

@@ -1,6 +1,6 @@
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { filterChoices, reply, title } from "@utils";
+import { embedError, filterChoices, reply, title } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
 import {
@@ -193,7 +193,7 @@ export const mjRoll = {
 			: undefined;
 		if (charName && serializedName !== serializedNameQueries) {
 			await reply(interaction, {
-				content: ul("error.charName", { charName: title(charName) }),
+				embeds: [embedError(ul("error.charName", { charName: title(charName) }), ul)],
 				ephemeral: true,
 			});
 			return;
@@ -206,7 +206,9 @@ export const mjRoll = {
 		if (!charData) {
 			let userName = `<@${user.id}>`;
 			if (charName) userName += ` (${charName})`;
-			await reply(interaction, ul("error.userNotRegistered", { user: userName }));
+			await reply(interaction, {
+				embeds: [embedError(ul("error.userNotRegistered", { user: userName }), ul)],
+			});
 			return;
 		}
 		const subcommand = options.getSubcommand(true);

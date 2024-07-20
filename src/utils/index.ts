@@ -18,7 +18,7 @@ import {
 	CategoryChannel,
 	CommandInteraction,
 	type Embed,
-	type EmbedBuilder,
+	EmbedBuilder,
 	ForumChannel,
 	type Guild,
 	type GuildBasedChannel,
@@ -368,7 +368,9 @@ export async function searchUserChannel(
 				interaction instanceof ButtonInteraction ||
 				interaction instanceof ModalSubmitInteraction
 			)
-				await interaction?.channel?.send(ul("error.noThread"));
+				await interaction?.channel?.send({
+					embeds: [embedError(ul("error.noThread"), ul)],
+				});
 			else await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
 			return;
 		}
@@ -383,8 +385,9 @@ export async function searchUserChannel(
 			interaction instanceof ButtonInteraction ||
 			interaction instanceof ModalSubmitInteraction
 		) {
-			if (interaction.replied) await interaction.editReply(ul("error.noThread"));
-			else await reply(interaction, ul("error.noThread"));
+			if (interaction.replied)
+				await interaction.editReply({ embeds: [embedError(ul("error.noThread"), ul)] });
+			else await reply(interaction, { embeds: [embedError(ul("error.noThread"), ul)] });
 		} else await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
 		return;
 	}
@@ -411,6 +414,13 @@ export async function reply(
 		? await interaction.editReply(options)
 		: await interaction.reply(options);
 }
+
+export const embedError = (error: string, ul: Translation) => {
+	return new EmbedBuilder()
+		.setTitle(`⚠️ ${ul("common.error")}`)
+		.setDescription(error)
+		.setColor("Red");
+};
 
 async function fetchDiceRole(diceEmbed: boolean, guild: Guild, role?: string) {
 	if (!diceEmbed || !role) return;
