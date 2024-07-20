@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.7.6](https://github.com/Dicelette/discord-dicelette/compare/1.7.5...1.7.6) (2024-07-20)
+
+
+### Bug Fixes
+
+* context should not take the bot as it ([e4b0266](https://github.com/Dicelette/discord-dicelette/commit/e4b0266a92315c947cb642f0504458ea876e136e))
+* error when calling directly by name ([25fb1dd](https://github.com/Dicelette/discord-dicelette/commit/25fb1ddac7242590facbaa923bcc8ae629ed19e4))
+* subtext format ([c8be46e](https://github.com/Dicelette/discord-dicelette/commit/c8be46e1d9ca4d6a7ef34795b31edec42cd0c836))
+
 ## [1.7.5](https://github.com/Dicelette/discord-dicelette/compare/1.7.4...1.7.5) (2024-07-12)
 
 
