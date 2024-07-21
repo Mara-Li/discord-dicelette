@@ -3,7 +3,7 @@ import color from "ansi-colors";
 import { Command, Option, type OptionValues } from "commander";
 import Enmap from "enmap";
 import { writeFileSync } from "node:fs";
-import colorizeJson from "json-colorizer";
+import { colorize as colorizeJson } from "json-colorizer";
 import removeAccents from "remove-accents";
 
 //extends console to add console.error with color
