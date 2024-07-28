@@ -42,7 +42,8 @@
       "@events": ["src/events/index.js"],
       "@commands/*": ["src/commands/*"],
       "@commands": ["src/commands/index.js"],
-      "@console": ["src/console.js"]
+      "@console": ["src/console.js"],
+      "remove-accents": ["src/remove-accents.ts"]
     }
   },
   "files": ["src/index.ts"],

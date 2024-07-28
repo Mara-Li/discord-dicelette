@@ -3,7 +3,7 @@ import { error } from "@console";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply, title } from "@utils";
-import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
+import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice } from "@utils/roll";
 import {
 	type AutocompleteInteraction,
@@ -75,10 +75,9 @@ export const dbd = {
 			if (char) {
 				const values = user.find((data) => {
 					if (data.charName)
-						return (
-							removeAccents(data.charName).toLowerCase() ===
-							removeAccents(char).toLowerCase()
-						);
+						return removeAccents(data.charName)
+							.toLowerCase()
+							.includes(removeAccents(char).toLowerCase());
 					return false;
 				});
 				if (values?.damageName) choices = values.damageName;
@@ -126,7 +125,7 @@ export const dbd = {
 		if (!db || !interaction.guild || !interaction.channel) return;
 		const user = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
 		if (!user) return;
-		let charOptions = options.getString(t("common.character"));
+		let charOptions = options.getString(t("common.character")) ?? undefined;
 		const charName = charOptions ? removeAccents(charOptions).toLowerCase() : undefined;
 		const ul = ln(interaction.locale as Locale);
 		try {
@@ -136,13 +135,8 @@ export const dbd = {
 				interaction,
 				charName
 			);
-			const serializedUserNameDB = userStatistique?.userName
-				? removeAccents(userStatistique.userName).toLowerCase()
-				: undefined;
-			const serializedQueries = charName
-				? removeAccents(charName).toLowerCase()
-				: undefined;
-			if (charOptions && serializedUserNameDB !== serializedQueries) {
+			const selectedCharByQueries = serializeName(userStatistique, charName);
+			if (charOptions && !selectedCharByQueries) {
 				await reply(interaction, {
 					embeds: [
 						embedError(ul("error.charName", { charName: title(charOptions) }), ul),
@@ -151,10 +145,11 @@ export const dbd = {
 				});
 				return;
 			}
+			charOptions = userStatistique?.userName ? userStatistique.userName : undefined;
 			if (!userStatistique && !charName) {
 				const char = await getFirstRegisteredChar(client, interaction, ul);
 				userStatistique = char?.userStatistique;
-				charOptions = char?.optionChar ?? null;
+				charOptions = char?.optionChar ?? undefined;
 			}
 			if (!userStatistique) {
 				await reply(interaction, {
@@ -170,7 +165,14 @@ export const dbd = {
 				});
 				return;
 			}
-			return await rollDice(interaction, client, userStatistique, options, ul, charName);
+			return await rollDice(
+				interaction,
+				client,
+				userStatistique,
+				options,
+				ul,
+				charOptions
+			);
 		} catch (e) {
 			error(e);
 			await reply(interaction, {

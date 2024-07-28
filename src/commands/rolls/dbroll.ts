@@ -1,7 +1,7 @@
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply, title } from "@utils";
-import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
+import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollStatistique } from "@utils/roll";
 import {
 	type AutocompleteInteraction,
@@ -106,19 +106,16 @@ export const dbRoll = {
 			interaction,
 			charName
 		);
-		const serializedNameDB = userStatistique?.userName
-			? removeAccents(userStatistique.userName.toLowerCase())
-			: undefined;
-		const serializedNameQueries = charName
-			? removeAccents(charName).toLowerCase()
-			: undefined;
-		if (optionChar && serializedNameDB !== serializedNameQueries) {
+		const selectedCharByQueries = serializeName(userStatistique, charName);
+
+		if (optionChar && !selectedCharByQueries) {
 			await reply(interaction, {
 				embeds: [embedError(ul("error.charName", { charName: title(optionChar) }), ul)],
 				ephemeral: true,
 			});
 			return;
 		}
+		optionChar = userStatistique?.userName ? userStatistique.userName : undefined;
 		if (!userStatistique && !charName) {
 			//find the first character registered
 			const char = await getFirstRegisteredChar(client, interaction, ul);

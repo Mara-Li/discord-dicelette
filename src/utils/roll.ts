@@ -136,13 +136,28 @@ export async function rollStatistique(
 	optionChar?: string,
 	user?: User
 ) {
-	const statistique = options.getString(t("common.statistic"), true).toLowerCase();
+	let statistique = options.getString(t("common.statistic"), true).toLowerCase();
 	//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	const override = options.getString(t("dbRoll.options.override.name"));
 	const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
-	const userStat = userStatistique.stats?.[removeAccents(statistique)];
-	if (!userStat) {
+
+	let userStat = userStatistique.stats?.[removeAccents(statistique)];
+
+	while (!userStat) {
+		const guildData = client.settings.get(interaction.guild!.id, "templateID.statsName");
+		if (userStatistique.stats && guildData) {
+			const findStatInList = guildData.find((stat) =>
+				removeAccents(stat)
+					.toLowerCase()
+					.includes(removeAccents(statistique).toLowerCase())
+			);
+			if (findStatInList) {
+				statistique = findStatInList;
+				userStat = userStatistique.stats[removeAccents(findStatInList).toLowerCase()];
+			}
+		}
+		if (userStat) break;
 		throw new Error(
 			ul("error.noStat", {
 				stat: title(statistique),
@@ -150,6 +165,7 @@ export async function rollStatistique(
 			})
 		);
 	}
+	console.log(statistique);
 	const template = userStatistique.template;
 	let dice = template.diceType?.replaceAll("$", userStat.toString());
 	if (!dice) {
@@ -197,13 +213,30 @@ export async function rollDice(
 	charOptions?: string,
 	user?: User
 ) {
-	const atq = removeAccents(
-		options.getString(t("rAtq.atq_name.name"), true).toLowerCase()
-	);
+	let atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	//search dice
 	let dice = userStatistique.damage?.[atq.toLowerCase()];
-	if (!dice) {
+	const serializedName = charOptions
+		? removeAccents(charOptions).toLowerCase()
+		: undefined;
+	const userData = client.settings
+		.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`)
+		?.find((char) => {
+			if (serializedName && char.charName)
+				return removeAccents(char.charName).toLowerCase().includes(serializedName);
+			return charOptions == null && char.charName == null;
+		});
+	while (!dice) {
+		const damageName = userData?.damageName ?? [];
+		const findAtqInList = damageName.find((atqName) =>
+			removeAccents(atqName).toLowerCase().includes(removeAccents(atq).toLowerCase())
+		);
+		if (findAtqInList) {
+			atq = findAtqInList;
+			dice = userStatistique.damage?.[findAtqInList];
+		}
+		if (dice) break;
 		await reply(interaction, {
 			embeds: [
 				embedError(

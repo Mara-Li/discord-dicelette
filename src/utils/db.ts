@@ -43,10 +43,34 @@ export async function getTemplate(
 	return verifyTemplateValue(res);
 }
 
+export function serializeName(
+	userStatistique: UserData | undefined,
+	charName: string | undefined
+) {
+	const serializedNameDB = userStatistique?.userName
+		? removeAccents(userStatistique.userName.toLowerCase())
+		: undefined;
+	const serializedNameQueries = charName
+		? removeAccents(charName).toLowerCase()
+		: undefined;
+	const selectedCharByQueries =
+		serializedNameDB !== serializedNameQueries ||
+		(serializedNameQueries && serializedNameDB?.includes(serializedNameQueries));
+	return selectedCharByQueries;
+}
+
+function strictTest(strict: boolean, char: string, query: string) {
+	if (strict) {
+		return removeAccents(char).toLowerCase() === removeAccents(query).toLowerCase();
+	}
+	return removeAccents(char).toLowerCase().includes(removeAccents(query).toLowerCase());
+}
+
 export async function getDatabaseChar(
 	interaction: CommandInteraction,
 	client: EClient,
-	t: Translation
+	t: Translation,
+	strict = true
 ) {
 	const options = interaction.options as CommandInteractionOptionResolver;
 	const guildData = client.settings.get(interaction.guildId as string);
@@ -65,11 +89,7 @@ export async function getDatabaseChar(
 		const allUsers = Object.entries(allUsersData);
 		for (const [user, data] of allUsers) {
 			const userChar = data.find((char) => {
-				if (char.charName && charName)
-					return (
-						removeAccents(char.charName).toLowerCase() ===
-						removeAccents(charName).toLowerCase()
-					);
+				if (char.charName && charName) return strictTest(strict, char.charName, charName);
 				return charName == null && char.charName == null;
 			});
 			if (userChar) {
@@ -84,11 +104,7 @@ export async function getDatabaseChar(
 		`user.${user?.id ?? interaction.user.id}`
 	);
 	let findChara = userData?.find((char) => {
-		if (char.charName && charName)
-			return (
-				removeAccents(char.charName).toLowerCase() ===
-				removeAccents(charName).toLowerCase()
-			);
+		if (char.charName && charName) return strictTest(strict, char.charName, charName);
 		return charName == null && char.charName == null;
 	});
 	if (!findChara) findChara = userData?.[0];
@@ -162,8 +178,8 @@ export async function getUserFromMessage(
 	const serializedName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const guild = interaction.guild;
 	const user = guildData.get(guild!.id, `user.${userId}`)?.find((char) => {
-		if (char.charName && char)
-			return removeAccents(char.charName).toLowerCase() === serializedName;
+		if (serializedName && char.charName)
+			return removeAccents(char.charName).toLowerCase().includes(serializedName);
 		return charName == null && char.charName == null;
 	});
 	if (!user) return;

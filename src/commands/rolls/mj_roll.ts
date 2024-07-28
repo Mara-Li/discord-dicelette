@@ -1,7 +1,7 @@
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply, title } from "@utils";
-import { getFirstRegisteredChar, getUserFromMessage } from "@utils/db";
+import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
 import {
 	type AutocompleteInteraction,
@@ -11,7 +11,6 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import i18next from "i18next";
-import removeAccents from "remove-accents";
 
 const t = i18next.getFixedT("en");
 
@@ -185,19 +184,15 @@ export const mjRoll = {
 			interaction,
 			charName
 		);
-		const serializedName = charData?.userName
-			? removeAccents(charData.userName).toLowerCase()
-			: undefined;
-		const serializedNameQueries = charName
-			? removeAccents(charName).toLowerCase()
-			: undefined;
-		if (charName && serializedName !== serializedNameQueries) {
+		const serializedNameQueries = serializeName(charData, charName);
+		if (charName && !serializedNameQueries) {
 			await reply(interaction, {
 				embeds: [embedError(ul("error.charName", { charName: title(charName) }), ul)],
 				ephemeral: true,
 			});
 			return;
 		}
+		optionChar = charData?.userName ?? undefined;
 		if (!charData && !charName) {
 			const char = await getFirstRegisteredChar(client, interaction, ul);
 			charData = char?.userStatistique;

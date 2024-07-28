@@ -26,6 +26,7 @@ import {
 import i18next from "i18next";
 import parse from "parse-color";
 import path from "node:path";
+import removeAccents from "remove-accents";
 
 async function chart(
 	userData: UserData,
@@ -235,9 +236,14 @@ export const graph = {
 			const userId = user?.id ?? interaction.user.id;
 			let userData = charData[userId];
 			if (!charData[userId]) {
-				const findChara = Object.values(charData).find(
-					(data) => data.charName?.toLowerCase() === charName?.toLowerCase()
-				);
+				const findChara = Object.values(charData).find((data) => {
+					if (data.charName && charName) {
+						return removeAccents(data.charName)
+							.toLowerCase()
+							.includes(removeAccents(charName));
+					}
+					return data.charName === charName;
+				});
 
 				if (!findChara) {
 					await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });

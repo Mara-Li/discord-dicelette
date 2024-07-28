@@ -23,6 +23,7 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import type { PersonnageIds } from "@interface";
+import removeAccents from "remove-accents";
 
 const t = i18next.getFixedT("en");
 
@@ -87,7 +88,7 @@ export const displayUser = {
 			return;
 		}
 		const user = options.getUser(t("display.userLowercase"));
-		const charData = await getDatabaseChar(interaction, client, t);
+		const charData = await getDatabaseChar(interaction, client, t, false);
 		const charName = options.getString(t("common.character"))?.toLowerCase();
 		if (!charData) {
 			let userName = `<@${user?.id ?? interaction.user.id}>`;
@@ -101,9 +102,14 @@ export const displayUser = {
 		let userData = charData?.[user?.id ?? interaction.user.id];
 		if (!userData) {
 			/* search based on the character name */
-			const findChara = Object.values(charData).find(
-				(data) => data.charName === charName
-			);
+			const findChara = Object.values(charData).find((data) => {
+				if (data.charName && charName) {
+					return removeAccents(data.charName)
+						.toLowerCase()
+						.includes(removeAccents(charName).toLowerCase());
+				}
+				return data.charName === charName;
+			});
 			if (!findChara) {
 				await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
 				return;
