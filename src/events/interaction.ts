@@ -1,7 +1,7 @@
 import { autCompleteCmd, commandsList } from "@commands";
 import { error } from "@console";
-import { executeAddDiceButton, storeDamageDice } from "@dice/add";
-import { initiateDiceEdit, validateDiceEdit } from "@dice/edit";
+import { executeAddDiceButton, storeDamageDice } from "@interactions/add/dice";
+import { initiateDiceEdit, validateDiceEdit } from "@interactions/edit/dice";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
 import { lError, ln } from "@localization";
@@ -13,7 +13,7 @@ import {
 	recordFirstPage,
 } from "@register/start";
 import { validateUserButton } from "@register/validate";
-import { editStats, triggerEditStats } from "@stats/edit";
+import { editStats, triggerEditStats } from "@interactions/edit/stats";
 import { embedError, reply } from "@utils";
 import { getTemplate, getTemplateWithDB } from "@utils/db";
 import { ensureEmbed } from "@utils/parse";
@@ -23,10 +23,14 @@ import {
 	type ButtonInteraction,
 	type ModalSubmitInteraction,
 	PermissionsBitField,
+	type StringSelectMenuInteraction,
 	TextChannel,
 	type User,
 } from "discord.js";
-import { initiateAvatarEdit, validateAvatarEdit } from "../database/avatar";
+import { initiateAvatarEdit, validateAvatarEdit } from "@interactions/edit/avatar";
+import { initiateRenaming, validateRename } from "@interactions/edit/rename";
+import { initiateMove, validateMove } from "@interactions/edit/user";
+import { resetButton } from "../commands/gimmick/edit";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
@@ -58,20 +62,22 @@ export default (client: EClient): void => {
 					return;
 				}
 				await buttonSubmit(interaction, ul, interactionUser, template, client.settings);
-			} else if (interaction.isModalSubmit()) {
-				await modalSubmit(interaction, ul, interactionUser, client.settings);
-			}
+			} else if (interaction.isModalSubmit())
+				await modalSubmit(interaction, ul, interactionUser, client);
+			else if (interaction.isStringSelectMenu())
+				await selectSubmit(interaction, ul, interactionUser, client.settings);
 		} catch (e) {
 			error(e);
 			if (!interaction.guild) return;
 			const msgError = lError(e as Error, interaction);
 			if (msgError.length === 0) return;
+			const embed = embedError(msgError, ul);
 			if (
 				interaction.isButton() ||
 				interaction.isModalSubmit() ||
 				interaction.isCommand()
 			)
-				await reply(interaction, msgError);
+				await reply(interaction, { embeds: [embed] });
 			if (client.settings.has(interaction.guild.id)) {
 				const db = client.settings.get(interaction.guild.id, "logs");
 				if (!db) return;
@@ -94,8 +100,9 @@ async function modalSubmit(
 	interaction: ModalSubmitInteraction,
 	ul: Translation,
 	interactionUser: User,
-	db: Settings
+	client: EClient
 ) {
+	const db = client.settings;
 	if (interaction.customId.includes("damageDice"))
 		await storeDamageDice(interaction, ul, interactionUser, db);
 	else if (interaction.customId.includes("page")) await pageNumber(interaction, ul, db);
@@ -105,6 +112,8 @@ async function modalSubmit(
 		await validateDiceEdit(interaction, ul, db);
 	else if (interaction.customId === "editAvatar")
 		await validateAvatarEdit(interaction, ul);
+	else if (interaction.customId === "rename") validateRename(interaction, ul, client);
+	else if (interaction.customId === "move") validateMove(interaction, ul, client);
 }
 
 /**
@@ -129,20 +138,38 @@ async function buttonSubmit(
 			ul,
 			db.has(interaction.guild!.id, "privateChannel")
 		);
-	else if (interaction.customId === "continue") {
+	else if (interaction.customId === "continue")
 		await continuePage(interaction, template, ul, interactionUser);
-	} else if (interaction.customId.includes("add_dice")) {
-		await executeAddDiceButton(interaction, ul, interactionUser, db);
-	} else if (interaction.customId === "edit_stats") {
+	else if (interaction.customId.includes("add_dice"))
+		await executeAddDiceButton(interaction, interactionUser, db);
+	else if (interaction.customId === "edit_stats")
 		await triggerEditStats(interaction, ul, interactionUser, db);
-	} else if (interaction.customId === "validate") {
+	else if (interaction.customId === "validate")
 		await validateUserButton(interaction, interactionUser, template, ul, db);
-	} else if (interaction.customId === "cancel")
+	else if (interaction.customId === "cancel")
 		await cancel(interaction, ul, interactionUser);
 	else if (interaction.customId === "edit_dice")
 		await initiateDiceEdit(interaction, ul, interactionUser, db);
-	else if (interaction.customId === "avatar")
-		await initiateAvatarEdit(interaction, ul, interactionUser, db);
+	else if (interaction.customId === "avatar") {
+		await resetButton(interaction.message, ul);
+		await interaction.reply({ content: ul("refresh"), ephemeral: true });
+	}
+}
+
+async function selectSubmit(
+	interaction: StringSelectMenuInteraction,
+	ul: Translation,
+	interactionUser: User,
+	db: Settings
+) {
+	if (interaction.customId === "edit_select") {
+		const value = interaction.values[0];
+		if (value === "avatar")
+			await initiateAvatarEdit(interaction, ul, interactionUser, db);
+		else if (value === "name")
+			await initiateRenaming(interaction, ul, interactionUser, db);
+		else if (value === "user") await initiateMove(interaction, ul, interactionUser, db);
+	}
 }
 
 /**

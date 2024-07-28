@@ -3,7 +3,7 @@ import {
 	createStatsEmbed,
 	createTemplateEmbed,
 	createUserEmbed,
-} from "@database";
+} from "@interactions";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
@@ -32,6 +32,7 @@ import {
 	userMention,
 } from "discord.js";
 import { warn } from "../../console";
+import { isUserNameOrId } from "../../utils/find";
 
 export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;
@@ -57,9 +58,7 @@ export async function createEmbedFirstPage(
 		throw new NoChannel();
 	}
 	const userFromField = interaction.fields.getTextInputValue("userID");
-	const user = (
-		await interaction!.guild!.members.fetch({ query: userFromField })
-	).first();
+	const user = await isUserNameOrId(userFromField, interaction);
 	if (!user) {
 		reply(interaction, { embeds: [embedError(ul("error.user"), ul)], ephemeral: true });
 		return;
@@ -217,7 +216,7 @@ export async function validateUser(
 			templateDamage[removeEmojiAccents(damage.name)] = damage.value;
 		}
 	}
-
+	console.log(template.damage);
 	for (const [name, dice] of Object.entries(template.damage ?? {})) {
 		if (!templateDamage) templateDamage = {};
 		templateDamage[name] = dice;

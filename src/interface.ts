@@ -45,7 +45,7 @@ export type PersonnageIds = { channelId: string; messageId: string };
 export type UserRegistration = {
 	userID: string;
 	isPrivate?: boolean;
-	charName?: string;
+	charName?: string | null;
 	damage?: string[];
 	msgId: UserMessageId;
 };

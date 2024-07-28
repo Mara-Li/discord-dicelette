@@ -2,7 +2,7 @@ import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
 import { ln } from "@localization";
 import { createEmbedFirstPage } from "@register/validate";
-import { embedStatistiques, showStatistiqueModal } from "@stats/add";
+import { embedStatistiques, showStatistiqueModal } from "@interactions/add/stats";
 import { embedError, removeEmojiAccents, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { getEmbeds, parseEmbedFields } from "@utils/parse";
@@ -19,7 +19,7 @@ import {
 	TextInputStyle,
 	type User,
 } from "discord.js";
-import { createStatsEmbed } from "@database";
+import { createStatsEmbed } from "@interactions";
 
 /**
  * Interaction to continue to the next page of the statistics when registering a new user

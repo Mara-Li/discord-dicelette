@@ -3,7 +3,7 @@
  * The bot will register user as the other commands, with adding them into the user thread using {@link validateUser}
  */
 
-import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@database";
+import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@interactions";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";

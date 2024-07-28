@@ -6,7 +6,7 @@ import {
 	type UserData,
 	type UserRegistration,
 } from "@interface";
-import { editUserButtons } from "@utils/buttons";
+import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { setDefaultManagerId, registerUser } from "@utils/db";
 import { parseEmbedFields, removeBacktick } from "@utils/parse";
 import {
@@ -33,6 +33,7 @@ import {
 	type PrivateThreadChannel,
 	type PublicThreadChannel,
 	StageChannel,
+	type StringSelectMenuInteraction,
 	TextChannel,
 	VoiceChannel,
 } from "discord.js";
@@ -133,7 +134,7 @@ export async function repostInThread(
 		: undefined;
 	const msg = await thread.send({
 		embeds: embed,
-		components: [editUserButtons(ul, which.stats, which.dice)],
+		components: [editUserButtons(ul, which.stats, which.dice), selectEditMenu(ul)],
 	});
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;
 	const userRegister: UserRegistration = {
@@ -392,6 +393,7 @@ export async function searchUserChannel(
 		} else await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
 		return;
 	}
+	if (thread.isThread() && thread.archived) thread.setArchived(false);
 	return thread;
 }
 
@@ -408,7 +410,11 @@ export async function downloadTutorialImages() {
 }
 
 export async function reply(
-	interaction: CommandInteraction | ModalSubmitInteraction | ButtonInteraction,
+	interaction:
+		| CommandInteraction
+		| ModalSubmitInteraction
+		| ButtonInteraction
+		| StringSelectMenuInteraction,
 	options: string | InteractionReplyOptions | MessagePayload
 ) {
 	return interaction.replied || interaction.deferred

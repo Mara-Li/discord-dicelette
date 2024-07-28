@@ -181,7 +181,7 @@ export const graph = {
 		const options = interaction.options as CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guild!.id);
-
+		const ul = ln(interaction.locale as Locale);
 		if (!guildData) return;
 		const choices: string[] = [];
 		let user = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
@@ -192,10 +192,10 @@ export const graph = {
 			const guildChars = guildData.user[user as string];
 			if (!guildChars) return;
 			for (const data of guildChars) {
-				const allowed = haveAccess(interaction, data.messageId[1], user as string);
-				if (data.charName)
-					if (!data.isPrivate) choices.push(data.charName);
-					else if (allowed) choices.push(data.charName);
+				const allowed = haveAccess(interaction, data.messageId[1], user);
+				const toPush = data.charName ? data.charName : ul("common.default");
+				if (!data.isPrivate) choices.push(toPush);
+				else if (allowed) choices.push(toPush);
 			}
 		}
 		if (choices.length === 0) return;

@@ -1,4 +1,4 @@
-import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@database";
+import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import { evalStatsDice, roll } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId, UserRegistration } from "@interface";
 import {

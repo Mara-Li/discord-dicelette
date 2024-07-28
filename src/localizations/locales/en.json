@@ -24,14 +24,22 @@
     }
   },
   "button": {
-    "avatar": "Edit image",
+    "avatar": {
+      "description": "Edit a character's image",
+      "title": "Avatar"
+    },
     "cancel": "Cancel",
     "continue": "Continue",
     "dice": "Save a die",
     "edit": {
       "dice": "Edit dice",
+      "move": "",
+      "name": "Rename a character",
+      "select": "Edit user data",
       "stats": "Edit statistics"
     },
+    "name": "Change character name",
+    "user": "Edit associated user",
     "validate": "To validate"
   },
   "changeThread": {
@@ -174,6 +182,26 @@
     "user": "The user to display",
     "userLowercase": "player"
   },
+  "edit": {
+    "desc": "Allows you to edit the data of a file",
+    "rename": {
+      "desc": "Change a character's name",
+      "option": {
+        "desc": "New name to use",
+        "title": "new_name"
+      },
+      "title": "rename"
+    },
+    "user": {
+      "desc": "Modify the user associated with a character",
+      "option": {
+        "desc": "The new owner of the character",
+        "title": "new_user"
+      },
+      "success": "",
+      "title": "user"
+    }
+  },
   "edit_avatar": {
     "character": "The name of the character to modify",
     "default": "",
@@ -184,14 +212,17 @@
       "desc": "Link to the message containing the file",
       "name": "message_url"
     },
-    "name": "edit_avatar",
+    "name": "avatar",
     "success": "Avatar changed for {{- name}} ([link to the file]({{-link}}))!",
     "url": {
       "desc": "Link to the image to put (no discord link!)",
-      "name": "avatar_url"
+      "name": "url"
     },
     "url_desc": "Link to the file",
     "user": "The player to modify"
+  },
+  "edit_name": {
+    "success": "The character's name has been changed! \nYou can find it here: {{- url}}"
   },
   "embed": {
     "add": "User registration",
@@ -214,6 +245,7 @@
     "charName": "The character {{- charName}} is not registered.",
     "csvContent": "The content of {{- fichier}} is invalid.",
     "discord": "## [DISCORD] :warning: __Error__ : \n- **Code** : `{{- code}}`\n- **Source** : `{{- stack}}`\n\nPlease report the bug on [the official server](https://discord.gg/2PUqwWeQYZ).",
+    "duplicate": "The name is already used for another character! \nSo you can't use it here. \nEach name must be unique!",
     "emptyDamage": "You have no ability dice saved.",
     "emptyStats": "This combination is invalid: no statistics exist!",
     "generic": {
@@ -228,6 +260,7 @@
     "missingPermission": "## [DISCORD] **MISSING PERMISSIONS**\nThe bot does not have the permissions to perform the requested action. Check that it has access to the requested channel/thread!",
     "mustBeGreater": "\nThe {{- value}} value must be greater than {{- min}}",
     "mustBeLower": "The `{{- value}}` value must be smaller than `{{- max}}`",
+    "noCharacter": "Your character does not have a name: it cannot therefore be renamed!",
     "noDamage": "`{{- atq}}` is not saved in `{{- charName}}`.",
     "noDefaultChannel": "You must provide at least one default channel to save the records.",
     "noDice": "You cannot issue this command without having a registered die type!",
@@ -241,6 +274,7 @@
     "noTemplate": "No template or channel configured",
     "noTemplateId": "No messages found with data saved in database:\n- Channel: `{{-channelId}}`\n- Message ID: `{{- messageId}}`",
     "noThread": "No valid channel found - Please re-register the template if the channel was deleted",
+    "notFound": "",
     "notRegistered": "You are not registered",
     "oldEmbed": "This record does not match the one in the database. \nYou will find the new sheet [here]({{- sheet}}).",
     "private": "This character sheet is private! \nYou do not have permission to read it.",
@@ -251,7 +285,7 @@
     "tooMuchDice": "Too many dice have been saved! You cannot have more than 25 dice saved.",
     "tooMuchStats": "Too many statistics have been saved! You cannot have more than 25 statistics",
     "totalExceededBy": "The total of {{- value}} is exceeded by {{- max}}",
-    "user": "User not found. \n\n- This may be a temporary error caused by updating the cache,\n\n- The record cannot be found because it has been deleted (or its channel) but the data has not been deleted from the database. \nIf so, you need to use the `/delete_char` command.",
+    "user": "User not found. \n- This may be a temporary error caused by updating the cache,\n- The record cannot be found because it has been deleted (or its channel) but the data has not been deleted from the database. \nIf so, you need to use the `/delete_char` command.",
     "userNotRegistered": "{{- user}} is not registered."
   },
   "export": {
@@ -459,6 +493,7 @@
     "description": "Roll a registered die for a skill/attack",
     "name": "dbd"
   },
+  "refresh": "Following an update, the buttons have been modified! \nNow you need to select the “Avatar” option from the drop-down menu to edit the image.\n\nNew options have also been added!",
   "register": {
     "button": "Register a character",
     "description": "Register a new template for the dbroll command",

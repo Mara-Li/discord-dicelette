@@ -227,7 +227,8 @@ export async function registerUser(
 	userData: UserRegistration,
 	interaction: BaseInteraction,
 	enmap: Settings,
-	deleteMsg: boolean | undefined = true
+	deleteMsg: boolean | undefined = true,
+	errorOnDuplicate: boolean | undefined = false
 ) {
 	const { userID, charName, msgId, isPrivate } = userData;
 	const ids: PersonnageIds = { channelId: msgId[1], messageId: msgId[0] };
@@ -270,6 +271,7 @@ export async function registerUser(
 			return char.charName == null && charName == null;
 		});
 		if (char) {
+			if (errorOnDuplicate) throw new Error("DUPLICATE");
 			//delete old message
 			if (deleteMsg) {
 				try {

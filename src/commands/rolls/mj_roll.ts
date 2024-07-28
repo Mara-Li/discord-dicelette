@@ -141,7 +141,7 @@ export const mjRoll = {
 			const guildChars = guildData.user[user];
 			if (!guildChars) return;
 			for (const data of guildChars) {
-				if (data.charName) choices.push(data.charName);
+				choices.push(data.charName ? data.charName : t("common.default"));
 			}
 		} else if (fixed.name === t("common.statistic")) {
 			choices = guildData.templateID.statsName;

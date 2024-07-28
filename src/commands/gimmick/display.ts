@@ -1,4 +1,4 @@
-import { createDiceEmbed, createStatsEmbed } from "@database";
+import { createDiceEmbed, createStatsEmbed } from "@interactions";
 import { cmdLn, findln, ln } from "@localization";
 import type { EClient } from "@main";
 import {
@@ -60,6 +60,7 @@ export const displayUser = {
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		const choices: string[] = [];
+		const ul = ln(interaction.locale as Locale);
 		let userID = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
 		if (typeof userID !== "string") userID = interaction.user.id;
 		if (fixed.name === t("common.character")) {
@@ -67,10 +68,9 @@ export const displayUser = {
 			if (!guildChars) return;
 			for (const data of guildChars) {
 				const allowed = haveAccess(interaction, data.messageId[1], userID);
-				if (data.charName) {
-					if (!data.isPrivate) choices.push(data.charName);
-					else if (allowed) choices.push(data.charName);
-				}
+				const toPush = data.charName ? data.charName : ul("common.default");
+				if (!data.isPrivate) choices.push(toPush);
+				else if (allowed) choices.push(toPush);
 			}
 		}
 		if (choices.length === 0) return;

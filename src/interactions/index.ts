@@ -7,14 +7,15 @@ import {
 	type Message,
 	type ModalSubmitInteraction,
 	PermissionsBitField,
+	type StringSelectMenuInteraction,
 	TextChannel,
 	ThreadChannel,
 	type User,
 } from "discord.js";
-import { findln, ln } from "../localizations";
-import { embedError, reply, title } from "../utils";
+import { findln, ln } from "@localization";
+import { embedError, reply, title } from "@utils";
 import removeAccents from "remove-accents";
-import { warn } from "../console";
+import { warn } from "@console";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found
@@ -133,7 +134,7 @@ export function verifyIfEmbedInDB(
 }
 
 export async function allowEdit(
-	interaction: ButtonInteraction,
+	interaction: ButtonInteraction | StringSelectMenuInteraction,
 	db: Settings,
 	interactionUser: User
 ) {

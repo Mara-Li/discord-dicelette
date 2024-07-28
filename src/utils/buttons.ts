@@ -1,5 +1,12 @@
 import type { Translation } from "@interface";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	StringSelectMenuBuilder,
+	StringSelectMenuOptionBuilder,
+} from "discord.js";
+import { title } from ".";
 
 /**
  * Button to edit the user embed character sheet
@@ -24,24 +31,42 @@ export function editUserButtons(ul: Translation, stats?: boolean, dice?: boolean
 		.setLabel(ul("button.edit.dice"))
 		.setEmoji("📝")
 		.setStyle(ButtonStyle.Secondary);
-	const avatar = new ButtonBuilder()
-		.setCustomId("avatar")
-		.setLabel(ul("button.avatar"))
-		.setEmoji("🖼️")
-		.setStyle(ButtonStyle.Danger);
 
 	if (stats && dice)
 		return new ActionRowBuilder<ButtonBuilder>().addComponents([
-			avatar,
 			editUser,
 			editDice,
 			addDice,
 		]);
-	const components = [avatar];
+	const components = [];
 	if (stats) components.push(editUser);
 	if (dice) components.push(editDice);
 	components.push(addDice);
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(components);
+}
+
+export function selectEditMenu(ul: Translation) {
+	const select = new StringSelectMenuBuilder()
+		.setCustomId("edit_select")
+		.setPlaceholder(ul("button.edit.select"))
+		.addOptions(
+			new StringSelectMenuOptionBuilder()
+				.setLabel(title(ul("common.character")))
+				.setEmoji("📝")
+				.setValue("name")
+				.setDescription(ul("button.name")),
+			new StringSelectMenuOptionBuilder()
+				.setLabel(ul("button.avatar.title"))
+				.setValue("avatar")
+				.setEmoji("🖼️")
+				.setDescription(ul("button.avatar.description")),
+			new StringSelectMenuOptionBuilder()
+				.setLabel(ul("common.user"))
+				.setValue("user")
+				.setEmoji("👤")
+				.setDescription(ul("button.user"))
+		);
+	return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
 }
 
 /**

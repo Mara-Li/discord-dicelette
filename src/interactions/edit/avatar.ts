@@ -4,19 +4,19 @@ import {
 	ModalBuilder,
 	TextInputBuilder,
 	TextInputStyle,
-	type ButtonInteraction,
 	type User,
 	type ModalSubmitInteraction,
+	type StringSelectMenuInteraction,
 } from "discord.js";
-import { allowEdit } from "@database";
+import { allowEdit } from "@interactions";
 import type { Translation, Settings } from "@interface";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
 import { embedError, reply } from "@utils";
-import { verifyAvatarUrl } from "./register/validate";
-import { findln } from "../localizations";
+import { verifyAvatarUrl } from "../register/validate";
+import { findln } from "@localization";
 
 export async function initiateAvatarEdit(
-	interaction: ButtonInteraction,
+	interaction: StringSelectMenuInteraction,
 	ul: Translation,
 	interactionUser: User,
 	db: Settings
@@ -25,13 +25,16 @@ export async function initiateAvatarEdit(
 		await showAvatarEdit(interaction, ul);
 }
 
-export async function showAvatarEdit(interaction: ButtonInteraction, ul: Translation) {
+export async function showAvatarEdit(
+	interaction: StringSelectMenuInteraction,
+	ul: Translation
+) {
 	const embed = getEmbeds(ul, interaction.message, "user");
 	if (!embed) throw new Error(ul("error.noEmbed"));
 	const thumbnail = embed.toJSON().thumbnail?.url ?? interaction.user.displayAvatarURL();
 	const modal = new ModalBuilder()
 		.setCustomId("editAvatar")
-		.setTitle(ul("button.avatar"));
+		.setTitle(ul("button.avatar.description"));
 	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("avatar")

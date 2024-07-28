@@ -6,6 +6,7 @@ import type {
 	AnyThreadChannel,
 	CommandInteraction,
 	GuildTextBasedChannel,
+	ModalSubmitInteraction,
 	NonThreadGuildBasedChannel,
 	ThreadChannel,
 	User,
@@ -138,10 +139,10 @@ function cleanUserDB(
 }
 
 export function deleteUser(
-	interaction: CommandInteraction,
+	interaction: CommandInteraction | ModalSubmitInteraction,
 	guildData: GuildData,
 	user?: User | null,
-	charName?: string
+	charName?: string | null
 ) {
 	//delete the character from the database
 	const userCharIndex = guildData.user[user?.id ?? interaction.user.id].findIndex(

@@ -62,9 +62,8 @@ export const deleteChar = {
 			const guildChars = guildData.user[user];
 			if (!guildChars) return;
 			for (const data of guildChars) {
-				if (data.charName) choices.push(data.charName);
+				choices.push(data.charName ? data.charName : ul("common.default"));
 			}
-			choices.push(`${ul("common.default")}`);
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
@@ -180,7 +179,11 @@ async function deleteMessage(
 	for (const id of ids) {
 		const userThread = await searchUserChannel(client.settings, interaction, ul, id[1]);
 		if (!userThread) continue;
-		const message = await userThread.messages.fetch(id[1]);
-		await message.delete();
+		try {
+			const message = await userThread.messages.fetch(id[1]);
+			await message.delete();
+		} catch (e) {
+			error(e, "deleteChar: no message found - No problem");
+		}
 	}
 }

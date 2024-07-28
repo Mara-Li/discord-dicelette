@@ -1,4 +1,4 @@
-import { allowEdit, createStatsEmbed, getUserNameAndChar } from "@database";
+import { allowEdit, createStatsEmbed, getUserNameAndChar } from "@interactions";
 import { evalOneCombinaison, FormulaError } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
 import {

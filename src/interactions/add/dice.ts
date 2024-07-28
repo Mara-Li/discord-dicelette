@@ -1,4 +1,4 @@
-import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@database";
+import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import { evalStatsDice } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId } from "@interface";
 import { findln, ln } from "@localization";
@@ -38,7 +38,6 @@ import {
  */
 export async function executeAddDiceButton(
 	interaction: ButtonInteraction,
-	ul: Translation,
 	interactionUser: User,
 	db: Settings
 ) {

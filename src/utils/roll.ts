@@ -220,14 +220,15 @@ export async function rollDice(
 	const serializedName = charOptions
 		? removeAccents(charOptions).toLowerCase()
 		: undefined;
-	const userData = client.settings
-		.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`)
-		?.find((char) => {
-			if (serializedName && char.charName)
-				return removeAccents(char.charName).toLowerCase().includes(serializedName);
-			return charOptions == null && char.charName == null;
-		});
+
 	while (!dice) {
+		const userData = client.settings
+			.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`)
+			?.find((char) => {
+				if (serializedName && char.charName)
+					return removeAccents(char.charName).toLowerCase().includes(serializedName);
+				return charOptions == null && char.charName == null;
+			});
 		const damageName = userData?.damageName ?? [];
 		const findAtqInList = damageName.find((atqName) =>
 			removeAccents(atqName).toLowerCase().includes(removeAccents(atq).toLowerCase())

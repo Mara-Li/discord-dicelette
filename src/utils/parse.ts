@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createTemplateEmbed } from "@database";
+import { createTemplateEmbed } from "@interactions";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findln, ln } from "@localization";

@@ -24,14 +24,22 @@
     }
   },
   "button": {
-    "avatar": "Modifier l'image",
+    "avatar": {
+      "description": "Modifier l'image d'un personnage",
+      "title": "Avatar"
+    },
     "cancel": "Annuler",
     "continue": "Continuer",
     "dice": "Enregistrer un dé",
     "edit": {
       "dice": "Modifier les dés",
+      "move": "Modifier l'utilisateur associé",
+      "name": "Renommer un personnage",
+      "select": "Modifier les données de l'utilisateur",
       "stats": "Modifier les statistiques"
     },
+    "name": "Modifier le nom du personnage",
+    "user": "Modifier l'utilisateur associé",
     "validate": "Valider"
   },
   "changeThread": {
@@ -174,6 +182,26 @@
     "user": "L'utilisateur à afficher",
     "userLowercase": "joueur"
   },
+  "edit": {
+    "desc": "Permet d'éditer les données d'une fiche",
+    "rename": {
+      "desc": "Modifier le nom d'un personnage",
+      "option": {
+        "desc": "Nouveau nom à utiliser",
+        "title": "nouveau_nom"
+      },
+      "title": "rename"
+    },
+    "user": {
+      "desc": "Modifier l'utilisateur associé à un personnage",
+      "option": {
+        "desc": "Le nouveau possesseur du personnage",
+        "title": "nouveau_utilisateur"
+      },
+      "success": "L'utilisateur a bien été changé.",
+      "title": "user"
+    }
+  },
   "edit_avatar": {
     "character": "Le nom du personnage à modifier",
     "default": "L'image utilisée sera votre avatar actuel !",
@@ -184,14 +212,17 @@
       "desc": "Lien du message contenant la fiche",
       "name": "message_url"
     },
-    "name": "edit_avatar",
+    "name": "avatar",
     "success": "Avatar changé pour {{- name}} ([lien vers la fiche]({{-link}})) !",
     "url": {
       "desc": "Lien vers l'image à mettre (pas de lien discord!)",
-      "name": "avatar_url"
+      "name": "url"
     },
     "url_desc": "Lien vers la fiche",
     "user": "Le joueur à modifier"
+  },
+  "edit_name": {
+    "success": "Le nom du personnage a bien été changé ! Vous pouvez le retrouver ici: {{- url}}"
   },
   "embed": {
     "add": "Enregistrement de l'utilisateur",
@@ -208,12 +239,13 @@
   "error": {
     "avatar": {
       "discord": "Il n'est pas possible d'utiliser une image discord, car les liens sont actualisés régulièrement.",
-      "url": "L'image fournie est invalide : elle doit contenir le format de l'image (`JPG`/`JPEG`/`PNG`/`WEBP`/`GIF`/`GIFV`)et être un lien en `https`."
+      "url": "L'image fournie est invalide : elle doit contenir le format de l'image (`JPG`/`JPEG`/`PNG`/`WEBP`/`GIF`/`GIFV`) et être un lien en `https`."
     },
     "channel": "Le channel `{{-channel}}` n'existe pas sur ce serveur.",
     "charName": "Le personnage {{- charName}} n'est pas enregistré.",
     "csvContent": "Le contenu du {{- fichier}} est invalide.",
     "discord": "## [DISCORD] :warning: __Erreur__ : \n- **Code** : `{{- code}}`\n- **Source** : `{{- stack}}`\n\nMerci de signaler le bug sur [le serveur officiel](https://discord.gg/2PUqwWeQYZ).",
+    "duplicate": "Le nom est déjà utilisé pour un autre personnage ! Vous ne pouvez donc pas l'utiliser ici. Chaque nom doit être unique !",
     "emptyDamage": "Vous n'avez pas de dés de capacités enregistrés.",
     "emptyStats": "Cette combinaison est invalide : aucune statistiques n'existent !",
     "generic": {
@@ -228,6 +260,7 @@
     "missingPermission": "## [DISCORD] :warning: __Erreur__ : **PERMISSIONS MANQUANTES**\nLe bot n'a pas les permissions pour faire l'action demandées. Vérifié qu'il a bien accès au channel/thread demandé !\n",
     "mustBeGreater": "## :warning: **Une erreur est survenue**\nLa valeur `{{- value}}` doit être plus grande que `{{- min}}`.",
     "mustBeLower": "La valeur `{{- value}}` doit être plus petite que `{{- max}}`",
+    "noCharacter": "Votre personnage n'a pas de nom : il ne peut donc pas être renommé !",
     "noDamage": "`{{- atq}}` n'est pas enregistré pour {{- charName}}.",
     "noDefaultChannel": "Vous devez fournir au moins un channel par défaut pour sauvegarder les fiches.",
     "noDice": "Vous ne pouvez pas lancer cette commande sans avoir un dé type enregistré !",
@@ -241,6 +274,7 @@
     "noTemplate": "Aucun modèle ou channel configuré",
     "noTemplateId": "Aucun message trouvé avec les données sauvegardée dans la base de données:\n- Channel : `{{- channelId}}`\n- ID du message : `{{- messageId}}`",
     "noThread": "Aucun channel valide trouvé — Veuillez réenregistrer le modèle si le channel a été supprimé",
+    "notFound": "Le personnage est introuvable dans la base de donnée.",
     "notRegistered": "Vous n'êtes pas enregistré !",
     "oldEmbed": "Cette fiche ne correspond pas à celle dans la base de données. Vous trouverez la nouvelle fiche [ici](<{{- fiche}}>).",
     "private": "Cette fiche est privée ! Vous n'avez pas la permissions pour la lire.",
@@ -459,6 +493,7 @@
     "description": "Lancer un dé enrégistré pour une compétence/attaque",
     "name": "dbd"
   },
+  "refresh": "Suite à une mise à jour, les boutons ont été modifié ! Vous devez maintenant sélectionner l'option \"Avatar\" du menu déroulant pour modifier l'image.\nDe nouvelles options y ont aussi été rajouté !",
   "register": {
     "button": "Enregistrer un personnage",
     "description": "Enregistre un nouveau modèle pour la commande dbroll",

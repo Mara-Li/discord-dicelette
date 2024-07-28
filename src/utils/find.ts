@@ -5,9 +5,19 @@ import {
 	type ForumChannel,
 	type InteractionResponse,
 	type Message,
+	type ModalSubmitInteraction,
 	TextChannel,
 	ThreadChannel,
 } from "discord.js";
+
+export async function isUserNameOrId(
+	userId: string,
+	interaction: ModalSubmitInteraction
+) {
+	if (!userId.match(/\d+/))
+		return (await interaction.guild!.members.fetch({ query: userId })).first();
+	return await interaction.guild!.members.fetch({ user: userId });
+}
 
 export async function findMessageBefore(
 	channel: DiscordTextChannel,
