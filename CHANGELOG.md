@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.8.0](https://github.com/Dicelette/discord-dicelette/compare/1.7.6...1.8.0) (2024-07-28)
+
+
+### Features
+
+* better autocompleting ([014c464](https://github.com/Dicelette/discord-dicelette/commit/014c4644a68ae88a3370571256b58c2b2ccccad0))
+
+
+### Bug Fixes
+
+* colorize json has no call signature ([21e95f1](https://github.com/Dicelette/discord-dicelette/commit/21e95f17955614b8594fd4a692084d1a8421aa1c))
+
 ## [1.7.6](https://github.com/Dicelette/discord-dicelette/compare/1.7.5...1.7.6) (2024-07-20)
 
 
