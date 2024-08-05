@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.9.0](https://github.com/Dicelette/discord-dicelette/compare/1.8.0...1.9.0) (2024-08-05)
+
+
+### Features
+
+* add edit command ([5417182](https://github.com/Dicelette/discord-dicelette/commit/5417182b54731629f3c574eb6ab889b22201cb46))
+
 ## [1.8.0](https://github.com/Dicelette/discord-dicelette/compare/1.7.6...1.8.0) (2024-07-28)
 
 
