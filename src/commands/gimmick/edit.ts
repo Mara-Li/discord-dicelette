@@ -325,10 +325,12 @@ export async function rename(
 		await registerUser(userRegister, interaction, client.settings, false, true);
 	} catch (error) {
 		if ((error as Error).message === "DUPLICATE")
-			await reply(interaction, { embeds: [embedError(ul("error.duplicate"), ul)] });
+			await reply(interaction, {
+				embeds: [embedError(ul("error.duplicate"), ul, "duplicate")],
+			});
 		else
 			await reply(interaction, {
-				embeds: [embedError(ul("error.generic.e", { e: error }), ul)],
+				embeds: [embedError(ul("error.generic.e", { e: error }), ul, "unknown")],
 			});
 		await resetButton(message, ul);
 		return;
