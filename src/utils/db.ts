@@ -208,7 +208,7 @@ export async function getUserFromMessage(
 			options.fetchChannel
 		);
 	} catch (error) {
-		if (!skipNotFound) throw new Error(ul("error.user"));
+		if (!skipNotFound) throw new Error(ul("error.user"), { cause: "404 not found" });
 	}
 }
 

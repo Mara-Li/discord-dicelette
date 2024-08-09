@@ -422,12 +422,12 @@ export async function reply(
 		: await interaction.reply(options);
 }
 
-export const embedError = (error: string, ul: Translation) => {
+export const embedError = (error: string, ul: Translation, cause?: string) => {
 	const stack = findln(error);
 	return new EmbedBuilder()
 		.setDescription(error)
 		.setColor("Red")
-		.setFooter({ text: stack.replace("error.", "") })
+		.setFooter({ text: cause ?? stack.replace("error.", "") })
 		.setAuthor({ name: ul("common.error"), iconURL: "https://i.imgur.com/2ulUJCc.png" })
 		.setTimestamp();
 };

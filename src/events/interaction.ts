@@ -71,7 +71,8 @@ export default (client: EClient): void => {
 			if (!interaction.guild) return;
 			const msgError = lError(e as Error, interaction);
 			if (msgError.length === 0) return;
-			const embed = embedError(msgError, ul);
+			const cause = (e as Error).cause ? ((e as Error).cause as string) : undefined;
+			const embed = embedError(msgError, ul, cause);
 			if (
 				interaction.isButton() ||
 				interaction.isModalSubmit() ||

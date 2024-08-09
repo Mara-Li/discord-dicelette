@@ -29,7 +29,6 @@ export function ln(userLang: Locale) {
 
 export function lError(e: Error, interaction?: BaseInteraction, userLang?: Locale) {
 	const ul = ln(interaction?.locale ?? userLang ?? Locale.EnglishUS);
-	console.error(e);
 	if (e instanceof DiceTypeError)
 		return ul("error.invalidDice.withDice", { dice: e.dice });
 

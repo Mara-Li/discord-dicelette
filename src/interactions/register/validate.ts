@@ -216,7 +216,6 @@ export async function validateUser(
 			templateDamage[removeEmojiAccents(damage.name)] = damage.value;
 		}
 	}
-	console.log(template.damage);
 	for (const [name, dice] of Object.entries(template.damage ?? {})) {
 		if (!templateDamage) templateDamage = {};
 		templateDamage[name] = dice;

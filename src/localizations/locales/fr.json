@@ -45,6 +45,7 @@
   "changeThread": {
     "delete": "Les résultats des dés ne seront plus envoyés",
     "description": "Enregistrer un channel pour y envoyer les résultats des dés ",
+    "hidden": "",
     "name": "result_channel",
     "noChan": "Aucun channel de sauvegarde n'est paramétré. Annulation de la commande.",
     "options": "Channel des résultats",
@@ -92,6 +93,10 @@
       "name": "afficher"
     },
     "displayResult": "Affichage des résultats",
+    "hiddenRoll": {
+      "desc": "Permet de cacher les résultats des dés des MJ et de l'envoyé dans un channel spécifique ou par message éphémère.",
+      "title": "[MJ] Jets invisibles"
+    },
     "linkToLog": {
       "desc": "Dans le résultat du dé, permet d'afficher un lien vers la sauvegarde du résultat.",
       "title": "[Résultat] Lien vers la sauvegarde du résultat de dés"
@@ -137,6 +142,10 @@
       "comments": {
         "description": "Description de l'action",
         "name": "commentaires"
+      },
+      "hidden": {
+        "description": "Cache le résultat du dé (ignoré si la configuration n'est pas faite)",
+        "name": "caché"
       },
       "modificator": {
         "description": "Bonus/malus ajouté au lancer",
@@ -250,7 +259,7 @@
     "emptyStats": "Cette combinaison est invalide : aucune statistiques n'existent !",
     "generic": {
       "e": "{{- e.message}}",
-      "withWarning": "## [{{- e.name}}] :warning: __Erreur__ :\n`{{- e.message}}`"
+      "withWarning": "## [{{- e.name}}] :warning: __Erreur__ :\n{{- e.message}}"
     },
     "invalidDice": {
       "embeds": "Aucun embed de dé détecté",
@@ -279,7 +288,7 @@
     "oldEmbed": "Cette fiche ne correspond pas à celle dans la base de données. Vous trouverez la nouvelle fiche [ici](<{{- fiche}}>).",
     "private": "Cette fiche est privée ! Vous n'avez pas la permissions pour la lire.",
     "public": "Vous ne pouvez pas choisir le channel {{- chan}} sans choisir un channel où poster les fiches, car il sera impossible d'y créer un thread.",
-    "rollChannelNotFound": "Le channel configuré par la commande `/result_channel` n'a pas été trouvé. Utilisation de la configuration par défaut.",
+    "rollChannelNotFound": "Le channel configuré par la commande `/{{- command}}` n'a pas été trouvé. Utilisation de la configuration par défaut.",
     "statNotFound": "Statistiques introuvable ! Avez vous fait une erreur de frappe ?",
     "template": "Vous devez fournir un fichier JSON.",
     "tooMuchDice": "Trop de dés ont été fournis ! Vous ne pouvez pas avoir plus de 25 dés.",
@@ -385,6 +394,14 @@
       "message": "Le bot permet de configurer un modèle (\"modèle de serveur\") qui permet ensuite de créer des fiches de personnages ainsi que de retenir des dés. \n\nLes données restent intégralement sur votre serveur, et le modèle est pensé pour être adaptable à l'infini (ou presque !).\n\nVous trouverez [ici](<https://dicelette.github.io/docs/admin/model>) toutes les informations afin de configurer le modèle et enregistrer les fiches, afin de pouvoir utiliser les commandes </dbroll:{{- dbroll}}>, </dbd:{{- dbd}}>, ou encore </graph:{{- graph}}>.",
       "name": "enregistrer"
     }
+  },
+  "hidden": {
+    "description": "Permet de cacher les résultats des dés du lancer MJ",
+    "disabled": "Les résultats des dés MJ utilisent maintenant la configuration des dés normaux.",
+    "enabled": "Les dés MJ seront maintenant cachés et leur résultats envoyés dans un message éphémère.",
+    "enabledChan": "Les résultats des dés MJ seront maintenant envoyés dans {{- channel}} directement.",
+    "options": "Permet d'envoyer les résultats dans ce channel (sinon, ils seront envoyés dans un message éphémère)",
+    "title": "jet_invisible"
   },
   "import": {
     "all_success": "Tous les utilisateurs ont été enregistrés.",
