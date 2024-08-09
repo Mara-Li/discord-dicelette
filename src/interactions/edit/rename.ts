@@ -93,7 +93,6 @@ export async function validateRename(
 		client,
 		sheetLocation,
 		oldData,
-		interaction.channel as DiscordChannel,
-		guildData
+		interaction.channel as DiscordChannel
 	);
 }

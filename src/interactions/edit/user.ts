@@ -119,7 +119,6 @@ export async function validateMove(
 		client,
 		sheetLocation,
 		oldData,
-		interaction.channel as DiscordChannel,
-		guildData
+		interaction.channel as DiscordChannel
 	);
 }

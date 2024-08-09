@@ -24,7 +24,6 @@ import {
 import { getDatabaseChar, registerUser } from "@utils/db";
 import type {
 	DiscordChannel,
-	GuildData,
 	PersonnageIds,
 	Translation,
 	UserMessageId,
@@ -217,8 +216,7 @@ export const editAvatar = {
 				client,
 				sheetLocation,
 				userData,
-				thread,
-				guildData
+				thread
 			);
 		} else if (subcommand === t("edit.user.title")) {
 			await move(
@@ -229,8 +227,7 @@ export const editAvatar = {
 				client,
 				sheetLocation,
 				userData,
-				thread,
-				guildData
+				thread
 			);
 		}
 	},
@@ -305,8 +302,7 @@ export async function rename(
 		damageName?: string[];
 		isPrivate?: boolean;
 	},
-	thread: DiscordChannel,
-	guildData: GuildData
+	thread: DiscordChannel
 ) {
 	const message = await thread!.messages.fetch(sheetLocation.messageId);
 	const embed = getEmbeds(ul, message, "user");
@@ -319,8 +315,6 @@ export async function rename(
 	//update the embed
 	const embedsList = getEmbedsList(ul, { which: "user", embed }, message);
 	//update the database
-	const newData = structuredClone(oldData);
-	newData.charName = name;
 	const userRegister: UserRegistration = {
 		userID: user?.id ?? interaction.user.id,
 		charName: name,
@@ -339,6 +333,7 @@ export async function rename(
 		await resetButton(message, ul);
 		return;
 	}
+	const guildData = client.settings.get(interaction.guildId as string);
 	const newdata = deleteUser(interaction, guildData!, user, oldData.charName);
 	client.settings.set(interaction.guildId as string, newdata);
 	await generateButton(message, ul, embedsList.list);
@@ -361,8 +356,7 @@ export async function move(
 		damageName?: string[];
 		isPrivate?: boolean;
 	},
-	thread: DiscordChannel,
-	guildData: GuildData
+	thread: DiscordChannel
 ) {
 	const message = await thread!.messages.fetch(sheetLocation.messageId);
 	const embed = getEmbeds(ul, message, "user");
@@ -374,9 +368,7 @@ export async function move(
 	//update the embed
 	const embedsList = getEmbedsList(ul, { which: "user", embed }, message);
 	//update the database, with deleting the old data
-	const newdata = deleteUser(interaction, guildData, user, oldData.charName);
-	//save the new data
-	client.settings.set(interaction.guildId as string, newdata);
+
 	//add the new data to the database
 	const userRegister: UserRegistration = {
 		userID: newUser.id,
@@ -384,7 +376,22 @@ export async function move(
 		damage: oldData.damageName,
 		msgId: oldData.messageId,
 	};
-	registerUser(userRegister, interaction, client.settings, false);
+	try {
+		registerUser(userRegister, interaction, client.settings, false, true);
+	} catch (error) {
+		if ((error as Error).message === "DUPLICATE")
+			await reply(interaction, { embeds: [embedError(ul("error.duplicate"), ul)] });
+		else
+			await reply(interaction, {
+				embeds: [embedError(ul("error.generic.e", { e: error }), ul)],
+			});
+		await resetButton(message, ul);
+		return;
+	}
+	const guildData = client.settings.get(interaction.guildId as string);
+	const newdata = deleteUser(interaction, guildData!, user, oldData.charName);
+	//save the new data
+	client.settings.set(interaction.guildId as string, newdata);
 	await generateButton(message, ul, embedsList.list);
 	await reply(interaction, {
 		content: ul("edit.user.success", { url: message.url }),
