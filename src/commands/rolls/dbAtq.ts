@@ -133,7 +133,8 @@ export const dbd = {
 				client.settings,
 				interaction.user.id,
 				interaction,
-				charName
+				charName,
+				{ skipNotFound: true }
 			);
 			const selectedCharByQueries = serializeName(userStatistique, charName);
 			if (charOptions && !selectedCharByQueries) {

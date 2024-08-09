@@ -78,6 +78,14 @@ export const mjRoll = {
 						.setDescriptionLocalizations(cmdLn("dbRoll.options.modificator.description"))
 						.setRequired(false)
 				)
+				.addBooleanOption((option) =>
+					option
+						.setName(t("dbRoll.options.hidden.name"))
+						.setDescription(t("dbRoll.options.hidden.description"))
+						.setNameLocalizations(cmdLn("dbRoll.options.hidden.name"))
+						.setDescriptionLocalizations(cmdLn("dbRoll.options.hidden.description"))
+						.setRequired(false)
+				)
 		)
 		.addSubcommand((sub) =>
 			sub
@@ -125,6 +133,14 @@ export const mjRoll = {
 						.setDescription(t("dbRoll.options.comments.description"))
 						.setNameLocalizations(cmdLn("dbRoll.options.comments.name"))
 						.setDescriptionLocalizations(cmdLn("dbRoll.options.comments.description"))
+						.setRequired(false)
+				)
+				.addBooleanOption((option) =>
+					option
+						.setName(t("dbRoll.options.hidden.name"))
+						.setDescription(t("dbRoll.options.hidden.description"))
+						.setNameLocalizations(cmdLn("dbRoll.options.hidden.name"))
+						.setDescriptionLocalizations(cmdLn("dbRoll.options.hidden.description"))
 						.setRequired(false)
 				)
 		),
@@ -182,7 +198,8 @@ export const mjRoll = {
 			client.settings,
 			user.id,
 			interaction,
-			charName
+			charName,
+			{ skipNotFound: true }
 		);
 		const serializedNameQueries = serializeName(charData, charName);
 		if (charName && !serializedNameQueries) {
@@ -206,6 +223,7 @@ export const mjRoll = {
 			});
 			return;
 		}
+		const hide = options.getBoolean(t("dbRoll.options.hidden.name"));
 		const subcommand = options.getSubcommand(true);
 		if (subcommand === ul("dbRoll.name"))
 			return await rollStatistique(
@@ -215,9 +233,19 @@ export const mjRoll = {
 				options,
 				ul,
 				optionChar,
-				user
+				user,
+				hide
 			);
 		if (subcommand === ul("rAtq.name"))
-			return await rollDice(interaction, client, charData, options, ul, optionChar, user);
+			return await rollDice(
+				interaction,
+				client,
+				charData,
+				options,
+				ul,
+				optionChar,
+				user,
+				hide
+			);
 	},
 };

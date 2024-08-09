@@ -200,6 +200,35 @@ export const configuration = {
 						.setDescriptionLocalizations(cmdLn("linkToLog.options"))
 						.setRequired(true)
 				)
+		)
+		/** HIDDEN ROLL FOR MJROLL */
+		.addSubcommand((sub) =>
+			sub
+				.setName(t("hidden.title"))
+				.setDescriptionLocalizations(cmdLn("hidden.description"))
+				.setDescription(t("hidden.description"))
+				.setNameLocalizations(cmdLn("hidden.title"))
+				.addBooleanOption((option) =>
+					option
+						.setName(t("disableThread.options.name"))
+						.setDescription(t("linkToLog.options"))
+						.setNameLocalizations(cmdLn("disableThread.options.name"))
+						.setDescriptionLocalizations(cmdLn("linkToLog.options"))
+						.setRequired(true)
+				)
+				.addChannelOption((option) =>
+					option
+						.setName(t("common.channel"))
+						.setNameLocalizations(cmdLn("common.channel"))
+						.setDescription(t("hidden.options"))
+						.setDescriptionLocalizations(cmdLn("hidden.options"))
+						.setRequired(false)
+						.addChannelTypes(
+							ChannelType.GuildText,
+							ChannelType.PublicThread,
+							ChannelType.PrivateThread
+						)
+				)
 		),
 	async execute(interaction: CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
@@ -229,6 +258,8 @@ export const configuration = {
 				return await anchor(interaction, client, ul);
 			case t("config.logLink.name"):
 				return await linkToLog(interaction, client, ul);
+			case t("hidden.title"):
+				return await hiddenRoll(interaction, client, ul, options);
 		}
 	},
 };
@@ -370,6 +401,33 @@ async function disableThread(
 	return;
 }
 
+async function hiddenRoll(
+	interaction: CommandInteraction,
+	client: EClient,
+	ul: Translation,
+	options: CommandInteractionOptionResolver
+) {
+	const toggle = options.getBoolean(t("disableThread.options.name"), true);
+	const channel = options.getChannel(t("common.channel"), false);
+	if (!toggle) {
+		//disable
+		client.settings.delete(interaction.guild!.id, "hiddenRoll");
+		await reply(interaction, { content: ul("hidden.disabled"), ephemeral: true });
+		return;
+	}
+	if (!channel) {
+		client.settings.set(interaction.guild!.id, true, "hiddenRoll");
+		await reply(interaction, { content: ul("hidden.enabled"), ephemeral: true });
+		return;
+	}
+	client.settings.set(interaction.guild!.id, channel.id, "hiddenRoll");
+	await reply(interaction, {
+		content: ul("hidden.enabledChan", { channel: channelMention(channel.id) }),
+		ephemeral: true,
+	});
+	return;
+}
+
 async function timer(
 	interaction: CommandInteraction,
 	client: EClient,
@@ -445,7 +503,9 @@ async function display(
 					 ${ul("config.context.desc")}
 					${dpTitle("config.linkToLog.title")} ${dp(guildSettings.linkToLogs)}
 					 ${ul("config.linkToLog.desc")}
-					`),
+					${dpTitle("config.hiddenRoll.title")} ${dp(guildSettings.hiddenRoll, "chan")}
+					 ${ul("config.hiddenRoll.desc")}
+					 `),
 			},
 
 			{

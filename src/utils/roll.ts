@@ -38,7 +38,8 @@ export async function rollWithInteraction(
 	critical?: { failure?: number; success?: number },
 	user?: User,
 	charName?: string,
-	infoRoll?: string
+	infoRoll?: string,
+	hideResult?: boolean | null
 ) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild)
 		return;
@@ -79,26 +80,42 @@ export async function rollWithInteraction(
 	};
 	const retrieveUser = infoRollTotal(true);
 	const disableThread = db.get(interaction.guild.id, "disableThread");
-	if (
-		channel.name.startsWith("🎲") ||
-		disableThread ||
-		db.get(interaction.guild.id, "rollChannel") === channel.id
-	) {
+	let rollChannel = db.get(interaction.guild.id, "rollChannel");
+	const hideResultConfig = db.get(interaction.guild.id, "hiddenRoll");
+	const hidden = hideResult && hideResultConfig;
+	let isHidden: undefined | string = undefined;
+	if (hidden) {
+		if (typeof hideResultConfig === "string") {
+			//send to another channel ;
+			rollChannel = hideResultConfig;
+			isHidden = hideResultConfig;
+		} else if (typeof hideResultConfig === "boolean") {
+			await reply(interaction, {
+				content: `${retrieveUser}${parser}`,
+				allowedMentions: { users: [userId] },
+				ephemeral: true,
+			});
+			return;
+		}
+	}
+	if (channel.name.startsWith("🎲") || disableThread || rollChannel === channel.id) {
 		await reply(interaction, {
 			content: `${retrieveUser}${parser}`,
 			allowedMentions: { users: [userId] },
+			ephemeral: !!hidden,
 		});
 		return;
 	}
 	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
 	const thread =
 		parentChannel instanceof TextChannel
-			? await findThread(db, parentChannel, ul)
+			? await findThread(db, parentChannel, ul, isHidden)
 			: await findForumChannel(
 					channel.parent as ForumChannel,
 					channel as ThreadChannel,
 					db,
-					ul
+					ul,
+					isHidden
 				);
 
 	const rollog = await thread.send("_ _");
@@ -108,6 +125,7 @@ export async function rollWithInteraction(
 	const inter = await reply(interaction, {
 		content: `${retrieveUser}${parser}${rollogUrl}`,
 		allowedMentions: { users: [userId] },
+		ephemeral: !!hidden,
 	});
 	const anchor = db.get(interaction.guild.id, "context");
 	const dbTime = db.get(interaction.guild.id, "deleteAfter");
@@ -134,7 +152,8 @@ export async function rollStatistique(
 	options: CommandInteractionOptionResolver,
 	ul: Translation,
 	optionChar?: string,
-	user?: User
+	user?: User,
+	hideResult?: boolean | null
 ) {
 	let statistique = options.getString(t("common.statistic"), true).toLowerCase();
 	//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
@@ -165,7 +184,6 @@ export async function rollStatistique(
 			})
 		);
 	}
-	console.log(statistique);
 	const template = userStatistique.template;
 	let dice = template.diceType?.replaceAll("$", userStat.toString());
 	if (!dice) {
@@ -200,7 +218,8 @@ export async function rollStatistique(
 		template.critical,
 		user,
 		optionChar,
-		statistique
+		statistique,
+		hideResult
 	);
 }
 
@@ -211,7 +230,8 @@ export async function rollDice(
 	options: CommandInteractionOptionResolver,
 	ul: Translation,
 	charOptions?: string,
-	user?: User
+	user?: User,
+	hideResult?: boolean | null
 ) {
 	let atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
@@ -268,6 +288,7 @@ export async function rollDice(
 		undefined,
 		user,
 		charOptions,
-		atq
+		atq,
+		hideResult
 	);
 }

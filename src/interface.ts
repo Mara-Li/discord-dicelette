@@ -74,6 +74,13 @@ export interface GuildData {
 	 */
 	disableThread?: boolean;
 	/**
+	 * Hidden channel or result for mjroll
+	 * If true => hide result, doesn't send logs ; result are send in DM
+	 * if string => channel/thread.id where result will be send
+	 * In all cases; result are hidden in the channel when used (unless used in configured channel)
+	 */
+	hiddenRoll?: boolean | string;
+	/**
 	 * The default channel for the character sheet
 	 */
 	managerId?: string;

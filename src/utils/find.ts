@@ -41,9 +41,14 @@ export async function findMessageBefore(
  * @param channel {TextChannel}
  * @param reason {string}
  */
-export async function findThread(db: Settings, channel: TextChannel, ul: Translation) {
+export async function findThread(
+	db: Settings,
+	channel: TextChannel,
+	ul: Translation,
+	hidden?: string
+) {
 	const guild = channel.guild.id;
-	const rollChannelId = db.get(guild, "rollChannel");
+	const rollChannelId = !hidden ? db.get(guild, "rollChannel") : hidden;
 	if (rollChannelId) {
 		try {
 			const rollChannel = await channel.guild.channels.fetch(rollChannelId);
@@ -51,8 +56,13 @@ export async function findThread(db: Settings, channel: TextChannel, ul: Transla
 				return rollChannel;
 			}
 		} catch (e) {
-			db.delete(guild, "rollChannel");
-			sendLogs(ul("error.rollChannelNotFound"), channel.guild, db);
+			let command = `${ul("config.name")} ${ul("changeThread.name")}`;
+
+			if (hidden) {
+				db.delete(guild, "hiddenRoll");
+				command = `${ul("config.name")} ${ul("hidden.title")}`;
+			} else db.delete(guild, "rollChannel");
+			sendLogs(ul("error.rollChannelNotFound", { command }), channel.guild, db);
 		}
 	}
 	await channel.threads.fetch();
@@ -108,10 +118,11 @@ export async function findForumChannel(
 	forum: ForumChannel,
 	thread: ThreadChannel | TextChannel,
 	db: Settings,
-	ul: Translation
+	ul: Translation,
+	hidden?: string
 ) {
 	const guild = forum.guild.id;
-	const rollChannelId = db.get(guild, "rollChannel");
+	const rollChannelId = !hidden ? db.get(guild, "rollChannel") : hidden;
 	if (rollChannelId) {
 		try {
 			const rollChannel = await forum.guild.channels.fetch(rollChannelId);
@@ -119,8 +130,13 @@ export async function findForumChannel(
 				return rollChannel;
 			}
 		} catch (e) {
-			db.delete(guild, "rollChannel");
-			sendLogs(ul("error.rollChannelNotFound"), forum.guild, db);
+			let command = `${ul("config.name")} ${ul("changeThread.name")}`;
+
+			if (hidden) {
+				db.delete(guild, "hiddenRoll");
+				command = `${ul("config.name")} ${ul("hidden.title")}`;
+			} else db.delete(guild, "rollChannel");
+			sendLogs(ul("error.rollChannelNotFound", { command }), forum.guild, db);
 		}
 	}
 	const allForumChannel = forum.threads.cache.sort((a, b) => {

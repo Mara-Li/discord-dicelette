@@ -54,6 +54,14 @@ export const diceRoll = {
 				.setDescription(t("roll.option.description"))
 				.setDescriptionLocalizations(cmdLn("roll.option.description"))
 				.setRequired(true)
+		)
+		.addBooleanOption((option) =>
+			option
+				.setName(t("dbRoll.options.hidden.name"))
+				.setNameLocalizations(cmdLn("dbRoll.options.hidden.name"))
+				.setDescriptionLocalizations(cmdLn("dbRoll.options.hidden.description"))
+				.setDescription(t("dbRoll.options.hidden.description"))
+				.setRequired(false)
 		),
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
@@ -61,6 +69,7 @@ export const diceRoll = {
 		if (!channel || !channel.isTextBased()) return;
 		const option = interaction.options as CommandInteractionOptionResolver;
 		const dice = option.getString(t("roll.option.name"), true);
+		const hidden = option.getBoolean(t("dbRoll.options.hidden.name"));
 		await rollWithInteraction(
 			interaction,
 			dice,
@@ -69,7 +78,8 @@ export const diceRoll = {
 			undefined,
 			undefined,
 			undefined,
-			undefined
+			undefined,
+			hidden
 		);
 	},
 };
