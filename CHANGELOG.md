@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.10.0](https://github.com/Dicelette/discord-dicelette/compare/1.9.0...1.10.0) (2024-08-09)
+
+
+### Features
+
+* allow to hide roll result ([f4d6c6e](https://github.com/Dicelette/discord-dicelette/commit/f4d6c6e8c2ed4b6e19fcef8c72fec5798dc1993b))
+
+
+### Bug Fixes
+
+* double code d'erreur dans la commande not found character ([d8b2274](https://github.com/Dicelette/discord-dicelette/commit/d8b22741f7410d5781d751980812c2fa0e2a185e))
+* renaming deleted all chara ([1191ecd](https://github.com/Dicelette/discord-dicelette/commit/1191ecddac5a4abacb5e59c701fe7f3c9a02917e))
+
 ## [1.9.0](https://github.com/Dicelette/discord-dicelette/compare/1.8.0...1.9.0) (2024-08-05)
 
 
