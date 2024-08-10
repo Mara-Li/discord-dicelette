@@ -1,20 +1,5 @@
-import {
-	type AutocompleteInteraction,
-	type Locale,
-	SlashCommandBuilder,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	PermissionsBitField,
-	type User,
-	type Message,
-	type EmbedBuilder,
-	type ModalSubmitInteraction,
-} from "discord.js";
-import type { EClient } from "@main";
-import i18next from "i18next";
-import { cmdLn, findln, ln } from "@localization";
-import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
-import { getDatabaseChar, registerUser } from "@utils/db";
+import { deleteUser } from "@events/on_delete";
+import { verifyAvatarUrl } from "@interactions/register/validate";
 import type {
 	DiscordChannel,
 	PersonnageIds,
@@ -22,10 +7,25 @@ import type {
 	UserMessageId,
 	UserRegistration,
 } from "@interface";
-import { getEmbeds, getEmbedsList } from "@utils/parse";
+import { cmdLn, findln, ln } from "@localization";
+import type { EClient } from "@main";
+import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
-import { verifyAvatarUrl } from "@interactions/register/validate";
-import { deleteUser } from "@events/on_delete";
+import { getDatabaseChar, registerUser } from "@utils/db";
+import { getEmbeds, getEmbedsList } from "@utils/parse";
+import {
+	type AutocompleteInteraction,
+	type CommandInteraction,
+	type CommandInteractionOptionResolver,
+	type EmbedBuilder,
+	type Locale,
+	type Message,
+	type ModalSubmitInteraction,
+	PermissionsBitField,
+	SlashCommandBuilder,
+	type User,
+} from "discord.js";
+import i18next from "i18next";
 import "standardize";
 
 const t = i18next.getFixedT("en");

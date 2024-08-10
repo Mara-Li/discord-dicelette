@@ -1,5 +1,5 @@
+import { FormulaError, evalOneCombinaison } from "@dicelette/core";
 import { allowEdit, createStatsEmbed, getUserNameAndChar } from "@interactions";
-import { evalOneCombinaison, FormulaError } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
 import { displayOldAndNewStats, isArrayEqual, reply, sendLogs } from "@utils";
 import { editUserButtons } from "@utils/buttons";
@@ -11,8 +11,8 @@ import {
 	removeEmbedsFromList,
 } from "@utils/parse";
 import {
-	ActionRowBuilder,
 	type APIEmbedField,
+	ActionRowBuilder,
 	type ButtonInteraction,
 	type Embed,
 	type Guild,

@@ -1,17 +1,17 @@
+import type { StatisticalTemplate } from "@dicelette/core";
 import {
 	createDiceEmbed,
 	createStatsEmbed,
 	createTemplateEmbed,
 	createUserEmbed,
 } from "@interactions";
-import type { StatisticalTemplate } from "@dicelette/core";
 import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import {
-	addAutoRole,
-	embedError,
 	NoChannel,
 	NoEmbed,
+	addAutoRole,
+	embedError,
 	reply,
 	repostInThread,
 } from "@utils";
@@ -19,13 +19,13 @@ import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
 import {
 	type ButtonInteraction,
-	channelMention,
 	type Embed,
 	EmbedBuilder,
 	type Locale,
 	type ModalSubmitInteraction,
 	PermissionsBitField,
 	type User,
+	channelMention,
 	userMention,
 } from "discord.js";
 import { warn } from "../../console";

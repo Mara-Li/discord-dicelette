@@ -6,19 +6,19 @@ import {
 } from "discord.js";
 import { default as i18next } from "i18next";
 
-import { resources } from "./init";
-import { ALL_TRANSLATION_KEYS } from "..";
 import {
 	DiceTypeError,
+	EmptyObjectError,
 	FormulaError,
 	MaxGreater,
-	EmptyObjectError,
-	TooManyDice,
 	NoStatisticsError,
+	TooManyDice,
 	TooManyStats,
 } from "@dicelette/core";
-import { InvalidCsvContent, NoChannel, NoEmbed } from "../utils";
+import { ALL_TRANSLATION_KEYS } from "..";
 import { error } from "../console";
+import { InvalidCsvContent, NoChannel, NoEmbed } from "../utils";
+import { resources } from "./init";
 
 export function ln(userLang: Locale) {
 	const localeName = Object.entries(Locale).find(([name, abbr]) => {

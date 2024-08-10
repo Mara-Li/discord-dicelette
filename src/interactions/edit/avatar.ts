@@ -1,19 +1,19 @@
+import { allowEdit } from "@interactions";
+import type { Settings, Translation } from "@interface";
+import { findln } from "@localization";
+import { embedError, reply } from "@utils";
+import { getEmbeds, getEmbedsList } from "@utils/parse";
 import {
 	ActionRowBuilder,
 	type ModalActionRowComponentBuilder,
 	ModalBuilder,
+	type ModalSubmitInteraction,
+	type StringSelectMenuInteraction,
 	TextInputBuilder,
 	TextInputStyle,
 	type User,
-	type ModalSubmitInteraction,
-	type StringSelectMenuInteraction,
 } from "discord.js";
-import { allowEdit } from "@interactions";
-import type { Translation, Settings } from "@interface";
-import { getEmbeds, getEmbedsList } from "@utils/parse";
-import { embedError, reply } from "@utils";
 import { verifyAvatarUrl } from "../register/validate";
-import { findln } from "@localization";
 
 export async function initiateAvatarEdit(
 	interaction: StringSelectMenuInteraction,

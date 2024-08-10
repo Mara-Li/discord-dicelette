@@ -1,5 +1,11 @@
 import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
+import type {
+	DiscordChannel,
+	PersonnageIds,
+	Translation,
+	UserMessageId,
+} from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply, searchUserChannel } from "@utils";
@@ -14,12 +20,6 @@ import {
 	userMention,
 } from "discord.js";
 import i18next from "i18next";
-import type {
-	DiscordChannel,
-	PersonnageIds,
-	Translation,
-	UserMessageId,
-} from "@interface";
 import "standardize";
 
 const t = i18next.getFixedT("en");

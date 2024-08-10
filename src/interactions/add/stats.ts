@@ -1,4 +1,4 @@
-import { evalCombinaison, type StatisticalTemplate } from "@dicelette/core";
+import { type StatisticalTemplate, evalCombinaison } from "@dicelette/core";
 import { ln } from "@localization";
 import { reply } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";

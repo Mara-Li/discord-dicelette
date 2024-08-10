@@ -1,4 +1,7 @@
+import { warn } from "@console";
 import type { PersonnageIds, Settings, Translation } from "@interface";
+import { findln, ln } from "@localization";
+import { embedError, reply } from "@utils";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
 import {
 	type ButtonInteraction,
@@ -12,9 +15,6 @@ import {
 	ThreadChannel,
 	type User,
 } from "discord.js";
-import { findln, ln } from "@localization";
-import { embedError, reply } from "@utils";
-import { warn } from "@console";
 import "standardize";
 
 /**

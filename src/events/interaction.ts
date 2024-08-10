@@ -1,19 +1,23 @@
 import "standardize";
 import { autCompleteCmd, commandsList } from "@commands";
-import { executeAddDiceButton, storeDamageDice } from "@interactions/add/dice";
-import { initiateDiceEdit, validateDiceEdit } from "@interactions/edit/dice";
+import { resetButton } from "@commands/gimmick/edit";
 import type { StatisticalTemplate } from "@dicelette/core";
+import { executeAddDiceButton, storeDamageDice } from "@interactions/add/dice";
+import { initiateAvatarEdit, validateAvatarEdit } from "@interactions/edit/avatar";
+import { initiateDiceEdit, validateDiceEdit } from "@interactions/edit/dice";
+import { initiateRenaming, validateRename } from "@interactions/edit/rename";
+import { editStats, triggerEditStats } from "@interactions/edit/stats";
+import { initiateMove, validateMove } from "@interactions/edit/user";
 import type { Settings, Translation } from "@interface";
 import { lError, ln } from "@localization";
 import type { EClient } from "@main";
 import {
 	continuePage,
-	startRegisterUser,
 	pageNumber,
 	recordFirstPage,
+	startRegisterUser,
 } from "@register/start";
 import { validateUserButton } from "@register/validate";
-import { editStats, triggerEditStats } from "@interactions/edit/stats";
 import { embedError, reply } from "@utils";
 import { getTemplate, getTemplateWithDB } from "@utils/db";
 import { ensureEmbed } from "@utils/parse";
@@ -27,10 +31,6 @@ import {
 	TextChannel,
 	type User,
 } from "discord.js";
-import { initiateAvatarEdit, validateAvatarEdit } from "@interactions/edit/avatar";
-import { initiateRenaming, validateRename } from "@interactions/edit/rename";
-import { initiateMove, validateMove } from "@interactions/edit/user";
-import { resetButton } from "@commands/gimmick/edit";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {

@@ -1,8 +1,8 @@
-import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import { evalStatsDice } from "@dicelette/core";
+import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import type { Settings, Translation, UserMessageId } from "@interface";
 import { findln, ln } from "@localization";
-import { addAutoRole, embedError, NoEmbed, reply, sendLogs } from "@utils";
+import { NoEmbed, addAutoRole, embedError, reply, sendLogs } from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed, getEmbeds } from "@utils/parse";

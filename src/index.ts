@@ -1,3 +1,4 @@
+import * as process from "node:process";
 import { log } from "@console";
 import interaction from "@events/interaction";
 import join from "@events/join";
@@ -13,7 +14,6 @@ import type { GuildData } from "@interface";
 import { Client, type ClientOptions, GatewayIntentBits, Partials } from "discord.js";
 import dotenv from "dotenv";
 import Enmap from "enmap";
-import * as process from "node:process";
 
 import * as pkg from "../package.json" assert { type: "json" };
 import { flattenJson } from "./localizations";

@@ -1,3 +1,4 @@
+import path from "node:path";
 import { log } from "@console";
 import type { PersonnageIds, UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
@@ -23,7 +24,6 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
-import path from "node:path";
 import "standardize";
 
 async function chart(

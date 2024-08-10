@@ -1,17 +1,19 @@
+import { error } from "@console";
 import {
 	type DiscordChannel,
 	type Settings,
-	type Translation,
 	TUTORIAL_IMAGES,
+	type Translation,
 	type UserData,
 	type UserRegistration,
 } from "@interface";
+import { findln } from "@localization";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
-import { setDefaultManagerId, registerUser } from "@utils/db";
+import { registerUser, setDefaultManagerId } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
 import {
-	type AnyThreadChannel,
 	type APIEmbedField,
+	type AnyThreadChannel,
 	AttachmentBuilder,
 	type BaseInteraction,
 	ButtonInteraction,
@@ -39,8 +41,6 @@ import {
 } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
-import { error } from "@console";
-import { findln } from "@localization";
 import "standardize";
 
 /**

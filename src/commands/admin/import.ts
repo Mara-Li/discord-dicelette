@@ -4,15 +4,15 @@
  */
 import "standardize";
 
-import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@interactions";
 import type { StatisticalTemplate } from "@dicelette/core";
+import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@interactions";
 import type { UserData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import {
-	addAutoRole,
 	InvalidCsvContent,
 	InvalidURL,
+	addAutoRole,
 	reply,
 	repostInThread,
 } from "@utils";

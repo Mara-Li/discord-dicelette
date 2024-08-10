@@ -3,6 +3,9 @@
   "files": {
     "ignore": ["node_modules", "dist"]
   },
+  "organizeImports": {
+    "enabled": true
+  },
   "linter": {
     "rules": {
       "recommended": true,

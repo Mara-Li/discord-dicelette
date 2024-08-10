@@ -1,8 +1,9 @@
 import type { StatisticalTemplate } from "@dicelette/core";
+import { createStatsEmbed } from "@interactions";
+import { embedStatistiques, showStatistiqueModal } from "@interactions/add/stats";
 import type { Settings, Translation } from "@interface";
 import { ln } from "@localization";
 import { createEmbedFirstPage } from "@register/validate";
-import { embedStatistiques, showStatistiqueModal } from "@interactions/add/stats";
 import { embedError, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { getEmbeds, parseEmbedFields } from "@utils/parse";
@@ -19,7 +20,6 @@ import {
 	TextInputStyle,
 	type User,
 } from "discord.js";
-import { createStatsEmbed } from "@interactions";
 import "standardize";
 
 /**

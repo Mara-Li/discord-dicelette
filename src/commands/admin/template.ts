@@ -16,7 +16,6 @@ import {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
-	channelMention,
 	ChannelType,
 	type CommandInteraction,
 	type CommandInteractionOptionResolver,
@@ -26,6 +25,7 @@ import {
 	SlashCommandBuilder,
 	TextChannel,
 	ThreadChannel,
+	channelMention,
 } from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";

@@ -1,6 +1,6 @@
+import type { StatisticalTemplate } from "@dicelette/core";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createTemplateEmbed } from "@interactions";
-import type { StatisticalTemplate } from "@dicelette/core";
 import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findln, ln } from "@localization";
 import { NoEmbed, searchUserChannel } from "@utils";

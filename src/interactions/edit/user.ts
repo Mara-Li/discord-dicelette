@@ -1,13 +1,5 @@
-import {
-	ActionRowBuilder,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	type ModalSubmitInteraction,
-	TextInputBuilder,
-	TextInputStyle,
-	type StringSelectMenuInteraction,
-	type User,
-} from "discord.js";
+import { move, resetButton } from "@commands/gimmick/edit";
+import { allowEdit } from "@interactions";
 import type {
 	DiscordChannel,
 	PersonnageIds,
@@ -15,14 +7,22 @@ import type {
 	Translation,
 	UserMessageId,
 } from "@interface";
-import { allowEdit } from "@interactions";
-import { getEmbeds } from "@utils/parse";
-import { getUserByEmbed } from "@utils/db";
-import type { EClient } from "@main";
-import { move, resetButton } from "@commands/gimmick/edit";
 import { findln } from "@localization";
+import type { EClient } from "@main";
 import { embedError } from "@utils";
+import { getUserByEmbed } from "@utils/db";
 import { isUserNameOrId } from "@utils/find";
+import { getEmbeds } from "@utils/parse";
+import {
+	ActionRowBuilder,
+	type ModalActionRowComponentBuilder,
+	ModalBuilder,
+	type ModalSubmitInteraction,
+	type StringSelectMenuInteraction,
+	TextInputBuilder,
+	TextInputStyle,
+	type User,
+} from "discord.js";
 
 export async function initiateMove(
 	interaction: StringSelectMenuInteraction,

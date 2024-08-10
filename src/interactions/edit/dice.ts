@@ -1,5 +1,5 @@
-import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import { evalStatsDice, roll } from "@dicelette/core";
+import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import type { Settings, Translation, UserMessageId, UserRegistration } from "@interface";
 import { displayOldAndNewStats, parseStatsString, reply, sendLogs } from "@utils";
 import { editUserButtons } from "@utils/buttons";
@@ -11,8 +11,8 @@ import {
 	removeEmbedsFromList,
 } from "@utils/parse";
 import {
-	ActionRowBuilder,
 	type APIEmbedField,
+	ActionRowBuilder,
 	type ButtonInteraction,
 	type Embed,
 	type Guild,

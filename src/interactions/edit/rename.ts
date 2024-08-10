@@ -1,26 +1,26 @@
+import { rename } from "@commands/gimmick/edit";
+import { allowEdit } from "@interactions";
+import type {
+	DiscordChannel,
+	PersonnageIds,
+	Settings,
+	Translation,
+	UserMessageId,
+} from "@interface";
+import { findln } from "@localization";
+import type { EClient } from "@main";
+import { getUserByEmbed } from "@utils/db";
+import { getEmbeds } from "@utils/parse";
 import {
 	ActionRowBuilder,
 	type ModalActionRowComponentBuilder,
 	ModalBuilder,
+	type ModalSubmitInteraction,
+	type StringSelectMenuInteraction,
 	TextInputBuilder,
 	TextInputStyle,
-	type StringSelectMenuInteraction,
 	type User,
-	type ModalSubmitInteraction,
 } from "discord.js";
-import { allowEdit } from "@interactions";
-import type {
-	Translation,
-	Settings,
-	PersonnageIds,
-	UserMessageId,
-	DiscordChannel,
-} from "@interface";
-import { getEmbeds } from "@utils/parse";
-import { findln } from "@localization";
-import { getUserByEmbed } from "@utils/db";
-import type { EClient } from "@main";
-import { rename } from "@commands/gimmick/edit";
 
 export async function initiateRenaming(
 	interaction: StringSelectMenuInteraction,

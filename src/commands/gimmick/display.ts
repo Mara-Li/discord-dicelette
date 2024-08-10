@@ -1,10 +1,11 @@
+import { error } from "@console";
 import { createDiceEmbed, createStatsEmbed } from "@interactions";
+import type { PersonnageIds } from "@interface";
 import { cmdLn, findln, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
-import { error } from "@console";
 import {
 	type APIEmbedField,
 	type AutocompleteInteraction,
@@ -15,7 +16,6 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import i18next from "i18next";
-import type { PersonnageIds } from "@interface";
 import "standardize";
 
 const t = i18next.getFixedT("en");

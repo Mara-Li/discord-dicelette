@@ -3,7 +3,6 @@ import type { EClient } from "@main";
 import { reply, setTagsForRoll } from "@utils";
 import { rollWithInteraction } from "@utils/roll";
 import {
-	channelMention,
 	type CommandInteraction,
 	type CommandInteractionOptionResolver,
 	ForumChannel,
@@ -12,6 +11,7 @@ import {
 	type Message,
 	SlashCommandBuilder,
 	TextChannel,
+	channelMention,
 	userMention,
 } from "discord.js";
 import i18next from "i18next";

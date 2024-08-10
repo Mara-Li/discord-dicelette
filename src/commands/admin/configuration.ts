@@ -3,16 +3,16 @@ import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
 import {
-	channelMention,
 	ChannelType,
 	type CommandInteraction,
 	type CommandInteractionOptionResolver,
 	EmbedBuilder,
 	PermissionFlagsBits,
-	roleMention,
 	SlashCommandBuilder,
 	TextChannel,
 	ThreadChannel,
+	channelMention,
+	roleMention,
 } from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
