@@ -483,6 +483,8 @@ async function display(
 				 ${ul("config.result.desc")} 
 				${dpTitle("config.disableThread.title")} ${dp(guildSettings.disableThread)}
 				 ${ul("config.disableThread.desc")}
+				${dpTitle("config.hiddenRoll.title")} ${dp(guildSettings.hiddenRoll, "chan")}
+				 ${ul("config.hiddenRoll.desc")}
 			`),
 			},
 			{
@@ -503,8 +505,6 @@ async function display(
 					 ${ul("config.context.desc")}
 					${dpTitle("config.linkToLog.title")} ${dp(guildSettings.linkToLogs)}
 					 ${ul("config.linkToLog.desc")}
-					${dpTitle("config.hiddenRoll.title")} ${dp(guildSettings.hiddenRoll, "chan")}
-					 ${ul("config.hiddenRoll.desc")}
 					 `),
 			},
 
