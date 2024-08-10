@@ -12,11 +12,8 @@ import {
 	embedError,
 	NoChannel,
 	NoEmbed,
-	removeEmoji,
-	removeEmojiAccents,
 	reply,
 	repostInThread,
-	title,
 } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
@@ -33,6 +30,7 @@ import {
 } from "discord.js";
 import { warn } from "../../console";
 import { isUserNameOrId } from "../../utils/find";
+import "standardize";
 
 export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;
@@ -101,7 +99,7 @@ export async function createEmbedFirstPage(
 	if (channelMention) {
 		embed.addFields({ name: "_ _", value: "_ _", inline: true });
 		embed.addFields({
-			name: title(ul("common.channel")),
+			name: ul("common.channel").capitalize(),
 			value: `${channelMention(sheetId as string)}`,
 			inline: true,
 		});
@@ -180,7 +178,7 @@ export async function validateUser(
 			diceEmbed = createDiceEmbed(ul);
 		}
 		diceEmbed.addFields({
-			name: title(removeEmojiAccents(field.name)),
+			name: field.name.unidecode(true).capitalize(),
 			value: `\`${field.value}\``,
 			inline: true,
 		});
@@ -190,7 +188,7 @@ export async function validateUser(
 			statsEmbed = createStatsEmbed(ul);
 		}
 		statsEmbed.addFields({
-			name: title(removeEmoji(field.name)),
+			name: field.name.unidecode(true).capitalize(),
 			value: field.value,
 			inline: true,
 		});
@@ -203,7 +201,7 @@ export async function validateUser(
 	const stats: { [name: string]: number } = {};
 	if (parsedStats)
 		for (const stat of templateStat) {
-			stats[stat] = Number.parseInt(parsedStats[removeEmojiAccents(stat)], 10);
+			stats[stat] = Number.parseInt(parsedStats[stat.unidecode()], 10);
 		}
 
 	const damageFields = diceEmbed?.toJSON().fields ?? [];
@@ -213,7 +211,7 @@ export async function validateUser(
 		templateDamage = {};
 
 		for (const damage of damageFields) {
-			templateDamage[removeEmojiAccents(damage.name)] = damage.value;
+			templateDamage[damage.name.unidecode()] = damage.value;
 		}
 	}
 	for (const [name, dice] of Object.entries(template.damage ?? {})) {
@@ -245,7 +243,7 @@ export async function validateUser(
 		templateEmbed = createTemplateEmbed(ul);
 		if (template.diceType)
 			templateEmbed.addFields({
-				name: title(ul("common.dice")),
+				name: ul("common.dice").capitalize(),
 				value: `\`${template.diceType}\``,
 				inline: true,
 			});

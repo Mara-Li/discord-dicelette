@@ -8,15 +8,8 @@ import type {
 } from "@interface";
 import { ln } from "@localization";
 import type { EClient } from "@main";
-import {
-	embedError,
-	haveAccess,
-	removeEmojiAccents,
-	reply,
-	searchUserChannel,
-	title,
-} from "@utils";
-import { ensureEmbed, getEmbeds, parseEmbedFields, removeBacktick } from "@utils/parse";
+import { embedError, haveAccess, reply, searchUserChannel } from "@utils";
+import { ensureEmbed, getEmbeds, parseEmbedFields } from "@utils/parse";
 import {
 	type BaseInteraction,
 	type ButtonInteraction,
@@ -28,7 +21,7 @@ import {
 	type Message,
 	type ModalSubmitInteraction,
 } from "discord.js";
-import removeAccents from "remove-accents";
+import "standardize";
 
 /**
  * Get the guild template when clicking on the "registering user" button or when submiting
@@ -47,23 +40,12 @@ export function serializeName(
 	userStatistique: UserData | undefined,
 	charName: string | undefined
 ) {
-	const serializedNameDB = userStatistique?.userName
-		? removeAccents(userStatistique.userName.toLowerCase())
-		: undefined;
-	const serializedNameQueries = charName
-		? removeAccents(charName).toLowerCase()
-		: undefined;
+	const serializedNameDB = userStatistique?.userName?.standardize(true);
+	const serializedNameQueries = charName?.standardize(true);
 	const selectedCharByQueries =
 		serializedNameDB !== serializedNameQueries ||
 		(serializedNameQueries && serializedNameDB?.includes(serializedNameQueries));
 	return selectedCharByQueries;
-}
-
-function strictTest(strict: boolean, char: string, query: string) {
-	if (strict) {
-		return removeAccents(char).toLowerCase() === removeAccents(query).toLowerCase();
-	}
-	return removeAccents(char).toLowerCase().includes(removeAccents(query).toLowerCase());
 }
 
 export async function getDatabaseChar(
@@ -89,8 +71,7 @@ export async function getDatabaseChar(
 		const allUsers = Object.entries(allUsersData);
 		for (const [user, data] of allUsers) {
 			const userChar = data.find((char) => {
-				if (char.charName && charName) return strictTest(strict, char.charName, charName);
-				return charName == null && char.charName == null;
+				return char.charName?.subText(charName, strict);
 			});
 			if (userChar) {
 				return {
@@ -104,8 +85,7 @@ export async function getDatabaseChar(
 		`user.${user?.id ?? interaction.user.id}`
 	);
 	let findChara = userData?.find((char) => {
-		if (char.charName && charName) return strictTest(strict, char.charName, charName);
-		return charName == null && char.charName == null;
+		char.charName?.subText(charName, strict);
 	});
 	if (!findChara) findChara = userData?.[0];
 	if (!findChara) {
@@ -175,12 +155,9 @@ export async function getUserFromMessage(
 		options = { integrateCombinaison: true, allowAccess: true, skipNotFound: false };
 	const { integrateCombinaison, allowAccess, skipNotFound } = options;
 	const ul = ln(interaction.locale);
-	const serializedName = charName ? removeAccents(charName).toLowerCase() : undefined;
 	const guild = interaction.guild;
 	const user = guildData.get(guild!.id, `user.${userId}`)?.find((char) => {
-		if (serializedName && char.charName)
-			return removeAccents(char.charName).toLowerCase().includes(serializedName);
-		return charName == null && char.charName == null;
+		return char.charName?.subText(charName);
 	});
 	if (!user) return;
 	const userMessageId: PersonnageIds = {
@@ -235,9 +212,6 @@ export async function registerUser(
 	let { damage } = userData;
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
-	const uniCharName: string | undefined = charName
-		? removeAccents(charName.toLowerCase())
-		: undefined;
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
 	if (
@@ -261,14 +235,10 @@ export async function registerUser(
 	if (!damage) delete newChar.damageName;
 	if (user) {
 		const char = user.find((char) => {
-			if (charName && char.charName)
-				return removeAccents(char.charName).toLowerCase() === uniCharName;
-			return char.charName == null && charName == null;
+			return char.charName?.subText(charName, true);
 		});
 		const charIndx = user.findIndex((char) => {
-			if (charName && char.charName)
-				return removeAccents(char.charName).toLowerCase() === uniCharName;
-			return char.charName == null && charName == null;
+			return char.charName?.subText(charName, true);
 		});
 		if (char) {
 			if (errorOnDuplicate) throw new Error("DUPLICATE");
@@ -332,14 +302,14 @@ export function getUserByEmbed(
 		stats = {};
 		for (const stat of templateStat) {
 			if (first && !stat.name.startsWith("✏️")) continue;
-			const value = Number.parseInt(removeBacktick(stat.value), 10);
+			const value = Number.parseInt(stat.value.removeBacktick(), 10);
 			if (Number.isNaN(value)) {
 				//it's a combinaison
 				//remove the `x` = text;
 				const combinaison = stat.value.split("=")[1].trim();
 				if (integrateCombinaison)
-					stats[removeEmojiAccents(stat.name)] = Number.parseInt(combinaison, 10);
-			} else stats[removeEmojiAccents(stat.name)] = value;
+					stats[stat.name.unidecode()] = Number.parseInt(combinaison, 10);
+			} else stats[stat.name.unidecode()] = value;
 		}
 	}
 	user.stats = stats;
@@ -350,7 +320,7 @@ export function getUserByEmbed(
 	if (damageFields) {
 		templateDamage = {};
 		for (const damage of damageFields) {
-			templateDamage[removeEmojiAccents(damage.name)] = removeBacktick(damage.value);
+			templateDamage[damage.name.unidecode()] = damage.value.removeBacktick();
 		}
 	}
 	const templateEmbed = first ? userEmbed : getEmbeds(ul, message, "template");
@@ -400,7 +370,7 @@ export async function getFirstRegisteredChar(
 		return;
 	}
 	const firstChar = userData[0];
-	const optionChar = title(firstChar.charName);
+	const optionChar = firstChar.charName?.capitalize();
 	const userStatistique = await getUserFromMessage(
 		client.settings,
 		interaction.user.id,

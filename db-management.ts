@@ -4,7 +4,7 @@ import { Command, Option, type OptionValues } from "commander";
 import Enmap from "enmap";
 import { writeFileSync } from "node:fs";
 import { colorize as colorizeJson } from "json-colorizer";
-import removeAccents from "remove-accents";
+import "standardize";
 
 //extends console to add console.error with color
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -105,11 +105,6 @@ function readAll() {
 	}
 }
 
-const unicode = (str?: string | null) => {
-	if (!str) return undefined;
-	return removeAccents(str).toLowerCase();
-};
-
 function getGuild(guildId: string) {
 	const guild = db.get(guildId);
 	console.log("Guild data for :", header(guildId));
@@ -158,9 +153,11 @@ function editUser(
 		return;
 	}
 	//find charName in the user data
-	const dataUser = user.find((data) => unicode(charName) === unicode(data?.charName));
+	const dataUser = user.find(
+		(data) => charName?.standardize() === data?.charName?.standardize()
+	);
 	const dataIndex = user.findIndex(
-		(data) => unicode(charName) === unicode(data?.charName)
+		(data) => charName?.standardize() === data?.charName?.standardize()
 	);
 	if (!dataUser || dataIndex === -1) {
 		error(`User ${userId} not found in guild ${guildId} for provided data.`);

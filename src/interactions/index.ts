@@ -13,9 +13,9 @@ import {
 	type User,
 } from "discord.js";
 import { findln, ln } from "@localization";
-import { embedError, reply, title } from "@utils";
-import removeAccents from "remove-accents";
+import { embedError, reply } from "@utils";
 import { warn } from "@console";
+import "standardize";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found
@@ -74,17 +74,21 @@ export function createUserEmbed(
 		.setTitle(ul("embed.user"))
 		.setColor("Random")
 		.setThumbnail(thumbnail)
-		.addFields({ name: title(ul("common.user")), value: `<@${user}>`, inline: true });
+		.addFields({
+			name: ul("common.user").capitalize(),
+			value: `<@${user}>`,
+			inline: true,
+		});
 	if (charName)
 		userEmbed.addFields({
-			name: title(ul("common.character")),
-			value: title(charName),
+			name: ul("common.character").capitalize(),
+			value: charName.capitalize(),
 			inline: true,
 		});
 	else
 		userEmbed.addFields({
-			name: title(ul("common.character")),
-			value: title(ul("common.noSet")),
+			name: ul("common.character").capitalize(),
+			value: ul("common.noSet").capitalize(),
 			inline: true,
 		});
 	return userEmbed;
@@ -95,7 +99,9 @@ export function createUserEmbed(
  * @param ul {Translation}
  */
 export function createStatsEmbed(ul: Translation) {
-	return new EmbedBuilder().setTitle(title(ul("common.statistics"))).setColor("Aqua");
+	return new EmbedBuilder()
+		.setTitle(ul("common.statistics").capitalize())
+		.setColor("Aqua");
 }
 
 /**
@@ -116,10 +122,7 @@ export function verifyIfEmbedInDB(
 	if (!charData) return { isInDb: false };
 	const charName = charData.find((char) => {
 		if (userName && char.charName)
-			return (
-				removeAccents(char.charName).toLowerCase() ===
-				removeAccents(userName.toLowerCase())
-			);
+			return char.charName.standardize() === userName.standardize();
 		return char.charName == null && userName == null;
 	});
 	if (!charName) return { isInDb: false };

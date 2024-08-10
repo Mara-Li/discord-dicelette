@@ -2,7 +2,7 @@
 import { error } from "@console";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { embedError, filterChoices, reply, title } from "@utils";
+import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice } from "@utils/roll";
 import {
@@ -13,7 +13,7 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import i18next from "i18next";
-import removeAccents from "remove-accents";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 
@@ -74,10 +74,8 @@ export const dbd = {
 
 			if (char) {
 				const values = user.find((data) => {
-					if (data.charName)
-						return removeAccents(data.charName)
-							.toLowerCase()
-							.includes(removeAccents(char).toLowerCase());
+					if (data.charName) return data.charName?.subText(char);
+
 					return false;
 				});
 				if (values?.damageName) choices = values.damageName;
@@ -98,8 +96,8 @@ export const dbd = {
 				const values = user.filter((data) => {
 					if (data.damageName)
 						return data.damageName
-							.map((data) => removeAccents(data).toLowerCase())
-							.includes(removeAccents(skill).toLowerCase());
+							.map((data) => data.standardize())
+							.includes(skill.standardize());
 					return false;
 				});
 				choices = values
@@ -116,7 +114,7 @@ export const dbd = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map((result) => ({ name: title(result), value: result }))
+			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -126,7 +124,7 @@ export const dbd = {
 		const user = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
 		if (!user) return;
 		let charOptions = options.getString(t("common.character")) ?? undefined;
-		const charName = charOptions ? removeAccents(charOptions).toLowerCase() : undefined;
+		const charName = charOptions?.normalize();
 		const ul = ln(interaction.locale as Locale);
 		try {
 			let userStatistique = await getUserFromMessage(
@@ -140,7 +138,7 @@ export const dbd = {
 			if (charOptions && !selectedCharByQueries) {
 				await reply(interaction, {
 					embeds: [
-						embedError(ul("error.charName", { charName: title(charOptions) }), ul),
+						embedError(ul("error.charName", { charName: charOptions.capitalize() }), ul),
 					],
 					ephemeral: true,
 				});

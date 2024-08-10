@@ -18,6 +18,7 @@ import * as process from "node:process";
 import * as pkg from "../package.json" assert { type: "json" };
 import { flattenJson } from "./localizations";
 import { resources } from "./localizations/init";
+import "standardize";
 
 dotenv.config({ path: ".env" });
 

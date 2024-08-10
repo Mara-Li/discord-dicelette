@@ -4,7 +4,6 @@
 
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { removeEmojiAccents } from "@utils";
 import { getUserFromMessage } from "@utils/db";
 import {
 	type CommandInteraction,
@@ -13,6 +12,7 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
+import "standardize";
 
 import type { CSVRow } from "./import";
 
@@ -70,7 +70,7 @@ export const exportData = {
 				let newStats: { [key: string]: number | undefined } = {};
 				if (statsName && stats.stats) {
 					for (const name of statsName) {
-						newStats[name] = stats.stats?.[removeEmojiAccents(name)];
+						newStats[name] = stats.stats?.[name.unidecode()];
 					}
 				} else if (stats.stats) newStats = stats.stats;
 				const statChannelAsString = stats.channel ? `'${stats.channel}` : undefined;

@@ -8,7 +8,9 @@ import {
 import type { GuildData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { downloadTutorialImages, embedError, reply, title } from "@utils";
+import { downloadTutorialImages, embedError, reply } from "@utils";
+import "standardize";
+
 import { bulkEditTemplateUser } from "@utils/parse";
 import {
 	ActionRowBuilder,
@@ -259,7 +261,7 @@ export const registerTemplate = {
 		let statisticsEmbed: undefined | EmbedBuilder = undefined;
 		if (templateData.statistics) {
 			statisticsEmbed = new EmbedBuilder()
-				.setTitle(title(ul("common.statistics")))
+				.setTitle(ul("common.statistics").capitalize())
 				.setThumbnail(
 					"https://github.com/dicelette/discord-dicelette/blob/main/assets/player.png?raw=true"
 				);
@@ -274,7 +276,7 @@ export const registerTemplate = {
 				if (max) msg += `- Max${ul("common.space")}: \`${max}\`\n`;
 				if (msg.length === 0) msg = ul("register.embed.noValue");
 				statisticsEmbed.addFields({
-					name: title(stat),
+					name: stat.capitalize(),
 					value: msg,
 					inline: true,
 				});
@@ -283,7 +285,7 @@ export const registerTemplate = {
 
 		if (templateData.diceType)
 			embedTemplate.addFields({
-				name: title(ul("common.dice")),
+				name: ul("common.dice").capitalize(),
 				value: `\`${templateData.diceType}\``,
 			});
 		let msgComparator = "";
@@ -311,7 +313,7 @@ export const registerTemplate = {
 				);
 			for (const [dice, value] of Object.entries(templateData.damage))
 				diceEmbed.addFields({
-					name: title(dice),
+					name: dice.capitalize(),
 					value: `${value}`,
 					inline: true,
 				});

@@ -1,5 +1,5 @@
+import "standardize";
 import { autCompleteCmd, commandsList } from "@commands";
-import { error } from "@console";
 import { executeAddDiceButton, storeDamageDice } from "@interactions/add/dice";
 import { initiateDiceEdit, validateDiceEdit } from "@interactions/edit/dice";
 import type { StatisticalTemplate } from "@dicelette/core";
@@ -30,7 +30,7 @@ import {
 import { initiateAvatarEdit, validateAvatarEdit } from "@interactions/edit/avatar";
 import { initiateRenaming, validateRename } from "@interactions/edit/rename";
 import { initiateMove, validateMove } from "@interactions/edit/user";
-import { resetButton } from "../commands/gimmick/edit";
+import { resetButton } from "@commands/gimmick/edit";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {
@@ -67,7 +67,7 @@ export default (client: EClient): void => {
 			else if (interaction.isStringSelectMenu())
 				await selectSubmit(interaction, ul, interactionUser, client.settings);
 		} catch (e) {
-			error(e);
+			console.error(e);
 			if (!interaction.guild) return;
 			const msgError = lError(e as Error, interaction);
 			if (msgError.length === 0) return;

@@ -1,6 +1,6 @@
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { embedError, filterChoices, reply, title } from "@utils";
+import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
 import {
@@ -11,6 +11,7 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import i18next from "i18next";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 
@@ -181,7 +182,7 @@ export const mjRoll = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map((result) => ({ name: title(result), value: result }))
+			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -204,7 +205,9 @@ export const mjRoll = {
 		const serializedNameQueries = serializeName(charData, charName);
 		if (charName && !serializedNameQueries) {
 			await reply(interaction, {
-				embeds: [embedError(ul("error.charName", { charName: title(charName) }), ul)],
+				embeds: [
+					embedError(ul("error.charName", { charName: charName.capitalize() }), ul),
+				],
 				ephemeral: true,
 			});
 			return;

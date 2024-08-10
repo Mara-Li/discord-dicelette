@@ -1,7 +1,7 @@
 import type { Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { reply, title } from "@utils";
+import { reply } from "@utils";
 import {
 	channelMention,
 	ChannelType,
@@ -16,6 +16,7 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 export const configuration = {
@@ -453,7 +454,8 @@ async function display(
 	if (!guildSettings) return;
 
 	const dpTitle = (content?: string, toUpperCase?: boolean) => {
-		if (toUpperCase) return `- **__${title(ul(content))}__**${ul("common.space")}:`;
+		if (toUpperCase)
+			return `- **__${ul(content)?.capitalize()}__**${ul("common.space")}:`;
 		return `- **__${ul(content)}__**${ul("common.space")}:`;
 	};
 

@@ -8,7 +8,7 @@ import {
 } from "@interface";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { setDefaultManagerId, registerUser } from "@utils/db";
-import { parseEmbedFields, removeBacktick } from "@utils/parse";
+import { parseEmbedFields } from "@utils/parse";
 import {
 	type AnyThreadChannel,
 	type APIEmbedField,
@@ -39,9 +39,10 @@ import {
 } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
-import removeAccents from "remove-accents";
-import { error } from "../console";
-import { findln } from "../localizations";
+import { error } from "@console";
+import { findln } from "@localization";
+import "standardize";
+
 /**
  * Set the tags for thread channel in forum
  * @param forum {ForumChannel}
@@ -71,19 +72,6 @@ export async function setTagsForRoll(forum: ForumChannel) {
 	return forum.availableTags.find(
 		(tag) => tag.name === "Dice Roll" && tag.emoji?.name === "🪡"
 	) as GuildForumTagData;
-}
-
-/**
- * Title case a string
- * @param str {str}
- */
-export function title(str?: string | null) {
-	if (!str) return "";
-	const words = str.split(" ");
-	const titleCasedWords = words.map((word) => {
-		return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-	});
-	return titleCasedWords.join(" ");
 }
 
 /**
@@ -145,22 +133,6 @@ export async function repostInThread(
 		msgId: [msg.id, thread.id],
 	};
 	registerUser(userRegister, interaction, guildData);
-}
-
-/**
- * Remove the emoji from the registering user embed
- * Also set to lowercase
- * @param dice {string}
- */
-export function removeEmoji(dice: string) {
-	return dice.replaceAll("🔪", "").replaceAll("✏️", "").trim().toLowerCase();
-}
-
-/** Remove the emoji AND accents, and set to lowercase
- * @param dice {string}
- */
-export function removeEmojiAccents(dice: string) {
-	return removeBacktick(removeAccents(removeEmoji(dice)));
 }
 
 /**
@@ -252,7 +224,7 @@ export function generateStatsDice(
 		//the dice will be converted before roll
 		const allStats = Object.keys(stats);
 		for (const stat of allStats) {
-			const regex = new RegExp(escapeRegex(removeAccents(stat)), "gi");
+			const regex = new RegExp(escapeRegex(stat.removeAccents()), "gi");
 			if (dice.match(regex)) {
 				const statValue = stats[stat];
 				dice = dice.replace(regex, statValue.toString());
@@ -286,9 +258,7 @@ export function cleanedDice(dice: string) {
  * @param focused {string}
  */
 export function filterChoices(choices: string[], focused: string) {
-	return choices.filter((choice) =>
-		removeAccents(choice).toLowerCase().includes(removeAccents(focused).toLowerCase())
-	);
+	return choices.filter((choice) => choice.subText(focused.removeAccents()));
 }
 
 /**

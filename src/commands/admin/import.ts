@@ -2,6 +2,7 @@
  * Allow to add multiple people to the user database at once, using a CSV file.
  * The bot will register user as the other commands, with adding them into the user thread using {@link validateUser}
  */
+import "standardize";
 
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@interactions";
 import type { StatisticalTemplate } from "@dicelette/core";
@@ -12,10 +13,8 @@ import {
 	addAutoRole,
 	InvalidCsvContent,
 	InvalidURL,
-	removeEmojiAccents,
 	reply,
 	repostInThread,
-	title,
 } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
@@ -32,6 +31,7 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 
@@ -115,14 +115,14 @@ export const bulkAdd = {
 						? `\`${validateValue.combinaison}\` = ${value}`
 						: `\`${value}\``;
 					statsEmbed!.addFields({
-						name: title(name),
+						name: name.capitalize(),
 						value: fieldValue,
 						inline: true,
 					});
 				}
 				for (const [name, dice] of Object.entries(guildTemplate.damage ?? {})) {
 					diceEmbed!.addFields({
-						name: title(name),
+						name: name.capitalize(),
 						value: `\`${dice}\``,
 						inline: true,
 					});
@@ -131,7 +131,7 @@ export const bulkAdd = {
 				for (const [name, dice] of Object.entries(char.damage ?? {})) {
 					if (!diceEmbed) diceEmbed = createDiceEmbed(ul);
 					diceEmbed!.addFields({
-						name: title(name),
+						name: name.capitalize(),
 						value: `\`${dice}\``,
 						inline: true,
 					});
@@ -143,7 +143,7 @@ export const bulkAdd = {
 						.setTitle(ul("embed.template"))
 						.setColor("DarkerGrey");
 					templateEmbed.addFields({
-						name: title(ul("common.dice")),
+						name: ul("common.dice").capitalize(),
 						value: `\`${guildTemplate.diceType}\``,
 						inline: true,
 					});
@@ -247,7 +247,7 @@ export async function parseCSV(
 	if (allowPrivate) header.push("isPrivate");
 	const ul = ln(interaction?.locale ?? ("en" as Locale));
 	header.push("dice");
-	header = header.map((key) => removeEmojiAccents(key));
+	header = header.map((key) => key.unidecode());
 	//papaparse can't be used in Node, we need first to create a readable stream
 
 	const csvText = url.startsWith("https://") ? await readCSV(url) : url;
@@ -269,7 +269,7 @@ export async function parseCSV(
 				return;
 			}
 			//throw error if missing header (it shouldn't not throw if a header is added)
-			const dataHeader = results.meta.fields?.map((key) => removeEmojiAccents(key));
+			const dataHeader = results.meta.fields?.map((key) => key.unidecode());
 			if (!dataHeader) {
 				console.error("Error while parsing CSV, missing header");
 				if (interaction)
@@ -379,7 +379,7 @@ async function step(
 		if (
 			members[userID].find((char) => {
 				if (char.userName && charName)
-					return removeEmojiAccents(char.userName) === removeEmojiAccents(charName);
+					return char.userName.unidecode() === charName.unidecode();
 				if (!char.userName && !charName) return true;
 				return false;
 			})

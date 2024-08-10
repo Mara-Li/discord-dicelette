@@ -41,7 +41,7 @@
       "@commands/*": ["src/commands/*"],
       "@commands": ["src/commands/index.js"],
       "@console": ["src/console.js"],
-      "remove-accents": ["src/remove-accents.js"]
+      "standardize": ["src/standardize.js"]
     }
   },
   "files": ["src/index.ts"],

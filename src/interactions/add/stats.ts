@@ -1,8 +1,8 @@
 import { evalCombinaison, type StatisticalTemplate } from "@dicelette/core";
 import { ln } from "@localization";
-import { removeEmojiAccents, reply, title } from "@utils";
+import { reply } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
-import { getEmbeds, getStatistiqueFields, removeBacktick } from "@utils/parse";
+import { getEmbeds, getStatistiqueFields } from "@utils/parse";
 import {
 	ActionRowBuilder,
 	type ButtonInteraction,
@@ -14,6 +14,7 @@ import {
 	TextInputStyle,
 } from "discord.js";
 import { createStatsEmbed } from "..";
+import "standardize";
 
 /**
  * Embed to display the statistics when adding a new user
@@ -39,7 +40,7 @@ export async function embedStatistiques(
 	const statEmbeds = statsEmbed ?? createStatsEmbed(ul);
 	for (const [stat, value] of Object.entries(stats)) {
 		statEmbeds.addFields({
-			name: title(stat),
+			name: stat.capitalize(),
 			value: `\`${value}\``,
 			inline: true,
 		});
@@ -47,16 +48,14 @@ export async function embedStatistiques(
 	const statsWithoutCombinaison = template.statistics
 		? Object.keys(template.statistics)
 				.filter((stat) => !template.statistics![stat].combinaison)
-				.map((name) => removeEmojiAccents(name))
+				.map((name) => name.standardize())
 		: [];
 	const embedObject = statEmbeds.toJSON();
 	const fields = embedObject.fields;
 	if (!fields) return;
 	const parsedFields: { [name: string]: string } = {};
 	for (const field of fields) {
-		parsedFields[removeEmojiAccents(field.name)] = removeBacktick(
-			field.value.toLowerCase()
-		);
+		parsedFields[field.name.standardize()] = field.value.removeBacktick().standardize();
 	}
 
 	const embedStats = Object.fromEntries(
@@ -68,7 +67,7 @@ export async function embedStatistiques(
 		//add combinaison to the embed
 		for (const stat of Object.keys(combinaison)) {
 			statEmbeds.addFields({
-				name: title(stat),
+				name: stat.capitalize(),
 				value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
 				inline: true,
 			});
@@ -119,9 +118,7 @@ export async function showStatistiqueModal(
 		.setTitle(ul("modals.steps", { page, max: nbOfPages + 1 }));
 	let statToDisplay = statsWithoutCombinaison;
 	if (stats && stats.length > 0) {
-		statToDisplay = statToDisplay.filter(
-			(stat) => !stats.includes(removeEmojiAccents(stat))
-		);
+		statToDisplay = statToDisplay.filter((stat) => !stats.includes(stat.unidecode()));
 		if (statToDisplay.length === 0) {
 			//remove button
 			const button = registerDmgButton(ul);
@@ -131,13 +128,10 @@ export async function showStatistiqueModal(
 	}
 	const statsToDisplay = statToDisplay.slice(0, 4);
 	const statisticsLowerCase = Object.fromEntries(
-		Object.entries(template.statistics).map(([key, value]) => [
-			removeEmojiAccents(key),
-			value,
-		])
+		Object.entries(template.statistics).map(([key, value]) => [key.standardize(), value])
 	);
 	for (const stat of statsToDisplay) {
-		const cleanedName = removeEmojiAccents(stat);
+		const cleanedName = stat.unidecode();
 		const value = statisticsLowerCase[cleanedName];
 		if (value.combinaison) continue;
 		let msg = "";

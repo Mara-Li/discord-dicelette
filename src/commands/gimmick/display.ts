@@ -1,14 +1,7 @@
 import { createDiceEmbed, createStatsEmbed } from "@interactions";
 import { cmdLn, findln, ln } from "@localization";
 import type { EClient } from "@main";
-import {
-	embedError,
-	filterChoices,
-	haveAccess,
-	reply,
-	searchUserChannel,
-	title,
-} from "@utils";
+import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
 import { error } from "@console";
@@ -23,7 +16,7 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import type { PersonnageIds } from "@interface";
-import removeAccents from "remove-accents";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 
@@ -76,7 +69,7 @@ export const displayUser = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map((result) => ({ name: title(result) ?? result, value: result }))
+			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -104,9 +97,7 @@ export const displayUser = {
 			/* search based on the character name */
 			const findChara = Object.values(charData).find((data) => {
 				if (data.charName && charName) {
-					return removeAccents(data.charName)
-						.toLowerCase()
-						.includes(removeAccents(charName).toLowerCase());
+					return data.charName.search(charName);
 				}
 				return data.charName === charName;
 			});
@@ -169,8 +160,9 @@ export const displayUser = {
 					inline: true,
 				})
 				.addFields({
-					name: title(ul("common.character")),
-					value: jsonDataChar?.value ?? title(userData.charName) ?? ul("common.noSet"),
+					name: ul("common.character").capitalize(),
+					value:
+						jsonDataChar?.value ?? userData.charName?.capitalize() ?? ul("common.noSet"),
 					inline: true,
 				});
 			const newStatEmbed: EmbedBuilder | undefined = statsFields

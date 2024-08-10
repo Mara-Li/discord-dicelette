@@ -3,7 +3,7 @@ import type { Settings, Translation } from "@interface";
 import { ln } from "@localization";
 import { createEmbedFirstPage } from "@register/validate";
 import { embedStatistiques, showStatistiqueModal } from "@interactions/add/stats";
-import { embedError, removeEmojiAccents, reply } from "@utils";
+import { embedError, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { getEmbeds, parseEmbedFields } from "@utils/parse";
 import {
@@ -20,6 +20,7 @@ import {
 	type User,
 } from "discord.js";
 import { createStatsEmbed } from "@interactions";
+import "standardize";
 
 /**
  * Interaction to continue to the next page of the statistics when registering a new user
@@ -49,12 +50,12 @@ export async function continuePage(
 	if (!embed || !dbTemplate.statistics) return;
 	const statsEmbed = getEmbeds(ul, interaction.message, "stats") ?? createStatsEmbed(ul);
 	const allTemplateStat = Object.keys(dbTemplate.statistics).map((stat) =>
-		removeEmojiAccents(stat)
+		stat.unidecode()
 	);
 
 	const statsAlreadySet = Object.keys(parseEmbedFields(statsEmbed.toJSON() as Embed))
-		.filter((stat) => allTemplateStat.includes(removeEmojiAccents(stat)))
-		.map((stat) => removeEmojiAccents(stat));
+		.filter((stat) => allTemplateStat.includes(stat.unidecode()))
+		.map((stat) => stat.unidecode());
 	if (statsAlreadySet.length === allTemplateStat.length) {
 		await reply(interaction, { content: ul("modals.alreadySet"), ephemeral: true });
 		return;

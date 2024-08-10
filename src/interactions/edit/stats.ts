@@ -1,14 +1,7 @@
 import { allowEdit, createStatsEmbed, getUserNameAndChar } from "@interactions";
 import { evalOneCombinaison, FormulaError } from "@dicelette/core";
 import type { Settings, Translation } from "@interface";
-import {
-	displayOldAndNewStats,
-	isArrayEqual,
-	removeEmojiAccents,
-	reply,
-	sendLogs,
-	title,
-} from "@utils";
+import { displayOldAndNewStats, isArrayEqual, reply, sendLogs } from "@utils";
 import { editUserButtons } from "@utils/buttons";
 import { getTemplateWithDB } from "@utils/db";
 import {
@@ -31,6 +24,7 @@ import {
 	type User,
 	userMention,
 } from "discord.js";
+import "standardize";
 
 /**
  * Validate the stats and edit the embed with the new stats for editing
@@ -63,19 +57,17 @@ export async function editStats(
 	//verify value from template
 	const template = Object.fromEntries(
 		Object.entries(templateStats.statistics).map(([name, value]) => [
-			removeEmojiAccents(name),
+			name.unidecode(),
 			value,
 		])
 	);
 	const embedsStatsFields: APIEmbedField[] = [];
 	for (const [name, value] of Object.entries(stats)) {
-		const stat = template?.[removeEmojiAccents(name)];
+		const stat = template?.[name.unidecode()];
 		if (
 			value.toLowerCase() === "x" ||
 			value.trim().length === 0 ||
-			embedsStatsFields.find(
-				(field) => removeEmojiAccents(field.name) === removeEmojiAccents(name)
-			)
+			embedsStatsFields.find((field) => field.name.unidecode() === name.unidecode())
 		)
 			continue;
 		if (!stat) {
@@ -90,7 +82,7 @@ export async function editStats(
 				throw new FormulaError(value);
 			}
 			embedsStatsFields.push({
-				name: title(name),
+				name: name.capitalize(),
 				value: `\`${value}\` = ${combinaison}`,
 				inline: true,
 			});
@@ -100,7 +92,7 @@ export async function editStats(
 			throw new Error(ul("error.mustBeGreater", { value: name, min: stat.min }));
 		} //skip register total + max because leveling can be done here
 		embedsStatsFields.push({
-			name: title(name),
+			name: name.capitalize(),
 			value: `\`${num}\``,
 			inline: true,
 		});
@@ -114,13 +106,11 @@ export async function editStats(
 				field.value !== "0" &&
 				field.value.toLowerCase() !== "x" &&
 				field.value.trim().length > 0 &&
-				embedsStatsFields.find(
-					(field) => removeEmojiAccents(field.name) === removeEmojiAccents(name)
-				)
+				embedsStatsFields.find((field) => field.name.unidecode() === name.unidecode())
 			) {
 				//register the old value
 				embedsStatsFields.push({
-					name: title(name),
+					name: name.capitalize(),
 					value: field.value,
 					inline: true,
 				});
@@ -131,10 +121,7 @@ export async function editStats(
 	const fieldsToAppend: APIEmbedField[] = [];
 	for (const field of embedsStatsFields) {
 		const name = field.name.toLowerCase();
-		if (
-			fieldsToAppend.find((f) => removeEmojiAccents(f.name) === removeEmojiAccents(name))
-		)
-			continue;
+		if (fieldsToAppend.find((f) => f.name.unidecode() === name.unidecode())) continue;
 		fieldsToAppend.push(field);
 	}
 	const newEmbedStats = createStatsEmbed(ul).addFields(fieldsToAppend);
@@ -191,14 +178,12 @@ export async function showEditorStats(
 	if (!statistics) throw new Error(ul("error.statNotFound"));
 	const stats = parseEmbedFields(statistics.toJSON() as Embed);
 	const originalGuildData = db.get(interaction.guild!.id, "templateID.statsName");
-	const registeredStats = originalGuildData?.map((stat) => removeEmojiAccents(stat));
-	const userStats = Object.keys(stats).map((stat) =>
-		removeEmojiAccents(stat.toLowerCase())
-	);
+	const registeredStats = originalGuildData?.map((stat) => stat.unidecode());
+	const userStats = Object.keys(stats).map((stat) => stat.unidecode());
 	let statsStrings = "";
 	for (const [name, value] of Object.entries(stats)) {
 		let stringValue = value;
-		if (!registeredStats?.includes(removeEmojiAccents(name))) continue; //remove stats that are not registered
+		if (!registeredStats?.includes(name.unidecode())) continue; //remove stats that are not registered
 		if (value.match(/=/)) {
 			const combinaison = value.split("=")?.[0].trim();
 			if (combinaison) stringValue = combinaison;
@@ -213,16 +198,14 @@ export async function showEditorStats(
 		//check which stats was added
 		const diff = registeredStats.filter((x) => !userStats.includes(x));
 		for (const stat of diff) {
-			const realName = originalGuildData?.find(
-				(x) => removeEmojiAccents(x) === removeEmojiAccents(stat)
-			);
-			statsStrings += `- ${title(realName)}${ul("common.space")}: 0\n`;
+			const realName = originalGuildData?.find((x) => x.unidecode() === stat.unidecode());
+			statsStrings += `- ${realName?.capitalize()}${ul("common.space")}: 0\n`;
 		}
 	}
 
 	const modal = new ModalBuilder()
 		.setCustomId("editStats")
-		.setTitle(title(ul("common.statistics")));
+		.setTitle(ul("common.statistics").capitalize());
 	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("allStats")

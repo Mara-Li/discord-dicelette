@@ -3,7 +3,7 @@ import { createTemplateEmbed } from "@interactions";
 import type { StatisticalTemplate } from "@dicelette/core";
 import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findln, ln } from "@localization";
-import { NoEmbed, removeEmojiAccents, searchUserChannel } from "@utils";
+import { NoEmbed, searchUserChannel } from "@utils";
 import {
 	type ButtonInteraction,
 	type CommandInteraction,
@@ -129,8 +129,8 @@ export function parseEmbedFields(embed: Embed): { [name: string]: string } {
 	if (!fields) return {};
 	const parsedFields: { [name: string]: string } = {};
 	for (const field of fields) {
-		parsedFields[findln(removeBacktick(field.name))] = findln(
-			removeBacktick(field.value)
+		parsedFields[findln(field.name.removeBacktick())] = findln(
+			field.value.removeBacktick()
 		);
 	}
 	return parsedFields;
@@ -243,7 +243,7 @@ export function getStatistiqueFields(
 	let total = templateData.total;
 	if (!templateData.statistics) return { combinaisonFields, stats };
 	for (const [key, value] of Object.entries(templateData.statistics)) {
-		const name = removeEmojiAccents(key);
+		const name = key.standardize();
 		if (!interaction.fields.fields.has(name) && !value.combinaison) continue;
 		if (value.combinaison) {
 			combinaisonFields[key] = value.combinaison;
@@ -266,14 +266,4 @@ export function getStatistiqueFields(
 		} else stats[key] = num;
 	}
 	return { combinaisonFields, stats };
-}
-
-/**
- * Remove backtick in value
- * Used when parsing the user embed
- * @param text {string}
- * @returns
- */
-export function removeBacktick(text: string) {
-	return text.replace(/`/g, "");
 }

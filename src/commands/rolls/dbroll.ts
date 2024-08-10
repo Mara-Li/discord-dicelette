@@ -1,6 +1,6 @@
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { embedError, filterChoices, reply, title } from "@utils";
+import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollStatistique } from "@utils/roll";
 import {
@@ -10,7 +10,7 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import i18next from "i18next";
-import removeAccents from "remove-accents";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 
@@ -88,7 +88,7 @@ export const dbRoll = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map((result) => ({ name: title(result), value: result }))
+			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -98,7 +98,7 @@ export const dbRoll = {
 		const ul = ln(interaction.locale);
 		if (!guildData) return;
 		let optionChar = options.getString(t("common.character")) ?? undefined;
-		const charName = optionChar ? removeAccents(optionChar.toLowerCase()) : undefined;
+		const charName = optionChar?.standardize();
 
 		let userStatistique = await getUserFromMessage(
 			client.settings,
@@ -111,7 +111,9 @@ export const dbRoll = {
 
 		if (optionChar && !selectedCharByQueries) {
 			await reply(interaction, {
-				embeds: [embedError(ul("error.charName", { charName: title(optionChar) }), ul)],
+				embeds: [
+					embedError(ul("error.charName", { charName: optionChar.capitalize() }), ul),
+				],
 				ephemeral: true,
 			});
 			return;

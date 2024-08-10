@@ -13,14 +13,7 @@ import {
 import type { EClient } from "@main";
 import i18next from "i18next";
 import { cmdLn, findln, ln } from "@localization";
-import {
-	embedError,
-	filterChoices,
-	haveAccess,
-	reply,
-	searchUserChannel,
-	title,
-} from "@utils";
+import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar, registerUser } from "@utils/db";
 import type {
 	DiscordChannel,
@@ -33,6 +26,7 @@ import { getEmbeds, getEmbedsList } from "@utils/parse";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { verifyAvatarUrl } from "@interactions/register/validate";
 import { deleteUser } from "@events/on_delete";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 export const editAvatar = {
@@ -151,7 +145,7 @@ export const editAvatar = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map((result) => ({ name: title(result) ?? result, value: result }))
+			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {

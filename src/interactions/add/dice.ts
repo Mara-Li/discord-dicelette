@@ -2,18 +2,10 @@ import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import { evalStatsDice } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId } from "@interface";
 import { findln, ln } from "@localization";
-import {
-	addAutoRole,
-	embedError,
-	NoEmbed,
-	removeEmojiAccents,
-	reply,
-	sendLogs,
-	title,
-} from "@utils";
+import { addAutoRole, embedError, NoEmbed, reply, sendLogs } from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
-import { ensureEmbed, getEmbeds, removeBacktick } from "@utils/parse";
+import { ensureEmbed, getEmbeds } from "@utils/parse";
 import {
 	ActionRowBuilder,
 	type ButtonInteraction,
@@ -29,6 +21,7 @@ import {
 	type User,
 	userMention,
 } from "discord.js";
+import "standardize";
 
 /**
  * Interaction to add a new skill dice
@@ -143,9 +136,7 @@ export async function registerDamageDice(
 			if (
 				diceEmbed
 					.toJSON()
-					.fields?.findIndex(
-						(f) => removeEmojiAccents(f.name) === removeEmojiAccents(field.name)
-					) === -1
+					.fields?.findIndex((f) => f.name.unidecode() === field.name.unidecode()) === -1
 			) {
 				diceEmbed.addFields(field);
 			}
@@ -157,20 +148,18 @@ export async function registerDamageDice(
 	if (
 		diceEmbed
 			.toJSON()
-			.fields?.findIndex(
-				(f) => removeEmojiAccents(f.name) === removeEmojiAccents(name)
-			) === -1 ||
+			.fields?.findIndex((f) => f.name.unidecode() === name.unidecode()) === -1 ||
 		!diceEmbed.toJSON().fields
 	) {
 		diceEmbed.addFields({
-			name: title(name),
+			name: name.capitalize(),
 			value: `\`${value}\``,
 			inline: true,
 		});
 	}
 	const damageName = diceEmbed.toJSON().fields?.reduce(
 		(acc, field) => {
-			acc[field.name] = removeBacktick(field.value);
+			acc[field.name] = field.value.removeBacktick();
 			return acc;
 		},
 		{} as { [name: string]: string }

@@ -12,7 +12,7 @@ import type {
 	User,
 } from "discord.js";
 import type Enmap from "enmap";
-import removeAccents from "remove-accents";
+import "standardize";
 
 export const DELETE_CHANNEL = (client: EClient): void => {
 	client.on("channelDelete", async (channel) => {
@@ -147,12 +147,7 @@ export function deleteUser(
 	//delete the character from the database
 	const userCharIndex = guildData.user[user?.id ?? interaction.user.id].findIndex(
 		(char) => {
-			if (char.charName && charName)
-				return (
-					removeAccents(char.charName).toLowerCase() ===
-					removeAccents(charName).toLowerCase()
-				);
-			return charName == null && char.charName == null;
+			return char.charName?.standardize() === charName?.standardize();
 		}
 	);
 	if (userCharIndex === -1) {

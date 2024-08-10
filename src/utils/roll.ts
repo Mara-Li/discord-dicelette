@@ -4,7 +4,7 @@ import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { Settings, Translation, UserData } from "@interface";
 import { ln } from "@localization";
 import type { EClient } from "@main";
-import { embedError, reply, timestamp, title } from "@utils";
+import { embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import {
 	type CommandInteraction,
@@ -17,9 +17,9 @@ import {
 	userMention,
 } from "discord.js";
 import i18next from "i18next";
-import removeAccents from "remove-accents";
 
 import { parseResult } from "../dice";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 
@@ -67,7 +67,7 @@ export async function rollWithInteraction(
 	const parser = parseResult(rollDice, ul, critical, !!infoRoll);
 	const userId = user?.id ?? interaction.user.id;
 	let mentionUser: string = userMention(userId);
-	const titleCharName = `__**${title(charName)}**__`;
+	const titleCharName = `__**${charName?.capitalize()}**__`;
 	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
 	const infoRollTotal = (mention?: boolean, time?: boolean) => {
 		let user = " ";
@@ -75,7 +75,7 @@ export async function rollWithInteraction(
 		else if (charName) user = titleCharName;
 		if (time) user += `${timestamp(db, interaction.guild!.id)}`;
 		if (user.trim().length > 0) user += `${ul("common.space")}:\n  `;
-		if (infoRoll) return `${user}[__${title(infoRoll)}__] `;
+		if (infoRoll) return `${user}[__${infoRoll.capitalize()}__] `;
 		return user;
 	};
 	const retrieveUser = infoRollTotal(true);
@@ -155,32 +155,28 @@ export async function rollStatistique(
 	user?: User,
 	hideResult?: boolean | null
 ) {
-	let statistique = options.getString(t("common.statistic"), true).toLowerCase();
+	let statistique = options.getString(t("common.statistic"), true).standardize(true);
 	//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	const override = options.getString(t("dbRoll.options.override.name"));
 	const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 
-	let userStat = userStatistique.stats?.[removeAccents(statistique)];
+	let userStat = userStatistique.stats?.[statistique];
 
 	while (!userStat) {
 		const guildData = client.settings.get(interaction.guild!.id, "templateID.statsName");
 		if (userStatistique.stats && guildData) {
-			const findStatInList = guildData.find((stat) =>
-				removeAccents(stat)
-					.toLowerCase()
-					.includes(removeAccents(statistique).toLowerCase())
-			);
+			const findStatInList = guildData.find((stat) => stat.subText(statistique));
 			if (findStatInList) {
 				statistique = findStatInList;
-				userStat = userStatistique.stats[removeAccents(findStatInList).toLowerCase()];
+				userStat = userStatistique.stats[findStatInList.standardize(true)];
 			}
 		}
 		if (userStat) break;
 		throw new Error(
 			ul("error.noStat", {
-				stat: title(statistique),
-				char: title(optionChar ? ` ${optionChar}` : ""),
+				stat: statistique.capitalize(),
+				char: optionChar ? ` ${optionChar.capitalize()}` : "",
 			})
 		);
 	}
@@ -233,26 +229,20 @@ export async function rollDice(
 	user?: User,
 	hideResult?: boolean | null
 ) {
-	let atq = removeAccents(options.getString(t("rAtq.atq_name.name"), true).toLowerCase());
+	let atq = options.getString(t("rAtq.atq_name.name"), true).standardize(true);
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	//search dice
 	let dice = userStatistique.damage?.[atq.toLowerCase()];
-	const serializedName = charOptions
-		? removeAccents(charOptions).toLowerCase()
-		: undefined;
+	const serializedName = charOptions?.standardize(true);
 
 	while (!dice) {
 		const userData = client.settings
 			.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`)
 			?.find((char) => {
-				if (serializedName && char.charName)
-					return removeAccents(char.charName).toLowerCase().includes(serializedName);
-				return charOptions == null && char.charName == null;
+				return char.charName?.subText(charOptions);
 			});
 		const damageName = userData?.damageName ?? [];
-		const findAtqInList = damageName.find((atqName) =>
-			removeAccents(atqName).toLowerCase().includes(removeAccents(atq).toLowerCase())
-		);
+		const findAtqInList = damageName.find((atqName) => atqName.subText(atq));
 		if (findAtqInList) {
 			atq = findAtqInList;
 			dice = userStatistique.damage?.[findAtqInList];
@@ -261,7 +251,7 @@ export async function rollDice(
 		await reply(interaction, {
 			embeds: [
 				embedError(
-					ul("error.noDamage", { atq: title(atq), charName: charOptions ?? "" }),
+					ul("error.noDamage", { atq: atq.capitalize(), charName: charOptions ?? "" }),
 					ul
 				),
 			],

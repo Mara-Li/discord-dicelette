@@ -6,7 +6,7 @@ import {
 	StringSelectMenuBuilder,
 	StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { title } from ".";
+import "standardize";
 
 /**
  * Button to edit the user embed character sheet
@@ -51,7 +51,7 @@ export function selectEditMenu(ul: Translation) {
 		.setPlaceholder(ul("button.edit.select"))
 		.addOptions(
 			new StringSelectMenuOptionBuilder()
-				.setLabel(title(ul("common.character")))
+				.setLabel(ul("common.character").capitalize())
 				.setEmoji("📝")
 				.setValue("name")
 				.setDescription(ul("button.name")),

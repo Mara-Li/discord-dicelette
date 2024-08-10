@@ -6,11 +6,9 @@ import {
 	embedError,
 	filterChoices,
 	haveAccess,
-	removeEmojiAccents,
 	reply,
 	searchUserChannel,
 	sendLogs,
-	title,
 } from "@utils";
 import { getDatabaseChar, getTemplateWithDB, getUserByEmbed } from "@utils/db";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
@@ -26,7 +24,7 @@ import {
 import i18next from "i18next";
 import parse from "parse-color";
 import path from "node:path";
-import removeAccents from "remove-accents";
+import "standardize";
 
 async function chart(
 	userData: UserData,
@@ -38,7 +36,7 @@ async function chart(
 ) {
 	if (!userData.stats) return;
 	const data = {
-		labels: labels.map((key) => title(key)),
+		labels: labels.map((key) => key.capitalize()),
 		datasets: [
 			{
 				data: Object.values(userData.stats),
@@ -201,7 +199,7 @@ export const graph = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map((result) => ({ name: title(result) ?? result, value: result }))
+			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient) {
@@ -238,9 +236,7 @@ export const graph = {
 			if (!charData[userId]) {
 				const findChara = Object.values(charData).find((data) => {
 					if (data.charName && charName) {
-						return removeAccents(data.charName)
-							.toLowerCase()
-							.includes(removeAccents(charName));
+						return data.charName.subText(charName);
 					}
 					return data.charName === charName;
 				});
@@ -283,17 +279,17 @@ export const graph = {
 			}
 			const titleUser = () => {
 				let msg = "# ";
-				if (userData.charName) msg += `${title(userData.charName)} `;
+				if (userData.charName) msg += `${userData.charName.capitalize()} `;
 				msg += `⌈${userMention(userId)}⌋ `;
 				return msg;
 			};
 			const labels = guildData.templateID.statsName;
 			//only keep labels that exists in the user stats
 			const userStatKeys = Object.keys(userStatistique.stats).map((key) =>
-				removeEmojiAccents(key)
+				key.unidecode()
 			);
 			const filteredLabels = labels.filter((label) =>
-				userStatKeys.includes(removeEmojiAccents(label))
+				userStatKeys.includes(label.unidecode())
 			);
 			const lineColor = options.getString(t("graph.line.name"));
 			const fillColor = options.getString(t("graph.bg.name"));

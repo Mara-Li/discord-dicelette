@@ -1,14 +1,7 @@
 import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import { evalStatsDice, roll } from "@dicelette/core";
 import type { Settings, Translation, UserMessageId, UserRegistration } from "@interface";
-import {
-	displayOldAndNewStats,
-	parseStatsString,
-	removeEmojiAccents,
-	reply,
-	sendLogs,
-	title,
-} from "@utils";
+import { displayOldAndNewStats, parseStatsString, reply, sendLogs } from "@utils";
 import { editUserButtons } from "@utils/buttons";
 import { registerUser } from "@utils/db";
 import {
@@ -31,6 +24,7 @@ import {
 	type User,
 	userMention,
 } from "discord.js";
+import "standardize";
 
 /**
  * Show the modal to **edit** the registered dice
@@ -48,7 +42,7 @@ export async function showEditDice(interaction: ButtonInteraction, ul: Translati
 	}
 	const modal = new ModalBuilder()
 		.setCustomId("editDice")
-		.setTitle(title(ul("common.dice")));
+		.setTitle(ul("common.dice").capitalize());
 	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
 		new TextInputBuilder()
 			.setCustomId("allDice")
@@ -91,15 +85,11 @@ export async function validateDiceEdit(
 	const newEmbedDice: APIEmbedField[] = [];
 	for (const [skill, dice] of Object.entries(dices)) {
 		//test if dice is valid
-		if (
-			newEmbedDice.find(
-				(field) => removeEmojiAccents(field.name) === removeEmojiAccents(skill)
-			)
-		)
+		if (newEmbedDice.find((field) => field.name.unidecode() === skill.unidecode()))
 			continue;
 		if (dice === "X" || dice.trim().length === 0 || dice === "0") {
 			newEmbedDice.push({
-				name: title(skill),
+				name: skill.capitalize(),
 				value: "X",
 				inline: true,
 			});
@@ -119,7 +109,7 @@ export async function validateDiceEdit(
 			throw new Error(ul("error.invalidDice.withDice", { dice }));
 		}
 		newEmbedDice.push({
-			name: title(skill),
+			name: skill.capitalize(),
 			value: `\`${dice}\``,
 			inline: true,
 		});
@@ -128,14 +118,10 @@ export async function validateDiceEdit(
 	if (oldDice) {
 		for (const field of oldDice) {
 			const name = field.name.toLowerCase();
-			if (
-				!newEmbedDice.find(
-					(field) => removeEmojiAccents(field.name) === removeEmojiAccents(name)
-				)
-			) {
+			if (!newEmbedDice.find((field) => field.name.unidecode() === name.unidecode())) {
 				//register the old value
 				newEmbedDice.push({
-					name: title(name),
+					name: name.capitalize(),
 					value: `${field.value}`,
 					inline: true,
 				});
@@ -148,9 +134,7 @@ export async function validateDiceEdit(
 		const name = field.name.toLowerCase();
 		const dice = field.value;
 		if (
-			fieldsToAppend.find(
-				(f) => removeEmojiAccents(f.name) === removeEmojiAccents(name)
-			) ||
+			fieldsToAppend.find((f) => f.name.unidecode() === name.unidecode()) ||
 			dice.toLowerCase() === "x" ||
 			dice.trim().length === 0 ||
 			dice === "0"

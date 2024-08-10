@@ -2,7 +2,7 @@ import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
-import { embedError, filterChoices, reply, searchUserChannel, title } from "@utils";
+import { embedError, filterChoices, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import {
 	type AutocompleteInteraction,
@@ -20,6 +20,7 @@ import type {
 	Translation,
 	UserMessageId,
 } from "@interface";
+import "standardize";
 
 const t = i18next.getFixedT("en");
 
@@ -68,7 +69,7 @@ export const deleteChar = {
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
-			filter.map((result) => ({ name: title(result) ?? result, value: result }))
+			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
@@ -151,7 +152,7 @@ export const deleteChar = {
 			return;
 		}
 		const messageID = sheetLocation.messageId;
-		const msg = `${userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${title(charName)})*` : ""}`;
+		const msg = `${userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${charName.capitalize()})*` : ""}`;
 		try {
 			//search for the message and delete it
 			const message = await userChannel.messages.fetch(messageID);
