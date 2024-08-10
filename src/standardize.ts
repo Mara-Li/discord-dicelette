@@ -22,7 +22,7 @@ Object.defineProperty(String.prototype, "toTitle", {
 
 Object.defineProperty(String.prototype, "capitalize", {
 	value: function () {
-		return this.replace(/\b\w/g, (char: string) => char.toUpperCase());
+		return this.replace(/(^\p{L})|(\s\p{L})/giu, (char: string) => char.toUpperCase());
 	},
 	enumerable: false,
 });
