@@ -5,11 +5,7 @@
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { getUserFromMessage } from "@utils/db";
-import {
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	SlashCommandBuilder,
-} from "discord.js";
+
 import i18next from "i18next";
 import Papa from "papaparse";
 

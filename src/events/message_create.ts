@@ -5,14 +5,6 @@ import { lError, ln } from "@localization";
 import type { EClient } from "@main";
 import { timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
-import {
-	ChannelType,
-	type ForumChannel,
-	Locale,
-	TextChannel,
-	ThreadChannel,
-	userMention,
-} from "discord.js";
 
 import { parseResult } from "../dice";
 

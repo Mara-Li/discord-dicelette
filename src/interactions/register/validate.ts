@@ -17,19 +17,8 @@ import {
 } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
-import {
-	type ButtonInteraction,
-	type Embed,
-	EmbedBuilder,
-	type Locale,
-	type ModalSubmitInteraction,
-	PermissionsBitField,
-	type User,
-	channelMention,
-	userMention,
-} from "discord.js";
-import { warn } from "../../console";
-import { isUserNameOrId } from "../../utils/find";
+import { warn } from "@console";
+import { isUserNameOrId } from "@utils/find";
 
 export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;

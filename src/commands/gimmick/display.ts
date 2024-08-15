@@ -6,15 +6,7 @@ import type { EClient } from "@main";
 import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
-import {
-	type APIEmbedField,
-	type AutocompleteInteraction,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	EmbedBuilder,
-	type Locale,
-	SlashCommandBuilder,
-} from "discord.js";
+
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");

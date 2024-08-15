@@ -10,17 +10,6 @@ import { ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, haveAccess, reply, searchUserChannel } from "@utils";
 import { ensureEmbed, getEmbeds, parseEmbedFields } from "@utils/parse";
-import {
-	type BaseInteraction,
-	type ButtonInteraction,
-	CategoryChannel,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	type Embed,
-	type Locale,
-	type Message,
-	type ModalSubmitInteraction,
-} from "discord.js";
 
 /**
  * Get the guild template when clicking on the "registering user" button or when submiting

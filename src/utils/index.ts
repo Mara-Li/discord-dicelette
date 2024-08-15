@@ -1,6 +1,5 @@
 import { error } from "@console";
 import {
-	type DiscordChannel,
 	type Settings,
 	TUTORIAL_IMAGES,
 	type Translation,
@@ -11,39 +10,11 @@ import { findln } from "@localization";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { registerUser, setDefaultManagerId } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
-import {
-	type APIEmbedField,
-	type AnyThreadChannel,
-	AttachmentBuilder,
-	type BaseInteraction,
-	ButtonInteraction,
-	CategoryChannel,
-	CommandInteraction,
-	type Embed,
-	EmbedBuilder,
-	ForumChannel,
-	type Guild,
-	type GuildBasedChannel,
-	type GuildChannelResolvable,
-	type GuildForumTagData,
-	type InteractionReplyOptions,
-	MediaChannel,
-	type Message,
-	type MessagePayload,
-	ModalSubmitInteraction,
-	type NewsChannel,
-	PermissionFlagsBits,
-	type PrivateThreadChannel,
-	type PublicThreadChannel,
-	StageChannel,
-	type StringSelectMenuInteraction,
-	TextChannel,
-	ThreadAutoArchiveDuration,
-	VoiceChannel,
-} from "discord.js";
+
 import { evaluate } from "mathjs";
 import moment from "moment";
 import { deleteAfter } from "../commands/rolls/base_roll";
+import type { AnyThreadChannel } from "discord.js";
 
 /**
  * Set the tags for thread channel in forum
@@ -113,7 +84,7 @@ export async function repostInThread(
 	};
 	let isForumThread = false;
 	let thread = await searchUserChannel(guildData, interaction, ul, threadId, true);
-	let msg: Message<true> | undefined = undefined;
+	let msg: Message | undefined = undefined;
 	if (!thread) {
 		const channel = await interaction.guild?.channels.fetch(threadId);
 		if (channel && channel instanceof ForumChannel) {
@@ -532,7 +503,7 @@ export function isStatsThread(
 		| NewsChannel
 		| TextChannel
 		| PrivateThreadChannel
-		| PublicThreadChannel<boolean>
+		| typeof PublicThreadChannel<boolean>
 		| undefined
 ) {
 	return (

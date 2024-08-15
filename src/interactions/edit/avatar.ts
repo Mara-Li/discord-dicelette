@@ -3,16 +3,6 @@ import type { Settings, Translation } from "@interface";
 import { findln } from "@localization";
 import { embedError, reply } from "@utils";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
-import {
-	ActionRowBuilder,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	type ModalSubmitInteraction,
-	type StringSelectMenuInteraction,
-	TextInputBuilder,
-	TextInputStyle,
-	type User,
-} from "discord.js";
 import { verifyAvatarUrl } from "../register/validate";
 
 export async function initiateAvatarEdit(

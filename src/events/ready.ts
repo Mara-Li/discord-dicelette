@@ -2,7 +2,7 @@ import process from "node:process";
 import { commandsList } from "@commands";
 import { log, success, warn } from "@console";
 import type { Settings } from "@interface";
-import { type EClient, VERSION } from "@main";
+import { VERSION } from "@main";
 import { ActivityType, type Guild, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 

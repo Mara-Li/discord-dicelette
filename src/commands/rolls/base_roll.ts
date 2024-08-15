@@ -2,18 +2,6 @@ import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply, setTagsForRoll } from "@utils";
 import { rollWithInteraction } from "@utils/roll";
-import {
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	ForumChannel,
-	type InteractionResponse,
-	type Locale,
-	type Message,
-	SlashCommandBuilder,
-	TextChannel,
-	channelMention,
-	userMention,
-} from "discord.js";
 import i18next from "i18next";
 import moment from "moment";
 

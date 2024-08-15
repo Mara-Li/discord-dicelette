@@ -17,17 +17,7 @@ import {
 } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-import {
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	EmbedBuilder,
-	type GuildMember,
-	type Locale,
-	PermissionFlagsBits,
-	SlashCommandBuilder,
-	type User,
-	userMention,
-} from "discord.js";
+
 import i18next from "i18next";
 import Papa from "papaparse";
 

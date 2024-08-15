@@ -20,16 +20,6 @@ import { validateUserButton } from "@register/validate";
 import { embedError, reply } from "@utils";
 import { getTemplate, getTemplateWithDB } from "@utils/db";
 import { ensureEmbed } from "@utils/parse";
-import {
-	type AutocompleteInteraction,
-	type BaseInteraction,
-	type ButtonInteraction,
-	type ModalSubmitInteraction,
-	PermissionsBitField,
-	type StringSelectMenuInteraction,
-	TextChannel,
-	type User,
-} from "discord.js";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: BaseInteraction) => {

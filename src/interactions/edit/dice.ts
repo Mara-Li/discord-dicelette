@@ -10,20 +10,6 @@ import {
 	parseEmbedFields,
 	removeEmbedsFromList,
 } from "@utils/parse";
-import {
-	type APIEmbedField,
-	ActionRowBuilder,
-	type ButtonInteraction,
-	type Embed,
-	type Guild,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	type ModalSubmitInteraction,
-	TextInputBuilder,
-	TextInputStyle,
-	type User,
-	userMention,
-} from "discord.js";
 
 /**
  * Show the modal to **edit** the registered dice

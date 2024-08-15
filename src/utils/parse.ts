@@ -4,15 +4,6 @@ import { createTemplateEmbed } from "@interactions";
 import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findln, ln } from "@localization";
 import { NoEmbed, searchUserChannel } from "@utils";
-import {
-	type ButtonInteraction,
-	type CommandInteraction,
-	type Embed,
-	EmbedBuilder,
-	type Locale,
-	type Message,
-	type ModalSubmitInteraction,
-} from "discord.js";
 
 /**
  * Ensure the embeds are present

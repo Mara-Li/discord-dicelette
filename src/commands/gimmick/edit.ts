@@ -1,7 +1,6 @@
 import { deleteUser } from "@events/on_delete";
 import { verifyAvatarUrl } from "@interactions/register/validate";
 import type {
-	DiscordChannel,
 	PersonnageIds,
 	Translation,
 	UserMessageId,
@@ -13,18 +12,7 @@ import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from 
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { getDatabaseChar, registerUser } from "@utils/db";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
-import {
-	type AutocompleteInteraction,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	type EmbedBuilder,
-	type Locale,
-	type Message,
-	type ModalSubmitInteraction,
-	PermissionsBitField,
-	SlashCommandBuilder,
-	type User,
-} from "discord.js";
+
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");

@@ -3,12 +3,7 @@ import type { EClient } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollStatistique } from "@utils/roll";
-import {
-	type AutocompleteInteraction,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	SlashCommandBuilder,
-} from "discord.js";
+
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");

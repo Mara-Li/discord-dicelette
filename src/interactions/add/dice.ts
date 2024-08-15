@@ -6,21 +6,6 @@ import { NoEmbed, addAutoRole, embedError, reply, sendLogs } from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
-import {
-	ActionRowBuilder,
-	type ButtonInteraction,
-	EmbedBuilder,
-	type Guild,
-	type Locale,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	type ModalSubmitInteraction,
-	PermissionsBitField,
-	TextInputBuilder,
-	TextInputStyle,
-	type User,
-	userMention,
-} from "discord.js";
 
 /**
  * Interaction to add a new skill dice

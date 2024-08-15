@@ -3,18 +3,6 @@ import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findln, ln } from "@localization";
 import { embedError, reply } from "@utils";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
-import {
-	type ButtonInteraction,
-	EmbedBuilder,
-	type Locale,
-	type Message,
-	type ModalSubmitInteraction,
-	PermissionsBitField,
-	type StringSelectMenuInteraction,
-	TextChannel,
-	ThreadChannel,
-	type User,
-} from "discord.js";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found

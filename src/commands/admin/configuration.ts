@@ -2,18 +2,7 @@ import type { Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
-import {
-	ChannelType,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	EmbedBuilder,
-	PermissionFlagsBits,
-	SlashCommandBuilder,
-	TextChannel,
-	ThreadChannel,
-	channelMention,
-	roleMention,
-} from "discord.js";
+
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
 

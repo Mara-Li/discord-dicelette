@@ -6,16 +6,6 @@ import { ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
-import {
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	type ForumChannel,
-	type TextBasedChannel,
-	TextChannel,
-	ThreadChannel,
-	type User,
-	userMention,
-} from "discord.js";
 import i18next from "i18next";
 
 import { parseResult } from "../dice";

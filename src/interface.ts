@@ -1,12 +1,5 @@
 import type { Critical } from "@dicelette/core";
-import type {
-	NewsChannel,
-	PrivateThreadChannel,
-	PublicThreadChannel,
-	StageChannel,
-	TextChannel,
-	VoiceChannel,
-} from "discord.js";
+
 import type Enmap from "enmap";
 import type { TFunction } from "i18next";
 
@@ -35,12 +28,7 @@ export const LINKS = {
 export type UserMessageId = [string, string];
 export type Settings = Enmap<string, GuildData, unknown>;
 export type Translation = TFunction<"translation", undefined>;
-export type DiscordChannel =
-	| PrivateThreadChannel
-	| PublicThreadChannel<boolean>
-	| TextChannel
-	| NewsChannel
-	| undefined;
+
 export type PersonnageIds = { channelId: string; messageId: string };
 export type UserRegistration = {
 	userID: string;
@@ -49,14 +37,6 @@ export type UserRegistration = {
 	damage?: string[];
 	msgId: UserMessageId;
 };
-
-export type DiscordTextChannel =
-	| TextChannel
-	| NewsChannel
-	| StageChannel
-	| PrivateThreadChannel
-	| PublicThreadChannel<boolean>
-	| VoiceChannel;
 
 export interface GuildData {
 	/**

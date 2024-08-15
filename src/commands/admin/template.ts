@@ -11,21 +11,6 @@ import type { EClient } from "@main";
 import { downloadTutorialImages, embedError, reply } from "@utils";
 
 import { bulkEditTemplateUser } from "@utils/parse";
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	ChannelType,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	EmbedBuilder,
-	type Locale,
-	PermissionFlagsBits,
-	SlashCommandBuilder,
-	TextChannel,
-	ThreadChannel,
-	channelMention,
-} from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
 
@@ -193,7 +178,8 @@ export const registerTemplate = {
 				.addChannelTypes(
 					ChannelType.PublicThread,
 					ChannelType.GuildText,
-					ChannelType.PrivateThread
+					ChannelType.PrivateThread,
+					ChannelType.GuildForum
 				)
 		)
 		.addChannelOption((option) =>
@@ -206,7 +192,8 @@ export const registerTemplate = {
 				.addChannelTypes(
 					ChannelType.PublicThread,
 					ChannelType.GuildText,
-					ChannelType.PrivateThread
+					ChannelType.PrivateThread,
+					ChannelType.GuildForum
 				)
 		),
 	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
@@ -230,6 +217,7 @@ export const registerTemplate = {
 		const channel = options.getChannel(t("common.channel"), true);
 		const publicChannel = options.getChannel(t("register.options.public.name"), false);
 		const privateChannel = options.getChannel(t("register.options.private.name"), false);
+
 		if (
 			(!(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) ||
 			(!publicChannel && !(channel instanceof TextChannel))

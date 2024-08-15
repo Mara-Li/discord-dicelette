@@ -7,20 +7,6 @@ import { createEmbedFirstPage } from "@register/validate";
 import { embedError, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { getEmbeds, parseEmbedFields } from "@utils/parse";
-import {
-	ActionRowBuilder,
-	type ButtonInteraction,
-	type Embed,
-	type Locale,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	type ModalSubmitInteraction,
-	PermissionsBitField,
-	TextInputBuilder,
-	TextInputStyle,
-	type User,
-} from "discord.js";
-
 /**
  * Interaction to continue to the next page of the statistics when registering a new user
  * @param interaction {ButtonInteraction}

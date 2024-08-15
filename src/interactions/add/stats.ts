@@ -3,16 +3,6 @@ import { ln } from "@localization";
 import { reply } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { getEmbeds, getStatistiqueFields } from "@utils/parse";
-import {
-	ActionRowBuilder,
-	type ButtonInteraction,
-	type Locale,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	type ModalSubmitInteraction,
-	TextInputBuilder,
-	TextInputStyle,
-} from "discord.js";
 import { createStatsEmbed } from "..";
 
 /**

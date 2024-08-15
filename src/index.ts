@@ -11,13 +11,12 @@ import {
 } from "@events/on_delete";
 import ready from "@events/ready";
 import type { GuildData } from "@interface";
-import { Client, type ClientOptions, GatewayIntentBits, Partials } from "discord.js";
 import dotenv from "dotenv";
 import Enmap from "enmap";
 
 import * as pkg from "../package.json" assert { type: "json" };
-import { flattenJson } from "./localizations";
-import { resources } from "./localizations/init";
+import { flattenJson } from "@localization";
+import { resources } from "@localization/init";
 import "uniformize";
 
 dotenv.config({ path: ".env" });

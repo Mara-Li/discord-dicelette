@@ -2,15 +2,7 @@ import { error as err, log } from "@console";
 import type { GuildData, PersonnageIds } from "@interface";
 import type { EClient } from "@main";
 import { sendLogs } from "@utils";
-import type {
-	AnyThreadChannel,
-	CommandInteraction,
-	GuildTextBasedChannel,
-	ModalSubmitInteraction,
-	NonThreadGuildBasedChannel,
-	ThreadChannel,
-	User,
-} from "discord.js";
+import type { AnyThreadChannel } from "discord.js";
 import type Enmap from "enmap";
 
 export const DELETE_CHANNEL = (client: EClient): void => {

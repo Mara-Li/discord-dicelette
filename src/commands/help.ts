@@ -3,15 +3,7 @@ import { LINKS, type Settings, type Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
-import {
-	type ApplicationCommand,
-	type Collection,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	type Locale,
-	SlashCommandBuilder,
-	type Snowflake,
-} from "discord.js";
+import type { Collection, ApplicationCommand } from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
 

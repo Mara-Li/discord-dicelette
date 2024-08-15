@@ -13,15 +13,6 @@ import {
 } from "@utils";
 import { getDatabaseChar, getTemplateWithDB, getUserByEmbed } from "@utils/db";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
-import {
-	AttachmentBuilder,
-	type AutocompleteInteraction,
-	type CommandInteraction,
-	type CommandInteractionOptionResolver,
-	type Locale,
-	SlashCommandBuilder,
-	userMention,
-} from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
 

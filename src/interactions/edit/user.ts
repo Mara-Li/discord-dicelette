@@ -1,28 +1,12 @@
 import { move, resetButton } from "@commands/gimmick/edit";
 import { allowEdit } from "@interactions";
-import type {
-	DiscordChannel,
-	PersonnageIds,
-	Settings,
-	Translation,
-	UserMessageId,
-} from "@interface";
+import type { PersonnageIds, Settings, Translation, UserMessageId } from "@interface";
 import { findln } from "@localization";
 import type { EClient } from "@main";
 import { embedError } from "@utils";
 import { getUserByEmbed } from "@utils/db";
 import { isUserNameOrId } from "@utils/find";
 import { getEmbeds } from "@utils/parse";
-import {
-	ActionRowBuilder,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	type ModalSubmitInteraction,
-	type StringSelectMenuInteraction,
-	TextInputBuilder,
-	TextInputStyle,
-	type User,
-} from "discord.js";
 
 export async function initiateMove(
 	interaction: StringSelectMenuInteraction,

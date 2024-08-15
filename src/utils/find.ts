@@ -1,14 +1,5 @@
-import type { DiscordTextChannel, Settings, Translation } from "@interface";
+import type { Settings, Translation } from "@interface";
 import { sendLogs, setTagsForRoll } from "@utils";
-import {
-	type Client,
-	type ForumChannel,
-	type InteractionResponse,
-	type Message,
-	type ModalSubmitInteraction,
-	TextChannel,
-	ThreadChannel,
-} from "discord.js";
 
 export async function isUserNameOrId(
 	userId: string,
