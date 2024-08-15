@@ -2,9 +2,9 @@ import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply, setTagsForRoll } from "@utils";
 import { rollWithInteraction } from "@utils/roll";
+import * as Djs from "discord.js";
 import i18next from "i18next";
 import moment from "moment";
-import * as Djs from "discord.js";
 
 const t = i18next.getFixedT("en");
 

@@ -9,8 +9,8 @@ import type { GuildData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { downloadTutorialImages, embedError, reply } from "@utils";
-import * as Djs from "discord.js";
 import { bulkEditTemplateUser } from "@utils/parse";
+import * as Djs from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
 

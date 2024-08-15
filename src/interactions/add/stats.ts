@@ -3,8 +3,8 @@ import { ln } from "@localization";
 import { reply } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { getEmbeds, getStatistiqueFields } from "@utils/parse";
-import { createStatsEmbed } from "..";
 import * as Djs from "discord.js";
+import { createStatsEmbed } from "..";
 /**
  * Embed to display the statistics when adding a new user
  * @param interaction {ModalSubmitInteraction}

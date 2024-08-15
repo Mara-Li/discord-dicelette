@@ -1,3 +1,4 @@
+import { warn } from "@console";
 import type { StatisticalTemplate } from "@dicelette/core";
 import {
 	createDiceEmbed,
@@ -16,9 +17,8 @@ import {
 	repostInThread,
 } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
-import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
-import { warn } from "@console";
 import { isUserNameOrId } from "@utils/find";
+import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
 import * as Djs from "discord.js";
 export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;

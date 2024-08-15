@@ -6,9 +6,9 @@ import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { getUserFromMessage } from "@utils/db";
 
+import * as Djs from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
-import * as Djs from "discord.js";
 import type { CSVRow } from "./import";
 
 const t = i18next.getFixedT("en");

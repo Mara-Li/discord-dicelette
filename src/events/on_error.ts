@@ -1,6 +1,6 @@
 import { error as err } from "@console";
-import dotenv from "dotenv";
 import type { EClient } from "@main";
+import dotenv from "dotenv";
 
 dotenv.config({ path: ".env" });
 

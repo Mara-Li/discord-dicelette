@@ -1,5 +1,4 @@
 import { rename } from "@commands/gimmick/edit";
-import * as Djs from "discord.js";
 import { allowEdit } from "@interactions";
 import type {
 	DiscordChannel,
@@ -12,6 +11,7 @@ import { findln } from "@localization";
 import type { EClient } from "@main";
 import { getUserByEmbed } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
+import * as Djs from "discord.js";
 export async function initiateRenaming(
 	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation,

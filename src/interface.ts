@@ -1,8 +1,8 @@
 import type { Critical } from "@dicelette/core";
 
+import type * as Djs from "discord.js";
 import type Enmap from "enmap";
 import type { TFunction } from "i18next";
-import type * as Djs from "discord.js";
 export const TUTORIAL_IMAGES = [
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_1.png?raw=true",
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_2.png?raw=true",

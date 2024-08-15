@@ -1,5 +1,4 @@
 import type { StatisticalTemplate } from "@dicelette/core";
-import * as Djs from "discord.js";
 import { createStatsEmbed } from "@interactions";
 import { embedStatistiques, showStatistiqueModal } from "@interactions/add/stats";
 import type { Settings, Translation } from "@interface";
@@ -8,6 +7,7 @@ import { createEmbedFirstPage } from "@register/validate";
 import { embedError, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { getEmbeds, parseEmbedFields } from "@utils/parse";
+import * as Djs from "discord.js";
 /**
  * Interaction to continue to the next page of the statistics when registering a new user
  * @param interaction {ButtonInteraction}

@@ -14,9 +14,9 @@ import type { GuildData } from "@interface";
 import dotenv from "dotenv";
 import Enmap from "enmap";
 
-import * as pkg from "../package.json" assert { type: "json" };
 import { flattenJson } from "@localization";
 import { resources } from "@localization/init";
+import * as pkg from "../package.json" assert { type: "json" };
 import "uniformize";
 import * as Djs from "discord.js";
 

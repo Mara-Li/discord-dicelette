@@ -1,10 +1,11 @@
+import type { UserMessageId } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
-import i18next from "i18next";
 import * as Djs from "discord.js";
+import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
 
@@ -145,28 +146,56 @@ export const mjRoll = {
 		if (!guildData || !guildData.templateID) return;
 		let choices: string[] = [];
 		let user = options.get(t("display.userLowercase"))?.value;
+		let allCharFromGuild: {
+			charName?: string | null;
+			messageId: UserMessageId;
+			damageName?: string[];
+			isPrivate?: boolean;
+		}[] = [];
+
 		if (typeof user !== "string") user = interaction.user.id;
+		if (user === interaction.user.id) {
+			for (const [user, char] of Object.entries(guildData.user)) {
+				for (const data of char) {
+					allCharFromGuild.push(data);
+				}
+			}
+		} else allCharFromGuild = guildData.user[user];
 		if (fixed.name === t("common.character")) {
-			//get ALL characters from the user
-			const guildChars = guildData.user[user];
-			if (!guildChars) return;
-			for (const data of guildChars) {
-				choices.push(data.charName ? data.charName : t("common.default"));
+			//get ALL characters from the guild
+			const skill = options.getString(t("rAtq.atq_name.name"));
+			if (skill) {
+				if (
+					guildData.templateID.damageName
+						?.map((x) => x.standardize())
+						.includes(skill.standardize())
+				) {
+					choices = allCharFromGuild.map((data) => data.charName ?? t("common.default"));
+				} else {
+					//search in all characters for the skill
+					const findSkillInAll = allCharFromGuild.filter((data) => {
+						return data.damageName?.includes(skill);
+					});
+					choices = findSkillInAll.map((data) => data.charName ?? t("common.default"));
+				}
+			} else {
+				for (const data of allCharFromGuild) {
+					choices.push(data.charName ? data.charName : t("common.default"));
+				}
 			}
 		} else if (fixed.name === t("common.statistic")) {
 			choices = guildData.templateID.statsName;
 		} else if (fixed.name === t("rAtq.atq_name.name")) {
 			const defaultDice = guildData.templateID.damageName;
-			const guildChars = guildData.user[user];
-			if (!guildChars) return;
+
 			const character = options.getString(t("common.character"), false);
 			if (character) {
-				const char = guildChars.find((c) => c.charName === character);
+				const char = allCharFromGuild.find((c) => c.charName?.subText(character));
 				if (char?.damageName) {
 					choices = char.damageName;
 				}
 			} else {
-				for (const data of guildChars) {
+				for (const data of allCharFromGuild) {
 					if (data.damageName) choices.push(...data.damageName);
 				}
 			}

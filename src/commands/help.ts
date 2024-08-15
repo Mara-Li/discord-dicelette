@@ -3,10 +3,9 @@ import { LINKS, type Settings, type Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
-import type { Collection, ApplicationCommand } from "discord.js";
+import * as Djs from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
-import * as Djs from "discord.js";
 
 const t = i18next.getFixedT("en");
 
@@ -141,7 +140,9 @@ export const help = {
 	},
 };
 
-function getHelpDBCmd(commandsID: Collection<string, ApplicationCommand<unknown>>) {
+function getHelpDBCmd(
+	commandsID: Djs.Collection<string, Djs.ApplicationCommand<unknown>>
+) {
 	const commandToFind = [
 		t("rAtq.name"),
 		t("dbRoll.name"),
@@ -159,7 +160,7 @@ function createHelpMessageDB(
 	guildID: Djs.Snowflake,
 	ul: Translation,
 	db: Settings,
-	commandsID?: Collection<string, ApplicationCommand<unknown>>
+	commandsID?: Djs.Collection<string, Djs.ApplicationCommand<unknown>>
 ) {
 	if (!db.has(guildID, "templateID") || !commandsID) return "";
 	const ids = getHelpDBCmd(commandsID);
@@ -171,7 +172,9 @@ function createHelpMessageDB(
 	});
 }
 
-function getIDForAdminNoDB(commandsID: Collection<string, ApplicationCommand<unknown>>) {
+function getIDForAdminNoDB(
+	commandsID: Djs.Collection<string, Djs.ApplicationCommand<unknown>>
+) {
 	const ids: { [key: string]: string | undefined } = {};
 	const idConfig = commandsID.findKey((command) => command.name === t("config.name"));
 	if (!idConfig) {
@@ -187,7 +190,7 @@ function getIDForAdminNoDB(commandsID: Collection<string, ApplicationCommand<unk
 }
 
 function getIDForAdminDB(
-	commandsID: Collection<string, ApplicationCommand<unknown>>,
+	commandsID: Djs.Collection<string, Djs.ApplicationCommand<unknown>>,
 	db: Settings,
 	guildID: Djs.Snowflake
 ) {

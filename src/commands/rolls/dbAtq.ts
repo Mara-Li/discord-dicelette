@@ -5,8 +5,8 @@ import type { EClient } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice } from "@utils/roll";
-import i18next from "i18next";
 import * as Djs from "discord.js";
+import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
 
@@ -67,9 +67,7 @@ export const dbd = {
 
 			if (char) {
 				const values = user.find((data) => {
-					if (data.charName) return data.charName?.subText(char);
-
-					return false;
+					return data.charName?.subText(char);
 				});
 				if (values?.damageName) choices = values.damageName;
 			} else {
@@ -86,18 +84,23 @@ export const dbd = {
 				.map((data) => data.charName ?? "")
 				.filter((data) => data.length > 0);
 			if (skill) {
-				const values = user.filter((data) => {
-					if (data.damageName)
-						return data.damageName
-							.map((data) => data.standardize())
-							.includes(skill.standardize());
-					return false;
-				});
-				choices = values
-					.map((data) => data.charName ?? "")
-					.filter((data) => data.length > 0);
-				if (db.templateID.damageName?.includes(skill)) {
+				if (
+					db.templateID.damageName
+						?.map((x) => x.standardize())
+						.includes(skill.standardize())
+				) {
 					choices = allCharactersFromUser;
+				} else {
+					const values = user.filter((data) => {
+						if (data.damageName)
+							return data.damageName
+								.map((data) => data.standardize())
+								.includes(skill.standardize());
+						return false;
+					});
+					choices = values
+						.map((data) => data.charName ?? t("common.default"))
+						.filter((data) => data.length > 0);
 				}
 			} else {
 				//get user characters

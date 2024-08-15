@@ -3,8 +3,8 @@ import type { GuildData, PersonnageIds } from "@interface";
 import type { EClient } from "@main";
 import { sendLogs } from "@utils";
 import type { AnyThreadChannel } from "discord.js";
-import type Enmap from "enmap";
 import type * as Djs from "discord.js";
+import type Enmap from "enmap";
 export const DELETE_CHANNEL = (client: EClient): void => {
 	client.on("channelDelete", async (channel) => {
 		try {

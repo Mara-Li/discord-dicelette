@@ -13,9 +13,9 @@ import {
 } from "@utils";
 import { getDatabaseChar, getTemplateWithDB, getUserByEmbed } from "@utils/db";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
+import * as Djs from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
-import * as Djs from "discord.js";
 
 async function chart(
 	userData: UserData,

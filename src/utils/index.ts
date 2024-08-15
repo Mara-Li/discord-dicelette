@@ -1,4 +1,4 @@
-import { error } from "@console";
+import { error, log } from "@console";
 import {
 	type DiscordChannel,
 	type Settings,
@@ -12,10 +12,10 @@ import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { registerUser, setDefaultManagerId } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
 
+import * as Djs from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import { deleteAfter } from "../commands/rolls/base_roll";
-import * as Djs from "discord.js";
 /**
  * Set the tags for thread channel in forum
  * @param forum {ForumChannel}
@@ -259,7 +259,26 @@ export function cleanedDice(dice: string) {
  * @param focused {string}
  */
 export function filterChoices(choices: string[], focused: string) {
-	return choices.filter((choice) => choice.subText(focused.removeAccents()));
+	//remove duplicate from choices, without using set
+	log(uniqueValues(choices));
+	return uniqueValues(choices).filter((choice) =>
+		choice.subText(focused.removeAccents())
+	);
+}
+
+export function uniqueValues(array: string[]) {
+	const seen: { [key: string]: boolean } = {};
+	const uniqueArray: string[] = [];
+
+	for (const item of array) {
+		const formattedItem = item.standardize();
+		if (!seen[formattedItem]) {
+			seen[formattedItem] = true;
+			uniqueArray.push(formattedItem);
+		}
+	}
+
+	return uniqueArray;
 }
 
 /**

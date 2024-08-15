@@ -1,6 +1,7 @@
 import * as Djs from "discord.js";
 import { default as i18next } from "i18next";
 
+import { error, log } from "@console";
 import {
 	DiceTypeError,
 	EmptyObjectError,
@@ -11,7 +12,6 @@ import {
 	TooManyStats,
 } from "@dicelette/core";
 import { ALL_TRANSLATION_KEYS } from "@main";
-import { error, log } from "@console";
 import { InvalidCsvContent, NoChannel, NoEmbed } from "@utils";
 import { resources } from "./init";
 
