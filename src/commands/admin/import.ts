@@ -17,7 +17,7 @@ import {
 } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
-
+import * as Djs from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
 
@@ -38,10 +38,10 @@ export type CSVRow = {
  * I don't want to think about a specific way to handle this, so I will just ignore it for now.
  */
 export const bulkAdd = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("import.name"))
 		.setDMPermission(false)
-		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDefaultMemberPermissions(Djs.PermissionFlagsBits.ManageRoles)
 		.setNameLocalizations(cmdLn("import.name"))
 		.setDescription(t("import.description"))
 		.setDescriptionLocalizations(cmdLn("import.description"))
@@ -53,8 +53,8 @@ export const bulkAdd = {
 				.setDescriptionLocalizations(cmdLn("import.options.description"))
 				.setRequired(true)
 		),
-	async execute(interaction: CommandInteraction, client: EClient) {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const csvFile = options.getAttachment(t("import.options.name"), true);
 		const ul = ln(interaction.guild?.preferredLocale ?? interaction.locale);
 		await interaction.deferReply({ ephemeral: true });
@@ -81,11 +81,11 @@ export const bulkAdd = {
 		const guildMembers = await interaction.guild?.members.fetch();
 		for (const [user, data] of Object.entries(members)) {
 			//we already parsed the user, so the cache should be up to date
-			let member: GuildMember | User | undefined = guildMembers!.get(user);
+			let member: Djs.GuildMember | Djs.User | undefined = guildMembers!.get(user);
 			if (!member || !member.user) {
 				continue;
 			}
-			member = member.user as User;
+			member = member.user as Djs.User;
 			for (const char of data) {
 				const userDataEmbed = createUserEmbed(
 					ul,
@@ -125,9 +125,9 @@ export const bulkAdd = {
 					});
 				}
 
-				let templateEmbed: EmbedBuilder | undefined = undefined;
+				let templateEmbed: Djs.EmbedBuilder | undefined = undefined;
 				if (guildTemplate.diceType || guildTemplate.critical) {
-					templateEmbed = new EmbedBuilder()
+					templateEmbed = new Djs.EmbedBuilder()
 						.setTitle(ul("embed.template"))
 						.setColor("DarkerGrey");
 					templateEmbed.addFields({
@@ -169,7 +169,7 @@ export const bulkAdd = {
 				);
 				addAutoRole(interaction, member.id, !!diceEmbed, !!statsEmbed, client.settings);
 				await reply(interaction, {
-					content: ul("import.success", { user: userMention(member.id) }),
+					content: ul("import.success", { user: Djs.userMention(member.id) }),
 				});
 			}
 		}
@@ -185,14 +185,14 @@ export const bulkAdd = {
  */
 
 export const bulkAddTemplate = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("csv_generation.name"))
 		.setDMPermission(false)
-		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDefaultMemberPermissions(Djs.PermissionFlagsBits.ManageRoles)
 		.setNameLocalizations(cmdLn("csv_generation.name"))
 		.setDescription(t("csv_generation.description"))
 		.setDescriptionLocalizations(cmdLn("csv_generation.description")),
-	async execute(interaction: CommandInteraction, client: EClient) {
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
 		const ul = ln(interaction.locale);
 		const guildTemplate = await getTemplateWithDB(interaction, client.settings);
@@ -220,12 +220,12 @@ export const bulkAddTemplate = {
  * Export a function to parse a CSV file and return the data, using PapaParse
  * @param url {string} The URL of the CSV file, or the content of the file as string
  * @param guildTemplate {StatisticalTemplate} The template of the guild
- * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
+ * @param interaction {Djs.CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
  */
 export async function parseCSV(
 	url: string,
 	guildTemplate: StatisticalTemplate,
-	interaction?: CommandInteraction,
+	interaction?: Djs.CommandInteraction,
 	allowPrivate?: boolean
 ) {
 	let header = ["user", "charName", "avatar", "channel"];
@@ -233,7 +233,7 @@ export async function parseCSV(
 		header = header.concat(Object.keys(guildTemplate.statistics));
 	}
 	if (allowPrivate) header.push("isPrivate");
-	const ul = ln(interaction?.locale ?? ("en" as Locale));
+	const ul = ln(interaction?.locale ?? ("en" as Djs.Locale));
 	header.push("dice");
 	header = header.map((key) => key.unidecode());
 	//papaparse can't be used in Node, we need first to create a readable stream
@@ -307,18 +307,18 @@ async function readCSV(url: string): Promise<string> {
  * Parse the csv file and return the data in the correct format
  * @param csv {CSVRow[]} The data parsed from the CSV file
  * @param guildTemplate {StatisticalTemplate} The template of the guild
- * @param interaction {CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
+ * @param interaction {Djs.CommandInteraction | undefined} The interaction to reply to, if any (undefined if used in test)
  */
 async function step(
 	csv: CSVRow[],
 	guildTemplate: StatisticalTemplate,
-	interaction?: CommandInteraction,
+	interaction?: Djs.CommandInteraction,
 	allowPrivate?: boolean
 ) {
 	const members: {
 		[id: string]: UserData[];
 	} = {};
-	const ul = ln(interaction?.locale ?? ("en" as Locale));
+	const ul = ln(interaction?.locale ?? ("en" as Djs.Locale));
 	const errors: string[] = [];
 	//get the user id from the guild
 	for (const data of csv) {
@@ -327,7 +327,7 @@ async function step(
 		const charName = data.charName;
 
 		//get user from the guild
-		let guildMember: undefined | GuildMember;
+		let guildMember: undefined | Djs.GuildMember;
 		let userID: string | undefined = user;
 		const allMembers = await interaction?.guild?.members.fetch();
 		if (!allMembers) {
@@ -356,7 +356,9 @@ async function step(
 		if (!members[userID]) members[userID] = [];
 		if (guildTemplate.charName && !charName) {
 			if (interaction) {
-				const msg = ul("import.errors.missing_charName", { user: userMention(userID) });
+				const msg = ul("import.errors.missing_charName", {
+					user: Djs.userMention(userID),
+				});
 				await reply(interaction, { content: msg });
 				errors.push(msg);
 			}
@@ -374,7 +376,7 @@ async function step(
 		) {
 			if (interaction) {
 				const msg = ul("import.errors.duplicate_charName", {
-					user: userMention(userID),
+					user: Djs.userMention(userID),
 					charName: charName ?? ul("common.default"),
 				});
 				await reply(interaction, { content: msg });
@@ -392,7 +394,7 @@ async function step(
 			if (emptyStats.length > 0) {
 				if (interaction) {
 					const msg = ul("import.errors.missing_stats", {
-						user: userMention(userID),
+						user: Djs.userMention(userID),
 						stats: emptyStats.join("\n- "),
 					});
 					await reply(interaction, { content: msg });

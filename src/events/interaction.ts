@@ -20,9 +20,10 @@ import { validateUserButton } from "@register/validate";
 import { embedError, reply } from "@utils";
 import { getTemplate, getTemplateWithDB } from "@utils/db";
 import { ensureEmbed } from "@utils/parse";
+import * as Djs from "discord.js";
 
 export default (client: EClient): void => {
-	client.on("interactionCreate", async (interaction: BaseInteraction) => {
+	client.on("interactionCreate", async (interaction: Djs.BaseInteraction) => {
 		const ul = ln(interaction.guild?.preferredLocale ?? interaction.locale);
 		const interactionUser = interaction.user;
 		try {
@@ -33,7 +34,7 @@ export default (client: EClient): void => {
 				if (!command) return;
 				await command.execute(interaction, client);
 			} else if (interaction.isAutocomplete()) {
-				const interac = interaction as AutocompleteInteraction;
+				const interac = interaction as Djs.AutocompleteInteraction;
 				const command = autCompleteCmd.find(
 					(cmd) => cmd.data.name === interac.commandName
 				);
@@ -72,7 +73,7 @@ export default (client: EClient): void => {
 				const db = client.settings.get(interaction.guild.id, "logs");
 				if (!db) return;
 				const logs = await interaction.guild.channels.fetch(db);
-				if (logs instanceof TextChannel) {
+				if (logs instanceof Djs.TextChannel) {
 					logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
 				}
 			}
@@ -87,9 +88,9 @@ export default (client: EClient): void => {
  * @param interactionUser {User}
  */
 async function modalSubmit(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	client: EClient
 ) {
 	const db = client.settings;
@@ -114,9 +115,9 @@ async function modalSubmit(
  * @param template {StatisticalTemplate}
  */
 async function buttonSubmit(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	template: StatisticalTemplate,
 	db: Settings
 ) {
@@ -147,9 +148,9 @@ async function buttonSubmit(
 }
 
 async function selectSubmit(
-	interaction: StringSelectMenuInteraction,
+	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	db: Settings
 ) {
 	if (interaction.customId === "edit_select") {
@@ -170,9 +171,9 @@ async function selectSubmit(
  * @param interactionUser {User}
  */
 async function cancel(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	ul: Translation,
-	interactionUser: User
+	interactionUser: Djs.User
 ) {
 	const embed = ensureEmbed(interaction.message);
 	const user =
@@ -182,7 +183,7 @@ async function cancel(
 			.replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache
 		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator) await interaction.message.edit({ components: [] });
 	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }

@@ -9,7 +9,7 @@ import type { GuildData } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { downloadTutorialImages, embedError, reply } from "@utils";
-
+import * as Djs from "discord.js";
 import { bulkEditTemplateUser } from "@utils/parse";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
@@ -17,10 +17,10 @@ import { dedent } from "ts-dedent";
 const t = i18next.getFixedT("en");
 
 export const generateTemplate = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("generate.name"))
 		.setNameLocalizations(cmdLn("generate.name"))
-		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDefaultMemberPermissions(Djs.PermissionFlagsBits.ManageRoles)
 		.setDescription(t("generate.description"))
 		.setDescriptionLocalizations(cmdLn("generate.description"))
 		.addStringOption((option) =>
@@ -83,10 +83,10 @@ export const generateTemplate = {
 				.setNameLocalizations(cmdLn("generate.options.damage.name"))
 				.setRequired(false)
 		),
-	async execute(interaction: CommandInteraction): Promise<void> {
+	async execute(interaction: Djs.CommandInteraction): Promise<void> {
 		if (!interaction.guild) return;
-		const options = interaction.options as CommandInteractionOptionResolver;
-		const ul = ln(interaction.locale as Locale);
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
+		const ul = ln(interaction.locale as Djs.Locale);
 		const name = options.getString(t("generate.options.stats.name")) ?? undefined;
 		let statServer: Statistic | undefined = undefined;
 		if (name) {
@@ -141,10 +141,10 @@ export const generateTemplate = {
 };
 
 export const registerTemplate = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("register.name"))
 		.setNameLocalizations(cmdLn("register.name"))
-		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDefaultMemberPermissions(Djs.PermissionFlagsBits.ManageRoles)
 		.setDescription(t("register.description"))
 		.setDescriptionLocalizations(cmdLn("register.description"))
 		.addChannelOption((option) =>
@@ -155,9 +155,9 @@ export const registerTemplate = {
 				.setDescriptionLocalizations(cmdLn("register.options.channel"))
 				.setRequired(true)
 				.addChannelTypes(
-					ChannelType.PublicThread,
-					ChannelType.GuildText,
-					ChannelType.PrivateThread
+					Djs.ChannelType.PublicThread,
+					Djs.ChannelType.GuildText,
+					Djs.ChannelType.PrivateThread
 				)
 		)
 		.addAttachmentOption((option) =>
@@ -176,10 +176,10 @@ export const registerTemplate = {
 				.setDescriptionLocalizations(cmdLn("register.options.public.description"))
 				.setRequired(false)
 				.addChannelTypes(
-					ChannelType.PublicThread,
-					ChannelType.GuildText,
-					ChannelType.PrivateThread,
-					ChannelType.GuildForum
+					Djs.ChannelType.PublicThread,
+					Djs.ChannelType.GuildText,
+					Djs.ChannelType.PrivateThread,
+					Djs.ChannelType.GuildForum
 				)
 		)
 		.addChannelOption((option) =>
@@ -190,16 +190,16 @@ export const registerTemplate = {
 				.setDescriptionLocalizations(cmdLn("register.options.private.description"))
 				.setRequired(false)
 				.addChannelTypes(
-					ChannelType.PublicThread,
-					ChannelType.GuildText,
-					ChannelType.PrivateThread,
-					ChannelType.GuildForum
+					Djs.ChannelType.PublicThread,
+					Djs.ChannelType.GuildText,
+					Djs.ChannelType.PrivateThread,
+					Djs.ChannelType.GuildForum
 				)
 		),
-	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
+	async execute(interaction: Djs.CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
 		await interaction.deferReply({ ephemeral: true });
-		const options = interaction.options as CommandInteractionOptionResolver;
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const ul = ln(interaction.guild.preferredLocale ?? interaction.locale);
 
 		const template = options.getAttachment(t("register.options.template.name"), true);
@@ -219,24 +219,27 @@ export const registerTemplate = {
 		const privateChannel = options.getChannel(t("register.options.private.name"), false);
 
 		if (
-			(!(channel instanceof TextChannel) && !(channel instanceof ThreadChannel)) ||
-			(!publicChannel && !(channel instanceof TextChannel))
+			(!(channel instanceof Djs.TextChannel) &&
+				!(channel instanceof Djs.ThreadChannel)) ||
+			(!publicChannel && !(channel instanceof Djs.TextChannel))
 		) {
 			await reply(interaction, {
 				embeds: [
-					embedError(ul("error.public", { chan: channelMention(channel.id) }), ul),
+					embedError(ul("error.public", { chan: Djs.channelMention(channel.id) }), ul),
 				],
 				ephemeral: true,
 			});
 			return;
 		}
 
-		const button = new ButtonBuilder()
+		const button = new Djs.ButtonBuilder()
 			.setCustomId("register")
 			.setLabel(ul("register.button"))
-			.setStyle(ButtonStyle.Primary);
-		const components = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
-		const embedTemplate = new EmbedBuilder()
+			.setStyle(Djs.ButtonStyle.Primary);
+		const components = new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents(
+			button
+		);
+		const embedTemplate = new Djs.EmbedBuilder()
 			.setTitle(ul("register.embed.title"))
 			.setDescription(ul("register.embed.description"))
 			.setThumbnail(
@@ -245,9 +248,9 @@ export const registerTemplate = {
 			.setColor("Random");
 
 		//if there are ~25 stats we need to create an embed for it, so go to multiple embed, as user was done.
-		let statisticsEmbed: undefined | EmbedBuilder = undefined;
+		let statisticsEmbed: undefined | Djs.EmbedBuilder = undefined;
 		if (templateData.statistics) {
-			statisticsEmbed = new EmbedBuilder()
+			statisticsEmbed = new Djs.EmbedBuilder()
 				.setTitle(ul("common.statistics").capitalize())
 				.setThumbnail(
 					"https://github.com/dicelette/discord-dicelette/blob/main/assets/player.png?raw=true"
@@ -291,9 +294,9 @@ export const registerTemplate = {
 				name: ul("common.total"),
 				value: `\`${templateData.total}\``,
 			});
-		let diceEmbed: undefined | EmbedBuilder = undefined;
+		let diceEmbed: undefined | Djs.EmbedBuilder = undefined;
 		if (templateData.damage) {
-			diceEmbed = new EmbedBuilder()
+			diceEmbed = new Djs.EmbedBuilder()
 				.setTitle(ul("embed.dice"))
 				.setThumbnail(
 					"https://raw.githubusercontent.com/dicelette/discord-dicelette/main/assets/dice.png"
@@ -310,7 +313,7 @@ export const registerTemplate = {
 		);
 		const msg = await channel.send({
 			content: "",
-			embeds: embeds as EmbedBuilder[],
+			embeds: embeds as Djs.EmbedBuilder[],
 			files: [
 				{
 					attachment: Buffer.from(JSON.stringify(templateData, null, 2), "utf-8"),
@@ -333,7 +336,7 @@ export const registerTemplate = {
 					const channel = await interaction.guild.channels.fetch(
 						json.templateID.channelId
 					);
-					const msg = await (channel as TextChannel).messages.fetch(
+					const msg = await (channel as Djs.TextChannel).messages.fetch(
 						json.templateID.messageId
 					);
 					await msg.delete();

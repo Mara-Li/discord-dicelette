@@ -1,9 +1,10 @@
-import type { Settings, Translation } from "@interface";
+import type { DiscordTextChannel, Settings, Translation } from "@interface";
 import { sendLogs, setTagsForRoll } from "@utils";
+import * as Djs from "discord.js";
 
 export async function isUserNameOrId(
 	userId: string,
-	interaction: ModalSubmitInteraction
+	interaction: Djs.ModalSubmitInteraction
 ) {
 	if (!userId.match(/\d+/))
 		return (await interaction.guild!.members.fetch({ query: userId })).first();
@@ -12,8 +13,8 @@ export async function isUserNameOrId(
 
 export async function findMessageBefore(
 	channel: DiscordTextChannel,
-	inter: Message | InteractionResponse,
-	client: Client
+	inter: Djs.Message | Djs.InteractionResponse,
+	client: Djs.Client
 ) {
 	let messagesBefore = await channel.messages.fetch({ before: inter.id, limit: 1 });
 	let messageBefore = messagesBefore.first();
@@ -34,7 +35,7 @@ export async function findMessageBefore(
  */
 export async function findThread(
 	db: Settings,
-	channel: TextChannel,
+	channel: Djs.TextChannel,
 	ul: Translation,
 	hidden?: string
 ) {
@@ -43,7 +44,10 @@ export async function findThread(
 	if (rollChannelId) {
 		try {
 			const rollChannel = await channel.guild.channels.fetch(rollChannelId);
-			if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
+			if (
+				rollChannel instanceof Djs.ThreadChannel ||
+				rollChannel instanceof Djs.TextChannel
+			) {
 				return rollChannel;
 			}
 		} catch (e) {
@@ -106,8 +110,8 @@ export async function findThread(
  * @returns
  */
 export async function findForumChannel(
-	forum: ForumChannel,
-	thread: ThreadChannel | TextChannel,
+	forum: Djs.ForumChannel,
+	thread: Djs.ThreadChannel | Djs.TextChannel,
 	db: Settings,
 	ul: Translation,
 	hidden?: string
@@ -117,7 +121,10 @@ export async function findForumChannel(
 	if (rollChannelId) {
 		try {
 			const rollChannel = await forum.guild.channels.fetch(rollChannelId);
-			if (rollChannel instanceof ThreadChannel || rollChannel instanceof TextChannel) {
+			if (
+				rollChannel instanceof Djs.ThreadChannel ||
+				rollChannel instanceof Djs.TextChannel
+			) {
 				return rollChannel;
 			}
 		} catch (e) {

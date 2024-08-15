@@ -1,19 +1,24 @@
 import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
-import type { PersonnageIds, Translation, UserMessageId } from "@interface";
+import type {
+	DiscordChannel,
+	PersonnageIds,
+	Translation,
+	UserMessageId,
+} from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
-
+import * as Djs from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
 
 export const deleteChar = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("deleteChar.name"))
-		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDefaultMemberPermissions(Djs.PermissionFlagsBits.ManageRoles)
 		.setNameLocalizations(cmdLn("deleteChar.name"))
 		.setDescription(t("deleteChar.description"))
 		.setDescriptionLocalizations(cmdLn("deleteChar.description"))
@@ -34,15 +39,15 @@ export const deleteChar = {
 				.setAutocomplete(true)
 		),
 	async autocomplete(
-		interaction: AutocompleteInteraction,
+		interaction: Djs.AutocompleteInteraction,
 		client: EClient
 	): Promise<void> {
-		const options = interaction.options as CommandInteractionOptionResolver;
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		const choices: string[] = [];
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		let user = options.get(t("display.userLowercase"))?.value;
 		if (typeof user !== "string") user = interaction.user.id;
 		if (fixed.name === t("common.character")) {
@@ -58,10 +63,10 @@ export const deleteChar = {
 			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
-	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async execute(interaction: Djs.CommandInteraction, client: EClient): Promise<void> {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guildId as string);
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		if (!guildData) {
 			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;
@@ -84,7 +89,7 @@ export const deleteChar = {
 				await reply(
 					interaction,
 					ul("deleteChar.noCharacters", {
-						user: userMention(user?.id ?? interaction.user.id),
+						user: Djs.userMention(user?.id ?? interaction.user.id),
 					})
 				);
 				return;
@@ -103,7 +108,7 @@ export const deleteChar = {
 			await reply(
 				interaction,
 				ul("deleteChar.allSuccess", {
-					user: userMention(user?.id ?? interaction.user.id),
+					user: Djs.userMention(user?.id ?? interaction.user.id),
 				})
 			);
 			return;
@@ -133,12 +138,14 @@ export const deleteChar = {
 			client.settings.set(interaction.guildId as string, newGuildData);
 			await reply(
 				interaction,
-				ul("deleteChar.success", { user: userMention(user?.id ?? interaction.user.id) })
+				ul("deleteChar.success", {
+					user: Djs.userMention(user?.id ?? interaction.user.id),
+				})
 			);
 			return;
 		}
 		const messageID = sheetLocation.messageId;
-		const msg = `${userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${charName.capitalize()})*` : ""}`;
+		const msg = `${Djs.userMention(user?.id ?? interaction.user.id)}${charName ? ` *(${charName.capitalize()})*` : ""}`;
 		try {
 			//search for the message and delete it
 			const message = await userChannel.messages.fetch(messageID);
@@ -160,7 +167,7 @@ export const deleteChar = {
 async function deleteMessage(
 	ids: UserMessageId[],
 	client: EClient,
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	ul: Translation
 ) {
 	for (const id of ids) {

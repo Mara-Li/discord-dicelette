@@ -8,12 +8,12 @@ import { getUserFromMessage } from "@utils/db";
 
 import i18next from "i18next";
 import Papa from "papaparse";
-
+import * as Djs from "discord.js";
 import type { CSVRow } from "./import";
 
 const t = i18next.getFixedT("en");
 export const exportData = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("export.name"))
 		.setNameLocalizations(cmdLn("export.name"))
 		.setDescription(t("export.description"))
@@ -26,9 +26,9 @@ export const exportData = {
 				.setDescriptionLocalizations(cmdLn("export.options.desc"))
 				.setRequired(false)
 		),
-	async execute(interaction: CommandInteraction, client: EClient) {
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
-		const options = interaction.options as CommandInteractionOptionResolver;
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const isPrivate = options.getBoolean(t("export.options.name")) ?? undefined;
 		const allUser = client.settings.get(interaction.guild!.id, "user");
 		await interaction.deferReply();

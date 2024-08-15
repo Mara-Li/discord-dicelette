@@ -4,7 +4,7 @@ import { reply } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { getEmbeds, getStatistiqueFields } from "@utils/parse";
 import { createStatsEmbed } from "..";
-
+import * as Djs from "discord.js";
 /**
  * Embed to display the statistics when adding a new user
  * @param interaction {ModalSubmitInteraction}
@@ -12,12 +12,12 @@ import { createStatsEmbed } from "..";
  * @param page {number=2}
  */
 export async function embedStatistiques(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	template: StatisticalTemplate,
 	page = 2
 ) {
 	if (!interaction.message) return;
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
 	if (!userEmbed) return;
 	const statsEmbed = getEmbeds(ul, interaction.message, "stats");
@@ -87,13 +87,13 @@ export async function embedStatistiques(
  * @param page {number}
  */
 export async function showStatistiqueModal(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	template: StatisticalTemplate,
 	stats?: string[],
 	page = 1
 ) {
 	if (!template.statistics) return;
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	const statsWithoutCombinaison =
 		Object.keys(template.statistics).filter((stat) => {
 			return !template.statistics?.[stat]?.combinaison;
@@ -102,7 +102,7 @@ export async function showStatistiqueModal(
 		Math.ceil(statsWithoutCombinaison.length / 5) >= 1
 			? Math.ceil(statsWithoutCombinaison.length / 5)
 			: page;
-	const modal = new ModalBuilder()
+	const modal = new Djs.ModalBuilder()
 		.setCustomId(`page${page}`)
 		.setTitle(ul("modals.steps", { page, max: nbOfPages + 1 }));
 	let statToDisplay = statsWithoutCombinaison;
@@ -128,15 +128,16 @@ export async function showStatistiqueModal(
 			msg = ul("modals.enterValue.minAndMax", { min: value.min, max: value.max });
 		else if (value.min) msg = ul("modals.enterValue.minOnly", { min: value.min });
 		else if (value.max) msg = ul("modals.enterValue.maxOnly", { max: value.max });
-		const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-			new TextInputBuilder()
-				.setCustomId(cleanedName)
-				.setLabel(stat)
-				.setPlaceholder(msg)
-				.setRequired(true)
-				.setValue("")
-				.setStyle(TextInputStyle.Short)
-		);
+		const input =
+			new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+				new Djs.TextInputBuilder()
+					.setCustomId(cleanedName)
+					.setLabel(stat)
+					.setPlaceholder(msg)
+					.setRequired(true)
+					.setValue("")
+					.setStyle(Djs.TextInputStyle.Short)
+			);
 		modal.addComponents(input);
 	}
 	await interaction.showModal(modal);

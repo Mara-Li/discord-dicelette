@@ -6,11 +6,12 @@ import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice } from "@utils/roll";
 import i18next from "i18next";
+import * as Djs from "discord.js";
 
 const t = i18next.getFixedT("en");
 
 export const dbd = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("rAtq.name"))
 		.setDescription(t("rAtq.description"))
 		.setNameLocalizations(cmdLn("rAtq.name"))
@@ -50,8 +51,8 @@ export const dbd = {
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.comments.description"))
 				.setRequired(false)
 		),
-	async autocomplete(interaction: AutocompleteInteraction, client: EClient) {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async autocomplete(interaction: Djs.AutocompleteInteraction, client: EClient) {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
 		const db = client.settings.get(interaction.guild!.id);
 		if (!db || !db.templateID) return;
@@ -109,15 +110,15 @@ export const dbd = {
 			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
-	async execute(interaction: CommandInteraction, client: EClient) {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const db = client.settings.get(interaction.guild!.id);
 		if (!db || !interaction.guild || !interaction.channel) return;
 		const user = client.settings.get(interaction.guild.id, `user.${interaction.user.id}`);
 		if (!user) return;
 		let charOptions = options.getString(t("common.character")) ?? undefined;
 		const charName = charOptions?.normalize();
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		try {
 			let userStatistique = await getUserFromMessage(
 				client.settings,

@@ -1,9 +1,4 @@
-import {
-	type BaseInteraction,
-	DiscordAPIError,
-	Locale,
-	type LocalizationMap,
-} from "discord.js";
+import * as Djs from "discord.js";
 import { default as i18next } from "i18next";
 
 import {
@@ -20,15 +15,19 @@ import { error } from "../console";
 import { InvalidCsvContent, NoChannel, NoEmbed } from "../utils";
 import { resources } from "./init";
 
-export function ln(userLang: Locale) {
-	const localeName = Object.entries(Locale).find(([name, abbr]) => {
+export function ln(userLang: Djs.Locale) {
+	const localeName = Object.entries(Djs.Locale).find(([name, abbr]) => {
 		return name === userLang || abbr === userLang;
 	});
 	return i18next.getFixedT(localeName?.[1] ?? "en");
 }
 
-export function lError(e: Error, interaction?: BaseInteraction, userLang?: Locale) {
-	const ul = ln(interaction?.locale ?? userLang ?? Locale.EnglishUS);
+export function lError(
+	e: Error,
+	interaction?: Djs.BaseInteraction,
+	userLang?: Djs.Locale
+) {
+	const ul = ln(interaction?.locale ?? userLang ?? Djs.Locale.EnglishUS);
 	if (e instanceof DiceTypeError)
 		return ul("error.invalidDice.withDice", { dice: e.dice });
 
@@ -52,7 +51,7 @@ export function lError(e: Error, interaction?: BaseInteraction, userLang?: Local
 
 	if (e instanceof NoChannel) return ul("error.channel", { channel: "" });
 
-	if (e instanceof DiscordAPIError) {
+	if (e instanceof Djs.DiscordAPIError) {
 		if (e.method === "DELETE") {
 			error("Error while deleting message", e);
 			return "";
@@ -78,15 +77,15 @@ export function lError(e: Error, interaction?: BaseInteraction, userLang?: Local
  * @returns
  */
 export function cmdLn(key: string) {
-	const localized: LocalizationMap = {};
-	const allValidLocale = Object.entries(Locale);
+	const localized: Djs.LocalizationMap = {};
+	const allValidLocale = Object.entries(Djs.Locale);
 	const allTranslatedLanguages = Object.keys(resources).filter(
 		(lang) => !lang.includes("en")
 	);
-	for (const [name, locale] of allValidLocale) {
-		if (allTranslatedLanguages.includes(locale)) {
-			const ul = ln(name as Locale);
-			localized[locale as Locale] = ul(key);
+	for (const [name, Locale] of allValidLocale) {
+		if (allTranslatedLanguages.includes(Locale)) {
+			const ul = ln(name as Djs.Locale);
+			localized[Locale as Djs.Locale] = ul(key);
 		}
 	}
 	return localized;
@@ -125,7 +124,7 @@ export function flattenJson(
 export function findln(translatedText: string) {
 	const allLocales = Object.keys(resources);
 	for (const locale of allLocales) {
-		const ul = ln(locale as Locale);
+		const ul = ln(locale as Djs.Locale);
 		for (const key of ALL_TRANSLATION_KEYS) {
 			if (ul(key).toLowerCase() === translatedText.toLowerCase()) return key;
 		}

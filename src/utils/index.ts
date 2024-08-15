@@ -1,5 +1,6 @@
 import { error } from "@console";
 import {
+	type DiscordChannel,
 	type Settings,
 	TUTORIAL_IMAGES,
 	type Translation,
@@ -14,13 +15,12 @@ import { parseEmbedFields } from "@utils/parse";
 import { evaluate } from "mathjs";
 import moment from "moment";
 import { deleteAfter } from "../commands/rolls/base_roll";
-import type { AnyThreadChannel } from "discord.js";
-
+import * as Djs from "discord.js";
 /**
  * Set the tags for thread channel in forum
  * @param forum {ForumChannel}
  */
-export async function setTagsForRoll(forum: ForumChannel) {
+export async function setTagsForRoll(forum: Djs.ForumChannel) {
 	//check if the tags `🪡 roll logs` exists
 	const allTags = forum.availableTags;
 	const diceRollTag = allTags.find(
@@ -28,7 +28,7 @@ export async function setTagsForRoll(forum: ForumChannel) {
 	);
 	if (diceRollTag) return diceRollTag;
 
-	const availableTags: GuildForumTagData[] = allTags.map((tag) => {
+	const availableTags: Djs.GuildForumTagData[] = allTags.map((tag) => {
 		return {
 			id: tag.id,
 			moderated: tag.moderated,
@@ -44,7 +44,7 @@ export async function setTagsForRoll(forum: ForumChannel) {
 
 	return forum.availableTags.find(
 		(tag) => tag.name === "Dice Roll" && tag.emoji?.name === "🪡"
-	) as GuildForumTagData;
+	) as Djs.GuildForumTagData;
 }
 
 /**
@@ -57,8 +57,8 @@ export async function setTagsForRoll(forum: ForumChannel) {
  * @param which {stats?: boolean, dice?: boolean, template?: boolean} (for adding button)
  */
 export async function repostInThread(
-	embed: EmbedBuilder[],
-	interaction: BaseInteraction,
+	embed: Djs.EmbedBuilder[],
+	interaction: Djs.BaseInteraction,
 	userTemplate: UserData,
 	userId: string,
 	ul: Translation,
@@ -71,7 +71,7 @@ export async function repostInThread(
 		: undefined;
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;
 	const channel = interaction.channel;
-	if (!channel || channel instanceof CategoryChannel) return;
+	if (!channel || channel instanceof Djs.CategoryChannel) return;
 	if (!guildData)
 		throw new Error(
 			ul("error.generic.e", {
@@ -84,20 +84,20 @@ export async function repostInThread(
 	};
 	let isForumThread = false;
 	let thread = await searchUserChannel(guildData, interaction, ul, threadId, true);
-	let msg: Message | undefined = undefined;
+	let msg: Djs.Message | undefined = undefined;
 	if (!thread) {
 		const channel = await interaction.guild?.channels.fetch(threadId);
-		if (channel && channel instanceof ForumChannel) {
+		if (channel && channel instanceof Djs.ForumChannel) {
 			const userName =
 				userTemplate.userName ??
 				(await interaction.guild?.members.fetch(userId))?.displayName;
 			//create a new thread in the forum
 			const newThread = await channel.threads.create({
 				name: userName ?? `${ul("common.sheet")} ${ul("common.character").toUpperCase()}`,
-				autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+				autoArchiveDuration: Djs.ThreadAutoArchiveDuration.OneWeek,
 				message: dataToSend,
 			});
-			thread = newThread as AnyThreadChannel;
+			thread = newThread as Djs.AnyThreadChannel;
 			isForumThread = true;
 			const starterMsg = await newThread.fetchStarterMessage();
 			if (!starterMsg) throw new Error(ul("error.noThread"));
@@ -109,15 +109,15 @@ export async function repostInThread(
 			);
 			await deleteAfter(ping, 5000);
 		}
-	} else if (!thread && channel instanceof TextChannel) {
+	} else if (!thread && channel instanceof Djs.TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(
 			(thread) => thread.name === "📝 • [STATS]"
-		) as AnyThreadChannel | undefined;
+		) as Djs.AnyThreadChannel | undefined;
 		if (!thread) {
 			thread = (await channel.threads.create({
 				name: "📝 • [STATS]",
 				autoArchiveDuration: 10080,
-			})) as AnyThreadChannel;
+			})) as Djs.AnyThreadChannel;
 			setDefaultManagerId(guildData, interaction, thread.id);
 		}
 	}
@@ -266,8 +266,8 @@ export function filterChoices(choices: string[], focused: string) {
  * Parse the fields in stats, used to fix combinaison and get only them and not their result
  * @param statsEmbed {EmbedBuilder}
  */
-export function parseStatsString(statsEmbed: EmbedBuilder) {
-	const stats = parseEmbedFields(statsEmbed.toJSON() as Embed);
+export function parseStatsString(statsEmbed: Djs.EmbedBuilder) {
+	const stats = parseEmbedFields(statsEmbed.toJSON() as Djs.Embed);
 	const parsedStats: { [name: string]: number } = {};
 	for (const [name, value] of Object.entries(stats)) {
 		let number = Number.parseInt(value, 10);
@@ -280,12 +280,12 @@ export function parseStatsString(statsEmbed: EmbedBuilder) {
 	return parsedStats;
 }
 
-export async function sendLogs(message: string, guild: Guild, db: Settings) {
+export async function sendLogs(message: string, guild: Djs.Guild, db: Settings) {
 	const guildData = db.get(guild.id);
 	if (!guildData?.logs) return;
 	const channel = guildData.logs;
 	try {
-		const channelToSend = (await guild.channels.fetch(channel)) as TextChannel;
+		const channelToSend = (await guild.channels.fetch(channel)) as Djs.TextChannel;
 		await channelToSend.send(message);
 	} catch (error) {
 		return;
@@ -293,8 +293,8 @@ export async function sendLogs(message: string, guild: Guild, db: Settings) {
 }
 
 export function displayOldAndNewStats(
-	oldStats?: APIEmbedField[],
-	newStats?: APIEmbedField[]
+	oldStats?: Djs.APIEmbedField[],
+	newStats?: Djs.APIEmbedField[]
 ) {
 	let stats = "";
 	if (oldStats && newStats) {
@@ -321,33 +321,34 @@ export function displayOldAndNewStats(
 
 export async function searchUserChannel(
 	guildData: Settings,
-	interaction: BaseInteraction,
+	interaction: Djs.BaseInteraction,
 	ul: Translation,
 	channelId: string,
 	register?: boolean
 ): Promise<DiscordChannel> {
-	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
+	let thread: Djs.TextChannel | Djs.AnyThreadChannel | undefined | Djs.GuildBasedChannel =
+		undefined;
 	try {
 		const channel = await interaction.guild?.channels.fetch(channelId);
-		if (channel instanceof ForumChannel && register) return;
+		if (channel instanceof Djs.ForumChannel && register) return;
 		if (
 			!channel ||
-			channel instanceof CategoryChannel ||
-			channel instanceof ForumChannel ||
-			channel instanceof MediaChannel ||
-			channel instanceof StageChannel ||
-			channel instanceof VoiceChannel
+			channel instanceof Djs.CategoryChannel ||
+			channel instanceof Djs.ForumChannel ||
+			channel instanceof Djs.MediaChannel ||
+			channel instanceof Djs.StageChannel ||
+			channel instanceof Djs.VoiceChannel
 		) {
 			if (
-				interaction instanceof CommandInteraction ||
-				interaction instanceof ButtonInteraction ||
-				interaction instanceof ModalSubmitInteraction
+				interaction instanceof Djs.CommandInteraction ||
+				interaction instanceof Djs.ButtonInteraction ||
+				interaction instanceof Djs.ModalSubmitInteraction
 			)
 				await interaction?.channel?.send({
 					embeds: [embedError(ul("error.noThread"), ul)],
 				});
 
-			await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
+			await sendLogs(ul("error.noThread"), interaction.guild as Djs.Guild, guildData);
 			return;
 		}
 		thread = channel;
@@ -357,14 +358,15 @@ export async function searchUserChannel(
 	}
 	if (!thread) {
 		if (
-			interaction instanceof CommandInteraction ||
-			interaction instanceof ButtonInteraction ||
-			interaction instanceof ModalSubmitInteraction
+			interaction instanceof Djs.CommandInteraction ||
+			interaction instanceof Djs.ButtonInteraction ||
+			interaction instanceof Djs.ModalSubmitInteraction
 		) {
 			if (interaction.replied)
 				await interaction.editReply({ embeds: [embedError(ul("error.noThread"), ul)] });
 			else await reply(interaction, { embeds: [embedError(ul("error.noThread"), ul)] });
-		} else await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
+		} else
+			await sendLogs(ul("error.noThread"), interaction.guild as Djs.Guild, guildData);
 		return;
 	}
 	if (thread.isThread() && thread.archived) thread.setArchived(false);
@@ -372,10 +374,10 @@ export async function searchUserChannel(
 }
 
 export async function downloadTutorialImages() {
-	const imageBufferAttachments: AttachmentBuilder[] = [];
+	const imageBufferAttachments: Djs.AttachmentBuilder[] = [];
 	for (const url of TUTORIAL_IMAGES) {
 		const index = TUTORIAL_IMAGES.indexOf(url);
-		const newMessageAttachment = new AttachmentBuilder(url, {
+		const newMessageAttachment = new Djs.AttachmentBuilder(url, {
 			name: `tutorial_${index}.png`,
 		});
 		imageBufferAttachments.push(newMessageAttachment);
@@ -385,11 +387,11 @@ export async function downloadTutorialImages() {
 
 export async function reply(
 	interaction:
-		| CommandInteraction
-		| ModalSubmitInteraction
-		| ButtonInteraction
-		| StringSelectMenuInteraction,
-	options: string | InteractionReplyOptions | MessagePayload
+		| Djs.CommandInteraction
+		| Djs.ModalSubmitInteraction
+		| Djs.ButtonInteraction
+		| Djs.StringSelectMenuInteraction,
+	options: string | Djs.InteractionReplyOptions | Djs.MessagePayload
 ) {
 	return interaction.replied || interaction.deferred
 		? await interaction.editReply(options)
@@ -398,7 +400,7 @@ export async function reply(
 
 export const embedError = (error: string, ul: Translation, cause?: string) => {
 	const stack = findln(error);
-	return new EmbedBuilder()
+	return new Djs.EmbedBuilder()
 		.setDescription(error)
 		.setColor("Red")
 		.setFooter({ text: cause ?? stack.replace("error.", "") })
@@ -406,14 +408,14 @@ export const embedError = (error: string, ul: Translation, cause?: string) => {
 		.setTimestamp();
 };
 
-async function fetchDiceRole(diceEmbed: boolean, guild: Guild, role?: string) {
+async function fetchDiceRole(diceEmbed: boolean, guild: Djs.Guild, role?: string) {
 	if (!diceEmbed || !role) return;
 	const diceRole = guild.roles.cache.get(role);
 	if (!diceRole) return await guild.roles.fetch(role);
 	return diceRole;
 }
 
-async function fetchStatsRole(statsEmbed: boolean, guild: Guild, role?: string) {
+async function fetchStatsRole(statsEmbed: boolean, guild: Djs.Guild, role?: string) {
 	if (!statsEmbed || !role) return;
 	const statsRole = guild.roles.cache.get(role);
 	if (!statsRole) return await guild.roles.fetch(role);
@@ -421,7 +423,7 @@ async function fetchStatsRole(statsEmbed: boolean, guild: Guild, role?: string) 
 }
 
 export async function addAutoRole(
-	interaction: BaseInteraction,
+	interaction: Djs.BaseInteraction,
 	member: string,
 	diceEmbed: boolean,
 	statsEmbed: boolean,
@@ -454,7 +456,7 @@ export async function addAutoRole(
 		const errorMessage = `\`\`\`\n${(e as Error).message}\n\`\`\``;
 		if (dblogs) {
 			const logs = await interaction.guild!.channels.fetch(dblogs);
-			if (logs instanceof TextChannel) {
+			if (logs instanceof Djs.TextChannel) {
 				logs.send(errorMessage);
 			}
 		} else {
@@ -481,8 +483,8 @@ export async function addAutoRole(
  * @returns {boolean}
  */
 export function haveAccess(
-	interaction: BaseInteraction,
-	thread: GuildChannelResolvable,
+	interaction: Djs.BaseInteraction,
+	thread: Djs.GuildChannelResolvable,
 	user?: string
 ): boolean {
 	if (!user) return false;
@@ -491,8 +493,8 @@ export function haveAccess(
 	const member = interaction.guild?.members.cache.get(interaction.user.id);
 	if (!member || !thread) return false;
 	return (
-		member.permissions.has(PermissionFlagsBits.ManageRoles) ||
-		member.permissionsIn(thread).has(PermissionFlagsBits.ViewChannel)
+		member.permissions.has(Djs.PermissionFlagsBits.ManageRoles) ||
+		member.permissionsIn(thread).has(Djs.PermissionFlagsBits.ViewChannel)
 	);
 }
 
@@ -500,10 +502,10 @@ export function isStatsThread(
 	db: Settings,
 	guildID: string,
 	thread:
-		| NewsChannel
-		| TextChannel
-		| PrivateThreadChannel
-		| typeof PublicThreadChannel<boolean>
+		| Djs.NewsChannel
+		| Djs.TextChannel
+		| Djs.PrivateThreadChannel
+		| Djs.PublicThreadChannel<boolean>
 		| undefined
 ) {
 	return (

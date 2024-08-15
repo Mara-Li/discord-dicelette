@@ -19,7 +19,7 @@ import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
 import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
 import { warn } from "@console";
 import { isUserNameOrId } from "@utils/find";
-
+import * as Djs from "discord.js";
 export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;
 	if (url.match(/^(https:)([/|.|\w|\s|-])*\.(?:jpe?g|gifv?|png|webp)$/gi)) return url;
@@ -34,11 +34,11 @@ export function verifyAvatarUrl(url: string) {
  * @param template {StatisticalTemplate}
  */
 export async function createEmbedFirstPage(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	template: StatisticalTemplate,
 	setting: Settings
 ) {
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	const channel = interaction.channel;
 	if (!channel) {
 		throw new NoChannel();
@@ -71,7 +71,7 @@ export async function createEmbedFirstPage(
 		});
 		return;
 	}
-	const embed = new EmbedBuilder()
+	const embed = new Djs.EmbedBuilder()
 		.setTitle(ul("embed.add"))
 		.setThumbnail(verifiedAvatar ? avatar : user.displayAvatarURL())
 		.setFooter({ text: ul("common.page", { nb: 1 }) })
@@ -81,14 +81,14 @@ export async function createEmbedFirstPage(
 				value: charName.length > 0 ? charName : ul("common.noSet"),
 				inline: true,
 			},
-			{ name: ul("common.user"), value: userMention(user.id), inline: true },
+			{ name: ul("common.user"), value: Djs.userMention(user.id), inline: true },
 			{ name: ul("common.isPrivate"), value: isPrivate ? "✓" : "✕", inline: true }
 		);
-	if (channelMention) {
+	if (sheetId) {
 		embed.addFields({ name: "_ _", value: "_ _", inline: true });
 		embed.addFields({
 			name: ul("common.channel").capitalize(),
-			value: `${channelMention(sheetId as string)}`,
+			value: `${Djs.channelMention(sheetId as string)}`,
 			inline: true,
 		});
 		embed.addFields({ name: "_ _", value: "_ _", inline: true });
@@ -116,14 +116,14 @@ export async function createEmbedFirstPage(
  * @param template {StatisticalTemplate}
  */
 export async function validateUser(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	template: StatisticalTemplate,
 	db: Settings
 ) {
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
 	if (!userEmbed) throw new NoEmbed();
-	const oldEmbedsFields = parseEmbedFields(userEmbed.toJSON() as Embed);
+	const oldEmbedsFields = parseEmbedFields(userEmbed.toJSON() as Djs.Embed);
 	let userID = oldEmbedsFields?.["common.user"];
 	let charName: string | undefined = oldEmbedsFields?.["common.charName"];
 	const isPrivate = oldEmbedsFields["common.isPrivate"] === "common.yes";
@@ -159,8 +159,8 @@ export async function validateUser(
 	const oldStatsEmbed = getEmbeds(ul, interaction.message, "stats");
 	const oldDiceEmbedsFields = oldDiceEmbeds ? oldDiceEmbeds.toJSON().fields ?? [] : [];
 	const statEmbedsFields = oldStatsEmbed ? oldStatsEmbed.toJSON().fields ?? [] : [];
-	let diceEmbed: EmbedBuilder | undefined = undefined;
-	let statsEmbed: EmbedBuilder | undefined = undefined;
+	let diceEmbed: Djs.EmbedBuilder | undefined = undefined;
+	let statsEmbed: Djs.EmbedBuilder | undefined = undefined;
 	for (const field of oldDiceEmbedsFields) {
 		if (!diceEmbed) {
 			diceEmbed = createDiceEmbed(ul);
@@ -184,7 +184,7 @@ export async function validateUser(
 
 	const templateStat = template.statistics ? Object.keys(template.statistics) : [];
 	const parsedStats = statsEmbed
-		? parseEmbedFields(statsEmbed.toJSON() as Embed)
+		? parseEmbedFields(statsEmbed.toJSON() as Djs.Embed)
 		: undefined;
 	const stats: { [name: string]: number } = {};
 	if (parsedStats)
@@ -226,7 +226,7 @@ export async function validateUser(
 		private: isPrivate,
 		avatar: userEmbed.toJSON().thumbnail?.url,
 	};
-	let templateEmbed: EmbedBuilder | undefined = undefined;
+	let templateEmbed: Djs.EmbedBuilder | undefined = undefined;
 	if (template.diceType || template.critical) {
 		templateEmbed = createTemplateEmbed(ul);
 		if (template.diceType)
@@ -278,15 +278,15 @@ export async function validateUser(
  */
 
 export async function validateUserButton(
-	interaction: ButtonInteraction,
-	interactionUser: User,
+	interaction: Djs.ButtonInteraction,
+	interactionUser: Djs.User,
 	template: StatisticalTemplate,
 	ul: Translation,
 	db: Settings
 ) {
 	const isModerator = interaction.guild?.members.cache
 		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
 	if (isModerator) await validateUser(interaction, template, db);
 	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }

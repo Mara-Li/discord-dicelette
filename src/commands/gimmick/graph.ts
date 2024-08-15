@@ -15,6 +15,7 @@ import { getDatabaseChar, getTemplateWithDB, getUserByEmbed } from "@utils/db";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import i18next from "i18next";
 import parse from "parse-color";
+import * as Djs from "discord.js";
 
 async function chart(
 	userData: UserData,
@@ -107,7 +108,7 @@ function fontPath(fontName: string) {
 const t = i18next.getFixedT("en");
 
 export const graph = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("graph.name"))
 		.setDefaultMemberPermissions(0)
 		.setNameLocalizations(cmdLn("graph.name"))
@@ -163,13 +164,13 @@ export const graph = {
 				.setRequired(false)
 		),
 	async autocomplete(
-		interaction: AutocompleteInteraction,
+		interaction: Djs.AutocompleteInteraction,
 		client: EClient
 	): Promise<void> {
-		const options = interaction.options as CommandInteractionOptionResolver;
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guild!.id);
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		if (!guildData) return;
 		const choices: string[] = [];
 		let user = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
@@ -192,13 +193,13 @@ export const graph = {
 			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
-	async execute(interaction: CommandInteraction, client: EClient) {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		if (!interaction.guild) return;
 		const guildData = client.settings.get(interaction.guild!.id);
 		let min = options.getNumber(t("graph.min.name")) ?? undefined;
 		let max = options.getNumber(t("graph.max.name")) ?? undefined;
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		if (!guildData) {
 			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;
@@ -270,7 +271,7 @@ export const graph = {
 			const titleUser = () => {
 				let msg = "# ";
 				if (userData.charName) msg += `${userData.charName.capitalize()} `;
-				msg += `⌈${userMention(userId)}⌋ `;
+				msg += `⌈${Djs.userMention(userId)}⌋ `;
 				return msg;
 			};
 			const labels = guildData.templateID.statsName;
@@ -381,5 +382,5 @@ async function imagePersonalized(
 ) {
 	const charGraph = await chart(stat, labels, lineColor, fillColor, min, max);
 	if (!charGraph) return;
-	return new AttachmentBuilder(charGraph);
+	return new Djs.AttachmentBuilder(charGraph);
 }

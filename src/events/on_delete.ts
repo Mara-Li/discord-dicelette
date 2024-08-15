@@ -4,7 +4,7 @@ import type { EClient } from "@main";
 import { sendLogs } from "@utils";
 import type { AnyThreadChannel } from "discord.js";
 import type Enmap from "enmap";
-
+import type * as Djs from "discord.js";
 export const DELETE_CHANNEL = (client: EClient): void => {
 	client.on("channelDelete", async (channel) => {
 		try {
@@ -23,7 +23,7 @@ export const DELETE_CHANNEL = (client: EClient): void => {
 function deleteIfChannelOrThread(
 	db: Enmap<string, GuildData, unknown>,
 	guildID: string,
-	channel: NonThreadGuildBasedChannel | AnyThreadChannel<boolean>
+	channel: Djs.NonThreadGuildBasedChannel | AnyThreadChannel<boolean>
 ) {
 	const channelID = channel.id;
 	cleanUserDB(db, channel);
@@ -111,7 +111,7 @@ export const ON_KICK = (client: EClient): void => {
 
 function cleanUserDB(
 	guildDB: Enmap<string, GuildData, unknown>,
-	thread: GuildTextBasedChannel | ThreadChannel | NonThreadGuildBasedChannel
+	thread: Djs.GuildTextBasedChannel | Djs.ThreadChannel | Djs.NonThreadGuildBasedChannel
 ) {
 	const dbUser = guildDB.get(thread.guild.id, "user");
 	if (!dbUser) return;
@@ -130,9 +130,9 @@ function cleanUserDB(
 }
 
 export function deleteUser(
-	interaction: CommandInteraction | ModalSubmitInteraction,
+	interaction: Djs.CommandInteraction | Djs.ModalSubmitInteraction,
 	guildData: GuildData,
-	user?: User | null,
+	user?: Djs.User | null,
 	charName?: string | null
 ) {
 	//delete the character from the database

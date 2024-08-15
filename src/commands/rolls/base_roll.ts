@@ -4,6 +4,7 @@ import { reply, setTagsForRoll } from "@utils";
 import { rollWithInteraction } from "@utils/roll";
 import i18next from "i18next";
 import moment from "moment";
+import * as Djs from "discord.js";
 
 const t = i18next.getFixedT("en");
 
@@ -15,7 +16,7 @@ const t = i18next.getFixedT("en");
  * @param time - A number representing the delay in milliseconds before the message is deleted.
  */
 export async function deleteAfter(
-	message: InteractionResponse | Message,
+	message: Djs.InteractionResponse | Djs.Message,
 	time: number
 ): Promise<void> {
 	if (time === 0) return;
@@ -30,7 +31,7 @@ export async function deleteAfter(
 }
 
 export const diceRoll = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("roll.name"))
 		.setNameLocalizations(cmdLn("roll.name"))
 		.setDescription(t("roll.description"))
@@ -51,11 +52,11 @@ export const diceRoll = {
 				.setDescription(t("dbRoll.options.hidden.description"))
 				.setRequired(false)
 		),
-	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
+	async execute(interaction: Djs.CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
 		const channel = interaction.channel;
 		if (!channel || !channel.isTextBased()) return;
-		const option = interaction.options as CommandInteractionOptionResolver;
+		const option = interaction.options as Djs.CommandInteractionOptionResolver;
 		const dice = option.getString(t("roll.option.name"), true);
 		const hidden = option.getBoolean(t("dbRoll.options.hidden.name"));
 		await rollWithInteraction(
@@ -73,7 +74,7 @@ export const diceRoll = {
 };
 
 export const newScene = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("scene.name"))
 		.setDescription(t("scene.description"))
 		.setDescriptionLocalizations(cmdLn("scene.description"))
@@ -94,32 +95,32 @@ export const newScene = {
 				.setDescriptionLocalizations(cmdLn("scene.time.description"))
 				.setRequired(false)
 		),
-	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
+	async execute(interaction: Djs.CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
 		const allCommands = await interaction.guild.commands.fetch();
 		const channel = interaction.channel;
 		if (!channel || channel.isDMBased() || !channel.isTextBased()) return;
 
-		const option = interaction.options as CommandInteractionOptionResolver;
+		const option = interaction.options as Djs.CommandInteractionOptionResolver;
 		const scene = option.getString(t("scene.option.name"));
 		const bubble = option.getBoolean(t("scene.time.name"));
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		if (!scene && !bubble) {
 			await reply(interaction, { content: ul("scene.noScene"), ephemeral: true });
 			return;
 		}
 		//archive old threads
 		if (
-			channel instanceof TextChannel ||
-			channel.parent instanceof ForumChannel ||
+			channel instanceof Djs.TextChannel ||
+			channel.parent instanceof Djs.ForumChannel ||
 			!channel.name.startsWith("🎲")
 		) {
 			const threads =
-				channel instanceof TextChannel
+				channel instanceof Djs.TextChannel
 					? channel.threads.cache.filter(
 							(thread) => thread.name.startsWith("🎲") && !thread.archived
 						)
-					: (channel.parent as ForumChannel).threads.cache.filter(
+					: (channel.parent as Djs.ForumChannel).threads.cache.filter(
 							(thread) => thread.name === `🎲 ${scene}` && !thread.archived
 						);
 			for (const thread of threads) {
@@ -133,20 +134,20 @@ export const newScene = {
 			if (threadName.includes("{{date}}"))
 				threadName = threadName.replace("{{date}}", moment().format("DD-MM-YYYY"));
 			const newThread =
-				channel instanceof TextChannel
+				channel instanceof Djs.TextChannel
 					? await channel.threads.create({
 							name: threadName,
 							reason: ul("scene.reason"),
 						})
-					: await (channel.parent as ForumChannel).threads.create({
+					: await (channel.parent as Djs.ForumChannel).threads.create({
 							name: threadName,
 							message: { content: ul("scene.reason") },
 							appliedTags: [
-								(await setTagsForRoll(channel.parent as ForumChannel)).id as string,
+								(await setTagsForRoll(channel.parent as Djs.ForumChannel)).id as string,
 							],
 						});
 
-			const threadMention = channelMention(newThread.id);
+			const threadMention = Djs.channelMention(newThread.id);
 			const msgReply = await reply(interaction, {
 				content: ul("scene.interaction", { scene: threadMention }),
 			});
@@ -154,7 +155,7 @@ export const newScene = {
 			await deleteAfter(msgReply, time);
 			const rollID = allCommands.findKey((command) => command.name === "roll");
 			const msgToEdit = await newThread.send("_ _");
-			const msg = `${userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${ul("scene.underscore")} ${scene}\n*roll: </roll:${rollID}>*`;
+			const msg = `${Djs.userMention(interaction.user.id)} - <t:${moment().unix()}:R>\n${ul("scene.underscore")} ${scene}\n*roll: </roll:${rollID}>*`;
 			await msgToEdit.edit(msg);
 		}
 		return;

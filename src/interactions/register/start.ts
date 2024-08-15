@@ -1,4 +1,5 @@
 import type { StatisticalTemplate } from "@dicelette/core";
+import * as Djs from "discord.js";
 import { createStatsEmbed } from "@interactions";
 import { embedStatistiques, showStatistiqueModal } from "@interactions/add/stats";
 import type { Settings, Translation } from "@interface";
@@ -16,14 +17,14 @@ import { getEmbeds, parseEmbedFields } from "@utils/parse";
  * @returns
  */
 export async function continuePage(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	dbTemplate: StatisticalTemplate,
 	ul: Translation,
-	interactionUser: User
+	interactionUser: Djs.User
 ) {
 	const isModerator = interaction.guild?.members.cache
 		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
 	if (!isModerator) {
 		await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 		return;
@@ -38,7 +39,7 @@ export async function continuePage(
 		stat.unidecode()
 	);
 
-	const statsAlreadySet = Object.keys(parseEmbedFields(statsEmbed.toJSON() as Embed))
+	const statsAlreadySet = Object.keys(parseEmbedFields(statsEmbed.toJSON() as Djs.Embed))
 		.filter((stat) => allTemplateStat.includes(stat.unidecode()))
 		.map((stat) => stat.unidecode());
 	if (statsAlreadySet.length === allTemplateStat.length) {
@@ -55,7 +56,7 @@ export async function continuePage(
  * @param ul {Translation}
  */
 export async function pageNumber(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	ul: Translation,
 	db: Settings
 ) {
@@ -72,7 +73,10 @@ export async function pageNumber(
  * Submit the first page when the modal is validated
  * @param interaction {ModalSubmitInteraction}
  */
-export async function recordFirstPage(interaction: ModalSubmitInteraction, db: Settings) {
+export async function recordFirstPage(
+	interaction: Djs.ModalSubmitInteraction,
+	db: Settings
+) {
 	if (!interaction.guild || !interaction.channel || interaction.channel.isDMBased())
 		return;
 	const template = await getTemplateWithDB(interaction, db);
@@ -85,7 +89,7 @@ export async function recordFirstPage(interaction: ModalSubmitInteraction, db: S
  * @param template {StatisticalTemplate}
  */
 export async function showFirstPageModal(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	template: StatisticalTemplate,
 	havePrivate?: boolean
 ) {
@@ -95,62 +99,62 @@ export async function showFirstPageModal(
 		nbOfPages = Math.ceil(nbOfStatistique / 5) > 0 ? Math.ceil(nbOfStatistique / 5) : 2;
 	}
 
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 
-	const modal = new ModalBuilder()
+	const modal = new Djs.ModalBuilder()
 		.setCustomId("firstPage")
 		.setTitle(ul("modals.firstPage", { page: nbOfPages + 1 }));
 	const charNameInput =
-		new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-			new TextInputBuilder()
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
 				.setCustomId("charName")
 				.setLabel(ul("modals.charName.name"))
 				.setPlaceholder(ul("modals.charName.description"))
 				.setRequired(template.charName || false)
 				.setValue("")
-				.setStyle(TextInputStyle.Short)
+				.setStyle(Djs.TextInputStyle.Short)
 		);
 	const userIdInputs =
-		new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-			new TextInputBuilder()
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
 				.setCustomId("userID")
 				.setLabel(ul("modals.user.name"))
 				.setPlaceholder(ul("modals.user.description"))
 				.setRequired(true)
 				.setValue(interaction.user.username ?? interaction.user.id)
-				.setStyle(TextInputStyle.Short)
+				.setStyle(Djs.TextInputStyle.Short)
 		);
 	const avatarInputs =
-		new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-			new TextInputBuilder()
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
 				.setCustomId("avatar")
 				.setLabel(ul("modals.avatar.name"))
 				.setPlaceholder(ul("modals.avatar.description"))
 				.setRequired(false)
 				.setValue("")
-				.setStyle(TextInputStyle.Short)
+				.setStyle(Djs.TextInputStyle.Short)
 		);
 	const channelIdInput =
-		new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-			new TextInputBuilder()
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
 				.setCustomId("channelId")
 				.setLabel(ul("modals.channel.name"))
 				.setPlaceholder(ul("modals.channel.description"))
 				.setRequired(false)
 				.setValue("")
-				.setStyle(TextInputStyle.Short)
+				.setStyle(Djs.TextInputStyle.Short)
 		);
 	const components = [charNameInput, userIdInputs, avatarInputs, channelIdInput];
 	if (havePrivate) {
 		const privateInput =
-			new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-				new TextInputBuilder()
+			new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+				new Djs.TextInputBuilder()
 					.setCustomId("private")
 					.setLabel(ul("modals.private.name"))
 					.setPlaceholder(ul("modals.private.description"))
 					.setRequired(false)
 					.setValue("")
-					.setStyle(TextInputStyle.Short)
+					.setStyle(Djs.TextInputStyle.Short)
 			);
 		components.push(privateInput);
 	}
@@ -164,15 +168,15 @@ export async function showFirstPageModal(
  * @param ul {Translation}
  */
 export async function startRegisterUser(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	template: StatisticalTemplate,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	ul: Translation,
 	havePrivate?: boolean
 ) {
 	const isModerator = interaction.guild?.members.cache
 		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
 	if (isModerator) await showFirstPageModal(interaction, template, havePrivate);
 	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }

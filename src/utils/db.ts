@@ -10,13 +10,14 @@ import { ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, haveAccess, reply, searchUserChannel } from "@utils";
 import { ensureEmbed, getEmbeds, parseEmbedFields } from "@utils/parse";
+import * as Djs from "discord.js";
 
 /**
  * Get the guild template when clicking on the "registering user" button or when submiting
  * @param interaction {ButtonInteraction}
  */
 export async function getTemplate(
-	interaction: ButtonInteraction | ModalSubmitInteraction
+	interaction: Djs.ButtonInteraction | Djs.ModalSubmitInteraction
 ): Promise<StatisticalTemplate | undefined> {
 	const template = interaction.message?.attachments.first();
 	if (!template) return;
@@ -37,14 +38,14 @@ export function serializeName(
 }
 
 export async function getDatabaseChar(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	t: Translation,
 	strict = true
 ) {
-	const options = interaction.options as CommandInteractionOptionResolver;
+	const options = interaction.options as Djs.CommandInteractionOptionResolver;
 	const guildData = client.settings.get(interaction.guildId as string);
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	if (!guildData) {
 		await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 		return undefined;
@@ -89,7 +90,10 @@ export async function getDatabaseChar(
  * @param interaction {ButtonInteraction | ModalSubmitInteraction}
  */
 export async function getTemplateWithDB(
-	interaction: ButtonInteraction | ModalSubmitInteraction | CommandInteraction,
+	interaction:
+		| Djs.ButtonInteraction
+		| Djs.ModalSubmitInteraction
+		| Djs.CommandInteraction,
 	enmap: Settings
 ) {
 	if (!interaction.guild) return;
@@ -101,7 +105,7 @@ export async function getTemplateWithDB(
 
 	const { channelId, messageId } = templateID;
 	const channel = await guild.channels.fetch(channelId);
-	if (!channel || channel instanceof CategoryChannel) return;
+	if (!channel || channel instanceof Djs.CategoryChannel) return;
 	try {
 		const message = await channel.messages.fetch(messageId);
 		const template = message.attachments.first();
@@ -128,7 +132,7 @@ export async function getTemplateWithDB(
 export async function getUserFromMessage(
 	guildData: Settings,
 	userId: string,
-	interaction: BaseInteraction,
+	interaction: Djs.BaseInteraction,
 	charName?: string | null,
 	options?: {
 		integrateCombinaison?: boolean;
@@ -190,7 +194,7 @@ export async function getUserFromMessage(
  */
 export async function registerUser(
 	userData: UserRegistration,
-	interaction: BaseInteraction,
+	interaction: Djs.BaseInteraction,
 	enmap: Settings,
 	deleteMsg: boolean | undefined = true,
 	errorOnDuplicate: boolean | undefined = false
@@ -264,7 +268,7 @@ export async function registerUser(
  * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
 export function getUserByEmbed(
-	message: Message,
+	message: Djs.Message,
 	ul: Translation,
 	first: boolean | undefined = false,
 	integrateCombinaison = true,
@@ -274,7 +278,7 @@ export function getUserByEmbed(
 	const user: Partial<UserData> = {};
 	const userEmbed = first ? ensureEmbed(message) : getEmbeds(ul, message, "user");
 	if (!userEmbed) return;
-	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Embed);
+	const parsedFields = parseEmbedFields(userEmbed.toJSON() as Djs.Embed);
 	const charNameFields = [
 		{ key: "common.charName", value: parsedFields?.["common.charName"] },
 		{ key: "common.character", value: parsedFields?.["common.character"] },
@@ -312,7 +316,7 @@ export function getUserByEmbed(
 		}
 	}
 	const templateEmbed = first ? userEmbed : getEmbeds(ul, message, "template");
-	const templateFields = parseEmbedFields(templateEmbed?.toJSON() as Embed);
+	const templateFields = parseEmbedFields(templateEmbed?.toJSON() as Djs.Embed);
 	user.damage = templateDamage;
 	user.template = {
 		diceType: templateFields?.["common.dice"] || undefined,
@@ -334,7 +338,7 @@ export function getUserByEmbed(
  */
 export function setDefaultManagerId(
 	guildData: Settings,
-	interaction: BaseInteraction,
+	interaction: Djs.BaseInteraction,
 	channel?: string
 ) {
 	if (!channel || !interaction.guild) return;
@@ -343,7 +347,7 @@ export function setDefaultManagerId(
 
 export async function getFirstRegisteredChar(
 	client: EClient,
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	ul: Translation
 ) {
 	const userData = client.settings.get(

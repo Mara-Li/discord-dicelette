@@ -1,6 +1,7 @@
 import { deleteUser } from "@events/on_delete";
 import { verifyAvatarUrl } from "@interactions/register/validate";
 import type {
+	DiscordChannel,
 	PersonnageIds,
 	Translation,
 	UserMessageId,
@@ -12,12 +13,13 @@ import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from 
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { getDatabaseChar, registerUser } from "@utils/db";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
+import * as Djs from "discord.js";
 
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
 export const editAvatar = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName("edit")
 		.setDescription(t("edit.desc"))
 		.setDescriptionLocalizations(cmdLn("edit.desc"))
@@ -110,13 +112,13 @@ export const editAvatar = {
 						.setAutocomplete(true)
 				)
 		),
-	async autocomplete(interaction: AutocompleteInteraction, client: EClient) {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async autocomplete(interaction: Djs.AutocompleteInteraction, client: EClient) {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		const choices: string[] = [];
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		let userID = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
 		if (typeof userID !== "string") userID = interaction.user.id;
 		if (fixed.name === t("common.character")) {
@@ -135,10 +137,10 @@ export const editAvatar = {
 			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
-	async execute(interaction: CommandInteraction, client: EClient) {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guildId as string);
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		if (!guildData) {
 			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;
@@ -146,7 +148,7 @@ export const editAvatar = {
 		const user = options.getUser(t("display.userLowercase"));
 		const isModerator = interaction.guild?.members.cache
 			.get(interaction.user.id)
-			?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+			?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
 
 		if (user && user.id !== interaction.user.id && !isModerator) {
 			await reply(interaction, { embeds: [embedError(ul("error.noPermission"), ul)] });
@@ -215,10 +217,10 @@ export const editAvatar = {
 };
 
 async function avatar(
-	options: CommandInteractionOptionResolver,
-	interaction: CommandInteraction,
+	options: Djs.CommandInteractionOptionResolver,
+	interaction: Djs.CommandInteraction,
 	ul: Translation,
-	user: User | null,
+	user: Djs.User | null,
 	charName: string | undefined,
 	sheetLocation: PersonnageIds,
 	thread: DiscordChannel
@@ -253,9 +255,9 @@ async function avatar(
 }
 
 async function generateButton(
-	message: Message,
+	message: Djs.Message,
 	ul: Translation,
-	embedsList: EmbedBuilder[]
+	embedsList: Djs.EmbedBuilder[]
 ) {
 	const oldsButtons = message.components;
 
@@ -272,9 +274,9 @@ async function generateButton(
 
 export async function rename(
 	name: string,
-	interaction: CommandInteraction | ModalSubmitInteraction,
+	interaction: Djs.CommandInteraction | Djs.ModalSubmitInteraction,
 	ul: Translation,
-	user: User | null,
+	user: Djs.User | null,
 	client: EClient,
 	sheetLocation: PersonnageIds,
 	oldData: {
@@ -327,10 +329,10 @@ export async function rename(
 }
 
 export async function move(
-	newUser: User,
-	interaction: CommandInteraction | ModalSubmitInteraction,
+	newUser: Djs.User,
+	interaction: Djs.CommandInteraction | Djs.ModalSubmitInteraction,
 	ul: Translation,
-	user: User | null,
+	user: Djs.User | null,
 	client: EClient,
 	sheetLocation: PersonnageIds,
 	oldData: {
@@ -382,7 +384,7 @@ export async function move(
 	});
 }
 
-export function resetButton(message: Message, ul: Translation) {
+export function resetButton(message: Djs.Message, ul: Translation) {
 	const oldsButtons = message.components;
 
 	const haveStats = oldsButtons.some((row) =>

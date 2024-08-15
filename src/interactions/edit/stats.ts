@@ -10,14 +10,14 @@ import {
 	parseEmbedFields,
 	removeEmbedsFromList,
 } from "@utils/parse";
-
+import * as Djs from "discord.js";
 /**
  * Validate the stats and edit the embed with the new stats for editing
  * @param interaction {ModalSubmitInteraction}
  * @param ul {Translation}
  */
 export async function editStats(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	ul: Translation,
 	db: Settings
 ) {
@@ -46,7 +46,7 @@ export async function editStats(
 			value,
 		])
 	);
-	const embedsStatsFields: APIEmbedField[] = [];
+	const embedsStatsFields: Djs.APIEmbedField[] = [];
 	for (const [name, value] of Object.entries(stats)) {
 		const stat = template?.[name.unidecode()];
 		if (
@@ -103,7 +103,7 @@ export async function editStats(
 		}
 	}
 	//remove duplicate
-	const fieldsToAppend: APIEmbedField[] = [];
+	const fieldsToAppend: Djs.APIEmbedField[] = [];
 	for (const field of embedsStatsFields) {
 		const name = field.name.toLowerCase();
 		if (fieldsToAppend.find((f) => f.name.unidecode() === name.unidecode())) continue;
@@ -124,11 +124,11 @@ export async function editStats(
 		await reply(interaction, { content: ul("modals.removed.stats"), ephemeral: true });
 		await sendLogs(
 			ul("logs.stats.removed", {
-				user: userMention(interaction.user.id),
+				user: Djs.userMention(interaction.user.id),
 				fiche: interaction.message.url,
-				char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`,
+				char: `${Djs.userMention(userID)} ${userName ? `(${userName})` : ""}`,
 			}),
-			interaction.guild as Guild,
+			interaction.guild as Djs.Guild,
 			db
 		);
 	}
@@ -142,11 +142,11 @@ export async function editStats(
 	await reply(interaction, { content: ul("embed.edit.stats"), ephemeral: true });
 	const compare = displayOldAndNewStats(statsEmbeds.toJSON().fields, fieldsToAppend);
 	const logMessage = ul("logs.stats.added", {
-		user: userMention(interaction.user.id),
+		user: Djs.userMention(interaction.user.id),
 		fiche: interaction.message.url,
-		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`,
+		char: `${Djs.userMention(userID)} ${userName ? `(${userName})` : ""}`,
 	});
-	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Guild, db);
+	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Djs.Guild, db);
 }
 
 /**
@@ -155,13 +155,13 @@ export async function editStats(
  * @param ul {Translation}
  */
 export async function showEditorStats(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	ul: Translation,
 	db: Settings
 ) {
 	const statistics = getEmbeds(ul, interaction.message, "stats");
 	if (!statistics) throw new Error(ul("error.statNotFound"));
-	const stats = parseEmbedFields(statistics.toJSON() as Embed);
+	const stats = parseEmbedFields(statistics.toJSON() as Djs.Embed);
 	const originalGuildData = db.get(interaction.guild!.id, "templateID.statsName");
 	const registeredStats = originalGuildData?.map((stat) => stat.unidecode());
 	const userStats = Object.keys(stats).map((stat) => stat.unidecode());
@@ -188,17 +188,18 @@ export async function showEditorStats(
 		}
 	}
 
-	const modal = new ModalBuilder()
+	const modal = new Djs.ModalBuilder()
 		.setCustomId("editStats")
 		.setTitle(ul("common.statistics").capitalize());
-	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("allStats")
-			.setLabel(ul("modals.edit.stats"))
-			.setRequired(true)
-			.setStyle(TextInputStyle.Paragraph)
-			.setValue(statsStrings)
-	);
+	const input =
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
+				.setCustomId("allStats")
+				.setLabel(ul("modals.edit.stats"))
+				.setRequired(true)
+				.setStyle(Djs.TextInputStyle.Paragraph)
+				.setValue(statsStrings)
+		);
 	modal.addComponents(input);
 	await interaction.showModal(modal);
 }
@@ -210,9 +211,9 @@ export async function showEditorStats(
  * @param interactionUser {User}
  */
 export async function triggerEditStats(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	db: Settings
 ) {
 	if (await allowEdit(interaction, db, interactionUser))

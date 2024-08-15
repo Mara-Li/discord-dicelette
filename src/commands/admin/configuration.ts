@@ -2,16 +2,16 @@ import type { Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
-
+import * as Djs from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
 
 const t = i18next.getFixedT("en");
 export const configuration = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("config.name"))
 		.setNameLocalizations(cmdLn("config.name"))
-		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDefaultMemberPermissions(Djs.PermissionFlagsBits.ManageRoles)
 		.setDescription(t("config.description"))
 		.setDescriptionLocalizations(cmdLn("config.description"))
 		/* LOGS */
@@ -30,9 +30,9 @@ export const configuration = {
 						.setNameLocalizations(cmdLn("common.channel"))
 						.setRequired(false)
 						.addChannelTypes(
-							ChannelType.GuildText,
-							ChannelType.PrivateThread,
-							ChannelType.PublicThread
+							Djs.ChannelType.GuildText,
+							Djs.ChannelType.PrivateThread,
+							Djs.ChannelType.PublicThread
 						)
 				)
 		)
@@ -51,9 +51,9 @@ export const configuration = {
 						.setDescriptionLocalizations(cmdLn("changeThread.options"))
 						.setRequired(false)
 						.addChannelTypes(
-							ChannelType.GuildText,
-							ChannelType.PublicThread,
-							ChannelType.PrivateThread
+							Djs.ChannelType.GuildText,
+							Djs.ChannelType.PublicThread,
+							Djs.ChannelType.PrivateThread
 						)
 				)
 		)
@@ -213,16 +213,16 @@ export const configuration = {
 						.setDescriptionLocalizations(cmdLn("hidden.options"))
 						.setRequired(false)
 						.addChannelTypes(
-							ChannelType.GuildText,
-							ChannelType.PublicThread,
-							ChannelType.PrivateThread
+							Djs.ChannelType.GuildText,
+							Djs.ChannelType.PublicThread,
+							Djs.ChannelType.PrivateThread
 						)
 				)
 		),
-	async execute(interaction: CommandInteraction, client: EClient) {
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
 		const ul = ln(interaction.locale);
-		const options = interaction.options as CommandInteractionOptionResolver;
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const subcommand = options.getSubcommand(true);
 		const subcommandGroup = options.getSubcommandGroup();
 		if (subcommandGroup && subcommandGroup === t("autoRole.name")) {
@@ -254,10 +254,10 @@ export const configuration = {
 };
 
 function stats(
-	options: CommandInteractionOptionResolver,
+	options: Djs.CommandInteractionOptionResolver,
 	client: EClient,
 	ul: Translation,
-	interaction: CommandInteraction
+	interaction: Djs.CommandInteraction
 ) {
 	const role = options.getRole(t("common.role"));
 	if (!role) {
@@ -267,16 +267,16 @@ function stats(
 	}
 	client.settings.set(interaction.guild!.id, role.id, "autoRole.stats");
 	return reply(interaction, {
-		content: ul("autoRole.stat.set", { role: roleMention(role.id) }),
+		content: ul("autoRole.stat.set", { role: Djs.roleMention(role.id) }),
 		ephemeral: true,
 	});
 }
 
 function dice(
-	options: CommandInteractionOptionResolver,
+	options: Djs.CommandInteractionOptionResolver,
 	client: EClient,
 	ul: Translation,
-	interaction: CommandInteraction
+	interaction: Djs.CommandInteraction
 ) {
 	const role = options.getRole(t("common.role"));
 	if (!role) {
@@ -286,26 +286,26 @@ function dice(
 	}
 	client.settings.set(interaction.guild!.id, role.id, "autoRole.dice");
 	return reply(interaction, {
-		content: ul("autoRole.dice.set", { role: roleMention(role.id) }),
+		content: ul("autoRole.dice.set", { role: Djs.roleMention(role.id) }),
 		ephemeral: true,
 	});
 }
 
 async function logs(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation,
-	options: CommandInteractionOptionResolver
+	options: Djs.CommandInteractionOptionResolver
 ) {
 	const channel = options.getChannel(ul("common.channel"), true);
 	if (
 		!channel ||
-		(!(channel instanceof TextChannel) && !(channel instanceof ThreadChannel))
+		(!(channel instanceof Djs.TextChannel) && !(channel instanceof Djs.ThreadChannel))
 	) {
 		const oldChan = client.settings.get(interaction.guild!.id, "logs");
 		client.settings.delete(interaction.guild!.id, "logs");
 		const msg = oldChan
-			? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}`
+			? ` ${ul("logs.inChan", { chan: Djs.channelMention(oldChan) })}`
 			: ".";
 		await reply(interaction, { content: `${ul("logs.delete")}${msg}`, ephemeral: true });
 		return;
@@ -318,10 +318,10 @@ async function logs(
 }
 
 async function changeThread(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation,
-	options: CommandInteractionOptionResolver
+	options: Djs.CommandInteractionOptionResolver
 ) {
 	const channel = options.getChannel("channel");
 	const oldChan = client.settings.get(interaction.guild!.id, "rollChannel");
@@ -332,10 +332,10 @@ async function changeThread(
 	if (!interaction.guild) return;
 	if (
 		!channel ||
-		(!(channel instanceof TextChannel) && !(channel instanceof ThreadChannel))
+		(!(channel instanceof Djs.TextChannel) && !(channel instanceof Djs.ThreadChannel))
 	) {
 		const msg = oldChan
-			? ` ${ul("logs.inChan", { chan: channelMention(oldChan) })}`
+			? ` ${ul("logs.inChan", { chan: Djs.channelMention(oldChan) })}`
 			: ".";
 		client.settings.delete(interaction.guild.id, "rollChannel");
 		await reply(interaction, {
@@ -347,16 +347,16 @@ async function changeThread(
 	client.settings.set(interaction.guild.id, channel.id, "rollChannel");
 	await reply(
 		interaction,
-		ul("changeThread.set", { channel: channelMention(channel.id) })
+		ul("changeThread.set", { channel: Djs.channelMention(channel.id) })
 	);
 	return;
 }
 
 async function disableThread(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation,
-	options: CommandInteractionOptionResolver
+	options: Djs.CommandInteractionOptionResolver
 ) {
 	const toggle = options.getBoolean(t("disableThread.options.name"), true);
 	//toggle TRUE = disable thread creation
@@ -391,10 +391,10 @@ async function disableThread(
 }
 
 async function hiddenRoll(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation,
-	options: CommandInteractionOptionResolver
+	options: Djs.CommandInteractionOptionResolver
 ) {
 	const toggle = options.getBoolean(t("disableThread.options.name"), true);
 	const channel = options.getChannel(t("common.channel"), false);
@@ -411,17 +411,17 @@ async function hiddenRoll(
 	}
 	client.settings.set(interaction.guild!.id, channel.id, "hiddenRoll");
 	await reply(interaction, {
-		content: ul("hidden.enabledChan", { channel: channelMention(channel.id) }),
+		content: ul("hidden.enabledChan", { channel: Djs.channelMention(channel.id) }),
 		ephemeral: true,
 	});
 	return;
 }
 
 async function timer(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation,
-	options: CommandInteractionOptionResolver
+	options: Djs.CommandInteractionOptionResolver
 ) {
 	if (!interaction.guild) return;
 	const timer = options.getNumber(t("timer.option.name"), true);
@@ -434,7 +434,7 @@ async function timer(
 }
 
 async function display(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation
 ) {
@@ -459,7 +459,7 @@ async function display(
 		return `<#${settings}>`;
 	};
 
-	const baseEmbed = new EmbedBuilder()
+	const baseEmbed = new Djs.EmbedBuilder()
 		.setTitle(ul("config.title", { guild: interaction.guild!.name }))
 		.setThumbnail(interaction.guild!.iconURL() ?? "")
 		.setColor("Random")
@@ -506,12 +506,12 @@ async function display(
 				`),
 			}
 		);
-	let templateEmbed: undefined | EmbedBuilder = undefined;
+	let templateEmbed: undefined | Djs.EmbedBuilder = undefined;
 	if (guildSettings.templateID) {
 		const templateID = guildSettings.templateID;
 		const { channelId, messageId, statsName, damageName } = templateID ?? {};
 		if (messageId && messageId.length > 0 && channelId && channelId.length > 0) {
-			templateEmbed = new EmbedBuilder()
+			templateEmbed = new Djs.EmbedBuilder()
 				.setTitle(ul("config.template"))
 				.setColor("Random")
 				.setThumbnail(
@@ -542,10 +542,10 @@ async function display(
 }
 
 async function timestamp(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation,
-	options: CommandInteractionOptionResolver
+	options: Djs.CommandInteractionOptionResolver
 ) {
 	const toggle = options.getBoolean(t("disableThread.options.name"), true);
 	client.settings.set(interaction.guild!.id, toggle, "timestamp");
@@ -556,8 +556,12 @@ async function timestamp(
 	}
 }
 
-async function anchor(interaction: CommandInteraction, client: EClient, ul: Translation) {
-	const options = interaction.options as CommandInteractionOptionResolver;
+async function anchor(
+	interaction: Djs.CommandInteraction,
+	client: EClient,
+	ul: Translation
+) {
+	const options = interaction.options as Djs.CommandInteractionOptionResolver;
 	const toggle = options.getBoolean(t("disableThread.options.name"), true);
 	client.settings.set(interaction.guild!.id, toggle, "context");
 	const deleteLogs = client.settings.get(interaction.guild!.id, "deleteAfter") === 0;
@@ -576,11 +580,11 @@ async function anchor(interaction: CommandInteraction, client: EClient, ul: Tran
 }
 
 async function linkToLog(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation
 ) {
-	const options = interaction.options as CommandInteractionOptionResolver;
+	const options = interaction.options as Djs.CommandInteractionOptionResolver;
 	const toggle = options.getBoolean(t("disableThread.options.name"), true);
 	client.settings.set(interaction.guild!.id, toggle, "linkToLogs");
 	if (toggle) {

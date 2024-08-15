@@ -4,11 +4,11 @@ import { findln } from "@localization";
 import { embedError, reply } from "@utils";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
 import { verifyAvatarUrl } from "../register/validate";
-
+import * as Djs from "discord.js";
 export async function initiateAvatarEdit(
-	interaction: StringSelectMenuInteraction,
+	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	db: Settings
 ) {
 	if (await allowEdit(interaction, db, interactionUser))
@@ -16,29 +16,30 @@ export async function initiateAvatarEdit(
 }
 
 export async function showAvatarEdit(
-	interaction: StringSelectMenuInteraction,
+	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation
 ) {
 	const embed = getEmbeds(ul, interaction.message, "user");
 	if (!embed) throw new Error(ul("error.noEmbed"));
 	const thumbnail = embed.toJSON().thumbnail?.url ?? interaction.user.displayAvatarURL();
-	const modal = new ModalBuilder()
+	const modal = new Djs.ModalBuilder()
 		.setCustomId("editAvatar")
 		.setTitle(ul("button.avatar.description"));
-	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("avatar")
-			.setLabel(ul("modals.avatar.name"))
-			.setRequired(true)
-			.setStyle(TextInputStyle.Short)
-			.setValue(thumbnail)
-	);
+	const input =
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
+				.setCustomId("avatar")
+				.setLabel(ul("modals.avatar.name"))
+				.setRequired(true)
+				.setStyle(Djs.TextInputStyle.Short)
+				.setValue(thumbnail)
+		);
 	modal.addComponents(input);
 	await interaction.showModal(modal);
 }
 
 export async function validateAvatarEdit(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	ul: Translation
 ) {
 	if (!interaction.message) return;

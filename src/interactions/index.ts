@@ -3,21 +3,21 @@ import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findln, ln } from "@localization";
 import { embedError, reply } from "@utils";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
-
+import * as Djs from "discord.js";
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found
  * @param interaction {ButtonInteraction | ModalSubmitInteraction}
  * @param ul {Translation}
  */
 export async function getUserNameAndChar(
-	interaction: ButtonInteraction | ModalSubmitInteraction,
+	interaction: Djs.ButtonInteraction | Djs.ModalSubmitInteraction,
 	ul: Translation,
 	first?: boolean
 ) {
 	let userEmbed = getEmbeds(ul, interaction?.message ?? undefined, "user");
 	if (first) {
 		const firstEmbed = ensureEmbed(interaction?.message ?? undefined);
-		if (firstEmbed) userEmbed = new EmbedBuilder(firstEmbed.toJSON());
+		if (firstEmbed) userEmbed = new Djs.EmbedBuilder(firstEmbed.toJSON());
 	}
 	if (!userEmbed) throw new Error(ul("error.noEmbed"));
 	const userID = userEmbed
@@ -28,8 +28,8 @@ export async function getUserNameAndChar(
 	if (!userID) throw new Error(ul("error.user"));
 	if (
 		!interaction.channel ||
-		(!(interaction.channel instanceof ThreadChannel) &&
-			!(interaction.channel instanceof TextChannel))
+		(!(interaction.channel instanceof Djs.ThreadChannel) &&
+			!(interaction.channel instanceof Djs.TextChannel))
 	)
 		throw new Error(ul("error.noThread"));
 	let userName = userEmbed
@@ -43,7 +43,7 @@ export async function getUserNameAndChar(
  * @param ul {Translation}
  */
 export function createDiceEmbed(ul: Translation) {
-	return new EmbedBuilder().setTitle(ul("embed.dice")).setColor("Green");
+	return new Djs.EmbedBuilder().setTitle(ul("embed.dice")).setColor("Green");
 }
 
 /**
@@ -57,7 +57,7 @@ export function createUserEmbed(
 	user: string,
 	charName?: string
 ) {
-	const userEmbed = new EmbedBuilder()
+	const userEmbed = new Djs.EmbedBuilder()
 		.setTitle(ul("embed.user"))
 		.setColor("Random")
 		.setThumbnail(thumbnail)
@@ -86,7 +86,7 @@ export function createUserEmbed(
  * @param ul {Translation}
  */
 export function createStatsEmbed(ul: Translation) {
-	return new EmbedBuilder()
+	return new Djs.EmbedBuilder()
 		.setTitle(ul("common.statistics").capitalize())
 		.setColor("Aqua");
 }
@@ -96,12 +96,12 @@ export function createStatsEmbed(ul: Translation) {
  * @param ul {Translation}
  */
 export function createTemplateEmbed(ul: Translation) {
-	return new EmbedBuilder().setTitle(ul("embed.template")).setColor("DarkGrey");
+	return new Djs.EmbedBuilder().setTitle(ul("embed.template")).setColor("DarkGrey");
 }
 
 export function verifyIfEmbedInDB(
 	db: Settings,
-	message: Message,
+	message: Djs.Message,
 	userId: string,
 	userName?: string
 ): { isInDb: boolean; coord?: PersonnageIds } {
@@ -124,11 +124,11 @@ export function verifyIfEmbedInDB(
 }
 
 export async function allowEdit(
-	interaction: ButtonInteraction | StringSelectMenuInteraction,
+	interaction: Djs.ButtonInteraction | Djs.StringSelectMenuInteraction,
 	db: Settings,
-	interactionUser: User
+	interactionUser: Djs.User
 ) {
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	const embed = ensureEmbed(interaction.message);
 	const user = embed.fields
 		.find((field) => findln(field.name) === "common.user")
@@ -137,7 +137,7 @@ export async function allowEdit(
 	const isSameUser = user === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache
 		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
 	const first = interaction.customId.includes("first");
 	const userName = embed.fields.find((field) =>
 		["common.character", "common.charName"].includes(findln(field.name))

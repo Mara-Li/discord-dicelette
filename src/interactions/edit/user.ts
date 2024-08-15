@@ -1,37 +1,46 @@
 import { move, resetButton } from "@commands/gimmick/edit";
 import { allowEdit } from "@interactions";
-import type { PersonnageIds, Settings, Translation, UserMessageId } from "@interface";
+import type {
+	DiscordChannel,
+	PersonnageIds,
+	Settings,
+	Translation,
+	UserMessageId,
+} from "@interface";
 import { findln } from "@localization";
 import type { EClient } from "@main";
 import { embedError } from "@utils";
 import { getUserByEmbed } from "@utils/db";
 import { isUserNameOrId } from "@utils/find";
 import { getEmbeds } from "@utils/parse";
-
+import * as Djs from "discord.js";
 export async function initiateMove(
-	interaction: StringSelectMenuInteraction,
+	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	db: Settings
 ) {
 	if (await allowEdit(interaction, db, interactionUser)) await showMove(interaction, ul);
 }
 
-async function showMove(interaction: StringSelectMenuInteraction, ul: Translation) {
-	const modal = new ModalBuilder().setCustomId("move").setTitle(ul("button.edit.move"));
-	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("user")
-			.setLabel(ul("common.user"))
-			.setRequired(true)
-			.setStyle(TextInputStyle.Short)
-	);
+async function showMove(interaction: Djs.StringSelectMenuInteraction, ul: Translation) {
+	const modal = new Djs.ModalBuilder()
+		.setCustomId("move")
+		.setTitle(ul("button.edit.move"));
+	const input =
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
+				.setCustomId("user")
+				.setLabel(ul("common.user"))
+				.setRequired(true)
+				.setStyle(Djs.TextInputStyle.Short)
+		);
 	modal.addComponents(input);
 	await interaction.showModal(modal);
 }
 
 export async function validateMove(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	ul: Translation,
 	client: EClient
 ) {

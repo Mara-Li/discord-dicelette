@@ -2,7 +2,7 @@ import type { Critical } from "@dicelette/core";
 
 import type Enmap from "enmap";
 import type { TFunction } from "i18next";
-
+import type * as Djs from "discord.js";
 export const TUTORIAL_IMAGES = [
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_1.png?raw=true",
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_2.png?raw=true",
@@ -28,7 +28,12 @@ export const LINKS = {
 export type UserMessageId = [string, string];
 export type Settings = Enmap<string, GuildData, unknown>;
 export type Translation = TFunction<"translation", undefined>;
-
+export type DiscordChannel =
+	| Djs.PrivateThreadChannel
+	| Djs.PublicThreadChannel<boolean>
+	| Djs.TextChannel
+	| Djs.NewsChannel
+	| undefined;
 export type PersonnageIds = { channelId: string; messageId: string };
 export type UserRegistration = {
 	userID: string;
@@ -37,6 +42,14 @@ export type UserRegistration = {
 	damage?: string[];
 	msgId: UserMessageId;
 };
+
+export type DiscordTextChannel =
+	| Djs.TextChannel
+	| Djs.NewsChannel
+	| Djs.StageChannel
+	| Djs.PrivateThreadChannel
+	| Djs.PublicThreadChannel<boolean>
+	| Djs.VoiceChannel;
 
 export interface GuildData {
 	/**

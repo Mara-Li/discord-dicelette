@@ -7,6 +7,7 @@ import type { EClient } from "@main";
 import { embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import i18next from "i18next";
+import * as Djs from "discord.js";
 
 import { parseResult } from "../dice";
 
@@ -14,18 +15,18 @@ const t = i18next.getFixedT("en");
 
 /**
  * create the roll dice, parse interaction etc... When the slashcommands is used for dice
- * @param interaction {CommandInteraction}
+ * @param interaction {Djs.CommandInteraction}
  * @param dice {string}
  * @param channel {TextBasedChannel}
  * @param critical {failure?: number, success?: number}
  */
 export async function rollWithInteraction(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	dice: string,
-	channel: TextBasedChannel,
+	channel: Djs.TextBasedChannel,
 	db: Settings,
 	critical?: { failure?: number; success?: number },
-	user?: User,
+	user?: Djs.User,
 	charName?: string,
 	infoRoll?: string,
 	hideResult?: boolean | null
@@ -55,7 +56,7 @@ export async function rollWithInteraction(
 
 	const parser = parseResult(rollDice, ul, critical, !!infoRoll);
 	const userId = user?.id ?? interaction.user.id;
-	let mentionUser: string = userMention(userId);
+	let mentionUser: string = Djs.userMention(userId);
 	const titleCharName = `__**${charName?.capitalize()}**__`;
 	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
 	const infoRollTotal = (mention?: boolean, time?: boolean) => {
@@ -95,13 +96,13 @@ export async function rollWithInteraction(
 		});
 		return;
 	}
-	const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
+	const parentChannel = channel instanceof Djs.ThreadChannel ? channel.parent : channel;
 	const thread =
-		parentChannel instanceof TextChannel
+		parentChannel instanceof Djs.TextChannel
 			? await findThread(db, parentChannel, ul, isHidden)
 			: await findForumChannel(
-					channel.parent as ForumChannel,
-					channel as ThreadChannel,
+					channel.parent as Djs.ForumChannel,
+					channel as Djs.ThreadChannel,
 					db,
 					ul,
 					isHidden
@@ -135,13 +136,13 @@ export async function rollWithInteraction(
 }
 
 export async function rollStatistique(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	userStatistique: UserData,
-	options: CommandInteractionOptionResolver,
+	options: Djs.CommandInteractionOptionResolver,
 	ul: Translation,
 	optionChar?: string,
-	user?: User,
+	user?: Djs.User,
 	hideResult?: boolean | null
 ) {
 	let statistique = options.getString(t("common.statistic"), true).standardize(true);
@@ -198,7 +199,7 @@ export async function rollStatistique(
 	await rollWithInteraction(
 		interaction,
 		roll,
-		interaction!.channel as TextBasedChannel,
+		interaction!.channel as Djs.TextBasedChannel,
 		client.settings,
 		template.critical,
 		user,
@@ -209,13 +210,13 @@ export async function rollStatistique(
 }
 
 export async function rollDice(
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	client: EClient,
 	userStatistique: UserData,
-	options: CommandInteractionOptionResolver,
+	options: Djs.CommandInteractionOptionResolver,
 	ul: Translation,
 	charOptions?: string,
-	user?: User,
+	user?: Djs.User,
 	hideResult?: boolean | null
 ) {
 	let atq = options.getString(t("rAtq.atq_name.name"), true).standardize(true);
@@ -262,7 +263,7 @@ export async function rollDice(
 	await rollWithInteraction(
 		interaction,
 		roll,
-		interaction.channel as TextBasedChannel,
+		interaction.channel as Djs.TextBasedChannel,
 		client.settings,
 		undefined,
 		user,

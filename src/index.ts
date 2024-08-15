@@ -18,16 +18,17 @@ import * as pkg from "../package.json" assert { type: "json" };
 import { flattenJson } from "@localization";
 import { resources } from "@localization/init";
 import "uniformize";
+import * as Djs from "discord.js";
 
 dotenv.config({ path: ".env" });
 
 log("Starting bot...");
 
-export class EClient extends Client {
+export class EClient extends Djs.Client {
 	// Déclaration d'une propriété settings avec le type Enmap<string, any>
 	public settings: Enmap<string, GuildData, unknown>;
 
-	constructor(options: ClientOptions) {
+	constructor(options: Djs.ClientOptions) {
 		super(options);
 
 		// Initialisation de Enmap et attachement au client
@@ -44,12 +45,12 @@ export const ALL_TRANSLATION_KEYS = Object.keys(flattenJson(resources.en.transla
 
 export const client = new EClient({
 	intents: [
-		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.Guilds,
-		GatewayIntentBits.GuildMembers,
+		Djs.GatewayIntentBits.GuildMessages,
+		Djs.GatewayIntentBits.MessageContent,
+		Djs.GatewayIntentBits.Guilds,
+		Djs.GatewayIntentBits.GuildMembers,
 	],
-	partials: [Partials.Channel, Partials.GuildMember, Partials.User],
+	partials: [Djs.Partials.Channel, Djs.Partials.GuildMember, Djs.Partials.User],
 });
 
 export const VERSION = pkg.version ?? "0.0.0";

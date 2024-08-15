@@ -6,7 +6,7 @@ import { NoEmbed, addAutoRole, embedError, reply, sendLogs } from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
-
+import * as Djs from "discord.js";
 /**
  * Interaction to add a new skill dice
  * @param interaction {ButtonInteraction}
@@ -14,8 +14,8 @@ import { ensureEmbed, getEmbeds } from "@utils/parse";
  * @param interactionUser {User}
  */
 export async function executeAddDiceButton(
-	interaction: ButtonInteraction,
-	interactionUser: User,
+	interaction: Djs.ButtonInteraction,
+	interactionUser: Djs.User,
 	db: Settings
 ) {
 	const allow = await allowEdit(interaction, db, interactionUser);
@@ -30,30 +30,34 @@ export async function executeAddDiceButton(
  * - false: It's the modal when the user is already registered and a new dice is added to edit the user
  */
 export async function showDamageDiceModals(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	first?: boolean
 ) {
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	const id = first ? "damageDice_first" : "damageDice";
-	const modal = new ModalBuilder().setCustomId(id).setTitle(ul("register.embed.damage"));
-	const damageDice = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("damageName")
-			.setLabel(ul("modals.dice.name"))
-			.setPlaceholder(ul("modals.dice.placeholder"))
-			.setRequired(true)
-			.setValue("")
-			.setStyle(TextInputStyle.Short)
-	);
-	const diceValue = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("damageValue")
-			.setLabel(ul("modals.dice.value"))
-			.setPlaceholder("1d5")
-			.setRequired(true)
-			.setValue("")
-			.setStyle(TextInputStyle.Short)
-	);
+	const modal = new Djs.ModalBuilder()
+		.setCustomId(id)
+		.setTitle(ul("register.embed.damage"));
+	const damageDice =
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
+				.setCustomId("damageName")
+				.setLabel(ul("modals.dice.name"))
+				.setPlaceholder(ul("modals.dice.placeholder"))
+				.setRequired(true)
+				.setValue("")
+				.setStyle(Djs.TextInputStyle.Short)
+		);
+	const diceValue =
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
+				.setCustomId("damageValue")
+				.setLabel(ul("modals.dice.value"))
+				.setPlaceholder("1d5")
+				.setRequired(true)
+				.setValue("")
+				.setStyle(Djs.TextInputStyle.Short)
+		);
 	modal.addComponents(damageDice);
 	modal.addComponents(diceValue);
 	await interaction.showModal(modal);
@@ -67,9 +71,9 @@ export async function showDamageDiceModals(
  * @param interactionUser {User}
  */
 export async function storeDamageDice(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	db: Settings
 ) {
 	const template = await getTemplateWithDB(interaction, db);
@@ -85,7 +89,7 @@ export async function storeDamageDice(
 			.replace(">", "") === interactionUser.id;
 	const isModerator = interaction.guild?.members.cache
 		.get(interactionUser.id)
-		?.permissions.has(PermissionsBitField.Flags.ManageRoles);
+		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
 	if (user || isModerator)
 		await registerDamageDice(interaction, db, interaction.customId.includes("first"));
 	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
@@ -98,11 +102,11 @@ export async function storeDamageDice(
  * - false: It's the modal when the user is already registered and a new dice is added to edit the user
  */
 export async function registerDamageDice(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	db: Settings,
 	first?: boolean
 ) {
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
 	if (!interaction.guild) throw new Error(ul("error.noGuild"));
@@ -113,7 +117,9 @@ export async function registerDamageDice(
 		interaction.message ?? undefined,
 		"damage"
 	)?.toJSON();
-	const diceEmbed = oldDiceEmbeds ? new EmbedBuilder(oldDiceEmbeds) : createDiceEmbed(ul);
+	const diceEmbed = oldDiceEmbeds
+		? new Djs.EmbedBuilder(oldDiceEmbeds)
+		: createDiceEmbed(ul);
 	if (oldDiceEmbeds?.fields)
 		for (const field of oldDiceEmbeds.fields) {
 			//add fields only if not already in the diceEmbed
@@ -187,11 +193,11 @@ export async function registerDamageDice(
 		await reply(interaction, { content: ul("modals.added.dice"), ephemeral: true });
 		await sendLogs(
 			ul("logs.dice.add", {
-				user: userMention(interaction.user.id),
+				user: Djs.userMention(interaction.user.id),
 				fiche: interaction.message.url,
-				char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`,
+				char: `${Djs.userMention(userID)} ${userName ? `(${userName})` : ""}`,
 			}),
-			interaction.guild as Guild,
+			interaction.guild as Djs.Guild,
 			db
 		);
 		return;
@@ -212,11 +218,11 @@ export async function registerDamageDice(
 
 	await sendLogs(
 		ul("logs.dice.add", {
-			user: userMention(interaction.user.id),
+			user: Djs.userMention(interaction.user.id),
 			fiche: interaction.message.url,
-			char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`,
+			char: `${Djs.userMention(userID)} ${userName ? `(${userName})` : ""}`,
 		}),
-		interaction.guild as Guild,
+		interaction.guild as Djs.Guild,
 		db
 	);
 	return;

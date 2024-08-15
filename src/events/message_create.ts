@@ -5,7 +5,7 @@ import { lError, ln } from "@localization";
 import type { EClient } from "@main";
 import { timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
-
+import * as Djs from "discord.js";
 import { parseResult } from "../dice";
 
 export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
@@ -14,7 +14,7 @@ export default (client: EClient): void => {
 	client.on("messageCreate", async (message) => {
 		try {
 			if (message.author.bot) return;
-			if (message.channel.type === ChannelType.DM) return;
+			if (message.channel.type === Djs.ChannelType.DM) return;
 			if (!message.guild) return;
 			let content = message.content;
 			//detect roll between bracket
@@ -38,7 +38,7 @@ export default (client: EClient): void => {
 
 			//is a valid roll as we are in the function so we can work as always
 
-			const userLang = message.guild.preferredLocale ?? Locale.EnglishUS;
+			const userLang = message.guild.preferredLocale ?? Djs.Locale.EnglishUS;
 			const ul = ln(userLang);
 			const channel = message.channel;
 			if (!result) return;
@@ -66,13 +66,14 @@ export default (client: EClient): void => {
 			} else {
 				linkToOriginal = `\n-# ↪ [${ul("common.context")}] (<${message.url}>)`;
 			}
-			const parentChannel = channel instanceof ThreadChannel ? channel.parent : channel;
+			const parentChannel =
+				channel instanceof Djs.ThreadChannel ? channel.parent : channel;
 			const thread =
-				parentChannel instanceof TextChannel
+				parentChannel instanceof Djs.TextChannel
 					? await findThread(client.settings, parentChannel, ul)
 					: await findForumChannel(
-							parentChannel as ForumChannel,
-							channel as ThreadChannel,
+							parentChannel as Djs.ForumChannel,
+							channel as Djs.ThreadChannel,
 							client.settings,
 							ul
 						);
@@ -80,7 +81,7 @@ export default (client: EClient): void => {
 			const signMessage = result.compare
 				? `${result.compare.sign} ${result.compare.value}`
 				: "";
-			const authorMention = `*${userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
+			const authorMention = `*${Djs.userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
 			const msg = `${authorMention}${timestamp(client.settings, message.guild.id)}\n${parser}${linkToOriginal}`;
 			await msgToEdit.edit(msg);
 			const idMessage = client.settings.get(message.guild.id, "linkToLogs")
@@ -104,7 +105,7 @@ export default (client: EClient): void => {
 			const logsId = client.settings.get(message.guild.id, "logs");
 			if (logsId) {
 				const logs = await message.guild.channels.fetch(logsId);
-				if (logs instanceof TextChannel) {
+				if (logs instanceof Djs.TextChannel) {
 					logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
 				}
 			}

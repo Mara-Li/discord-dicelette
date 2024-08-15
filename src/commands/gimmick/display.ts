@@ -6,13 +6,13 @@ import type { EClient } from "@main";
 import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
-
+import * as Djs from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
 
 export const displayUser = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("display.title"))
 		.setDescription(t("display.description"))
 		.setNameLocalizations(cmdLn("display.title"))
@@ -36,15 +36,15 @@ export const displayUser = {
 				.setAutocomplete(true)
 		),
 	async autocomplete(
-		interaction: AutocompleteInteraction,
+		interaction: Djs.AutocompleteInteraction,
 		client: EClient
 	): Promise<void> {
-		const options = interaction.options as CommandInteractionOptionResolver;
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const fixed = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		const choices: string[] = [];
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		let userID = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
 		if (typeof userID !== "string") userID = interaction.user.id;
 		if (fixed.name === t("common.character")) {
@@ -63,10 +63,10 @@ export const displayUser = {
 			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
-	async execute(interaction: CommandInteraction, client: EClient) {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guildId as string);
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		if (!guildData) {
 			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;
@@ -137,7 +137,7 @@ export const displayUser = {
 			const jsonDataChar = dataUserEmbeds!
 				.toJSON()
 				.fields!.find((x) => findln(x.name) === findln("common.character"));
-			const displayEmbed = new EmbedBuilder()
+			const displayEmbed = new Djs.EmbedBuilder()
 				.setTitle(ul("embed.display"))
 				.setThumbnail(
 					dataUserEmbeds?.toJSON().thumbnail?.url ??
@@ -156,13 +156,13 @@ export const displayUser = {
 						jsonDataChar?.value ?? userData.charName?.capitalize() ?? ul("common.noSet"),
 					inline: true,
 				});
-			const newStatEmbed: EmbedBuilder | undefined = statsFields
+			const newStatEmbed: Djs.EmbedBuilder | undefined = statsFields
 				? createStatsEmbed(ul).addFields(keepResultOnlyInFormula(statsFields))
 				: undefined;
 			const newDiceEmbed = diceFields
 				? createDiceEmbed(ul).addFields(diceFields)
 				: undefined;
-			const displayEmbeds: EmbedBuilder[] = [displayEmbed];
+			const displayEmbeds: Djs.EmbedBuilder[] = [displayEmbed];
 			if (newStatEmbed) displayEmbeds.push(newStatEmbed);
 			if (newDiceEmbed) displayEmbeds.push(newDiceEmbed);
 			await reply(interaction, { embeds: displayEmbeds });
@@ -174,8 +174,8 @@ export const displayUser = {
 	},
 };
 
-function keepResultOnlyInFormula(fields: APIEmbedField[]) {
-	const newFields: APIEmbedField[] = [];
+function keepResultOnlyInFormula(fields: Djs.APIEmbedField[]) {
+	const newFields: Djs.APIEmbedField[] = [];
 	for (const field of fields) {
 		let value = field.value as string;
 		if (value.includes("= ")) {

@@ -4,12 +4,12 @@ import { createTemplateEmbed } from "@interactions";
 import type { PersonnageIds, Settings, Translation } from "@interface";
 import { findln, ln } from "@localization";
 import { NoEmbed, searchUserChannel } from "@utils";
-
+import * as Djs from "discord.js";
 /**
  * Ensure the embeds are present
  * @param {Message} message
  */
-export function ensureEmbed(message?: Message) {
+export function ensureEmbed(message?: Djs.Message) {
 	const oldEmbeds = message?.embeds[0];
 	if (!oldEmbeds || !oldEmbeds?.fields) throw new NoEmbed();
 	return oldEmbeds;
@@ -19,7 +19,9 @@ export function ensureEmbed(message?: Message) {
  * Parse the embed fields from an interaction
  * @param interaction {ButtonInteraction | ModalSubmitInteraction}
  */
-export function parseEmbed(interaction: ButtonInteraction | ModalSubmitInteraction) {
+export function parseEmbed(
+	interaction: Djs.ButtonInteraction | Djs.ModalSubmitInteraction
+) {
 	const embed = interaction.message?.embeds[0];
 	if (!embed) return;
 	return parseEmbedFields(embed);
@@ -33,10 +35,10 @@ export function parseEmbed(interaction: ButtonInteraction | ModalSubmitInteracti
  * @param templateEmbed {EmbedBuilder}
  */
 export function createEmbedsList(
-	userDataEmbed: EmbedBuilder,
-	statsEmbed?: EmbedBuilder,
-	diceEmbed?: EmbedBuilder,
-	templateEmbed?: EmbedBuilder
+	userDataEmbed: Djs.EmbedBuilder,
+	statsEmbed?: Djs.EmbedBuilder,
+	diceEmbed?: Djs.EmbedBuilder,
+	templateEmbed?: Djs.EmbedBuilder
 ) {
 	const allEmbeds = [userDataEmbed];
 	if (statsEmbed) allEmbeds.push(statsEmbed);
@@ -55,9 +57,9 @@ export function getEmbedsList(
 	ul: Translation,
 	embedToReplace: {
 		which: "user" | "stats" | "damage" | "template";
-		embed: EmbedBuilder;
+		embed: Djs.EmbedBuilder;
 	},
-	message?: Message
+	message?: Djs.Message
 ) {
 	const userDataEmbed =
 		embedToReplace.which === "user"
@@ -94,7 +96,7 @@ export function getEmbedsList(
  * @param ul {Translation}
  */
 export function removeEmbedsFromList(
-	embeds: EmbedBuilder[],
+	embeds: Djs.EmbedBuilder[],
 	which: "user" | "stats" | "damage" | "template"
 ) {
 	return embeds.filter((embed) => {
@@ -115,7 +117,7 @@ export function removeEmbedsFromList(
  * @param embed {Embed}
  * @returns { {[name: string]: string} }
  */
-export function parseEmbedFields(embed: Embed): { [name: string]: string } {
+export function parseEmbedFields(embed: Djs.Embed): { [name: string]: string } {
 	const fields = embed.fields;
 	if (!fields) return {};
 	const parsedFields: { [name: string]: string } = {};
@@ -134,7 +136,7 @@ export function parseEmbedFields(embed: Embed): { [name: string]: string } {
  */
 export function getEmbeds(
 	ul: Translation,
-	message?: Message,
+	message?: Djs.Message,
 	which?: "user" | "stats" | "damage" | "template"
 ) {
 	const allEmbeds = message?.embeds;
@@ -145,26 +147,26 @@ export function getEmbeds(
 		const userKeys = ["embed.user", "embed.add", "embed.old"];
 		const statsKeys = ["common.statistic", "common.statistics"];
 		if (userKeys.includes(titleKey) && which === "user")
-			return new EmbedBuilder(embedJSON);
+			return new Djs.EmbedBuilder(embedJSON);
 		if (statsKeys.includes(titleKey) && which === "stats")
-			return new EmbedBuilder(embedJSON);
+			return new Djs.EmbedBuilder(embedJSON);
 		if (titleKey === "embed.dice" && which === "damage")
-			return new EmbedBuilder(embedJSON);
+			return new Djs.EmbedBuilder(embedJSON);
 		if (titleKey === "embed.template" && which === "template")
-			return new EmbedBuilder(embedJSON);
+			return new Djs.EmbedBuilder(embedJSON);
 	}
 }
 
 /**
  * Update the template of existing user when the template is edited by moderation
  * @param guildData {GuildData}
- * @param interaction {CommandInteraction}
+ * @param interaction {Djs.CommandInteraction}
  * @param ul {Translation}
  * @param template {StatisticalTemplate}
  */
 export async function bulkEditTemplateUser(
 	guildData: Settings,
-	interaction: CommandInteraction,
+	interaction: Djs.CommandInteraction,
 	ul: Translation,
 	template: StatisticalTemplate
 ) {
@@ -225,10 +227,10 @@ export async function bulkEditTemplateUser(
  * @param templateData {StatisticalTemplate}
  */
 export function getStatistiqueFields(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	templateData: StatisticalTemplate
 ) {
-	const ul = ln(interaction.locale as Locale);
+	const ul = ln(interaction.locale as Djs.Locale);
 	const combinaisonFields: { [name: string]: string } = {};
 	const stats: { [name: string]: number } = {};
 	let total = templateData.total;

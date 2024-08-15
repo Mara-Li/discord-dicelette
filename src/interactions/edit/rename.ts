@@ -1,14 +1,21 @@
 import { rename } from "@commands/gimmick/edit";
+import * as Djs from "discord.js";
 import { allowEdit } from "@interactions";
-import type { PersonnageIds, Settings, Translation, UserMessageId } from "@interface";
+import type {
+	DiscordChannel,
+	PersonnageIds,
+	Settings,
+	Translation,
+	UserMessageId,
+} from "@interface";
 import { findln } from "@localization";
 import type { EClient } from "@main";
 import { getUserByEmbed } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
 export async function initiateRenaming(
-	interaction: StringSelectMenuInteraction,
+	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	db: Settings
 ) {
 	if (await allowEdit(interaction, db, interactionUser))
@@ -16,23 +23,26 @@ export async function initiateRenaming(
 }
 
 export async function showRename(
-	interaction: StringSelectMenuInteraction,
+	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation
 ) {
-	const modal = new ModalBuilder().setCustomId("rename").setTitle(ul("button.edit.name"));
-	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("newName")
-			.setLabel(ul("common.character"))
-			.setRequired(true)
-			.setStyle(TextInputStyle.Short)
-	);
+	const modal = new Djs.ModalBuilder()
+		.setCustomId("rename")
+		.setTitle(ul("button.edit.name"));
+	const input =
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
+				.setCustomId("newName")
+				.setLabel(ul("common.character"))
+				.setRequired(true)
+				.setStyle(Djs.TextInputStyle.Short)
+		);
 	modal.addComponents(input);
 	await interaction.showModal(modal);
 }
 
 export async function validateRename(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	ul: Translation,
 	client: EClient
 ) {

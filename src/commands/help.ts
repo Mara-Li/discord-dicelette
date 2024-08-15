@@ -6,11 +6,12 @@ import { reply } from "@utils";
 import type { Collection, ApplicationCommand } from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
+import * as Djs from "discord.js";
 
 const t = i18next.getFixedT("en");
 
 export const help = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("help.name"))
 		.setNameLocalizations(cmdLn("help.name"))
 		.setDescription(t("help.description"))
@@ -50,10 +51,10 @@ export const help = {
 				.setDescription(t("help.register.description"))
 				.setDescriptionLocalizations(cmdLn("help.register.description"))
 		),
-	async execute(interaction: CommandInteraction, client: EClient): Promise<void> {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async execute(interaction: Djs.CommandInteraction, client: EClient): Promise<void> {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const subcommand = options.getSubcommand(true);
-		const ul = ln(interaction.locale as Locale);
+		const ul = ln(interaction.locale as Djs.Locale);
 		const link = interaction.locale === "fr" ? LINKS.fr : LINKS.en;
 		const commandsID = await interaction.guild?.commands.fetch();
 		if (!commandsID) return;
@@ -155,7 +156,7 @@ function getHelpDBCmd(commandsID: Collection<string, ApplicationCommand<unknown>
 }
 
 function createHelpMessageDB(
-	guildID: Snowflake,
+	guildID: Djs.Snowflake,
 	ul: Translation,
 	db: Settings,
 	commandsID?: Collection<string, ApplicationCommand<unknown>>
@@ -188,7 +189,7 @@ function getIDForAdminNoDB(commandsID: Collection<string, ApplicationCommand<unk
 function getIDForAdminDB(
 	commandsID: Collection<string, ApplicationCommand<unknown>>,
 	db: Settings,
-	guildID: Snowflake
+	guildID: Djs.Snowflake
 ) {
 	if (!db.has(guildID, "templateID")) return;
 	const commandToFind = [

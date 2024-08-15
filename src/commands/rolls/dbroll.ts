@@ -3,13 +3,13 @@ import type { EClient } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollStatistique } from "@utils/roll";
-
+import * as Djs from "discord.js";
 import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
 
 export const dbRoll = {
-	data: new SlashCommandBuilder()
+	data: new Djs.SlashCommandBuilder()
 		.setName(t("dbRoll.name"))
 		.setNameLocalizations(cmdLn("dbRoll.name"))
 		.setDescription(t("dbRoll.description"))
@@ -57,8 +57,8 @@ export const dbRoll = {
 				.setDescriptionLocalizations(cmdLn("dbRoll.options.modificator.description"))
 				.setRequired(false)
 		),
-	async autocomplete(interaction: AutocompleteInteraction, client: EClient) {
-		const options = interaction.options as CommandInteractionOptionResolver;
+	async autocomplete(interaction: Djs.AutocompleteInteraction, client: EClient) {
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const focused = options.getFocused(true);
 		const guildData = client.settings.get(interaction.guild!.id);
 
@@ -85,9 +85,9 @@ export const dbRoll = {
 			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
 	},
-	async execute(interaction: CommandInteraction, client: EClient) {
+	async execute(interaction: Djs.CommandInteraction, client: EClient) {
 		if (!interaction.guild || !interaction.channel) return;
-		const options = interaction.options as CommandInteractionOptionResolver;
+		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guild.id);
 		const ul = ln(interaction.locale);
 		if (!guildData) return;

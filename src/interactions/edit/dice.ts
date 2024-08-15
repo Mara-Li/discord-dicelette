@@ -10,32 +10,33 @@ import {
 	parseEmbedFields,
 	removeEmbedsFromList,
 } from "@utils/parse";
-
+import * as Djs from "discord.js";
 /**
  * Show the modal to **edit** the registered dice
  * Will parse registered dice and show them in the modal as `- Skill : Dice`
  * @param interaction {ButtonInteraction}
  * @param ul {Translation}
  */
-export async function showEditDice(interaction: ButtonInteraction, ul: Translation) {
+export async function showEditDice(interaction: Djs.ButtonInteraction, ul: Translation) {
 	const diceEmbed = getEmbeds(ul, interaction.message, "damage");
 	if (!diceEmbed) throw new Error(ul("error.invalidDice.embeds"));
-	const diceFields = parseEmbedFields(diceEmbed.toJSON() as Embed);
+	const diceFields = parseEmbedFields(diceEmbed.toJSON() as Djs.Embed);
 	let dices = "";
 	for (const [skill, dice] of Object.entries(diceFields)) {
 		dices += `- ${skill}${ul("common.space")}: ${dice}\n`;
 	}
-	const modal = new ModalBuilder()
+	const modal = new Djs.ModalBuilder()
 		.setCustomId("editDice")
 		.setTitle(ul("common.dice").capitalize());
-	const input = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-		new TextInputBuilder()
-			.setCustomId("allDice")
-			.setLabel(ul("modals.edit.dice"))
-			.setRequired(true)
-			.setStyle(TextInputStyle.Paragraph)
-			.setValue(dices)
-	);
+	const input =
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
+				.setCustomId("allDice")
+				.setLabel(ul("modals.edit.dice"))
+				.setRequired(true)
+				.setStyle(Djs.TextInputStyle.Paragraph)
+				.setValue(dices)
+		);
 	modal.addComponents(input);
 	await interaction.showModal(modal);
 }
@@ -48,7 +49,7 @@ export async function showEditDice(interaction: ButtonInteraction, ul: Translati
  * @param ul {Translation}
  */
 export async function validateDiceEdit(
-	interaction: ModalSubmitInteraction,
+	interaction: Djs.ModalSubmitInteraction,
 	ul: Translation,
 	db: Settings
 ) {
@@ -67,7 +68,7 @@ export async function validateDiceEdit(
 		},
 		{} as { [name: string]: string }
 	);
-	const newEmbedDice: APIEmbedField[] = [];
+	const newEmbedDice: Djs.APIEmbedField[] = [];
 	for (const [skill, dice] of Object.entries(dices)) {
 		//test if dice is valid
 		if (newEmbedDice.find((field) => field.name.unidecode() === skill.unidecode()))
@@ -114,7 +115,7 @@ export async function validateDiceEdit(
 		}
 	}
 	//remove duplicate
-	const fieldsToAppend: APIEmbedField[] = [];
+	const fieldsToAppend: Djs.APIEmbedField[] = [];
 	for (const field of newEmbedDice) {
 		const name = field.name.toLowerCase();
 		const dice = field.value;
@@ -154,11 +155,11 @@ export async function validateDiceEdit(
 		registerUser(userRegister, interaction, db, false);
 		await sendLogs(
 			ul("logs.dice.remove", {
-				user: userMention(interaction.user.id),
+				user: Djs.userMention(interaction.user.id),
 				fiche: interaction.message.url,
-				char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`,
+				char: `${Djs.userMention(userID)} ${userName ? `(${userName})` : ""}`,
 			}),
-			interaction.guild as Guild,
+			interaction.guild as Djs.Guild,
 			db
 		);
 		return;
@@ -188,11 +189,11 @@ export async function validateDiceEdit(
 	await reply(interaction, { content: ul("embed.edit.dice"), ephemeral: true });
 	const compare = displayOldAndNewStats(diceEmbeds.toJSON().fields, fieldsToAppend);
 	const logMessage = ul("logs.dice.edit", {
-		user: userMention(interaction.user.id),
+		user: Djs.userMention(interaction.user.id),
 		fiche: interaction.message.url,
-		char: `${userMention(userID)} ${userName ? `(${userName})` : ""}`,
+		char: `${Djs.userMention(userID)} ${userName ? `(${userName})` : ""}`,
 	});
-	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Guild, db);
+	await sendLogs(`${logMessage}\n${compare}`, interaction.guild as Djs.Guild, db);
 }
 
 /**
@@ -203,9 +204,9 @@ export async function validateDiceEdit(
  * @param interactionUser {User}
  */
 export async function initiateDiceEdit(
-	interaction: ButtonInteraction,
+	interaction: Djs.ButtonInteraction,
 	ul: Translation,
-	interactionUser: User,
+	interactionUser: Djs.User,
 	db: Settings
 ) {
 	if (await allowEdit(interaction, db, interactionUser))
