@@ -28,6 +28,7 @@ import {
 	type GuildForumTagData,
 	type InteractionReplyOptions,
 	MediaChannel,
+	type Message,
 	type MessagePayload,
 	ModalSubmitInteraction,
 	type NewsChannel,
@@ -37,10 +38,12 @@ import {
 	StageChannel,
 	type StringSelectMenuInteraction,
 	TextChannel,
+	ThreadAutoArchiveDuration,
 	VoiceChannel,
 } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
+import { deleteAfter } from "../commands/rolls/base_roll";
 
 /**
  * Set the tags for thread channel in forum
@@ -92,6 +95,10 @@ export async function repostInThread(
 	guildData: Settings,
 	threadId: string
 ) {
+	userTemplate.userName = userTemplate.userName
+		? userTemplate.userName.toLowerCase()
+		: undefined;
+	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;
 	const channel = interaction.channel;
 	if (!channel || channel instanceof CategoryChannel) return;
 	if (!guildData)
@@ -100,8 +107,38 @@ export async function repostInThread(
 				e: "No server data found in database for this server.",
 			})
 		);
-	let thread = await searchUserChannel(guildData, interaction, ul, threadId);
-	if (!thread && channel instanceof TextChannel) {
+	const dataToSend = {
+		embeds: embed,
+		components: [editUserButtons(ul, which.stats, which.dice), selectEditMenu(ul)],
+	};
+	let isForumThread = false;
+	let thread = await searchUserChannel(guildData, interaction, ul, threadId, true);
+	let msg: Message<true> | undefined = undefined;
+	if (!thread) {
+		const channel = await interaction.guild?.channels.fetch(threadId);
+		if (channel && channel instanceof ForumChannel) {
+			const userName =
+				userTemplate.userName ??
+				(await interaction.guild?.members.fetch(userId))?.displayName;
+			//create a new thread in the forum
+			const newThread = await channel.threads.create({
+				name: userName ?? `${ul("common.sheet")} ${ul("common.character").toUpperCase()}`,
+				autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+				message: dataToSend,
+			});
+			thread = newThread as AnyThreadChannel;
+			isForumThread = true;
+			const starterMsg = await newThread.fetchStarterMessage();
+			if (!starterMsg) throw new Error(ul("error.noThread"));
+			msg = starterMsg;
+			const ping = await thread.send(
+				interaction.user.id !== userId
+					? `<@${interaction.user.id}> || <@${userId}>`
+					: `<@${interaction.user.id}>`
+			);
+			await deleteAfter(ping, 5000);
+		}
+	} else if (!thread && channel instanceof TextChannel) {
 		thread = (await channel.threads.fetch()).threads.find(
 			(thread) => thread.name === "📝 • [STATS]"
 		) as AnyThreadChannel | undefined;
@@ -116,14 +153,8 @@ export async function repostInThread(
 	if (!thread) {
 		throw new Error(ul("error.noThread"));
 	}
-	userTemplate.userName = userTemplate.userName
-		? userTemplate.userName.toLowerCase()
-		: undefined;
-	const msg = await thread.send({
-		embeds: embed,
-		components: [editUserButtons(ul, which.stats, which.dice), selectEditMenu(ul)],
-	});
-	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;
+	if (!isForumThread) msg = await thread.send(dataToSend);
+	if (!msg) throw new Error(ul("error.noThread"));
 	const userRegister: UserRegistration = {
 		userID: userId,
 		isPrivate: userTemplate.private,
@@ -321,11 +352,13 @@ export async function searchUserChannel(
 	guildData: Settings,
 	interaction: BaseInteraction,
 	ul: Translation,
-	channelId: string
+	channelId: string,
+	register?: boolean
 ): Promise<DiscordChannel> {
 	let thread: TextChannel | AnyThreadChannel | undefined | GuildBasedChannel = undefined;
 	try {
 		const channel = await interaction.guild?.channels.fetch(channelId);
+		if (channel instanceof ForumChannel && register) return;
 		if (
 			!channel ||
 			channel instanceof CategoryChannel ||
@@ -342,7 +375,8 @@ export async function searchUserChannel(
 				await interaction?.channel?.send({
 					embeds: [embedError(ul("error.noThread"), ul)],
 				});
-			else await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
+
+			await sendLogs(ul("error.noThread"), interaction.guild as Guild, guildData);
 			return;
 		}
 		thread = channel;
