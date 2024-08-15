@@ -10,9 +10,9 @@ import {
 	TooManyDice,
 	TooManyStats,
 } from "@dicelette/core";
-import { ALL_TRANSLATION_KEYS } from "..";
-import { error } from "../console";
-import { InvalidCsvContent, NoChannel, NoEmbed } from "../utils";
+import { ALL_TRANSLATION_KEYS } from "@main";
+import { error, log } from "@console";
+import { InvalidCsvContent, NoChannel, NoEmbed } from "@utils";
 import { resources } from "./init";
 
 export function ln(userLang: Djs.Locale) {
@@ -126,7 +126,10 @@ export function findln(translatedText: string) {
 	for (const locale of allLocales) {
 		const ul = ln(locale as Djs.Locale);
 		for (const key of ALL_TRANSLATION_KEYS) {
-			if (ul(key).toLowerCase() === translatedText.toLowerCase()) return key;
+			if (ul(key).toLowerCase() === translatedText.toLowerCase()) {
+				log(`Key found: ${key}`);
+				return key;
+			}
 		}
 	}
 	return translatedText;
