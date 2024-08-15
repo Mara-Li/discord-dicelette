@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.11.0](https://github.com/Dicelette/discord-dicelette/compare/1.10.0...1.11.0) (2024-08-15)
+
+
+### Features
+
+* allow to post directly in a forum and let the bot create a new post in it ([603d26f](https://github.com/Dicelette/discord-dicelette/commit/603d26f24758ff72005a1a54a50c81a56cfe962b))
+
+
+### Bug Fixes
+
+* use another regex for capitalization ([5a86bd9](https://github.com/Dicelette/discord-dicelette/commit/5a86bd9b424b621f0a5ca9b2f9f9609669b447f3))
+
 ## [1.10.0](https://github.com/Dicelette/discord-dicelette/compare/1.9.0...1.10.0) (2024-08-09)
 
 
