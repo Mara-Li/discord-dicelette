@@ -21,7 +21,6 @@ import {
 	type User,
 	userMention,
 } from "discord.js";
-import "standardize";
 
 /**
  * Interaction to add a new skill dice

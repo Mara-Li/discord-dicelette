@@ -20,7 +20,6 @@ import {
 	TextInputStyle,
 	type User,
 } from "discord.js";
-import "standardize";
 
 /**
  * Interaction to continue to the next page of the statistics when registering a new user

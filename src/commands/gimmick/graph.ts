@@ -24,7 +24,6 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
-import "standardize";
 
 async function chart(
 	userData: UserData,

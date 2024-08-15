@@ -19,7 +19,6 @@ import {
 import i18next from "i18next";
 
 import { parseResult } from "../dice";
-import "standardize";
 
 const t = i18next.getFixedT("en");
 

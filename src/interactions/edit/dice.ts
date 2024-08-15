@@ -24,7 +24,6 @@ import {
 	type User,
 	userMention,
 } from "discord.js";
-import "standardize";
 
 /**
  * Show the modal to **edit** the registered dice

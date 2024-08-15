@@ -14,7 +14,6 @@ import {
 	TextInputStyle,
 } from "discord.js";
 import { createStatsEmbed } from "..";
-import "standardize";
 
 /**
  * Embed to display the statistics when adding a new user

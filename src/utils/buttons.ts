@@ -6,7 +6,6 @@ import {
 	StringSelectMenuBuilder,
 	StringSelectMenuOptionBuilder,
 } from "discord.js";
-import "standardize";
 
 /**
  * Button to edit the user embed character sheet

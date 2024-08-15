@@ -12,7 +12,6 @@ import type {
 	User,
 } from "discord.js";
 import type Enmap from "enmap";
-import "standardize";
 
 export const DELETE_CHANNEL = (client: EClient): void => {
 	client.on("channelDelete", async (channel) => {

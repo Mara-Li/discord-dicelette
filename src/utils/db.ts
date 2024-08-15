@@ -21,7 +21,6 @@ import {
 	type Message,
 	type ModalSubmitInteraction,
 } from "discord.js";
-import "standardize";
 
 /**
  * Get the guild template when clicking on the "registering user" button or when submiting

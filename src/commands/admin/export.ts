@@ -12,7 +12,6 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
-import "standardize";
 
 import type { CSVRow } from "./import";
 

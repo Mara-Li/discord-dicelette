@@ -40,11 +40,10 @@
       "@events": ["src/events/index.js"],
       "@commands/*": ["src/commands/*"],
       "@commands": ["src/commands/index.js"],
-      "@console": ["src/console.js"],
-      "standardize": ["src/standardize.js"]
+      "@console": ["src/console.js"]
     }
   },
   "files": ["src/index.ts"],
   "include": ["./**/*.ts", "jest.config.ts"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist/**", "node_modules/**"]
 }

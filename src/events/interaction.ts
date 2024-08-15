@@ -1,4 +1,3 @@
-import "standardize";
 import { autCompleteCmd, commandsList } from "@commands";
 import { resetButton } from "@commands/gimmick/edit";
 import type { StatisticalTemplate } from "@dicelette/core";

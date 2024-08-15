@@ -30,7 +30,6 @@ import {
 } from "discord.js";
 import { warn } from "../../console";
 import { isUserNameOrId } from "../../utils/find";
-import "standardize";
 
 export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;

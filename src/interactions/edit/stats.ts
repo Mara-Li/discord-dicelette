@@ -24,7 +24,6 @@ import {
 	type User,
 	userMention,
 } from "discord.js";
-import "standardize";
 
 /**
  * Validate the stats and edit the embed with the new stats for editing

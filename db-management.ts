@@ -4,7 +4,6 @@ import { Command, Option, type OptionValues } from "commander";
 import Enmap from "enmap";
 import { writeFileSync } from "node:fs";
 import { colorize as colorizeJson } from "json-colorizer";
-import "standardize";
 
 //extends console to add console.error with color
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>

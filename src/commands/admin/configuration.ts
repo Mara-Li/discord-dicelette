@@ -16,7 +16,6 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
-import "standardize";
 
 const t = i18next.getFixedT("en");
 export const configuration = {

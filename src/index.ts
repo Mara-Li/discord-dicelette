@@ -18,7 +18,7 @@ import Enmap from "enmap";
 import * as pkg from "../package.json" assert { type: "json" };
 import { flattenJson } from "./localizations";
 import { resources } from "./localizations/init";
-import "standardize";
+import "uniformize";
 
 dotenv.config({ path: ".env" });
 

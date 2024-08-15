@@ -2,7 +2,6 @@
  * Allow to add multiple people to the user database at once, using a CSV file.
  * The bot will register user as the other commands, with adding them into the user thread using {@link validateUser}
  */
-import "standardize";
 
 import type { StatisticalTemplate } from "@dicelette/core";
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@interactions";
@@ -31,7 +30,6 @@ import {
 } from "discord.js";
 import i18next from "i18next";
 import Papa from "papaparse";
-import "standardize";
 
 const t = i18next.getFixedT("en");
 

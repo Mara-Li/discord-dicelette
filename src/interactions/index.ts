@@ -15,7 +15,6 @@ import {
 	ThreadChannel,
 	type User,
 } from "discord.js";
-import "standardize";
 
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found

@@ -41,7 +41,6 @@ import {
 } from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
-import "standardize";
 
 /**
  * Set the tags for thread channel in forum
