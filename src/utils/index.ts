@@ -260,7 +260,6 @@ export function cleanedDice(dice: string) {
  */
 export function filterChoices(choices: string[], focused: string) {
 	//remove duplicate from choices, without using set
-	log(uniqueValues(choices));
 	return uniqueValues(choices).filter((choice) =>
 		choice.subText(focused.removeAccents())
 	);
@@ -274,7 +273,7 @@ export function uniqueValues(array: string[]) {
 		const formattedItem = item.standardize();
 		if (!seen[formattedItem]) {
 			seen[formattedItem] = true;
-			uniqueArray.push(formattedItem);
+			uniqueArray.push(item);
 		}
 	}
 
