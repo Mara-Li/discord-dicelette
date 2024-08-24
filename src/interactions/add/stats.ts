@@ -14,14 +14,15 @@ import { createStatsEmbed } from "..";
 export async function embedStatistiques(
 	interaction: Djs.ModalSubmitInteraction,
 	template: StatisticalTemplate,
-	page = 2
+	page: number | undefined = 2,
+	lang: Djs.Locale = Djs.Locale.EnglishGB
 ) {
 	if (!interaction.message) return;
-	const ul = ln(interaction.locale as Djs.Locale);
+	const ul = ln(lang);
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
 	if (!userEmbed) return;
 	const statsEmbed = getEmbeds(ul, interaction.message, "stats");
-	const { combinaisonFields, stats } = getStatistiqueFields(interaction, template);
+	const { combinaisonFields, stats } = getStatistiqueFields(interaction, template, ul);
 	//combine all embeds as one
 	userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
 	//add old fields

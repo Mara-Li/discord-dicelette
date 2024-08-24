@@ -118,7 +118,8 @@ export const editAvatar = {
 		const guildData = client.settings.get(interaction.guildId as string);
 		if (!guildData) return;
 		const choices: string[] = [];
-		const ul = ln(interaction.locale as Djs.Locale);
+		const lang = guildData.lang ?? interaction.locale;
+		const ul = ln(lang);
 		let userID = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
 		if (typeof userID !== "string") userID = interaction.user.id;
 		if (fixed.name === t("common.character")) {
@@ -140,7 +141,8 @@ export const editAvatar = {
 	async execute(interaction: Djs.CommandInteraction, client: EClient) {
 		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guildId as string);
-		const ul = ln(interaction.locale as Djs.Locale);
+		const lang = guildData?.lang ?? interaction.locale;
+		const ul = ln(lang);
 		if (!guildData) {
 			await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 			return;

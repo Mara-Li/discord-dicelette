@@ -83,10 +83,11 @@ export const generateTemplate = {
 				.setNameLocalizations(cmdLn("generate.options.damage.name"))
 				.setRequired(false)
 		),
-	async execute(interaction: Djs.CommandInteraction): Promise<void> {
+	async execute(interaction: Djs.CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
 		const options = interaction.options as Djs.CommandInteractionOptionResolver;
-		const ul = ln(interaction.locale as Djs.Locale);
+		const lang = client.settings.get(interaction.guild.id, "lang") ?? interaction.locale;
+		const ul = ln(lang);
 		const name = options.getString(t("generate.options.stats.name")) ?? undefined;
 		let statServer: Statistic | undefined = undefined;
 		if (name) {
@@ -200,7 +201,11 @@ export const registerTemplate = {
 		if (!interaction.guild) return;
 		await interaction.deferReply({ ephemeral: true });
 		const options = interaction.options as Djs.CommandInteractionOptionResolver;
-		const ul = ln(interaction.guild.preferredLocale ?? interaction.locale);
+		const langToUse =
+			client.settings.get(interaction.guild!.id, "lang") ??
+			interaction.guild?.preferredLocale ??
+			interaction.locale;
+		const ul = ln(langToUse);
 
 		const template = options.getAttachment(t("register.options.template.name"), true);
 		//fetch the template
@@ -355,6 +360,7 @@ export const registerTemplate = {
 			client.settings.set(guildId, json);
 		} else {
 			const newData: GuildData = {
+				lang: interaction.guild.preferredLocale ?? interaction.locale,
 				templateID: {
 					channelId: channel.id,
 					messageId: msg.id,

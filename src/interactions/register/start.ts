@@ -67,7 +67,12 @@ export async function pageNumber(
 		await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 		return;
 	}
-	await embedStatistiques(interaction, template, pageNumber);
+	await embedStatistiques(
+		interaction,
+		template,
+		pageNumber,
+		db.get(interaction.guild!.id, "lang") ?? interaction.locale
+	);
 }
 /**
  * Submit the first page when the modal is validated
@@ -91,6 +96,7 @@ export async function recordFirstPage(
 export async function showFirstPageModal(
 	interaction: Djs.ButtonInteraction,
 	template: StatisticalTemplate,
+	ul: Translation,
 	havePrivate?: boolean
 ) {
 	let nbOfPages = 1;
@@ -98,8 +104,6 @@ export async function showFirstPageModal(
 		const nbOfStatistique = Object.keys(template.statistics).length;
 		nbOfPages = Math.ceil(nbOfStatistique / 5) > 0 ? Math.ceil(nbOfStatistique / 5) : 2;
 	}
-
-	const ul = ln(interaction.locale as Djs.Locale);
 
 	const modal = new Djs.ModalBuilder()
 		.setCustomId("firstPage")
@@ -177,6 +181,6 @@ export async function startRegisterUser(
 	const isModerator = interaction.guild?.members.cache
 		.get(interactionUser.id)
 		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
-	if (isModerator) await showFirstPageModal(interaction, template, havePrivate);
+	if (isModerator) await showFirstPageModal(interaction, template, ul, havePrivate);
 	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }

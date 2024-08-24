@@ -89,7 +89,8 @@ export const dbRoll = {
 		if (!interaction.guild || !interaction.channel) return;
 		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guild.id);
-		const ul = ln(interaction.locale);
+		const lang = guildData?.lang ?? interaction.locale;
+		const ul = ln(lang);
 		if (!guildData) return;
 		let optionChar = options.getString(t("common.character")) ?? undefined;
 		const charName = optionChar?.standardize();

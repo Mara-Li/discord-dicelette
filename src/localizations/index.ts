@@ -16,6 +16,8 @@ import { InvalidCsvContent, NoChannel, NoEmbed } from "@utils";
 import { resources } from "./init";
 
 export function ln(userLang: Djs.Locale) {
+	if (userLang === Djs.Locale.EnglishUS || userLang === Djs.Locale.EnglishGB)
+		return i18next.getFixedT("en");
 	const localeName = Object.entries(Djs.Locale).find(([name, abbr]) => {
 		return name === userLang || abbr === userLang;
 	});
@@ -27,7 +29,7 @@ export function lError(
 	interaction?: Djs.BaseInteraction,
 	userLang?: Djs.Locale
 ) {
-	const ul = ln(interaction?.locale ?? userLang ?? Djs.Locale.EnglishUS);
+	const ul = ln(userLang ?? interaction?.locale ?? Djs.Locale.EnglishUS);
 	if (e instanceof DiceTypeError)
 		return ul("error.invalidDice.withDice", { dice: e.dice });
 

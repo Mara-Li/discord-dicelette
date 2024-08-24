@@ -211,7 +211,7 @@ export const mjRoll = {
 		if (!interaction.guild || !interaction.channel) return;
 		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const guildData = client.settings.get(interaction.guild.id);
-		const ul = ln(interaction.locale);
+		const ul = ln(guildData?.lang ?? interaction.locale);
 		if (!guildData) return;
 
 		const user = options.getUser(t("display.userLowercase"), true);

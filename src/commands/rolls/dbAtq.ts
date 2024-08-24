@@ -121,7 +121,8 @@ export const dbd = {
 		if (!user) return;
 		let charOptions = options.getString(t("common.character")) ?? undefined;
 		const charName = charOptions?.normalize();
-		const ul = ln(interaction.locale as Djs.Locale);
+		const lang = client.settings.get(interaction.guild.id, "lang") ?? interaction.locale;
+		const ul = ln(lang);
 		try {
 			let userStatistique = await getUserFromMessage(
 				client.settings,

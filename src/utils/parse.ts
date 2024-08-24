@@ -228,9 +228,9 @@ export async function bulkEditTemplateUser(
  */
 export function getStatistiqueFields(
 	interaction: Djs.ModalSubmitInteraction,
-	templateData: StatisticalTemplate
+	templateData: StatisticalTemplate,
+	ul: Translation
 ) {
-	const ul = ln(interaction.locale as Djs.Locale);
 	const combinaisonFields: { [name: string]: string } = {};
 	const stats: { [name: string]: number } = {};
 	let total = templateData.total;

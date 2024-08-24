@@ -56,7 +56,11 @@ export const bulkAdd = {
 	async execute(interaction: Djs.CommandInteraction, client: EClient) {
 		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const csvFile = options.getAttachment(t("import.options.name"), true);
-		const ul = ln(interaction.guild?.preferredLocale ?? interaction.locale);
+		const langToUse =
+			client.settings.get(interaction.guild!.id, "lang") ??
+			interaction.guild?.preferredLocale ??
+			interaction.locale;
+		const ul = ln(langToUse);
 		await interaction.deferReply({ ephemeral: true });
 		const ext = csvFile.name.split(".").pop()?.toLowerCase() ?? "";
 		if (!ext || ext !== "csv") {
@@ -71,7 +75,8 @@ export const bulkAdd = {
 			csvFile.url,
 			guildTemplate,
 			interaction,
-			client.settings.has(interaction.guild!.id, "privateChannel")
+			client.settings.has(interaction.guild!.id, "privateChannel"),
+			langToUse
 		);
 		const defaultChannel = client.settings.get(interaction.guild!.id, "managerId");
 		const privateChannel = client.settings.get(interaction.guild!.id, "privateChannel");
@@ -194,7 +199,11 @@ export const bulkAddTemplate = {
 		.setDescriptionLocalizations(cmdLn("csv_generation.description")),
 	async execute(interaction: Djs.CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
-		const ul = ln(interaction.locale);
+		const lang =
+			client.settings.get(interaction.guild.id, "lang") ??
+			interaction.guild.preferredLocale ??
+			interaction.locale;
+		const ul = ln(lang);
 		const guildTemplate = await getTemplateWithDB(interaction, client.settings);
 		if (!guildTemplate) {
 			return reply(interaction, { content: ul("error.noTemplate") });
@@ -226,14 +235,16 @@ export async function parseCSV(
 	url: string,
 	guildTemplate: StatisticalTemplate,
 	interaction?: Djs.CommandInteraction,
-	allowPrivate?: boolean
+	allowPrivate?: boolean,
+	lang: Djs.Locale = Djs.Locale.EnglishGB
 ) {
 	let header = ["user", "charName", "avatar", "channel"];
 	if (guildTemplate.statistics) {
 		header = header.concat(Object.keys(guildTemplate.statistics));
 	}
 	if (allowPrivate) header.push("isPrivate");
-	const ul = ln(interaction?.locale ?? ("en" as Djs.Locale));
+
+	const ul = ln(lang);
 	header.push("dice");
 	header = header.map((key) => key.unidecode());
 	//papaparse can't be used in Node, we need first to create a readable stream
@@ -287,7 +298,7 @@ export async function parseCSV(
 	if (csvData.length === 0) {
 		throw new InvalidCsvContent("url");
 	}
-	return await step(csvData, guildTemplate, interaction, allowPrivate);
+	return await step(csvData, guildTemplate, interaction, allowPrivate, lang);
 }
 
 /**
@@ -313,12 +324,13 @@ async function step(
 	csv: CSVRow[],
 	guildTemplate: StatisticalTemplate,
 	interaction?: Djs.CommandInteraction,
-	allowPrivate?: boolean
+	allowPrivate?: boolean,
+	lang: Djs.Locale = Djs.Locale.EnglishGB
 ) {
 	const members: {
 		[id: string]: UserData[];
 	} = {};
-	const ul = ln(interaction?.locale ?? ("en" as Djs.Locale));
+	const ul = ln(lang);
 	const errors: string[] = [];
 	//get the user id from the guild
 	for (const data of csv) {

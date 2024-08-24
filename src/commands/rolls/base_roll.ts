@@ -104,7 +104,8 @@ export const newScene = {
 		const option = interaction.options as Djs.CommandInteractionOptionResolver;
 		const scene = option.getString(t("scene.option.name"));
 		const bubble = option.getBoolean(t("scene.time.name"));
-		const ul = ln(interaction.locale as Djs.Locale);
+		const lang = client.settings.get(interaction.guild.id, "lang") ?? interaction.locale;
+		const ul = ln(lang);
 		if (!scene && !bubble) {
 			await reply(interaction, { content: ul("scene.noScene"), ephemeral: true });
 			return;

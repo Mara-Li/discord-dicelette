@@ -1,8 +1,9 @@
 import type { Critical } from "@dicelette/core";
 
-import type * as Djs from "discord.js";
+import * as Djs from "discord.js";
 import type Enmap from "enmap";
 import type { TFunction } from "i18next";
+import { LocalePrimary, resources } from "./localizations/init";
 export const TUTORIAL_IMAGES = [
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_1.png?raw=true",
 	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_2.png?raw=true",
@@ -52,6 +53,10 @@ export type DiscordTextChannel =
 	| Djs.VoiceChannel;
 
 export interface GuildData {
+	/**
+	 * Language to use with the bot
+	 */
+	lang?: Djs.Locale;
 	/**
 	 * Save a channel to send every long related to the sheet edit
 	 */

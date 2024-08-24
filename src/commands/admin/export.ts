@@ -30,13 +30,19 @@ export const exportData = {
 		if (!interaction.guild) return;
 		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const isPrivate = options.getBoolean(t("export.options.name")) ?? undefined;
-		const allUser = client.settings.get(interaction.guild!.id, "user");
+		const guildData = client.settings.get(interaction.guild.id);
+		if (!guildData) {
+			await interaction.reply(t("export.error.noData"));
+			return;
+		}
+		const allUser = guildData.user;
 		await interaction.deferReply();
 		if (!allUser) {
 			await interaction.reply(t("export.error.noData"));
 			return;
 		}
-		const ul = ln(interaction.locale);
+		const lang = guildData.lang ?? interaction.locale;
+		const ul = ln(lang);
 		const csv: CSVRow[] = [];
 		const statsName = client.settings.get(interaction.guild.id, "templateID.statsName");
 		const isPrivateAllowed = client.settings.get(interaction.guild.id, "privateChannel");

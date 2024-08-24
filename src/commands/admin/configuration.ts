@@ -1,12 +1,23 @@
-import type { Translation } from "@interface";
+import { type Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
 import * as Djs from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
+import { LocalePrimary, localeList } from "@localization/init";
 
 const t = i18next.getFixedT("en");
+const findLocale = function (locale?: Djs.Locale) {
+	if (locale === Djs.Locale.EnglishUS || locale === Djs.Locale.EnglishGB) return "English";
+	if (!locale) return undefined;
+	const localeName = Object.entries(Djs.Locale).find(([name, abbr]) => {
+		return name === locale || abbr === locale;
+	});
+	const name= localeName?.[0];
+	if (name) return LocalePrimary[name as keyof typeof LocalePrimary];
+	return undefined;
+}
 export const configuration = {
 	data: new Djs.SlashCommandBuilder()
 		.setName(t("config.name"))
@@ -14,6 +25,24 @@ export const configuration = {
 		.setDefaultMemberPermissions(Djs.PermissionFlagsBits.ManageRoles)
 		.setDescription(t("config.description"))
 		.setDescriptionLocalizations(cmdLn("config.description"))
+		/* CHANGE LANG*/
+		.addSubcommand((subcommand) =>
+			subcommand
+				.setName(t("config.lang.name"))
+				.setNameLocalizations(cmdLn("config.lang.name"))
+				.setDescription(t("config.lang.description"))
+				.setDescriptionLocalizations(cmdLn("config.lang.description"))
+				.addStringOption((option) =>
+					option
+						.setName(t("config.lang.options.name"))
+						.setNameLocalizations(cmdLn("config.lang.options.name"))
+						.setDescription(t("config.lang.options.desc"))
+						.setDescriptionLocalizations(cmdLn("config.lang.options.desc"))
+						.setRequired(true)
+						.addChoices(...localeList)
+				)
+		)
+
 		/* LOGS */
 		.addSubcommand((subcommand) =>
 			subcommand
@@ -221,7 +250,10 @@ export const configuration = {
 		),
 	async execute(interaction: Djs.CommandInteraction, client: EClient) {
 		if (!interaction.guild) return;
-		const ul = ln(interaction.locale);
+		const lang =
+			client.settings.get(interaction.guild.id, "lang") ??
+			interaction.guild.preferredLocale;
+		const ul = ln(lang);
 		const options = interaction.options as Djs.CommandInteractionOptionResolver;
 		const subcommand = options.getSubcommand(true);
 		const subcommandGroup = options.getSubcommandGroup();
@@ -249,9 +281,26 @@ export const configuration = {
 				return await linkToLog(interaction, client, ul);
 			case t("hidden.title"):
 				return await hiddenRoll(interaction, client, ul, options);
+			case t("config.lang.name"):
+				return changeLanguage(options, client, interaction);
 		}
 	},
 };
+
+function changeLanguage(
+	options: Djs.CommandInteractionOptionResolver,
+	client: EClient,
+	interaction: Djs.CommandInteraction
+) {
+	const lang = options.getString(t("config.lang.options.name"), true) as Djs.Locale;
+	client.settings.set(interaction.guild!.id, lang, "lang");
+	const ul = ln(lang);
+	const nameOfLang = findLocale(lang);
+	return reply(interaction, {
+		content: ul("config.lang.set", { lang: nameOfLang }),
+		ephemeral: true,
+	});
+}
 
 function stats(
 	options: Djs.CommandInteractionOptionResolver,
@@ -459,11 +508,20 @@ async function display(
 		return `<#${settings}>`;
 	};
 
+	
+
+	
+	const userLocale = findLocale(guildSettings.lang) ?? findLocale(interaction.guild!.preferredLocale) ?? "English";
 	const baseEmbed = new Djs.EmbedBuilder()
 		.setTitle(ul("config.title", { guild: interaction.guild!.name }))
 		.setThumbnail(interaction.guild!.iconURL() ?? "")
 		.setColor("Random")
 		.addFields(
+			{
+				name: ul("config.lang.options.name").capitalize(),
+				value: userLocale.capitalize(),
+				inline: true
+			},
 			{
 				name: ul("config.logs"),
 				value: dedent(`

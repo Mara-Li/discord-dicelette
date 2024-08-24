@@ -37,8 +37,10 @@ export default (client: EClient): void => {
 			}
 
 			//is a valid roll as we are in the function so we can work as always
-
-			const userLang = message.guild.preferredLocale ?? Djs.Locale.EnglishUS;
+			const userLang =
+				client.settings.get(message.guild.id, "lang") ??
+				message.guild.preferredLocale ??
+				Djs.Locale.EnglishUS;
 			const ul = ln(userLang);
 			const channel = message.channel;
 			if (!result) return;
@@ -99,7 +101,11 @@ export default (client: EClient): void => {
 		} catch (e) {
 			error(e);
 			if (!message.guild) return;
-			const msgError = lError(e as Error, undefined, message?.guild?.preferredLocale);
+			const userLang =
+				client.settings.get(message.guild.id, "lang") ??
+				message.guild.preferredLocale ??
+				Djs.Locale.EnglishUS;
+			const msgError = lError(e as Error, undefined, userLang);
 			if (msgError.length === 0) return;
 			await message.channel.send({ content: msgError });
 			const logsId = client.settings.get(message.guild.id, "logs");

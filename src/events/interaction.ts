@@ -24,7 +24,11 @@ import * as Djs from "discord.js";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: Djs.BaseInteraction) => {
-		const ul = ln(interaction.guild?.preferredLocale ?? interaction.locale);
+		const langToUse =
+			client.settings.get(interaction.guild!.id, "lang") ??
+			interaction.guild?.preferredLocale ??
+			interaction.locale;
+		const ul = ln(langToUse);
 		const interactionUser = interaction.user;
 		try {
 			if (interaction.isCommand()) {
@@ -59,7 +63,7 @@ export default (client: EClient): void => {
 		} catch (e) {
 			console.error(e);
 			if (!interaction.guild) return;
-			const msgError = lError(e as Error, interaction);
+			const msgError = lError(e as Error, interaction, langToUse);
 			if (msgError.length === 0) return;
 			const cause = (e as Error).cause ? ((e as Error).cause as string) : undefined;
 			const embed = embedError(msgError, ul, cause);

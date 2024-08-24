@@ -19,7 +19,12 @@ export async function executeAddDiceButton(
 	db: Settings
 ) {
 	const allow = await allowEdit(interaction, db, interactionUser);
-	if (allow) showDamageDiceModals(interaction, interaction.customId.includes("first"));
+	if (allow)
+		showDamageDiceModals(
+			interaction,
+			interaction.customId.includes("first"),
+			db.get(interaction.guild!.id, "lang") ?? interaction.locale
+		);
 }
 
 /**
@@ -31,9 +36,10 @@ export async function executeAddDiceButton(
  */
 export async function showDamageDiceModals(
 	interaction: Djs.ButtonInteraction,
-	first?: boolean
+	first?: boolean,
+	lang: Djs.Locale = Djs.Locale.EnglishGB
 ) {
-	const ul = ln(interaction.locale as Djs.Locale);
+	const ul = ln(lang);
 	const id = first ? "damageDice_first" : "damageDice";
 	const modal = new Djs.ModalBuilder()
 		.setCustomId(id)
@@ -106,7 +112,8 @@ export async function registerDamageDice(
 	db: Settings,
 	first?: boolean
 ) {
-	const ul = ln(interaction.locale as Djs.Locale);
+	const lang = db.get(interaction.guild!.id, "lang") ?? interaction.locale;
+	const ul = ln(lang);
 	const name = interaction.fields.getTextInputValue("damageName");
 	let value = interaction.fields.getTextInputValue("damageValue");
 	if (!interaction.guild) throw new Error(ul("error.noGuild"));

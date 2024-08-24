@@ -38,7 +38,8 @@ export async function createEmbedFirstPage(
 	template: StatisticalTemplate,
 	setting: Settings
 ) {
-	const ul = ln(interaction.locale as Djs.Locale);
+	const lang = setting.get(interaction.guild!.id, "lang") ?? interaction.locale;
+	const ul = ln(lang);
 	const channel = interaction.channel;
 	if (!channel) {
 		throw new NoChannel();
@@ -120,7 +121,8 @@ export async function validateUser(
 	template: StatisticalTemplate,
 	db: Settings
 ) {
-	const ul = ln(interaction.locale as Djs.Locale);
+	const lang = db.get(interaction.guild!.id, "lang") ?? interaction.locale;
+	const ul = ln(lang);
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
 	if (!userEmbed) throw new NoEmbed();
 	const oldEmbedsFields = parseEmbedFields(userEmbed.toJSON() as Djs.Embed);
