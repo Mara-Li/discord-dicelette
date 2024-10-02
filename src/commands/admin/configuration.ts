@@ -1,4 +1,4 @@
-import { type Translation } from "@interface";
+import type { Translation } from "@interface";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
@@ -8,7 +8,7 @@ import { dedent } from "ts-dedent";
 import { LocalePrimary, localeList } from "@localization/init";
 
 const t = i18next.getFixedT("en");
-const findLocale = function (locale?: Djs.Locale) {
+const findLocale = (locale?: Djs.Locale) => {
 	if (locale === Djs.Locale.EnglishUS || locale === Djs.Locale.EnglishGB) return "English";
 	if (!locale) return undefined;
 	const localeName = Object.entries(Djs.Locale).find(([name, abbr]) => {
