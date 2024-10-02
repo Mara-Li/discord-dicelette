@@ -1,4 +1,5 @@
-import { warn } from "@console";
+// noinspection SuspiciousTypeOfGuard
+
 import {
 	type Critical,
 	type Statistic,
@@ -7,7 +8,7 @@ import {
 } from "@dicelette/core";
 import type { GuildData } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
-import type { EClient } from "@main";
+import { type EClient, logger } from "@main";
 import { downloadTutorialImages, embedError, reply } from "@utils";
 import { bulkEditTemplateUser } from "@utils/parse";
 import * as Djs from "discord.js";
@@ -346,7 +347,7 @@ export const registerTemplate = {
 					);
 					await msg.delete();
 				} catch (e) {
-					warn(e, "registerTemplate: delete message");
+					logger.warn(e, "registerTemplate: delete message");
 				}
 			}
 			json.templateID = {

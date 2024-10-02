@@ -1,8 +1,7 @@
 import path from "node:path";
-import { log } from "@console";
 import type { CharacterData, PersonnageIds, UserData } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
-import type { EClient } from "@main";
+import { EClient, logger } from "@main";
 import {
 	embedError,
 	filterChoices,
@@ -341,7 +340,7 @@ export const graph = {
 				interaction.guild,
 				client.settings
 			);
-			log(error);
+			logger.fatal(error);
 		}
 	},
 };

@@ -1,13 +1,12 @@
-import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
 import type { PersonnageIds, UserMessageId } from "@interfaces/database";
+import type { DiscordChannel, Translation } from "@interfaces/discord";
 import { cmdLn, ln } from "@localization";
-import type { EClient } from "@main";
+import { type EClient, logger } from "@main";
 import { embedError, filterChoices, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import * as Djs from "discord.js";
 import i18next from "i18next";
-import type { DiscordChannel, Translation } from "@interfaces/discord";
 
 const t = i18next.getFixedT("en");
 
@@ -149,7 +148,7 @@ export const deleteChar = {
 			await reply(interaction, ul("deleteChar.success", { user: msg }));
 			client.settings.set(interaction.guildId as string, newGuildData);
 		} catch (e) {
-			error(e, "deleteChar: no message found - No problem");
+			logger.warn(e, "deleteChar: no message found - No problem");
 			//no message found, delete the character from the database
 			const newGuildData = deleteUser(interaction, guildData, user, charName);
 			client.settings.set(interaction.guildId as string, newGuildData);
@@ -171,7 +170,7 @@ async function deleteMessage(
 			const message = await userThread.messages.fetch(id[1]);
 			await message.delete();
 		} catch (e) {
-			error(e, "deleteChar: no message found - No problem");
+			logger.warn(e, "deleteChar: no message found - No problem");
 		}
 	}
 }

@@ -1,8 +1,7 @@
-import { error } from "@console";
 import { createDiceEmbed, createStatsEmbed } from "@interactions";
-import type { CharacterData } from "../../interfaces/database";
+import type { CharacterData } from "@interfaces/database";
 import { cmdLn, findln, ln } from "@localization";
-import type { EClient } from "@main";
+import { type EClient, logger } from "@main";
 import { embedError, filterChoices, haveAccess, reply } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
@@ -92,7 +91,7 @@ export const displayUser = {
 			await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
 			return;
 		}
-		console.log(userData);
+		logger.silly(userData);
 		const { thread, sheetLocation } = await findLocation(
 			userData,
 			interaction,
@@ -149,7 +148,7 @@ export const displayUser = {
 			if (newDiceEmbed) displayEmbeds.push(newDiceEmbed);
 			await reply(interaction, { embeds: displayEmbeds });
 		} catch (e) {
-			error(e);
+			logger.error(e);
 			await reply(interaction, { embeds: [embedError(ul("error.noMessage"), ul)] });
 			return;
 		}

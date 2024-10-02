@@ -1,8 +1,7 @@
 import process from "node:process";
 import { commandsList } from "@commands";
-import { log, success, warn } from "@console";
 import type { Settings } from "@interfaces/discord";
-import { type EClient, VERSION } from "@main";
+import { type EClient, logger, VERSION } from "@main";
 import { ActivityType, type Guild, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 
@@ -15,15 +14,15 @@ export default (client: EClient): void => {
 		if (!client.user || !client.application || !process.env.CLIENT_ID) {
 			return;
 		}
-		success(`${client.user.username} is online; v.${VERSION}`);
+		logger.trace(`${client.user.username} is online; v.${VERSION}`);
 		const serializedCommands = commandsList.map((command) => command.data.toJSON());
 		client.user.setActivity("Roll Dices 🎲 !", { type: ActivityType.Competing });
 		for (const guild of client.guilds.cache.values()) {
-			log(`Registering commands for ${guild.name}`);
+			logger.trace(`Registering commands for \`${guild.name}\``);
 
 			// biome-ignore lint/complexity/noForEach: forEach is fine here noinspection ES6MissingAwait
 			guild.client.application.commands.cache.forEach(async (command) => {
-				log(`Deleting ${command.name}`);
+				logger.trace(`Deleting ${command.name}`);
 				await command.delete();
 			});
 
@@ -50,7 +49,9 @@ function convertDatabaseUser(db: Settings, guild: Guild) {
 		for (const index in userData) {
 			const data = userData[index];
 			if (!Array.isArray(data.messageId)) {
-				warn(`Converting ${userId} => ${JSON.stringify(userData)} in ${guild.name}`);
+				logger.warn(
+					`Converting ${userId} => ${JSON.stringify(userData)} in ${guild.name}`
+				);
 				let toUpdate = false;
 				if (data.isPrivate && privateChannel) {
 					data.messageId = [data.messageId, privateChannel];
@@ -78,7 +79,9 @@ function cleanData(client: EClient) {
 	const settings = client.settings;
 	for (const [guildId] of settings.entries()) {
 		if (!guilds.has(guildId)) {
-			warn(`Removing ${guildId} from the database as the bot is not in it anymore`);
+			logger.warn(
+				`Removing ${guildId} from the database as the bot is not in it anymore`
+			);
 			client.settings.delete(guildId);
 		}
 	}

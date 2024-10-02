@@ -1,7 +1,7 @@
-import { warn } from "@console";
 import type { PersonnageIds } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { findln, ln } from "@localization";
+import { logger } from "@main";
 import { embedError, reply } from "@utils";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
@@ -162,7 +162,7 @@ export async function allowEdit(
 			try {
 				await interaction.message.delete();
 			} catch (e) {
-				warn("Error while deleting message", e, "allowEdit");
+				logger.warn("Error while deleting message", e, "allowEdit");
 			}
 			return false;
 		}

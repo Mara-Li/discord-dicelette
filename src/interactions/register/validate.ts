@@ -1,4 +1,3 @@
-import { warn } from "@console";
 import type { StatisticalTemplate } from "@dicelette/core";
 import {
 	createDiceEmbed,
@@ -9,6 +8,7 @@ import {
 import type { UserData } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
+import { logger } from "@main";
 import {
 	NoChannel,
 	NoEmbed,
@@ -263,7 +263,7 @@ export async function validateUser(
 	try {
 		await interaction.message.delete();
 	} catch (e) {
-		warn(e, "validateUser: can't delete the message");
+		logger.warn(e, "validateUser: can't delete the message");
 	}
 	await addAutoRole(interaction, userID, !!statsEmbed, !!diceEmbed, db);
 	await reply(interaction, { content: ul("modals.finished"), ephemeral: true });

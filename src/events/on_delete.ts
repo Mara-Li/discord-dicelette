@@ -1,6 +1,5 @@
-import { error as err, log } from "@console";
 import type { GuildData, PersonnageIds } from "@interfaces/database";
-import type { EClient } from "@main";
+import { type EClient, logger } from "@main";
 import { sendLogs } from "@utils";
 import type { AnyThreadChannel } from "discord.js";
 import type * as Djs from "discord.js";
@@ -13,7 +12,7 @@ export const DELETE_CHANNEL = (client: EClient): void => {
 			const db = client.settings;
 			deleteIfChannelOrThread(db, guildID, channel);
 		} catch (error) {
-			err(error);
+			logger.error(error);
 			if (channel.isDMBased()) return;
 			await sendLogs((error as Error).message, channel.guild, client.settings);
 		}
@@ -39,14 +38,14 @@ function deleteIfChannelOrThread(
 export const DELETE_THREAD = (client: EClient): void => {
 	client.on("threadDelete", async (thread) => {
 		try {
-			log(`Thread ${thread.name} was deleted`);
+			logger.silly(`Thread ${thread.name} was deleted`);
 			//search channelID in database and delete it
 			const guildID = thread.guild.id;
 			const db = client.settings;
 			//verify if the user message was in the thread
 			deleteIfChannelOrThread(db, guildID, thread);
 		} catch (error) {
-			err(error);
+			logger.error(error);
 			if (thread.isDMBased()) return;
 			await sendLogs((error as Error).message, thread.guild, client.settings);
 		}
@@ -55,13 +54,13 @@ export const DELETE_THREAD = (client: EClient): void => {
 
 export const DELETE_MESSAGE = (client: EClient): void => {
 	client.on("messageDelete", async (message) => {
-		log(`Message ${message.id} was deleted`);
+		logger.silly(`Message ${message.id} was deleted`);
 		try {
 			if (!message.guild) return;
 			const messageId = message.id;
 			//search channelID in database and delete it
 			const guildID = message.guild.id;
-			log(`Message ${messageId} was deleted`);
+			logger.silly(`Message ${messageId} was deleted`);
 			const channel = message.channel;
 			if (channel.isDMBased()) return;
 			if (client.settings.get(guildID, "templateID.messageId") === messageId)
@@ -70,9 +69,9 @@ export const DELETE_MESSAGE = (client: EClient): void => {
 			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0) {
 				for (const [user, values] of Object.entries(dbUser)) {
-					log(`checking value for user ${user}`);
+					logger.silly(`checking value for user ${user}`);
 					for (const [index, value] of values.entries()) {
-						log(
+						logger.info(
 							`checking character ${value.charName}`,
 							value.messageId,
 							messageId,
@@ -83,7 +82,7 @@ export const DELETE_MESSAGE = (client: EClient): void => {
 							channelId: value.messageId[1],
 						};
 						if (persoId.messageId === messageId && persoId.channelId === channel.id) {
-							log(`Deleted character ${value.charName} for user ${user}`);
+							logger.silly(`Deleted character ${value.charName} for user ${user}`);
 							values.splice(index, 1);
 						}
 					}
@@ -104,7 +103,7 @@ export const ON_KICK = (client: EClient): void => {
 		try {
 			client.settings.delete(guild.id);
 		} catch (error) {
-			err(error);
+			logger.error(error);
 		}
 	});
 };
@@ -119,11 +118,13 @@ function cleanUserDB(
 	/** if private channel was deleted, delete only the private charactersheet */
 
 	for (const [user, data] of Object.entries(dbUser)) {
-		log(`Checking user ${user}`);
+		logger.silly(`Checking user ${user}`);
 		const filterChar = data.filter((char) => {
 			return char.messageId[1] !== thread.id;
 		});
-		log(`Deleted ${data.length - filterChar.length} characters for user ${user}`);
+		logger.silly(
+			`Deleted ${data.length - filterChar.length} characters for user ${user}`
+		);
 		if (filterChar.length === 0) guildDB.delete(thread.guild.id, `user.${user}`);
 		else guildDB.set(thread.guild.id, filterChar, `user.${user}`);
 	}

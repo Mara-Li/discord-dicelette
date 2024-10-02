@@ -348,6 +348,7 @@ async function logs(
 	options: Djs.CommandInteractionOptionResolver
 ) {
 	const channel = options.getChannel(ul("common.channel"), true);
+	// noinspection SuspiciousTypeOfGuard
 	if (
 		!channel ||
 		(!(channel instanceof Djs.TextChannel) && !(channel instanceof Djs.ThreadChannel))

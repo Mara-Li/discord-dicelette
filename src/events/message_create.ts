@@ -1,10 +1,9 @@
 // noinspection RegExpRedundantEscape
 
 import { deleteAfter } from "@commands/rolls/base_roll";
-import { error } from "@console";
 import { COMMENT_REGEX, type Resultat, roll } from "@dicelette/core";
 import { lError, ln } from "@localization";
-import type { EClient } from "@main";
+import { EClient, logger } from "@main";
 import { timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";
@@ -101,7 +100,7 @@ export default (client: EClient): void => {
 			await deleteAfter(reply, timer);
 			return;
 		} catch (e) {
-			error(e);
+			logger.error(e);
 			if (!message.guild) return;
 			const userLang =
 				client.settings.get(message.guild.id, "lang") ??

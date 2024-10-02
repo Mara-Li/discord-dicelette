@@ -1,6 +1,5 @@
-import { error } from "@console";
 import { cmdLn, ln } from "@localization";
-import type { EClient } from "@main";
+import { EClient, logger } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice } from "@utils/roll";
@@ -169,7 +168,7 @@ export const dbd = {
 				charOptions
 			);
 		} catch (e) {
-			error(e);
+			logger.fatal(e);
 			await reply(interaction, {
 				content: t("error.generic.e", { e: e as Error }),
 				ephemeral: true,

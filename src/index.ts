@@ -1,5 +1,4 @@
 import * as process from "node:process";
-import { log } from "@console";
 import interaction from "@events/interaction";
 import join from "@events/join";
 import MESSAGE_CREATE from "@events/message_create";
@@ -19,10 +18,14 @@ import { resources } from "@localization/init";
 import * as pkg from "../package.json" assert { type: "json" };
 import "uniformize";
 import * as Djs from "discord.js";
-
+import { type ILogObj, Logger } from "tslog";
 dotenv.config({ path: ".env" });
 
-log("Starting bot...");
+const optionLoggers =
+	process.env.NODE_ENV === "development" ? { minLevel: 0 } : { minLevel: 4 };
+
+export const logger: Logger<ILogObj> = new Logger(optionLoggers);
+logger.info("Starting bot...");
 
 export class EClient extends Djs.Client {
 	// Déclaration d'une propriété settings avec le type Enmap<string, any>

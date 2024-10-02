@@ -1,7 +1,6 @@
 import * as Djs from "discord.js";
 import { default as i18next } from "i18next";
 
-import { error, log } from "@console";
 import {
 	DiceTypeError,
 	EmptyObjectError,
@@ -11,7 +10,7 @@ import {
 	TooManyDice,
 	TooManyStats,
 } from "@dicelette/core";
-import { ALL_TRANSLATION_KEYS } from "@main";
+import { ALL_TRANSLATION_KEYS, logger } from "@main";
 import { InvalidCsvContent, NoChannel, NoEmbed } from "@utils";
 import { resources } from "./init";
 
@@ -55,7 +54,7 @@ export function lError(
 
 	if (e instanceof Djs.DiscordAPIError) {
 		if (e.method === "DELETE") {
-			error("Error while deleting message", e);
+			logger.warn("Error while deleting message", e);
 			return "";
 		}
 		if (e.code === 50001) return ul("error.missingPermission");
@@ -127,7 +126,7 @@ export function findln(translatedText: string) {
 		const ul = ln(locale as Djs.Locale);
 		for (const key of ALL_TRANSLATION_KEYS) {
 			if (ul(key).toLowerCase() === translatedText.toLowerCase()) {
-				log(`Key found: ${key}`);
+				logger.silly(`Key found: ${key}`);
 				return key;
 			}
 		}

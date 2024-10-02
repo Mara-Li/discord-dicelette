@@ -1,8 +1,10 @@
 import type {
-	CharacterData,
 	CharDataWithName,
+	CharacterData,
 	PersonnageIds,
 } from "@interfaces/database";
+import type { DiscordTextChannel, Settings, Translation } from "@interfaces/discord";
+import { type EClient, logger } from "@main";
 import {
 	embedError,
 	haveAccess,
@@ -12,8 +14,6 @@ import {
 	setTagsForRoll,
 } from "@utils";
 import * as Djs from "discord.js";
-import type { EClient } from "../index";
-import type { DiscordTextChannel, Settings, Translation } from "@interfaces/discord";
 
 export async function isUserNameOrId(
 	userId: string,
@@ -208,6 +208,7 @@ export async function findForumChannel(
 }
 
 export async function findChara(charData: CharDataWithName, charName?: string) {
+	logger.silly(charData, charName);
 	return Object.values(charData).find((data) => {
 		if (data.charName && charName) {
 			return data.charName.subText(charName);

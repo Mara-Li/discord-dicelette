@@ -18,6 +18,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
+    "inlineSourceMap": true,
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": true,
@@ -39,8 +40,7 @@
       "@events/*": ["src/events/*"],
       "@events": ["src/events/index.js"],
       "@commands/*": ["src/commands/*"],
-      "@commands": ["src/commands/index.js"],
-      "@console": ["src/console.js"]
+      "@commands": ["src/commands/index.js"]
     }
   },
   "files": ["src/index.ts"],

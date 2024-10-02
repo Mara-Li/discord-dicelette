@@ -1,6 +1,5 @@
 // noinspection SuspiciousTypeOfGuard
 
-import { error } from "@console";
 import type { UserData, UserRegistration } from "@interfaces/database";
 import { findln } from "@localization";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
@@ -13,6 +12,7 @@ import moment from "moment";
 import { deleteAfter } from "@commands/rolls/base_roll";
 import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
 import { TUTORIAL_IMAGES } from "@interfaces/constant";
+import { logger } from "@main";
 /**
  * Set the tags for thread channel in forum
  */
@@ -462,7 +462,7 @@ export async function addAutoRole(
 
 		if (statsEmbed && statsRole) await guildMember.roles.add(statsRole);
 	} catch (e) {
-		error("Error while adding role", e);
+		logger.error("Error while adding role", e);
 		//delete the role from database so it will be skip next time
 		db.delete(interaction.guild!.id, "autoRole");
 		const dbLogs = db.get(interaction.guild!.id, "logs");
