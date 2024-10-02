@@ -276,6 +276,7 @@ export function uniqueValues(array: string[]) {
 			uniqueArray.push(item);
 		}
 	}
+	if (uniqueArray.length >= 25) return uniqueArray.slice(0, 25);
 
 	return uniqueArray;
 }
