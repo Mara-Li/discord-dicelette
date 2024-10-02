@@ -159,8 +159,8 @@ export async function validateUser(
 	);
 	const oldDiceEmbeds = getEmbeds(ul, interaction.message, "damage");
 	const oldStatsEmbed = getEmbeds(ul, interaction.message, "stats");
-	const oldDiceEmbedsFields = oldDiceEmbeds ? oldDiceEmbeds.toJSON().fields ?? [] : [];
-	const statEmbedsFields = oldStatsEmbed ? oldStatsEmbed.toJSON().fields ?? [] : [];
+	const oldDiceEmbedsFields = oldDiceEmbeds ? (oldDiceEmbeds.toJSON().fields ?? []) : [];
+	const statEmbedsFields = oldStatsEmbed ? (oldStatsEmbed.toJSON().fields ?? []) : [];
 	let diceEmbed: Djs.EmbedBuilder | undefined = undefined;
 	let statsEmbed: Djs.EmbedBuilder | undefined = undefined;
 	for (const field of oldDiceEmbedsFields) {

@@ -8,6 +8,7 @@ import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
 import i18next from "i18next";
+import { findLocation } from "@utils/find";
 
 const t = i18next.getFixedT("en");
 
@@ -49,7 +50,7 @@ export const displayUser = {
 		let userID = options.get(t("display.userLowercase"))?.value ?? interaction.user.id;
 		if (typeof userID !== "string") userID = interaction.user.id;
 		if (fixed.name === t("common.character")) {
-			const guildChars = guildData.user[userID];
+			const guildChars = guildData.user?.[userID];
 			if (!guildChars) return;
 			for (const data of guildChars) {
 				const allowed = haveAccess(interaction, data.messageId[1], userID);
@@ -100,28 +101,15 @@ export const displayUser = {
 			}
 			userData = findChara;
 		}
-		const sheetLocation: PersonnageIds = {
-			channelId: userData.messageId[1],
-			messageId: userData.messageId[0],
-		};
-		const thread = await searchUserChannel(
-			client.settings,
+		const {thread, sheetLocation} = await findLocation(
+			userData,
 			interaction,
+			client,
 			ul,
-			sheetLocation?.channelId
+			charData,
+			user
 		);
-		if (!thread)
-			return await reply(interaction, { embeds: [embedError(ul("error.noThread"), ul)] });
-
-		const allowHidden = haveAccess(
-			interaction,
-			thread.id,
-			user?.id ?? interaction.user.id
-		);
-		if (!allowHidden && charData[user?.id ?? interaction.user.id]?.isPrivate) {
-			await reply(interaction, { embeds: [embedError(ul("error.private"), ul)] });
-			return;
-		}
+		
 		try {
 			const userMessage = await thread?.messages.fetch(sheetLocation.messageId);
 			const statisticEmbed = getEmbeds(ul, userMessage, "stats");

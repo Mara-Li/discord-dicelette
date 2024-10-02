@@ -9,15 +9,16 @@ import { LocalePrimary, localeList } from "@localization/init";
 
 const t = i18next.getFixedT("en");
 const findLocale = (locale?: Djs.Locale) => {
-	if (locale === Djs.Locale.EnglishUS || locale === Djs.Locale.EnglishGB) return "English";
+	if (locale === Djs.Locale.EnglishUS || locale === Djs.Locale.EnglishGB)
+		return "English";
 	if (!locale) return undefined;
 	const localeName = Object.entries(Djs.Locale).find(([name, abbr]) => {
 		return name === locale || abbr === locale;
 	});
-	const name= localeName?.[0];
+	const name = localeName?.[0];
 	if (name) return LocalePrimary[name as keyof typeof LocalePrimary];
 	return undefined;
-}
+};
 export const configuration = {
 	data: new Djs.SlashCommandBuilder()
 		.setName(t("config.name"))
@@ -508,10 +509,10 @@ async function display(
 		return `<#${settings}>`;
 	};
 
-	
-
-	
-	const userLocale = findLocale(guildSettings.lang) ?? findLocale(interaction.guild!.preferredLocale) ?? "English";
+	const userLocale =
+		findLocale(guildSettings.lang) ??
+		findLocale(interaction.guild!.preferredLocale) ??
+		"English";
 	const baseEmbed = new Djs.EmbedBuilder()
 		.setTitle(ul("config.title", { guild: interaction.guild!.name }))
 		.setThumbnail(interaction.guild!.iconURL() ?? "")
@@ -520,7 +521,7 @@ async function display(
 			{
 				name: ul("config.lang.options.name").capitalize(),
 				value: userLocale.capitalize(),
-				inline: true
+				inline: true,
 			},
 			{
 				name: ul("config.logs"),

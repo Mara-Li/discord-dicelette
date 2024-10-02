@@ -1,8 +1,8 @@
-import {cmdLn, ln} from "@localization";
-import type {EClient} from "@main";
-import {embedError, filterChoices, reply} from "@utils";
-import {getFirstRegisteredChar, getUserFromMessage, serializeName} from "@utils/db";
-import {rollStatistique} from "@utils/roll";
+import { cmdLn, ln } from "@localization";
+import type { EClient } from "@main";
+import { embedError, filterChoices, reply } from "@utils";
+import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
+import { rollStatistique } from "@utils/roll";
 import * as Djs from "discord.js";
 import i18next from "i18next";
 

@@ -16,6 +16,7 @@ import { getEmbeds, getEmbedsList } from "@utils/parse";
 import * as Djs from "discord.js";
 
 import i18next from "i18next";
+import {findLocation} from "@utils/find";
 
 const t = i18next.getFixedT("en");
 export const editAvatar = {
@@ -167,28 +168,7 @@ export const editAvatar = {
 			return;
 		}
 		const userData = charData[user?.id ?? interaction.user.id];
-		const sheetLocation: PersonnageIds = {
-			channelId: userData.messageId[1],
-			messageId: userData.messageId[0],
-		};
-		const thread = await searchUserChannel(
-			client.settings,
-			interaction,
-			ul,
-			sheetLocation?.channelId
-		);
-		if (!thread)
-			return await reply(interaction, { embeds: [embedError(ul("error.noThread"), ul)] });
-
-		const allowHidden = haveAccess(
-			interaction,
-			thread.id,
-			user?.id ?? interaction.user.id
-		);
-		if (!allowHidden && charData[user?.id ?? interaction.user.id]?.isPrivate) {
-			await reply(interaction, { embeds: [embedError(ul("error.private"), ul)] });
-			return;
-		}
+		const {thread, sheetLocation} = await findLocation(userData, interaction, client, ul, charData, user);
 		const subcommand = options.getSubcommand();
 		if (subcommand === t("edit_avatar.name")) {
 			await avatar(options, interaction, ul, user, charName, sheetLocation, thread);
