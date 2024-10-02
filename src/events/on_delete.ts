@@ -23,7 +23,7 @@ export const DELETE_CHANNEL = (client: EClient): void => {
 function deleteIfChannelOrThread(
 	db: Enmap<string, GuildData, unknown>,
 	guildID: string,
-	channel: Djs.NonThreadGuildBasedChannel | AnyThreadChannel<boolean>
+	channel: Djs.NonThreadGuildBasedChannel | AnyThreadChannel
 ) {
 	const channelID = channel.id;
 	cleanUserDB(db, channel);

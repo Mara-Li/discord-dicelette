@@ -38,19 +38,20 @@ export default (client: EClient): void => {
 				if (!command) return;
 				await command.execute(interaction, client);
 			} else if (interaction.isAutocomplete()) {
-				const interac = interaction as Djs.AutocompleteInteraction;
+				const autocompleteInteraction = interaction as Djs.AutocompleteInteraction;
 				const command = autCompleteCmd.find(
-					(cmd) => cmd.data.name === interac.commandName
+					(cmd) => cmd.data.name === autocompleteInteraction.commandName
 				);
 				if (!command) return;
-				await command.autocomplete(interac, client);
+				await command.autocomplete(autocompleteInteraction, client);
 			} else if (interaction.isButton()) {
 				let template = await getTemplate(interaction);
 				template = template
 					? template
 					: await getTemplateWithDB(interaction, client.settings);
 				if (!template) {
-					await interaction.channel?.send({
+					if (!interaction.channel || interaction.channel.isDMBased()) return;
+					await (interaction.channel as Djs.TextChannel).send({
 						embeds: [embedError(ul("error.noTemplate"), ul)],
 					});
 					return;
