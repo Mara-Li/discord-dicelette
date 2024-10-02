@@ -5,7 +5,7 @@ import {
 	type StatisticalTemplate,
 	verifyTemplateValue,
 } from "@dicelette/core";
-import type { GuildData } from "@interface";
+import type { GuildData } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { downloadTutorialImages, embedError, reply } from "@utils";

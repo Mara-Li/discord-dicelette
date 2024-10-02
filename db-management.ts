@@ -1,4 +1,4 @@
-import type { Settings } from "@interface";
+import type { Settings } from "./src/interfaces/database";
 import color from "ansi-colors";
 import { Command, Option, type OptionValues } from "commander";
 import Enmap from "enmap";

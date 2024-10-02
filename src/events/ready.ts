@@ -1,7 +1,7 @@
 import process from "node:process";
 import { commandsList } from "@commands";
 import { log, success, warn } from "@console";
-import type { Settings } from "@interface";
+import type { Settings } from "@interfaces/discord";
 import { type EClient, VERSION } from "@main";
 import { ActivityType, type Guild, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
@@ -21,7 +21,7 @@ export default (client: EClient): void => {
 		for (const guild of client.guilds.cache.values()) {
 			log(`Registering commands for ${guild.name}`);
 
-			// biome-ignore lint/complexity/noForEach: forEach is fine here
+			// biome-ignore lint/complexity/noForEach: forEach is fine here noinspection ES6MissingAwait
 			guild.client.application.commands.cache.forEach(async (command) => {
 				log(`Deleting ${command.name}`);
 				await command.delete();

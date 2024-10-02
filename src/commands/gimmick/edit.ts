@@ -1,22 +1,21 @@
 import { deleteUser } from "@events/on_delete";
 import { verifyAvatarUrl } from "@interactions/register/validate";
 import type {
-	DiscordChannel,
 	PersonnageIds,
-	Translation,
 	UserMessageId,
 	UserRegistration,
-} from "@interface";
+} from "@interfaces/database";
 import { cmdLn, findln, ln } from "@localization";
 import type { EClient } from "@main";
-import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
+import { embedError, filterChoices, haveAccess, reply } from "@utils";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { getDatabaseChar, registerUser } from "@utils/db";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
 import * as Djs from "discord.js";
 
 import i18next from "i18next";
-import {findLocation} from "@utils/find";
+import { findLocation } from "@utils/find";
+import type { DiscordChannel, Translation } from "@interfaces/discord";
 
 const t = i18next.getFixedT("en");
 export const editAvatar = {
@@ -168,7 +167,14 @@ export const editAvatar = {
 			return;
 		}
 		const userData = charData[user?.id ?? interaction.user.id];
-		const {thread, sheetLocation} = await findLocation(userData, interaction, client, ul, charData, user);
+		const { thread, sheetLocation } = await findLocation(
+			userData,
+			interaction,
+			client,
+			ul,
+			charData,
+			user
+		);
 		const subcommand = options.getSubcommand();
 		if (subcommand === t("edit_avatar.name")) {
 			await avatar(options, interaction, ul, user, charName, sheetLocation, thread);
@@ -209,17 +215,16 @@ async function avatar(
 ) {
 	try {
 		const imageURL = options.getString(t("edit_avatar.url.name"), true);
-		if (imageURL.match(/(cdn|media)\.discordapp\.net/gi))
+		if (imageURL.match(/(cdn|media)\.discordapp\.net/gi) || !verifyAvatarUrl(imageURL))
 			return await reply(interaction, {
 				embeds: [embedError(ul("error.avatar.discord"), ul)],
 			});
-		if (!verifyAvatarUrl(imageURL))
-			return await reply(interaction, {
-				embeds: [embedError(ul("error.avatar.url"), ul)],
-			});
 		const message = await thread!.messages.fetch(sheetLocation.messageId);
 		const embed = getEmbeds(ul, message, "user");
-		if (!embed) throw new Error(ul("error.noEmbed"));
+		if (!embed) {
+			// noinspection ExceptionCaughtLocallyJS
+			throw new Error(ul("error.noEmbed"));
+		}
 		embed.setThumbnail(imageURL);
 		const embedsList = getEmbedsList(ul, { which: "user", embed }, message);
 		//update button
@@ -356,9 +361,9 @@ export async function move(
 		return;
 	}
 	const guildData = client.settings.get(interaction.guildId as string);
-	const newdata = deleteUser(interaction, guildData!, user, oldData.charName);
+	const newData = deleteUser(interaction, guildData!, user, oldData.charName);
 	//save the new data
-	client.settings.set(interaction.guildId as string, newdata);
+	client.settings.set(interaction.guildId as string, newData);
 	await generateButton(message, ul, embedsList.list);
 	await reply(interaction, {
 		content: ul("edit.user.success", { url: message.url }),

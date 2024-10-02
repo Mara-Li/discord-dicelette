@@ -1,20 +1,14 @@
 import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
-import type {
-	PersonnageIds,
-	Settings,
-	Translation,
-	UserData,
-	UserRegistration,
-} from "@interface";
+import type { PersonnageIds, UserData, UserRegistration } from "@interfaces/database";
 import { ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, haveAccess, reply, searchUserChannel } from "@utils";
 import { ensureEmbed, getEmbeds, parseEmbedFields } from "@utils/parse";
 import * as Djs from "discord.js";
+import type { Settings, Translation } from "@interfaces/discord";
 
 /**
- * Get the guild template when clicking on the "registering user" button or when submiting
- * @param interaction {ButtonInteraction}
+ * Get the guild template when clicking on the "registering user" button or when submitting
  */
 export async function getTemplate(
 	interaction: Djs.ButtonInteraction | Djs.ModalSubmitInteraction
@@ -31,10 +25,10 @@ export function serializeName(
 ) {
 	const serializedNameDB = userStatistique?.userName?.standardize(true);
 	const serializedNameQueries = charName?.standardize(true);
-	const selectedCharByQueries =
+	return (
 		serializedNameDB !== serializedNameQueries ||
-		(serializedNameQueries && serializedNameDB?.includes(serializedNameQueries));
-	return selectedCharByQueries;
+		(serializedNameQueries && serializedNameDB?.includes(serializedNameQueries))
+	);
 }
 
 export async function getDatabaseChar(
@@ -87,7 +81,6 @@ export async function getDatabaseChar(
 
 /**
  * Get the statistical Template using the database templateID information
- * @param interaction {ButtonInteraction | ModalSubmitInteraction}
  */
 export async function getTemplateWithDB(
 	interaction:
@@ -109,7 +102,10 @@ export async function getTemplateWithDB(
 	try {
 		const message = await channel.messages.fetch(messageId);
 		const template = message.attachments.first();
-		if (!template) throw new Error(ul("error.noTemplate"));
+		if (!template) {
+			// noinspection ExceptionCaughtLocallyJS
+			throw new Error(ul("error.noTemplate"));
+		}
 		const res = await fetch(template.url).then((res) => res.json());
 		return verifyTemplateValue(res);
 	} catch (error) {
@@ -121,13 +117,6 @@ export async function getTemplateWithDB(
 
 /**
  * Create the UserData starting from the guildData and using a userId
- * @param guildData {GuildData}
- * @param userId {string}
- * @param guild {Guild}
- * @param interaction {BaseInteraction}
- * @param charName {string}
- * @param integrateCombinaison {boolean=true}
- * @param allowAccess {boolean=true} Allow to access the private channel (only used by {@link displayUser})
  */
 export async function getUserFromMessage(
 	guildData: Settings,
@@ -183,13 +172,6 @@ export async function getUserFromMessage(
 
 /**
  * Register an user in the database
- * @param userID {string}
- * @param interaction {BaseInteraction}
- * @param msgId {string}
- * @param thread {ThreadChannel}
- * @param charName {string|undefined}
- * @param damage {string[]|undefined}
- * @param deleteMsg {boolean=true} delete the old message if needed (overwriting user)
  * @returns
  */
 export async function registerUser(
@@ -229,7 +211,7 @@ export async function registerUser(
 		const char = user.find((char) => {
 			return char.charName?.subText(charName, true);
 		});
-		const charIndx = user.findIndex((char) => {
+		const charIndex = user.findIndex((char) => {
 			return char.charName?.subText(charName, true);
 		});
 		if (char) {
@@ -248,13 +230,13 @@ export async function registerUser(
 						if (oldMessage) oldMessage.delete();
 					}
 				} catch (error) {
-					//skip unknow message
+					//skip unknown message
 				}
 			}
 			//overwrite the message id
 			char.messageId = msgId;
 			if (damage) char.damageName = damage;
-			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndx}`);
+			enmap.set(interaction.guild.id, char, `user.${userID}.${charIndex}`);
 		} else enmap.set(interaction.guild.id, [...user, newChar], `user.${userID}`);
 		return;
 	}
@@ -263,9 +245,6 @@ export async function registerUser(
 
 /**
  * Get the userData from the embed
- * @param message {Message}
- * @param ul {Translation}
- * @param first {boolean=false} Indicate it the registering of the user or an edit
  */
 export function getUserByEmbed(
 	message: Djs.Message,
@@ -332,9 +311,6 @@ export function getUserByEmbed(
 
 /**
  * Register the managerId in the database
- * @param {GuildData} guildData
- * @param {BaseInteraction} interaction
- * @param {string} channel
  */
 export function setDefaultManagerId(
 	guildData: Settings,

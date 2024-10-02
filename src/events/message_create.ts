@@ -1,3 +1,5 @@
+// noinspection RegExpRedundantEscape
+
 import { deleteAfter } from "@commands/rolls/base_roll";
 import { error } from "@console";
 import { COMMENT_REGEX, type Resultat, roll } from "@dicelette/core";
@@ -112,7 +114,7 @@ export default (client: EClient): void => {
 			if (logsId) {
 				const logs = await message.guild.channels.fetch(logsId);
 				if (logs instanceof Djs.TextChannel) {
-					logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
+					await logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
 				}
 			}
 		}

@@ -1,11 +1,11 @@
-/* eslint-disable no-case-declarations */
-import { LINKS, type Settings, type Translation } from "@interface";
+import { LINKS } from "@interfaces/constant";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";
 import * as Djs from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
+import type { Settings, Translation } from "@interfaces/discord";
 
 const t = i18next.getFixedT("en");
 

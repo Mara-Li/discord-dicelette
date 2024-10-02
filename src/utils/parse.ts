@@ -1,8 +1,9 @@
 import type { StatisticalTemplate } from "@dicelette/core";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createTemplateEmbed } from "@interactions";
-import type { PersonnageIds, Settings, Translation } from "@interface";
-import { findln, ln } from "@localization";
+import type { PersonnageIds } from "@interfaces/database";
+import type { Settings, Translation } from "@interfaces/discord";
+import { findln } from "@localization";
 import { NoEmbed, searchUserChannel } from "@utils";
 import * as Djs from "discord.js";
 /**
@@ -16,23 +17,7 @@ export function ensureEmbed(message?: Djs.Message) {
 }
 
 /**
- * Parse the embed fields from an interaction
- * @param interaction {ButtonInteraction | ModalSubmitInteraction}
- */
-export function parseEmbed(
-	interaction: Djs.ButtonInteraction | Djs.ModalSubmitInteraction
-) {
-	const embed = interaction.message?.embeds[0];
-	if (!embed) return;
-	return parseEmbedFields(embed);
-}
-
-/**
  * Create a list of embeds
- * @param userDataEmbed {EmbedBuilder}
- * @param statsEmbed {EmbedBuilder}
- * @param diceEmbed {EmbedBuilder}
- * @param templateEmbed {EmbedBuilder}
  */
 export function createEmbedsList(
 	userDataEmbed: Djs.EmbedBuilder,
@@ -50,8 +35,6 @@ export function createEmbedsList(
 /**
  * Get the embeds from the message and replace based on the embed to replace
  * Also it returns if the embeds exists or not (useful for the buttons)
- * @param ul {Translation}
- * @param embedToReplace {which:"user" | "stats" | "damage" | "template", embed: EmbedBuilder}
  */
 export function getEmbedsList(
 	ul: Translation,
@@ -91,9 +74,6 @@ export function getEmbedsList(
 
 /**
  * Remove the embeds from the list
- * @param embeds {EmbedBuilder[]}
- * @param which {"user" | "stats" | "damage" | "template"}
- * @param ul {Translation}
  */
 export function removeEmbedsFromList(
 	embeds: Djs.EmbedBuilder[],
@@ -114,8 +94,6 @@ export function removeEmbedsFromList(
 
 /**
  * Parse the embed fields and remove the backtick if any
- * @param embed {Embed}
- * @returns { {[name: string]: string} }
  */
 export function parseEmbedFields(embed: Djs.Embed): { [name: string]: string } {
 	const fields = embed.fields;
@@ -131,8 +109,6 @@ export function parseEmbedFields(embed: Djs.Embed): { [name: string]: string } {
 
 /**
  * Get the embeds from the message and recreate it as EmbedBuilder
- * @param message {Message}
- * @param which {"user" | "stats" | "damage" | "template"}
  */
 export function getEmbeds(
 	ul: Translation,
@@ -223,8 +199,6 @@ export async function bulkEditTemplateUser(
 
 /**
  * Get the statistiques fields from the modals and verify if all value are correct and if the total is not exceeded
- * @param interaction {ButtonInteraction}
- * @param templateData {StatisticalTemplate}
  */
 export function getStatistiqueFields(
 	interaction: Djs.ModalSubmitInteraction,

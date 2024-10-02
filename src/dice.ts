@@ -1,12 +1,9 @@
 import type { Compare, Resultat } from "@dicelette/core";
-import type { Translation } from "@interface";
+import type { Translation } from "@interfaces/discord";
 import { evaluate } from "mathjs";
 
 /**
  * Parse the result of the dice to be readable
- * @param {Resultat} output
- * @param {Translation} ul
- * @param {failure: number | undefined, success: number | undefined} critical
  */
 export function parseResult(
 	output: Resultat,
@@ -16,13 +13,9 @@ export function parseResult(
 ) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
-	let msgSuccess = `${output.result
-		.replaceAll(";", "\n")
-		.replaceAll(":", " ⟶")
-		.replaceAll(/ = (\d+)/g, " = ` $1 `")
-		.replaceAll("*", "\\*")}`;
+	let msgSuccess: string;
 	const messageResult = output.result.split(";");
-	let succ = "";
+	let successOrFailure = "";
 	if (output.compare) {
 		msgSuccess = "";
 		let total = 0;
@@ -33,26 +26,29 @@ export function parseResult(
 				total = Number.parseInt(tot[1], 10);
 			}
 
-			succ = evaluate(`${total} ${output.compare.sign} ${output.compare.value}`)
+			successOrFailure = evaluate(
+				`${total} ${output.compare.sign} ${output.compare.value}`
+			)
 				? `**${ul("roll.success")}**`
 				: `**${ul("roll.failure")}**`;
+			// noinspection RegExpRedundantEscape
 			const naturalDice = r.matchAll(/\[(\d+)\]/gi);
 			for (const dice of naturalDice) {
 				natural.push(Number.parseInt(dice[1], 10));
 			}
 			if (critical) {
 				if (critical.failure && natural.includes(critical.failure)) {
-					succ = `**${ul("roll.critical.failure")}**`;
+					successOrFailure = `**${ul("roll.critical.failure")}**`;
 				} else if (critical.success && natural.includes(critical.success)) {
-					succ = `**${ul("roll.critical.success")}**`;
+					successOrFailure = `**${ul("roll.critical.success")}**`;
 				}
 			}
-			const totSucc = output.compare
+			const totalSuccess = output.compare
 				? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\``
 				: `= \`${total}\``;
-			msgSuccess += `  ${succ} — ${r
+			msgSuccess += `  ${successOrFailure} — ${r
 				.replaceAll(":", " ⟶")
-				.replaceAll(/ = (\S+)/g, totSucc)
+				.replaceAll(/ = (\S+)/g, totalSuccess)
 				.replaceAll("*", "\\*")}`;
 			total = 0;
 		}

@@ -1,10 +1,10 @@
 import { allowEdit } from "@interactions";
-import type { Settings, Translation } from "@interface";
+import type { Settings, Translation } from "@interfaces/discord";
 import { findln } from "@localization";
 import { embedError, reply } from "@utils";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
 import * as Djs from "discord.js";
-import { verifyAvatarUrl } from "../register/validate";
+import { verifyAvatarUrl } from "@register/validate";
 export async function initiateAvatarEdit(
 	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation,

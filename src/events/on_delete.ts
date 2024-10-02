@@ -1,5 +1,5 @@
 import { error as err, log } from "@console";
-import type { GuildData, PersonnageIds } from "@interface";
+import type { GuildData, PersonnageIds } from "@interfaces/database";
 import type { EClient } from "@main";
 import { sendLogs } from "@utils";
 import type { AnyThreadChannel } from "discord.js";
@@ -15,7 +15,7 @@ export const DELETE_CHANNEL = (client: EClient): void => {
 		} catch (error) {
 			err(error);
 			if (channel.isDMBased()) return;
-			sendLogs((error as Error).message, channel.guild, client.settings);
+			await sendLogs((error as Error).message, channel.guild, client.settings);
 		}
 	});
 };
@@ -48,7 +48,7 @@ export const DELETE_THREAD = (client: EClient): void => {
 		} catch (error) {
 			err(error);
 			if (thread.isDMBased()) return;
-			sendLogs((error as Error).message, thread.guild, client.settings);
+			await sendLogs((error as Error).message, thread.guild, client.settings);
 		}
 	});
 };

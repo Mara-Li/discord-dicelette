@@ -1,10 +1,8 @@
 import type {
-	DiscordTextChannel,
+	CharacterData,
+	CharDataWithName,
 	PersonnageIds,
-	Settings,
-	Translation,
-	UserMessageId,
-} from "@interface";
+} from "@interfaces/database";
 import {
 	embedError,
 	haveAccess,
@@ -15,23 +13,7 @@ import {
 } from "@utils";
 import * as Djs from "discord.js";
 import type { EClient } from "../index";
-import { ThreadChannel } from "discord.js";
-
-type UserData = {
-	charName?: string | null;
-	messageId: UserMessageId;
-	damageName?: string[];
-	isPrivate?: boolean;
-};
-
-type CharData = {
-	[p: string]: {
-		charName?: string | null;
-		messageId: UserMessageId;
-		damageName?: string[];
-		isPrivate?: boolean;
-	};
-};
+import type { DiscordTextChannel, Settings, Translation } from "@interfaces/discord";
 
 export async function isUserNameOrId(
 	userId: string,
@@ -60,11 +42,11 @@ export async function findMessageBefore(
 }
 
 export async function findLocation(
-	userData: UserData,
+	userData: CharacterData,
 	interaction: Djs.CommandInteraction,
 	client: EClient,
 	ul: Translation,
-	charData: CharData,
+	charData: CharDataWithName,
 	user?: Djs.User | null
 ): Promise<{
 	thread?:
@@ -98,10 +80,6 @@ export async function findLocation(
 
 /**
  * Find a thread by their data or create it for roll
- * @param db
- * @param channel {TextChannel}
- * @param ul
- * @param hidden
  */
 export async function findThread(
 	db: Settings,
@@ -114,6 +92,7 @@ export async function findThread(
 	if (rollChannelId) {
 		try {
 			const rollChannel = await channel.guild.channels.fetch(rollChannelId);
+			// noinspection SuspiciousTypeOfGuard
 			if (
 				rollChannel instanceof Djs.ThreadChannel ||
 				rollChannel instanceof Djs.TextChannel
@@ -158,7 +137,7 @@ export async function findThread(
 			(thread) => thread.name === threadName && thread.archived
 		);
 		if (thread) {
-			thread.setArchived(false);
+			await thread.setArchived(false);
 			return thread;
 		}
 	}
@@ -174,12 +153,6 @@ export async function findThread(
 
 /**
  * Find a forum channel already existing or creat it
- * @param forum {ForumChannel}
- * @param thread {ThreadChannel | TextChannel}
- * @param db
- * @param ul
- * @param hidden
- * @returns
  */
 export async function findForumChannel(
 	forum: Djs.ForumChannel,
@@ -206,7 +179,7 @@ export async function findForumChannel(
 				db.delete(guild, "hiddenRoll");
 				command = `${ul("config.name")} ${ul("hidden.title")}`;
 			} else db.delete(guild, "rollChannel");
-			sendLogs(ul("error.rollChannelNotFound", { command }), forum.guild, db);
+			await sendLogs(ul("error.rollChannelNotFound", { command }), forum.guild, db);
 		}
 	}
 	const allForumChannel = forum.threads.cache.sort((a, b) => {
@@ -231,5 +204,14 @@ export async function findForumChannel(
 		name: `🎲 ${topic}`,
 		message: { content: ul("roll.reason") },
 		appliedTags: [tags.id as string],
+	});
+}
+
+export async function findChara(charData: CharDataWithName, charName?: string) {
+	return Object.values(charData).find((data) => {
+		if (data.charName && charName) {
+			return data.charName.subText(charName);
+		}
+		return data.charName === charName;
 	});
 }

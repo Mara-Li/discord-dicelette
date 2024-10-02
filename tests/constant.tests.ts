@@ -1,6 +1,6 @@
 import type { StatisticalTemplate } from "@dicelette/core";
 
-import type { UserData } from "../src/interface";
+import type { UserData } from "../src/interfaces/database";
 
 export const guildTemplate: StatisticalTemplate = {
 	charName: true,

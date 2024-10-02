@@ -1,8 +1,7 @@
 import type { StatisticalTemplate } from "@dicelette/core";
 import { createStatsEmbed } from "@interactions";
 import { embedStatistiques, showStatistiqueModal } from "@interactions/add/stats";
-import type { Settings, Translation } from "@interface";
-import { ln } from "@localization";
+import type { Settings, Translation } from "@interfaces/discord";
 import { createEmbedFirstPage } from "@register/validate";
 import { embedError, reply } from "@utils";
 import { getTemplateWithDB } from "@utils/db";
@@ -10,11 +9,6 @@ import { getEmbeds, parseEmbedFields } from "@utils/parse";
 import * as Djs from "discord.js";
 /**
  * Interaction to continue to the next page of the statistics when registering a new user
- * @param interaction {ButtonInteraction}
- * @param dbTemplate {StatisticalTemplate}
- * @param ul {Translation}
- * @param interactionUser {User}
- * @returns
  */
 export async function continuePage(
 	interaction: Djs.ButtonInteraction,
@@ -51,9 +45,7 @@ export async function continuePage(
 
 /**
  * Register the statistic in the embed when registering a new user and validate the modal
- * Also verify if the template is registered before embeding the statistics
- * @param interaction {ModalSubmitInteraction}
- * @param ul {Translation}
+ * Also verify if the template is registered before embedding the statistics
  */
 export async function pageNumber(
 	interaction: Djs.ModalSubmitInteraction,
@@ -76,7 +68,6 @@ export async function pageNumber(
 }
 /**
  * Submit the first page when the modal is validated
- * @param interaction {ModalSubmitInteraction}
  */
 export async function recordFirstPage(
 	interaction: Djs.ModalSubmitInteraction,
@@ -90,8 +81,6 @@ export async function recordFirstPage(
 }
 /**
  * Modal opened to register a new user with the name of the character and the user id
- * @param interaction {ButtonInteraction}
- * @param template {StatisticalTemplate}
  */
 export async function showFirstPageModal(
 	interaction: Djs.ButtonInteraction,
@@ -168,8 +157,6 @@ export async function showFirstPageModal(
 
 /**
  * Open the showFirstPageModal function if the user is a moderator
- * @param interaction {ModalSubmitInteraction}
- * @param ul {Translation}
  */
 export async function startRegisterUser(
 	interaction: Djs.ButtonInteraction,

@@ -7,7 +7,7 @@ import { initiateDiceEdit, validateDiceEdit } from "@interactions/edit/dice";
 import { initiateRenaming, validateRename } from "@interactions/edit/rename";
 import { editStats, triggerEditStats } from "@interactions/edit/stats";
 import { initiateMove, validateMove } from "@interactions/edit/user";
-import type { Settings, Translation } from "@interface";
+import type { Settings, Translation } from "@interfaces/discord";
 import { lError, ln } from "@localization";
 import type { EClient } from "@main";
 import {
@@ -79,7 +79,7 @@ export default (client: EClient): void => {
 				if (!db) return;
 				const logs = await interaction.guild.channels.fetch(db);
 				if (logs instanceof Djs.TextChannel) {
-					logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
+					await logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
 				}
 			}
 		}
@@ -88,9 +88,10 @@ export default (client: EClient): void => {
 
 /**
  * Switch for modal submission
- * @param interaction {ModalSubmitInteraction}
+ * @param {Djs.ModalSubmitInteraction} interaction
  * @param ul {Translation}
  * @param interactionUser {User}
+ * @param client
  */
 async function modalSubmit(
 	interaction: Djs.ModalSubmitInteraction,
@@ -108,16 +109,18 @@ async function modalSubmit(
 		await validateDiceEdit(interaction, ul, db);
 	else if (interaction.customId === "editAvatar")
 		await validateAvatarEdit(interaction, ul);
-	else if (interaction.customId === "rename") validateRename(interaction, ul, client);
-	else if (interaction.customId === "move") validateMove(interaction, ul, client);
+	else if (interaction.customId === "rename")
+		await validateRename(interaction, ul, client);
+	else if (interaction.customId === "move") await validateMove(interaction, ul, client);
 }
 
 /**
  * Switch for button interaction
- * @param interaction {ButtonInteraction}
+ * @param interaction {Djs.ButtonInteraction}
  * @param ul {Translation}
  * @param interactionUser {User}
  * @param template {StatisticalTemplate}
+ * @param db
  */
 async function buttonSubmit(
 	interaction: Djs.ButtonInteraction,
@@ -170,8 +173,8 @@ async function selectSubmit(
 
 /**
  * Interaction when the cancel button is pressed
- * Also prevent to cancel by user not autorized
- * @param interaction {ButtonInteraction}
+ * Also prevent to cancel by user not authorized
+ * @param interaction {Djs.ButtonInteraction}
  * @param ul {Translation}
  * @param interactionUser {User}
  */

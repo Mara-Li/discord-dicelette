@@ -1,12 +1,6 @@
 import { move, resetButton } from "@commands/gimmick/edit";
 import { allowEdit } from "@interactions";
-import type {
-	DiscordChannel,
-	PersonnageIds,
-	Settings,
-	Translation,
-	UserMessageId,
-} from "@interface";
+import type { PersonnageIds, UserMessageId } from "@interfaces/database";
 import { findln } from "@localization";
 import type { EClient } from "@main";
 import { embedError } from "@utils";
@@ -14,6 +8,7 @@ import { getUserByEmbed } from "@utils/db";
 import { isUserNameOrId } from "@utils/find";
 import { getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
+import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
 export async function initiateMove(
 	interaction: Djs.StringSelectMenuInteraction,
 	ul: Translation,

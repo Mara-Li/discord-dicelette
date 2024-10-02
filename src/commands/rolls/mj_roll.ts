@@ -1,4 +1,4 @@
-import type { UserMessageId } from "@interface";
+import type { UserMessageId } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply } from "@utils";

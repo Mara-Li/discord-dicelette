@@ -1,12 +1,7 @@
-import { error, log } from "@console";
-import {
-	type DiscordChannel,
-	type Settings,
-	TUTORIAL_IMAGES,
-	type Translation,
-	type UserData,
-	type UserRegistration,
-} from "@interface";
+// noinspection SuspiciousTypeOfGuard
+
+import { error } from "@console";
+import type { UserData, UserRegistration } from "@interfaces/database";
 import { findln } from "@localization";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { registerUser, setDefaultManagerId } from "@utils/db";
@@ -15,10 +10,11 @@ import { parseEmbedFields } from "@utils/parse";
 import * as Djs from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
-import { deleteAfter } from "../commands/rolls/base_roll";
+import { deleteAfter } from "@commands/rolls/base_roll";
+import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
+import { TUTORIAL_IMAGES } from "@interfaces/constant";
 /**
  * Set the tags for thread channel in forum
- * @param forum {ForumChannel}
  */
 export async function setTagsForRoll(forum: Djs.ForumChannel) {
 	//check if the tags `🪡 roll logs` exists
@@ -49,12 +45,6 @@ export async function setTagsForRoll(forum: Djs.ForumChannel) {
 
 /**
  * Repost the character sheet in the thread / channel selected with `guildData.managerId`
- * @param embed {EmbedBuilder[]}
- * @param interaction {BaseInteraction}
- * @param userTemplate {UserData}
- * @param userId {string}
- * @param ul {Translation}
- * @param which {stats?: boolean, dice?: boolean, template?: boolean} (for adding button)
  */
 export async function repostInThread(
 	embed: Djs.EmbedBuilder[],
@@ -71,6 +61,7 @@ export async function repostInThread(
 		: undefined;
 	const damageName = userTemplate.damage ? Object.keys(userTemplate.damage) : undefined;
 	const channel = interaction.channel;
+	// noinspection SuspiciousTypeOfGuard
 	if (!channel || channel instanceof Djs.CategoryChannel) return;
 	if (!guildData)
 		throw new Error(
@@ -87,6 +78,7 @@ export async function repostInThread(
 	let msg: Djs.Message | undefined = undefined;
 	if (!thread) {
 		const channel = await interaction.guild?.channels.fetch(threadId);
+		// noinspection SuspiciousTypeOfGuard
 		if (channel && channel instanceof Djs.ForumChannel) {
 			const userName =
 				userTemplate.userName ??
@@ -109,16 +101,19 @@ export async function repostInThread(
 			);
 			await deleteAfter(ping, 5000);
 		}
-	} else if (!thread && channel instanceof Djs.TextChannel) {
-		thread = (await channel.threads.fetch()).threads.find(
-			(thread) => thread.name === "📝 • [STATS]"
-		) as Djs.AnyThreadChannel | undefined;
-		if (!thread) {
-			thread = (await channel.threads.create({
-				name: "📝 • [STATS]",
-				autoArchiveDuration: 10080,
-			})) as Djs.AnyThreadChannel;
-			setDefaultManagerId(guildData, interaction, thread.id);
+	} else {
+		// noinspection SuspiciousTypeOfGuard
+		if (!thread && channel instanceof Djs.TextChannel) {
+			thread = (await channel.threads.fetch()).threads.find(
+				(thread) => thread.name === "📝 • [STATS]"
+			) as Djs.AnyThreadChannel | undefined;
+			if (!thread) {
+				thread = (await channel.threads.create({
+					name: "📝 • [STATS]",
+					autoArchiveDuration: 10080,
+				})) as Djs.AnyThreadChannel;
+				setDefaultManagerId(guildData, interaction, thread.id);
+			}
 		}
 	}
 	if (!thread) {
@@ -193,6 +188,7 @@ export function isArrayEqual(array1: string[] | undefined, array2: string[] | un
  * @param dice {string}
  */
 export function replaceFormulaInDice(dice: string) {
+	// noinspection RegExpRedundantEscape
 	const formula = /(?<formula>\{{2}(.+?)\}{2})/gim;
 	const formulaMatch = formula.exec(dice);
 	if (formulaMatch?.groups?.formula) {
@@ -209,10 +205,9 @@ export function replaceFormulaInDice(dice: string) {
 	return cleanedDice(dice);
 }
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * Replace the stat name by their value using stat and after evaluate any formula using `replaceFormulaInDice`
- * @param originalDice {dice}
- * @param stats {[name: string]: number}
  */
 export function generateStatsDice(
 	originalDice: string,
@@ -283,7 +278,6 @@ export function uniqueValues(array: string[]) {
 
 /**
  * Parse the fields in stats, used to fix combinaison and get only them and not their result
- * @param statsEmbed {EmbedBuilder}
  */
 export function parseStatsString(statsEmbed: Djs.EmbedBuilder) {
 	const stats = parseEmbedFields(statsEmbed.toJSON() as Djs.Embed);
@@ -471,10 +465,10 @@ export async function addAutoRole(
 		error("Error while adding role", e);
 		//delete the role from database so it will be skip next time
 		db.delete(interaction.guild!.id, "autoRole");
-		const dblogs = db.get(interaction.guild!.id, "logs");
+		const dbLogs = db.get(interaction.guild!.id, "logs");
 		const errorMessage = `\`\`\`\n${(e as Error).message}\n\`\`\``;
-		if (dblogs) {
-			const logs = await interaction.guild!.channels.fetch(dblogs);
+		if (dbLogs) {
+			const logs = await interaction.guild!.channels.fetch(dbLogs);
 			if (logs instanceof Djs.TextChannel) {
 				logs.send(errorMessage);
 			}
@@ -496,8 +490,8 @@ export async function addAutoRole(
  * 	- If the thread doesn't exist (data will be not found anyway)
  *
  * It will ultimately check if the user have access to the channel (with reading permission)
- * @param interaction {BaseInteraction}
- * @param thread {TextChannel | NewsChannel | PrivateThreadChannel | PublicThreadChannel<boolean> | undefined} if undefined, return false (because it's probably that the channel doesn't exist anymore, so we don't care about it)
+ * @param interaction {Djs.BaseInteraction}
+ * @param thread {Djs.GuildChannelResolvable} if undefined, return false (because it's probably that the channel doesn't exist anymore, so we don't care about it)
  * @param user {User | null} if null, return false
  * @returns {boolean}
  */
@@ -514,21 +508,5 @@ export function haveAccess(
 	return (
 		member.permissions.has(Djs.PermissionFlagsBits.ManageRoles) ||
 		member.permissionsIn(thread).has(Djs.PermissionFlagsBits.ViewChannel)
-	);
-}
-
-export function isStatsThread(
-	db: Settings,
-	guildID: string,
-	thread:
-		| Djs.NewsChannel
-		| Djs.TextChannel
-		| Djs.PrivateThreadChannel
-		| Djs.PublicThreadChannel<boolean>
-		| undefined
-) {
-	return (
-		thread?.parent?.id === db.get(guildID, "templateID.channelId") &&
-		thread?.name === "📝 • [STATS]"
 	);
 }

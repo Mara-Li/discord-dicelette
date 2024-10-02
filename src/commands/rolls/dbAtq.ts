@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { error } from "@console";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";

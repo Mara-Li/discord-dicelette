@@ -1,17 +1,18 @@
 import { evalStatsDice } from "@dicelette/core";
 import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
-import type { Settings, Translation, UserMessageId } from "@interface";
+import type { UserMessageId } from "@interfaces/database";
 import { findln, ln } from "@localization";
 import { NoEmbed, addAutoRole, embedError, reply, sendLogs } from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
+import type { Settings, Translation } from "@interfaces/discord";
 /**
  * Interaction to add a new skill dice
- * @param interaction {ButtonInteraction}
- * @param ul {Translation}
+ * @param interaction {Djs.ButtonInteraction}
  * @param interactionUser {User}
+ * @param db
  */
 export async function executeAddDiceButton(
 	interaction: Djs.ButtonInteraction,
@@ -29,10 +30,11 @@ export async function executeAddDiceButton(
 
 /**
  * Modal to add a new skill dice
- * @param interaction {ButtonInteraction}
+ * @param interaction {Djs.ButtonInteraction}
  * @param first {boolean}
  * - true: It's the modal when the user is registered
  * - false: It's the modal when the user is already registered and a new dice is added to edit the user
+ * @param lang
  */
 export async function showDamageDiceModals(
 	interaction: Djs.ButtonInteraction,
@@ -72,9 +74,10 @@ export async function showDamageDiceModals(
 /**
  * Interaction to submit the new skill dice
  * Only works if the user is the owner of the user registered in the embed or if the user is a moderator
- * @param interaction {ModalSubmitInteraction}
+ * @param interaction {Djs.ModalSubmitInteraction}
  * @param ul {Translation}
  * @param interactionUser {User}
+ * @param db
  */
 export async function storeDamageDice(
 	interaction: Djs.ModalSubmitInteraction,
@@ -102,7 +105,8 @@ export async function storeDamageDice(
 }
 /**
  * Register the new skill dice in the embed and database
- * @param interaction {ModalSubmitInteraction}
+ * @param interaction {Djs.ModalSubmitInteraction}
+ * @param db
  * @param first {boolean}
  * - true: It's the modal when the user is registered
  * - false: It's the modal when the user is already registered and a new dice is added to edit the user
@@ -165,7 +169,7 @@ export async function registerDamageDice(
 		await reply(interaction, { content: ul("modals.dice.max"), ephemeral: true });
 		return;
 	}
-	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul, first);
+	const { userID, userName } = await getUserNameAndChar(interaction, ul, first);
 	await addAutoRole(
 		interaction,
 		userID,

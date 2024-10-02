@@ -1,14 +1,14 @@
 import { error } from "@console";
 import { createDiceEmbed, createStatsEmbed } from "@interactions";
-import type { PersonnageIds } from "@interface";
+import type { CharacterData } from "../../interfaces/database";
 import { cmdLn, findln, ln } from "@localization";
 import type { EClient } from "@main";
-import { embedError, filterChoices, haveAccess, reply, searchUserChannel } from "@utils";
+import { embedError, filterChoices, haveAccess, reply } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
 import i18next from "i18next";
-import { findLocation } from "@utils/find";
+import { findChara, findLocation } from "@utils/find";
 
 const t = i18next.getFixedT("en");
 
@@ -86,22 +86,14 @@ export const displayUser = {
 			return;
 		}
 
-		let userData = charData?.[user?.id ?? interaction.user.id];
+		let userData: CharacterData | undefined = charData?.[user?.id ?? interaction.user.id];
+		if (!userData) userData = await findChara(charData, charName);
 		if (!userData) {
-			/* search based on the character name */
-			const findChara = Object.values(charData).find((data) => {
-				if (data.charName && charName) {
-					return data.charName.search(charName);
-				}
-				return data.charName === charName;
-			});
-			if (!findChara) {
-				await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
-				return;
-			}
-			userData = findChara;
+			await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
+			return;
 		}
-		const {thread, sheetLocation} = await findLocation(
+		console.log(userData);
+		const { thread, sheetLocation } = await findLocation(
 			userData,
 			interaction,
 			client,
@@ -109,7 +101,7 @@ export const displayUser = {
 			charData,
 			user
 		);
-		
+
 		try {
 			const userMessage = await thread?.messages.fetch(sheetLocation.messageId);
 			const statisticEmbed = getEmbeds(ul, userMessage, "stats");

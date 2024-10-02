@@ -1,40 +1,12 @@
 import type { Critical } from "@dicelette/core";
 
-import * as Djs from "discord.js";
-import type Enmap from "enmap";
-import type { TFunction } from "i18next";
-import { LocalePrimary, resources } from "./localizations/init";
-export const TUTORIAL_IMAGES = [
-	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_1.png?raw=true",
-	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_2.png?raw=true",
-	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_3.png?raw=true",
-	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_4.png?raw=true",
-	"https://github.com/Dicelette/dicelette.github.io/blob/main/static/assets/tuto/allow_commands_5.png?raw=true",
-];
-
-export const LINKS = {
-	fr: {
-		bug: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=bug%2Ctriage%2Cfrench&projects=&template=bug_french.yml&title=%5BBug%5D%3A+",
-		fr: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=enhancement%2Ctriage%2Cfrench&projects=&template=Request_french.yml&title=%5BFR%5D%3A+",
-	},
-	en: {
-		bug: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=bug%2Ctriage%2Cenglish&projects=&template=bug_english.yml&title=%5BBug%5D%3A+",
-		fr: "https://github.com/Dicelette/discord-dicelette/issues/new?assignees=lisandra-dev&labels=enhancement%2Ctriage%2Cenglish&projects=&template=request_english.yml&title=%5BFR%5D%3A+",
-	},
-} as const;
+import type * as Djs from "discord.js";
 
 /**
  * `[messageId, channelId]`
  */
 export type UserMessageId = [string, string];
-export type Settings = Enmap<string, GuildData, unknown>;
-export type Translation = TFunction<"translation", undefined>;
-export type DiscordChannel =
-	| Djs.PrivateThreadChannel
-	| Djs.PublicThreadChannel<boolean>
-	| Djs.TextChannel
-	| Djs.NewsChannel
-	| undefined;
+
 export type PersonnageIds = { channelId: string; messageId: string };
 export type UserRegistration = {
 	userID: string;
@@ -43,14 +15,6 @@ export type UserRegistration = {
 	damage?: string[];
 	msgId: UserMessageId;
 };
-
-export type DiscordTextChannel =
-	| Djs.TextChannel
-	| Djs.NewsChannel
-	| Djs.StageChannel
-	| Djs.PrivateThreadChannel
-	| Djs.PublicThreadChannel<boolean>
-	| Djs.VoiceChannel;
 
 export interface GuildData {
 	/**
@@ -68,11 +32,11 @@ export interface GuildData {
 	/**
 	 * Disable the thread creation for roll
 	 * - Disable roll channel
-	 * - Disable the autodeletion
+	 * - Disable the auto deletion
 	 */
 	disableThread?: boolean;
 	/**
-	 * Hidden channel or result for mjroll
+	 * Hidden channel or result for mj roll
 	 * If true => hide result, doesn't send logs ; result are send in DM
 	 * if string => channel/thread.id where result will be send
 	 * In all cases; result are hidden in the channel when used (unless used in configured channel)
@@ -83,7 +47,7 @@ export interface GuildData {
 	 */
 	managerId?: string;
 	/**
-	 * Disable the autodeletion of the dice result
+	 * Disable the auto deletion of the dice result
 	 */
 	deleteAfter?: number;
 	/**
@@ -106,7 +70,7 @@ export interface GuildData {
 		stats?: string;
 	};
 	/**
-	 * In the logs, add a context link to the message. The link will change depending of the autodeletion:
+	 * In the logs, add a context link to the message. The link will change depending of the auto deletion:
 	 * - If disabled, the link will be the result interaction
 	 * - If enabled, the link will be the message before the interaction
 	 */
@@ -176,3 +140,14 @@ export interface UserData {
 	 */
 	channel?: string;
 }
+
+export type CharacterData = {
+	charName?: string | null;
+	messageId: UserMessageId;
+	damageName?: string[];
+	isPrivate?: boolean;
+};
+
+export type CharDataWithName = {
+	[p: string]: CharacterData;
+};

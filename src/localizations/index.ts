@@ -119,8 +119,6 @@ export function flattenJson(
 
 /**
  * Get the translation key from the translation text
- * @param key {string}
- * @param embed {{[name: string]: string}}
  * @example : "Nom du personnage" => ""common.charName"
  */
 export function findln(translatedText: string) {

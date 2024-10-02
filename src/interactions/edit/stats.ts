@@ -1,6 +1,6 @@
 import { FormulaError, evalOneCombinaison } from "@dicelette/core";
 import { allowEdit, createStatsEmbed, getUserNameAndChar } from "@interactions";
-import type { Settings, Translation } from "@interface";
+import type { Settings, Translation } from "@interfaces/discord";
 import { displayOldAndNewStats, isArrayEqual, reply, sendLogs } from "@utils";
 import { editUserButtons } from "@utils/buttons";
 import { getTemplateWithDB } from "@utils/db";
@@ -13,8 +13,9 @@ import {
 import * as Djs from "discord.js";
 /**
  * Validate the stats and edit the embed with the new stats for editing
- * @param interaction {ModalSubmitInteraction}
+ * @param interaction {Djs.ModalSubmitInteraction}
  * @param ul {Translation}
+ * @param db
  */
 export async function editStats(
 	interaction: Djs.ModalSubmitInteraction,
@@ -151,8 +152,6 @@ export async function editStats(
 
 /**
  * Show the stats editor
- * @param interaction {ButtonInteraction}
- * @param ul {Translation}
  */
 export async function showEditorStats(
 	interaction: Djs.ButtonInteraction,
@@ -206,9 +205,6 @@ export async function showEditorStats(
 
 /**
  * The button that trigger the stats editor
- * @param interaction {ButtonInteraction}
- * @param ul {Translation}
- * @param interactionUser {User}
  */
 export async function triggerEditStats(
 	interaction: Djs.ButtonInteraction,

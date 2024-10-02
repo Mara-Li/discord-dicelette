@@ -9,6 +9,6 @@ export const botError = (client: EClient): void => {
 		err(error);
 		if (!process.env.OWNER_ID) return;
 		const dm = await client.users.createDM(process.env.OWNER_ID);
-		dm.send(`An error has occurred:\n\`\`\`\n${error.message}\n\`\`\``);
+		await dm.send(`An error has occurred:\n\`\`\`\n${error.message}\n\`\`\``);
 	});
 };

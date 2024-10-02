@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { parseCSV } from "../src/commands/admin/import";
-import type { UserData } from "../src/interface";
+import type { UserData } from "../src/interfaces/database";
 import {
 	expectedResult,
 	clonedExpectedResultWithSkills,

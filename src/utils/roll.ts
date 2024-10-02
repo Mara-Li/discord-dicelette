@@ -1,7 +1,10 @@
+// noinspection SuspiciousTypeOfGuard,LoopStatementThatDoesntLoopJS
+
 import { deleteAfter } from "@commands/rolls/base_roll";
 import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
 import { DETECT_DICE_MESSAGE } from "@events/message_create";
-import type { Settings, Translation, UserData } from "@interface";
+import type { UserData } from "@interfaces/database";
+import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, reply, timestamp } from "@utils";
@@ -14,11 +17,7 @@ import { parseResult } from "../dice";
 const t = i18next.getFixedT("en");
 
 /**
- * create the roll dice, parse interaction etc... When the slashcommands is used for dice
- * @param interaction {Djs.CommandInteraction}
- * @param dice {string}
- * @param channel {TextBasedChannel}
- * @param critical {failure?: number, success?: number}
+ * create the roll dice, parse interaction etc... When the slash-commands is used for dice
  */
 export async function rollWithInteraction(
 	interaction: Djs.CommandInteraction,
@@ -112,12 +111,12 @@ export async function rollWithInteraction(
 					isHidden
 				);
 
-	const rollog = await thread.send("_ _");
-	await rollog.edit(`${infoRollTotal(true, true)}${parser}`);
+	const rolLog = await thread.send("_ _");
+	await rolLog.edit(`${infoRollTotal(true, true)}${parser}`);
 	const rollLogEnabled = db.get(interaction.guild.id, "linkToLogs");
-	const rollogUrl = rollLogEnabled ? `\n\n-# ↪ ${rollog.url}` : "";
+	const rolLogUrl = rollLogEnabled ? `\n\n-# ↪ ${rolLog.url}` : "";
 	const inter = await reply(interaction, {
-		content: `${retrieveUser}${parser}${rollogUrl}`,
+		content: `${retrieveUser}${parser}${rolLogUrl}`,
 		allowedMentions: { users: [userId] },
 		ephemeral: !!hidden,
 	});
@@ -133,7 +132,7 @@ export async function rollWithInteraction(
 			if (messageBefore)
 				url = `\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${messageBefore!.id}>)`;
 		}
-		await rollog.edit(`${infoRollTotal(true, true)}${parser}${url}`);
+		await rolLog.edit(`${infoRollTotal(true, true)}${parser}${url}`);
 	}
 	if (!disableThread) await deleteAfter(inter, timer);
 	return;
@@ -153,7 +152,7 @@ export async function rollStatistique(
 	//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	const override = options.getString(t("dbRoll.options.override.name"));
-	const modificator = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
+	const modification = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 
 	let userStat = userStatistique.stats?.[statistique];
 
@@ -190,8 +189,8 @@ export async function rollStatistique(
 			dice += overrideMatch[0];
 		}
 	}
-	const modificatorString =
-		modificator > 0 ? `+${modificator}` : modificator < 0 ? `${modificator}` : "";
+	const modificationString =
+		modification > 0 ? `+${modification}` : modification < 0 ? `${modification}` : "";
 	const comparatorMatch = /(?<sign>[><=!]+)(?<comparator>(\d+))/.exec(dice);
 	let comparator = "";
 	if (comparatorMatch) {
@@ -199,7 +198,7 @@ export async function rollStatistique(
 		dice = dice.replace(comparatorMatch[0], "").trim();
 		comparator = comparatorMatch[0];
 	}
-	const roll = `${replaceFormulaInDice(dice)}${modificatorString}${comparator} ${comments}`;
+	const roll = `${replaceFormulaInDice(dice)}${modificationString}${comparator} ${comments}`;
 	await rollWithInteraction(
 		interaction,
 		roll,
@@ -227,8 +226,6 @@ export async function rollDice(
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	//search dice
 	let dice = userStatistique.damage?.[atq.toLowerCase()];
-	const serializedName = charOptions?.standardize(true);
-
 	while (!dice) {
 		const userData = client.settings
 			.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`)

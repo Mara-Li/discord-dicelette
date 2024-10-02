@@ -35,7 +35,7 @@
       "@localization/*": ["src/localizations/*"],
       "@localization": ["src/localizations/index.js"],
       "@main": ["src/index.js"],
-      "@interface": ["src/interface.js"],
+      "@interfaces/*": ["src/interfaces/*"],
       "@events/*": ["src/events/*"],
       "@events": ["src/events/index.js"],
       "@commands/*": ["src/commands/*"],

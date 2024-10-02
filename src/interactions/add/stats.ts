@@ -7,9 +7,10 @@ import * as Djs from "discord.js";
 import { createStatsEmbed } from "..";
 /**
  * Embed to display the statistics when adding a new user
- * @param interaction {ModalSubmitInteraction}
+ * @param interaction {Djs.ModalSubmitInteraction}
  * @param template {StatisticalTemplate}
  * @param page {number=2}
+ * @param lang
  */
 export async function embedStatistiques(
 	interaction: Djs.ModalSubmitInteraction,
@@ -52,6 +53,7 @@ export async function embedStatistiques(
 		Object.entries(parsedFields).filter(([key]) => statsWithoutCombinaison.includes(key))
 	);
 	if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
+		// noinspection JSUnusedAssignment
 		let combinaison: { [name: string]: number } = {};
 		combinaison = evalCombinaison(combinaisonFields, embedStats);
 		//add combinaison to the embed
@@ -82,10 +84,6 @@ export async function embedStatistiques(
  * Modal to display the statistics when adding a new user
  * Will display the statistics that are not already set
  * 5 statistics per page
- * @param interaction {ButtonInteraction}
- * @param template {StatisticalTemplate}
- * @param stats {string[]}
- * @param page {number}
  */
 export async function showStatistiqueModal(
 	interaction: Djs.ButtonInteraction,

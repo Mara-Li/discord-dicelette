@@ -1,17 +1,13 @@
 import { error } from "@console";
 import { deleteUser } from "@events/on_delete";
-import type {
-	DiscordChannel,
-	PersonnageIds,
-	Translation,
-	UserMessageId,
-} from "@interface";
+import type { PersonnageIds, UserMessageId } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import * as Djs from "discord.js";
 import i18next from "i18next";
+import type { DiscordChannel, Translation } from "@interfaces/discord";
 
 const t = i18next.getFixedT("en");
 
@@ -76,11 +72,7 @@ export const deleteChar = {
 		const user = options.getUser(t("display.userLowercase"));
 		let charName = options.getString(t("common.character"))?.toLowerCase();
 		const charData = await getDatabaseChar(interaction, client, t);
-		//default channel
-		const isPrivateEnabled = client.settings.get(
-			interaction.guildId as string,
-			"privateChannel"
-		);
+
 		if (!charName) {
 			//delete all characters from the user
 			const allDataUser = client.settings.get(

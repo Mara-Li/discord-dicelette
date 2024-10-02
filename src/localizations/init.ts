@@ -12,6 +12,7 @@ export const resources = {
 	},
 };
 
+// noinspection JSIgnoredPromiseFromCall
 i18next.init({
 	lng: "en",
 	fallbackLng: "en",
@@ -20,6 +21,7 @@ i18next.init({
 });
 
 export enum LocalePrimary {
+	// noinspection JSUnusedGlobalSymbols
 	French = "Français",
 	English = "English",
 }

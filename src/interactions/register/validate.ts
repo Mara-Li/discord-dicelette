@@ -6,7 +6,8 @@ import {
 	createTemplateEmbed,
 	createUserEmbed,
 } from "@interactions";
-import type { Settings, Translation, UserData } from "@interface";
+import type { UserData } from "@interfaces/database";
+import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
 import {
 	NoChannel,
@@ -22,7 +23,7 @@ import { createEmbedsList, getEmbeds, parseEmbedFields } from "@utils/parse";
 import * as Djs from "discord.js";
 export function verifyAvatarUrl(url: string) {
 	if (url.length === 0) return false;
-	if (url.match(/^(https:)([/|.|\w|\s|-])*\.(?:jpe?g|gifv?|png|webp)$/gi)) return url;
+	if (url.match(/^(https:)([\/|.\w\s\-_])*(?:jpe?g|gifv?|png|webp)$/gi)) return url;
 	return false;
 }
 
@@ -30,8 +31,6 @@ export function verifyAvatarUrl(url: string) {
  * Create the embed after registering the user
  * If the template has statistics, show the continue button
  * Else show the dice button
- * @param interaction {ModalSubmitInteraction}
- * @param template {StatisticalTemplate}
  */
 export async function createEmbedFirstPage(
 	interaction: Djs.ModalSubmitInteraction,
@@ -113,8 +112,6 @@ export async function createEmbedFirstPage(
 /**
  * Validate the user and create the embeds
  * It will register the final embeds and send it in the thread
- * @param {ButtonInteraction} interaction
- * @param template {StatisticalTemplate}
  */
 export async function validateUser(
 	interaction: Djs.ButtonInteraction,
@@ -275,8 +272,6 @@ export async function validateUser(
 
 /**
  * Validate the user and create the embeds when the button is clicked
- * @param interaction {ButtonInteraction}
- * @param interactionUser {User}
  */
 
 export async function validateUserButton(

@@ -10,7 +10,7 @@ import {
 	ON_KICK,
 } from "@events/on_delete";
 import ready from "@events/ready";
-import type { GuildData } from "@interface";
+import type { GuildData } from "@interfaces/database";
 import dotenv from "dotenv";
 import Enmap from "enmap";
 
@@ -54,8 +54,6 @@ export const client = new EClient({
 });
 
 export const VERSION = pkg.version ?? "0.0.0";
-export const CHANNEL_ID = process.env.CHANNEL_ID ?? "0";
-export const prod = process.env.NODE_ENV === "production";
 
 try {
 	ready(client);
@@ -70,4 +68,5 @@ try {
 	console.error(error);
 }
 
+// noinspection JSIgnoredPromiseFromCall
 client.login(process.env.DISCORD_TOKEN);

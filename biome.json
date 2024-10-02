@@ -87,6 +87,16 @@
     { "include": ["**/*.js"] },
     { "include": ["*.json"] },
     {
+      "include": ["src/@types/essential-md.d.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
       "include": ["src/commands/gimmick/graph.ts"],
       "linter": {
         "rules": {

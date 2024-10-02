@@ -1,6 +1,7 @@
 import { evalStatsDice, roll } from "@dicelette/core";
 import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
-import type { Settings, Translation, UserMessageId, UserRegistration } from "@interface";
+import type { UserMessageId, UserRegistration } from "@interfaces/database";
+import type { Settings, Translation } from "@interfaces/discord";
 import { displayOldAndNewStats, parseStatsString, reply, sendLogs } from "@utils";
 import { editUserButtons } from "@utils/buttons";
 import { registerUser } from "@utils/db";
@@ -14,7 +15,7 @@ import * as Djs from "discord.js";
 /**
  * Show the modal to **edit** the registered dice
  * Will parse registered dice and show them in the modal as `- Skill : Dice`
- * @param interaction {ButtonInteraction}
+ * @param interaction {Djs.ButtonInteraction}
  * @param ul {Translation}
  */
 export async function showEditDice(interaction: Djs.ButtonInteraction, ul: Translation) {
@@ -45,8 +46,9 @@ export async function showEditDice(interaction: Djs.ButtonInteraction, ul: Trans
  * Validate the edit of the dice from the modals
  * Will parse the dice and validate if they are correct
  * Edit the embed with the new dice or remove it if it's empty
- * @param interaction {ModalSubmitInteraction}
+ * @param interaction {Djs.ModalSubmitInteraction}
  * @param ul {Translation}
+ * @param db
  */
 export async function validateDiceEdit(
 	interaction: Djs.ModalSubmitInteraction,
@@ -129,7 +131,7 @@ export async function validateDiceEdit(
 		fieldsToAppend.push(field);
 	}
 	const diceEmbed = createDiceEmbed(ul).addFields(fieldsToAppend);
-	const { userID, userName, thread } = await getUserNameAndChar(interaction, ul);
+	const { userID, userName } = await getUserNameAndChar(interaction, ul);
 	const messageID = [
 		interaction.message.id,
 		interaction.message.channelId,
@@ -199,9 +201,10 @@ export async function validateDiceEdit(
 /**
  * Start the showEditDice when the button is interacted
  * It will also verify if the user can edit their dice
- * @param interaction {ButtonInteraction}
+ * @param interaction {Djs.ButtonInteraction}
  * @param ul {Translation}
- * @param interactionUser {User}
+ * @param interactionUser {Djs.User}
+ * @param db {Settings}
  */
 export async function initiateDiceEdit(
 	interaction: Djs.ButtonInteraction,

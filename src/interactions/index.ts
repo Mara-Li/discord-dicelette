@@ -1,13 +1,12 @@
 import { warn } from "@console";
-import type { PersonnageIds, Settings, Translation } from "@interface";
+import type { PersonnageIds } from "@interfaces/database";
+import type { Settings, Translation } from "@interfaces/discord";
 import { findln, ln } from "@localization";
 import { embedError, reply } from "@utils";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
 /**
  * Get the userName and the char from the embed between an interaction (button or modal), throw error if not found
- * @param interaction {ButtonInteraction | ModalSubmitInteraction}
- * @param ul {Translation}
  */
 export async function getUserNameAndChar(
 	interaction: Djs.ButtonInteraction | Djs.ModalSubmitInteraction,
@@ -50,6 +49,8 @@ export function createDiceEmbed(ul: Translation) {
  * Create the userEmbed and embedding the avatar user in the thumbnail
  * @param ul {Translation}
  * @param thumbnail {string} The avatar of the user in the server (use server profile first, after global avatar)
+ * @param user
+ * @param charName
  */
 export function createUserEmbed(
 	ul: Translation,

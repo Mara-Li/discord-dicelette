@@ -1,4 +1,4 @@
-import type { Translation } from "@interface";
+import type { Translation } from "@interfaces/discord";
 import * as Djs from "discord.js";
 /**
  * Button to edit the user embed character sheet
@@ -76,25 +76,6 @@ export function continueCancelButtons(ul: Translation) {
 		.setStyle(Djs.ButtonStyle.Danger);
 	return new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents([
 		continueButton,
-		cancelButton,
-	]);
-}
-
-/**
- * Add the button for validating an user
- * @param ul {Translation}
- */
-export function validateCancelButton(ul: Translation) {
-	const validateButton = new Djs.ButtonBuilder()
-		.setCustomId("validate")
-		.setLabel(ul("button.validate"))
-		.setStyle(Djs.ButtonStyle.Success);
-	const cancelButton = new Djs.ButtonBuilder()
-		.setCustomId("cancel")
-		.setLabel(ul("button.cancel"))
-		.setStyle(Djs.ButtonStyle.Danger);
-	return new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents([
-		validateButton,
 		cancelButton,
 	]);
 }

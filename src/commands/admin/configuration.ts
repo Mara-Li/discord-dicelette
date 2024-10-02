@@ -1,4 +1,4 @@
-import type { Translation } from "@interface";
+import type { Translation } from "@interfaces/discord";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import { reply } from "@utils";

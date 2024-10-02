@@ -1,6 +1,6 @@
-import chalk from "chalk";
 import dotenv from "dotenv";
 dotenv.config();
+import * as md from "essential-md";
 /**
  * Extends console.error with a red background and red text
  * @param message {unknown}
@@ -10,7 +10,7 @@ export const error = (message?: unknown, ...optionalParams: unknown[]) => {
 	//search the function that called this function
 	const stack = new Error().stack;
 	const caller = stack?.split("\n")[2].trim();
-	console.error(chalk.bgRed(caller), chalk.red(message, ...optionalParams));
+	md.error(`# ${caller}\n`, message, ...optionalParams);
 };
 
 /**
@@ -19,7 +19,7 @@ export const error = (message?: unknown, ...optionalParams: unknown[]) => {
  * @param optionalParams {unknown[]}
  */
 export const warn = (message?: unknown, ...optionalParams: unknown[]) => {
-	console.warn(chalk.bgYellow("WARNING"), chalk.yellow(message, ...optionalParams));
+	md.warn(message, ...optionalParams);
 };
 
 /**
@@ -29,14 +29,14 @@ export const warn = (message?: unknown, ...optionalParams: unknown[]) => {
  */
 export const log = (message?: unknown, ...optionalParams: unknown[]) => {
 	if (process.env.NODE_ENV === "production") return;
-	console.log(chalk.bgBlue("INFO"), chalk.blue(message, ...optionalParams));
+	md.info(message, ...optionalParams);
 };
 
 export const success = (message?: unknown, ...optionalParams: unknown[]) => {
-	console.log(chalk.bgGreen(message, ...optionalParams));
+	md.ok(message, ...optionalParams);
 };
 
 export const dev = (message?: unknown, ...optionalParams: unknown[]) => {
 	if (process.env.NODE_ENV !== "development") return;
-	console.log(message, ...optionalParams);
+	md.log(message, ...optionalParams);
 };

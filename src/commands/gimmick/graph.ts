@@ -1,6 +1,6 @@
 import path from "node:path";
 import { log } from "@console";
-import type { PersonnageIds, UserData } from "@interface";
+import type { CharacterData, PersonnageIds, UserData } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
 import type { EClient } from "@main";
 import {
@@ -16,6 +16,7 @@ import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import * as Djs from "discord.js";
 import i18next from "i18next";
 import parse from "parse-color";
+import { findChara } from "@utils/find";
 
 async function chart(
 	userData: UserData,
@@ -225,20 +226,13 @@ export const graph = {
 		try {
 			if (!interaction.guild || !interaction.channel) return;
 			const userId = user?.id ?? interaction.user.id;
-			let userData = charData[userId];
-			if (!charData[userId]) {
-				const findChara = Object.values(charData).find((data) => {
-					if (data.charName && charName) {
-						return data.charName.subText(charName);
-					}
-					return data.charName === charName;
-				});
-
-				if (!findChara) {
-					await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
-					return;
-				}
-				userData = findChara;
+			let userData: CharacterData | undefined = charData[userId];
+			if (!userData) {
+				userData = await findChara(charData, charName);
+			}
+			if (!userData) {
+				await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
+				return;
 			}
 			const sheetLocation: PersonnageIds = {
 				channelId: userData.messageId[1],
