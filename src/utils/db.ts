@@ -1,7 +1,7 @@
 import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import type { PersonnageIds, UserData, UserRegistration } from "@interfaces/database";
 import { ln } from "@localization";
-import type { EClient } from "@main";
+import { type EClient, logger } from "@main";
 import { embedError, haveAccess, reply, searchUserChannel } from "@utils";
 import { ensureEmbed, getEmbeds, parseEmbedFields } from "@utils/parse";
 import * as Djs from "discord.js";
@@ -67,10 +67,9 @@ export async function getDatabaseChar(
 		interaction.guild!.id,
 		`user.${user?.id ?? interaction.user.id}`
 	);
-	let findChara = userData?.find((char) => {
-		char.charName?.subText(charName, strict);
+	const findChara = userData?.find((char) => {
+		return char.charName?.subText(charName, strict);
 	});
-	if (!findChara) findChara = userData?.[0];
 	if (!findChara) {
 		return undefined;
 	}
