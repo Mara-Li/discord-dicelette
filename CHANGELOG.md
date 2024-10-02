@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.12.2](https://github.com/Dicelette/discord-dicelette/compare/1.12.1...1.12.2) (2024-10-02)
+
+
+### Bug Fixes
+
+* **findChara:** forgot to return when a char is found ([caab5d2](https://github.com/Dicelette/discord-dicelette/commit/caab5d2341d351b31fc83b407aa69b2d4b030100))
+
 ## [1.12.1](https://github.com/Dicelette/discord-dicelette/compare/1.12.0...1.12.1) (2024-10-02)
 
 
