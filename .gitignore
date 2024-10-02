@@ -134,3 +134,4 @@ git.zip
 node_modules/
 pnpm-lock.yaml
 toDelete.txt
+.idea/
