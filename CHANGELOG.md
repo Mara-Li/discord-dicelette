@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.12.1](https://github.com/Dicelette/discord-dicelette/compare/1.12.0...1.12.1) (2024-10-02)
+
+
+### Bug Fixes
+
+* **filter:** crash when filter >=25 ([13f2396](https://github.com/Dicelette/discord-dicelette/commit/13f2396e410d856bdad9728fbca744b4647cbfef))
+* **filter:** crash when filter >=25 ([cff1b94](https://github.com/Dicelette/discord-dicelette/commit/cff1b9468969a67dfd405e653654362ad2d745b2))
+* **filter:** forgot normal returns when values <=25 ([7a72ec4](https://github.com/Dicelette/discord-dicelette/commit/7a72ec40c19f672b73742b86c0c4ad0672b5362c))
+
 ## [1.12.0](https://github.com/Dicelette/discord-dicelette/compare/1.11.1...1.12.0) (2024-08-24)
 
 
