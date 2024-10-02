@@ -1,8 +1,8 @@
-import { cmdLn, ln } from "@localization";
-import type { EClient } from "@main";
-import { embedError, filterChoices, reply } from "@utils";
-import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
-import { rollStatistique } from "@utils/roll";
+import {cmdLn, ln} from "@localization";
+import type {EClient} from "@main";
+import {embedError, filterChoices, reply} from "@utils";
+import {getFirstRegisteredChar, getUserFromMessage, serializeName} from "@utils/db";
+import {rollStatistique} from "@utils/roll";
 import * as Djs from "discord.js";
 import i18next from "i18next";
 
@@ -73,11 +73,9 @@ export const dbRoll = {
 				`user.${interaction.user.id}`
 			);
 			if (!userData) return;
-			const allCharactersFromUser = userData
+			choices = userData
 				.map((data) => data.charName ?? "")
 				.filter((data) => data.length > 0);
-
-			choices = allCharactersFromUser;
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
