@@ -264,6 +264,7 @@ export function filterChoices(choices: string[], focused: string) {
 		choice.subText(focused.removeAccents())
 	);
 	if (values.length >= 25) return values.slice(0, 25);
+	return values;
 }
 
 export function uniqueValues(array: string[]) {
