@@ -260,9 +260,10 @@ export function cleanedDice(dice: string) {
  */
 export function filterChoices(choices: string[], focused: string) {
 	//remove duplicate from choices, without using set
-	return uniqueValues(choices).filter((choice) =>
+	const values = uniqueValues(choices).filter((choice) =>
 		choice.subText(focused.removeAccents())
 	);
+	if (values.length >= 25) return values.slice(0, 25);
 }
 
 export function uniqueValues(array: string[]) {
@@ -276,8 +277,6 @@ export function uniqueValues(array: string[]) {
 			uniqueArray.push(item);
 		}
 	}
-	if (uniqueArray.length >= 25) return uniqueArray.slice(0, 25);
-
 	return uniqueArray;
 }
 
