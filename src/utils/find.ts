@@ -208,7 +208,6 @@ export async function findForumChannel(
 }
 
 export async function findChara(charData: CharDataWithName, charName?: string) {
-	logger.silly(charData, charName);
 	return Object.values(charData).find((data) => {
 		if (data.charName && charName) {
 			return data.charName.subText(charName);

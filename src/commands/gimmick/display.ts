@@ -91,7 +91,6 @@ export const displayUser = {
 			await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
 			return;
 		}
-		logger.silly(userData);
 		const { thread, sheetLocation } = await findLocation(
 			userData,
 			interaction,
