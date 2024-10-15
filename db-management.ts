@@ -1,9 +1,10 @@
-import type { Settings } from "./src/interfaces/database";
+import type { Settings } from "./src/interfaces/discord";
 import color from "ansi-colors";
 import { Command, Option, type OptionValues } from "commander";
 import Enmap from "enmap";
 import { writeFileSync } from "node:fs";
 import { colorize as colorizeJson } from "json-colorizer";
+import "uniformize";
 
 //extends console to add console.error with color
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>

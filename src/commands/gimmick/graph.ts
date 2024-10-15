@@ -1,7 +1,7 @@
 import path from "node:path";
 import type { CharacterData, PersonnageIds, UserData } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
-import { EClient, logger } from "@main";
+import { type EClient, logger } from "@main";
 import {
 	embedError,
 	filterChoices,
