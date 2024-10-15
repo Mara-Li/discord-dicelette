@@ -9,6 +9,7 @@ import {
 	ON_KICK,
 } from "@events/on_delete";
 import ready from "@events/ready";
+import messageReactionAdd from "@events/MessageReactionAdd";
 import type { GuildData } from "@interfaces/database";
 import dotenv from "dotenv";
 import Enmap from "enmap";
@@ -53,7 +54,7 @@ export const client = new EClient({
 		Djs.GatewayIntentBits.Guilds,
 		Djs.GatewayIntentBits.GuildMembers,
 	],
-	partials: [Djs.Partials.Channel, Djs.Partials.GuildMember, Djs.Partials.User],
+	partials: [Djs.Partials.Channel, Djs.Partials.GuildMember, Djs.Partials.User, Djs.Partials.Reaction],
 });
 
 export const VERSION = pkg.version ?? "0.0.0";
@@ -67,6 +68,7 @@ try {
 	DELETE_MESSAGE(client);
 	DELETE_CHANNEL(client);
 	DELETE_THREAD(client);
+	messageReactionAdd(client);
 } catch (error) {
 	console.error(error);
 }

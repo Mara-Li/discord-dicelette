@@ -1,7 +1,7 @@
-import {EClient, logger} from "@main";
+import { type EClient, logger } from "@main";
 import * as Djs from "discord.js";
 
-export default (client: EClient): void =>{
+export default (client: EClient): void => {
 	client.on("messageReactionAdd", async (reaction, user) => {
 		if (reaction.partial) {
 			try {
@@ -20,8 +20,9 @@ export default (client: EClient): void =>{
 			await sendRollToDM(reaction);
 			return;
 		}
+		await copyReaction(reaction);
 	});
-}
+};
 
 async function sendRollToDM(reaction: Djs.MessageReaction | Djs.PartialMessageReaction) {
 	const message = reaction.message;
@@ -31,9 +32,21 @@ async function sendRollToDM(reaction: Djs.MessageReaction | Djs.PartialMessageRe
 	await user.send({ content: message.content });
 }
 
-async function copyReaction(reaction: Djs.MessageReaction) {
+async function copyReaction(reaction: Djs.MessageReaction | Djs.PartialMessageReaction) {
 	if (!reaction.message.content) return;
+	const guild = reaction.message.guild as Djs.Guild;
 	const message = reaction.message.content;
-	if (!message.subText(`-# ↪ https://discord.com/channels/${reaction.message.guild!.id}`)) return;
-	const regexChannel = new RegExp(`https:\\/\\/discord.com\\/channels\\/${reaction.message!.guild!.id}\\/(?<channelID>\\d+)\\/(?<messageID>\\d+)\\/?`, "gi");
+	const regexChannel = new RegExp(
+		`-# ↪ https:\\/\\/discord.com\\/channels\\/${reaction.message!.guild!.id}\\/(?<channelID>\\d+)\\/(?<messageID>\\d+)\\/?`,
+		"gi"
+	);
+	const match = regexChannel.exec(message);
+	if (!match || !match.groups) return;
+	const channelID = match.groups.channelID;
+	const messageID = match.groups.messageID;
+	const channel = await guild.channels.fetch(channelID);
+	if (!channel || !channel.isTextBased || channel instanceof Djs.CategoryChannel) return;
+	const messageToCopy = await channel.messages.fetch(messageID);
+	if (!messageToCopy) return;
+	await messageToCopy.react(reaction.emoji);
 }
