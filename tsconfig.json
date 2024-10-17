@@ -24,7 +24,7 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "removeComments": true,
-    "typeRoots": ["src/@types", "node_modules/@types"],
+    "typeRoots": ["src/@types", "node_modules/@types", "src/uniformize"],
     "sourceMap": false,
     "baseUrl": ".",
     "paths": {
@@ -40,10 +40,11 @@
       "@events/*": ["src/events/*"],
       "@events": ["src/events/index.js"],
       "@commands/*": ["src/commands/*"],
-      "@commands": ["src/commands/index.js"]
+      "@commands": ["src/commands/index.js"],
+      "uniformize": ["src/uniformize/src/index.ts"],
     }
   },
   "files": ["src/index.ts"],
-  "include": ["src/**/*.ts", "src/@types/**/*.d.ts", "jest.config.ts"],
+  "include": ["src/**/*.ts", "src/@types/**/*.d.ts", "jest.config.ts", "src/uniformize/**/*.ts", "src/uniformize/**/*.d.ts"],
   "exclude": ["dist", "node_modules"]
 }

@@ -13,13 +13,12 @@ import { onReactionAdd, onReactionRemove } from "@events/MessageReactionAdd";
 import type { GuildData } from "@interfaces/database";
 import dotenv from "dotenv";
 import Enmap from "enmap";
-
 import { flattenJson } from "@localization";
 import { resources } from "@localization/init";
 import * as pkg from "../package.json" assert { type: "json" };
-import "uniformize";
 import * as Djs from "discord.js";
 import { type ILogObj, Logger } from "tslog";
+import "uniformize";
 dotenv.config({ path: ".env" });
 
 const optionLoggers =

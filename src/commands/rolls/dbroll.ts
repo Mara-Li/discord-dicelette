@@ -1,5 +1,5 @@
 import { cmdLn, ln } from "@localization";
-import type { EClient } from "@main";
+import {type EClient, logger} from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollStatistique } from "@utils/roll";
@@ -79,6 +79,7 @@ export const dbRoll = {
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
+		logger.silly("prout".capitalize());
 		await interaction.respond(
 			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
