@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.13.1](https://github.com/Dicelette/discord-dicelette/compare/1.13.0...1.13.1) (2024-10-18)
+
+
+### Bug Fixes
+
+* uniformize entirely broken… ([816b35e](https://github.com/Dicelette/discord-dicelette/commit/816b35e0b231279e2c0c72fea3fba352fba95307))
+* urgent fix for uniformize ([2adbd84](https://github.com/Dicelette/discord-dicelette/commit/2adbd84831f17349477375adf54c45af46c76878))
+
 ## [1.13.0](https://github.com/Dicelette/discord-dicelette/compare/1.12.2...1.13.0) (2024-10-15)
 
 
