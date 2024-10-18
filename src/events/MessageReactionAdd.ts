@@ -64,7 +64,11 @@ async function getSavedMessage(
 async function copyReaction(reaction: Djs.MessageReaction | Djs.PartialMessageReaction) {
 	const messageToCopy = await getSavedMessage(reaction);
 	if (!messageToCopy) return;
-	await messageToCopy.react(reaction.emoji);
+	try {
+		await messageToCopy.react(reaction.emoji);
+	} catch (error) {
+		logger.trace(error);
+	}
 }
 
 export const onReactionRemove = (client: EClient): void => {
