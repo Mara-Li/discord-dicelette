@@ -26,6 +26,7 @@ const optionLoggers =
 
 export const logger: Logger<ILogObj> = new Logger(optionLoggers);
 logger.info("Starting bot...");
+logger.silly("hello".toTitle())
 
 export class EClient extends Djs.Client {
 	// Déclaration d'une propriété settings avec le type Enmap<string, any>
