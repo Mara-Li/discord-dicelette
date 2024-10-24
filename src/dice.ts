@@ -68,18 +68,25 @@ export function parseResult(
 			? "\n"
 			: "";
 	const dicesResult = /(?<entry>\S+) ⟶ (?<calc>.*) =/;
-	const matches = dicesResult.exec(msgSuccess);
-	if (matches) {
-		if (matches?.groups?.entry) {
-			const entry = matches.groups.entry.replaceAll("\\*", "×");
-			msgSuccess = msgSuccess.replace(matches.groups.entry, `\`${entry}\``);
-		}
-		if (matches?.groups?.calc) {
-			const calc = matches.groups.calc.replaceAll("\\*", "×");
-			msgSuccess = msgSuccess.replace(matches.groups.calc, `\`${calc}\``);
-		}
+	const splitted = msgSuccess.split("\n");
+	const finalRes = [];
+	for (const i in splitted) {
+		const matches = dicesResult.exec(i);
+		let res = "";
+		if (matches) {
+			const {entry, calc} = matches.groups || {};
+			if (entry) {
+				const entryStr = entry.replaceAll("\\*", "×");
+				res += msgSuccess.replace(entry, `\`${entryStr}\``);
+			}
+			if (calc) {
+				const calcStr = calc.replaceAll("\\*", "×");
+				res += msgSuccess.replace(calc, `\`${calcStr}\``);
+			}
+		} else res = i;
+		finalRes.push(res);
 	}
-	return `${comment}${msgSuccess}`;
+	return `${comment}${finalRes.join("\n")}`;
 }
 
 /**
