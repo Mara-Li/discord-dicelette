@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.13.2](https://github.com/Dicelette/discord-dicelette/compare/1.13.1...1.13.2) (2024-10-24)
+
+
+### Bug Fixes
+
+* exploding dice wrongly parsed ([dfe1b23](https://github.com/Dicelette/discord-dicelette/commit/dfe1b234e8175243325ae52eab86c6f9ab6743af))
+
 ## [1.13.1](https://github.com/Dicelette/discord-dicelette/compare/1.13.0...1.13.1) (2024-10-18)
 
 
