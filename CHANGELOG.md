@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.13.3](https://github.com/Dicelette/discord-dicelette/compare/1.13.2...1.13.3) (2024-10-24)
+
+
+### Bug Fixes
+
+* typo that break the bot ([f12a74c](https://github.com/Dicelette/discord-dicelette/commit/f12a74ca169bb4b5f5569f7c83707233d28358c5))
+
 ## [1.13.2](https://github.com/Dicelette/discord-dicelette/compare/1.13.1...1.13.2) (2024-10-24)
 
 
