@@ -46,14 +46,14 @@ export function parseResult(
 			const totalSuccess = output.compare
 				? ` = \`${total} ${goodCompareSign(output.compare, total)} [${output.compare.value}]\``
 				: `= \`${total}\``;
-			msgSuccess += `  ${successOrFailure} — ${r
+			msgSuccess += `${successOrFailure} — ${r
 				.replaceAll(":", " ⟶")
 				.replaceAll(/ = (\S+)/g, totalSuccess)
 				.replaceAll("*", "\\*")}`;
 			total = 0;
 		}
 	} else {
-		msgSuccess = `  ${output.result
+		msgSuccess = `${output.result
 			.replaceAll(";", "\n")
 			.replaceAll(":", " ⟶")
 			.replaceAll(/ = (\S+)/g, " = ` $1 `")
@@ -85,7 +85,7 @@ export function parseResult(
 		}
 		finalRes.push(res);
 	}
-	return `${comment}${finalRes.join("\n   ")}`;
+	return `${comment}  ${finalRes.join("\n  ")}`;
 }
 
 /**
