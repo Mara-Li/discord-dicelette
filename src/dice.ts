@@ -70,23 +70,22 @@ export function parseResult(
 	const dicesResult = /(?<entry>\S+) ⟶ (?<calc>.*) =/;
 	const splitted = msgSuccess.split("\n");
 	const finalRes = [];
-	for (const i in splitted) {
-		const matches = dicesResult.exec(i);
-		let res = "";
+	for (let res of splitted) {
+		const matches = dicesResult.exec(res);
 		if (matches) {
 			const {entry, calc} = matches.groups || {};
 			if (entry) {
 				const entryStr = entry.replaceAll("\\*", "×");
-				res += msgSuccess.replace(entry, `\`${entryStr}\``);
+				res = res.replace(entry, `\`${entryStr}\``);
 			}
 			if (calc) {
 				const calcStr = calc.replaceAll("\\*", "×");
-				res += msgSuccess.replace(calc, `\`${calcStr}\``);
+				res = res.replace(calc, `\`${calcStr}\``);
 			}
-		} else res = i;
+		}
 		finalRes.push(res);
 	}
-	return `${comment}${finalRes.join("\n")}`;
+	return `${comment}${finalRes.join("\n   ")}`;
 }
 
 /**
