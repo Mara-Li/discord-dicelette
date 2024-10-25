@@ -1,6 +1,7 @@
 import type { Compare, Resultat } from "@dicelette/core";
 import type { Translation } from "@interfaces/discord";
 import { evaluate } from "mathjs";
+import { logger } from "./index";
 
 /**
  * Parse the result of the dice to be readable
@@ -13,14 +14,24 @@ export function parseResult(
 ) {
 	//result is in the form of "d% //comment: [dice] = result"
 	//parse into
+	const regexForFormulesDices = /^[✕◈✓]/;
 	let msgSuccess: string;
 	const messageResult = output.result.split(";");
 	let successOrFailure = "";
+	let isCritical: undefined | "failure" | "success" = undefined;
 	if (output.compare) {
 		msgSuccess = "";
 		let total = 0;
 		const natural: number[] = [];
 		for (const r of messageResult) {
+			if (r.match(regexForFormulesDices)) {
+				msgSuccess += `${r
+					.replaceAll(";", "\n")
+					.replaceAll(":", " ⟶")
+					.replaceAll(/ = (\S+)/g, " = ` $1 `")
+					.replaceAll("*", "\\*")}\n`;
+				continue;
+			}
 			const tot = r.match(/ = (\d+)/);
 			if (tot) {
 				total = Number.parseInt(tot[1], 10);
@@ -39,8 +50,10 @@ export function parseResult(
 			if (critical) {
 				if (critical.failure && natural.includes(critical.failure)) {
 					successOrFailure = `**${ul("roll.critical.failure")}**`;
+					isCritical = "failure";
 				} else if (critical.success && natural.includes(critical.success)) {
 					successOrFailure = `**${ul("roll.critical.success")}**`;
+					isCritical = "success";
 				}
 			}
 			const totalSuccess = output.compare
@@ -49,7 +62,7 @@ export function parseResult(
 			msgSuccess += `${successOrFailure} — ${r
 				.replaceAll(":", " ⟶")
 				.replaceAll(/ = (\S+)/g, totalSuccess)
-				.replaceAll("*", "\\*")}`;
+				.replaceAll("*", "\\*")}\n`;
 			total = 0;
 		}
 	} else {
@@ -73,7 +86,7 @@ export function parseResult(
 	for (let res of splitted) {
 		const matches = dicesResult.exec(res);
 		if (matches) {
-			const {entry, calc} = matches.groups || {};
+			const { entry, calc } = matches.groups || {};
 			if (entry) {
 				const entryStr = entry.replaceAll("\\*", "×");
 				res = res.replace(entry, `\`${entryStr}\``);
@@ -83,6 +96,17 @@ export function parseResult(
 				res = res.replace(calc, `\`${calcStr}\``);
 			}
 		}
+		logger.silly(isCritical);
+		if (isCritical === "failure") {
+			res = res.replace(regexForFormulesDices, `**${ul("roll.critical.failure")}** —`);
+		} else if (isCritical === "success") {
+			res = res.replace(regexForFormulesDices, `**${ul("roll.critical.success")}** —`);
+		} else {
+			res = res
+				.replace("✕", `**${ul("roll.failure")}** —`)
+				.replace("✓", `**${ul("roll.success")}** —`);
+		}
+
 		finalRes.push(res);
 	}
 	return `${comment}  ${finalRes.join("\n  ")}`;

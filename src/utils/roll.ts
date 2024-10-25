@@ -6,7 +6,7 @@ import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { UserData } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
-import {type EClient, logger} from "@main";
+import { type EClient, logger } from "@main";
 import { embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";
@@ -68,7 +68,7 @@ export async function rollWithInteraction(
 		if (mention) user = mentionUser;
 		else if (charName) user = titleCharName;
 		if (time) user += `${timestamp(db, interaction.guild!.id)}`;
-		if (user.trim().length > 0) user += `${ul("common.space")}:\n  `;
+		if (user.trim().length > 0) user += `${ul("common.space")}:\n`;
 		if (infoRoll) return `${user}[__${infoRoll.capitalize()}__] `;
 		return user;
 	};
