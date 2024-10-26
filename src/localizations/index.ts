@@ -29,9 +29,11 @@ export function lError(
 	userLang?: Djs.Locale
 ) {
 	const ul = ln(userLang ?? interaction?.locale ?? Djs.Locale.EnglishUS);
-	if (e instanceof DiceTypeError)
-		return ul("error.invalidDice.withDice", { dice: e.dice });
-
+	if (e instanceof DiceTypeError) {
+		if (e.cause !== "noBulkRoll")
+			return ul("error.invalidDice.withDice", { dice: e.dice });
+		return ul("error.noBulkRoll");
+	}
 	if (e instanceof FormulaError)
 		return ul("error.invalidFormula", { formula: e.formula });
 
