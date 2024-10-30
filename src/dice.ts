@@ -109,7 +109,7 @@ export function parseResult(
 
 		finalRes.push(res);
 	}
-	return `${comment}  ${finalRes.join("\n  ")}`;
+	return `${comment}  ${finalRes.join("\n  ").trimEnd()}`;
 }
 
 /**
