@@ -131,7 +131,7 @@ export async function rollWithInteraction(
 		if (timer && timer > 0) {
 			const messageBefore = await findMessageBefore(channel, inter, interaction.client);
 			if (messageBefore)
-				url = `\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${messageBefore!.id}>)`;
+				url = `\n\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${interaction.guild.id}/${interaction.channel!.id}/${messageBefore!.id}>)`;
 		}
 		await rolLog.edit(`${infoRollTotal(true, true)}${parser}${url}`);
 	}
