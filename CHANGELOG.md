@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.15.0](https://github.com/Dicelette/discord-dicelette/compare/1.14.0...1.15.0) (2024-11-02)
+
+
+### Features
+
+* **delete-char:** now add a wall to prevent deleting by error (confirm button) ([b428938](https://github.com/Dicelette/discord-dicelette/commit/b4289382b26358216f564074d917a2ff14f7f1bf))
+
+
+### Bug Fixes
+
+* async reaction ([65d58ed](https://github.com/Dicelette/discord-dicelette/commit/65d58ed56d9f6ba26e4fc17f6165a3fda04e3b38))
+* **style:** trimEnd the last test for finalRes (prevent too much newlines) ([a7e13ed](https://github.com/Dicelette/discord-dicelette/commit/a7e13ed3748090025b2869edc773238d95a62ab9))
+
 ## [1.14.0](https://github.com/Dicelette/discord-dicelette/compare/1.13.4...1.14.0) (2024-10-25)
 
 
