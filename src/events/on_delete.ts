@@ -38,7 +38,6 @@ function deleteIfChannelOrThread(
 export const DELETE_THREAD = (client: EClient): void => {
 	client.on("threadDelete", async (thread) => {
 		try {
-			logger.silly(`Thread ${thread.name} was deleted`);
 			//search channelID in database and delete it
 			const guildID = thread.guild.id;
 			const db = client.settings;
@@ -54,13 +53,11 @@ export const DELETE_THREAD = (client: EClient): void => {
 
 export const DELETE_MESSAGE = (client: EClient): void => {
 	client.on("messageDelete", async (message) => {
-		logger.silly(`Message ${message.id} was deleted`);
 		try {
 			if (!message.guild) return;
 			const messageId = message.id;
 			//search channelID in database and delete it
 			const guildID = message.guild.id;
-			logger.silly(`Message ${messageId} was deleted`);
 			const channel = message.channel;
 			if (channel.isDMBased()) return;
 			if (client.settings.get(guildID, "templateID.messageId") === messageId)
@@ -69,7 +66,6 @@ export const DELETE_MESSAGE = (client: EClient): void => {
 			const dbUser = client.settings.get(guildID, "user");
 			if (dbUser && Object.keys(dbUser).length > 0) {
 				for (const [user, values] of Object.entries(dbUser)) {
-					logger.silly(`checking value for user ${user}`);
 					for (const [index, value] of values.entries()) {
 						logger.info(
 							`checking character ${value.charName}`,
@@ -118,7 +114,6 @@ function cleanUserDB(
 	/** if private channel was deleted, delete only the private charactersheet */
 
 	for (const [user, data] of Object.entries(dbUser)) {
-		logger.silly(`Checking user ${user}`);
 		const filterChar = data.filter((char) => {
 			return char.messageId[1] !== thread.id;
 		});

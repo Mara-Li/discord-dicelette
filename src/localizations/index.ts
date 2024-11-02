@@ -128,7 +128,6 @@ export function findln(translatedText: string) {
 		const ul = ln(locale as Djs.Locale);
 		for (const key of ALL_TRANSLATION_KEYS) {
 			if (ul(key).toLowerCase() === translatedText.toLowerCase()) {
-				logger.silly(`Key found: ${key}`);
 				return key;
 			}
 		}

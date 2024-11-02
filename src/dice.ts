@@ -1,7 +1,6 @@
 import type { Compare, Resultat } from "@dicelette/core";
 import type { Translation } from "@interfaces/discord";
 import { evaluate } from "mathjs";
-import { logger } from "./index";
 
 /**
  * Parse the result of the dice to be readable
@@ -96,7 +95,6 @@ export function parseResult(
 				res = res.replace(calc, `\`${calcStr}\``);
 			}
 		}
-		logger.silly(isCritical);
 		if (isCritical === "failure") {
 			res = res.replace(regexForFormulesDices, `**${ul("roll.critical.failure")}** —`);
 		} else if (isCritical === "success") {

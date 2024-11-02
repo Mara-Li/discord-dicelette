@@ -6,7 +6,7 @@ import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { UserData } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
-import { type EClient, logger } from "@main";
+import type { EClient } from "@main";
 import { embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";
@@ -44,7 +44,6 @@ export async function rollWithInteraction(
 	}
 	//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
 	dice = dice.trim();
-	logger.silly(`Rolling dice: ${dice}`);
 	const rollDice = roll(dice.trim());
 	if (!rollDice) {
 		await reply(interaction, {

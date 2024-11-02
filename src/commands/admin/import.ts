@@ -7,7 +7,7 @@ import type { StatisticalTemplate } from "@dicelette/core";
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@interactions";
 import type { UserData } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
-import type { EClient } from "@main";
+import { type EClient, logger } from "@main";
 import {
 	InvalidCsvContent,
 	InvalidURL,
@@ -382,8 +382,7 @@ async function step(
 			members[userID].find((char) => {
 				if (char.userName && charName)
 					return char.userName.unidecode() === charName.unidecode();
-				if (!char.userName && !charName) return true;
-				return false;
+				return !char.userName && !charName;
 			})
 		) {
 			if (interaction) {
@@ -426,8 +425,7 @@ async function step(
 						const match = line.match(/-\s*([^:]+)\s*:\s*(.+)/);
 						if (match) {
 							const key = match[1].trim();
-							const value = match[2].trim();
-							acc[key] = value;
+							acc[key] = match[2].trim();
 						}
 						return acc;
 					},
@@ -446,6 +444,7 @@ async function step(
 			avatar: data.avatar ?? undefined,
 			channel,
 		};
+		logger.trace("Adding character", newChar);
 		// biome-ignore lint/performance/noDelete: I need this because the file will be rewritten and the undefined value can broke object
 		if (!newChar.private) delete newChar.private;
 		// biome-ignore lint/performance/noDelete: I need this because the file will be rewritten and the undefined value can broke object

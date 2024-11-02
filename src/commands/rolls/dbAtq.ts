@@ -1,5 +1,5 @@
 import { cmdLn, ln } from "@localization";
-import { EClient, logger } from "@main";
+import { type EClient, logger } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice } from "@utils/roll";
