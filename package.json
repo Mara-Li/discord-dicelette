@@ -64,7 +64,7 @@
 		"ts-dedent": "^2.2.0",
 		"tslog": "^4.9.3",
 		"typescript": "5.5.4",
-		"uniformize": "^2.0.3"
+		"uniformize": "^2.0.4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.3",
