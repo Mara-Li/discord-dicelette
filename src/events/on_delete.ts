@@ -67,12 +67,6 @@ export const DELETE_MESSAGE = (client: EClient): void => {
 			if (dbUser && Object.keys(dbUser).length > 0) {
 				for (const [user, values] of Object.entries(dbUser)) {
 					for (const [index, value] of values.entries()) {
-						logger.info(
-							`checking character ${value.charName}`,
-							value.messageId,
-							messageId,
-							channel.id
-						);
 						const persoId: PersonnageIds = {
 							messageId: value.messageId[0],
 							channelId: value.messageId[1],
