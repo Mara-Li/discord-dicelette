@@ -86,7 +86,7 @@ export const onReactionRemove = (client: EClient): void => {
 		);
 		if (!reaction.message.guild) return;
 		if (reaction.message.author?.id !== client.user?.id) return;
-		removeCopiedReaction(reaction, user);
+		await removeCopiedReaction(reaction, user);
 	});
 };
 
