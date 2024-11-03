@@ -79,7 +79,6 @@ export const dbRoll = {
 		}
 		if (choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
-		console.log("focused", interaction.options.getFocused());
 		await interaction.respond(
 			filter.map((result) => ({ name: result.capitalize(), value: result }))
 		);
