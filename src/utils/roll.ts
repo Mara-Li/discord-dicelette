@@ -44,7 +44,7 @@ export async function rollWithInteraction(
 	}
 	//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
 	dice = dice.trim();
-	const rollDice = roll(dice.trim());
+	const rollDice = roll(dice.trim().toLowerCase());
 	if (!rollDice) {
 		await reply(interaction, {
 			embeds: [embedError(ul("error.invalidDice.withDice", { dice }), ul)],

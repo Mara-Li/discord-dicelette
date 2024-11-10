@@ -3,13 +3,13 @@
 import { deleteAfter } from "@commands/rolls/base_roll";
 import { COMMENT_REGEX, type Resultat, roll } from "@dicelette/core";
 import { lError, ln } from "@localization";
-import { EClient, logger } from "@main";
+import { type EClient, logger } from "@main";
 import { timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";
 import { parseResult } from "../dice";
 
-export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/;
+export const DETECT_DICE_MESSAGE = /([\w\.]+|(\{.*\})) (.*)/i;
 
 export default (client: EClient): void => {
 	client.on("messageCreate", async (message) => {
@@ -22,14 +22,16 @@ export default (client: EClient): void => {
 			const detectRoll = content.match(/\[(.*)\]/)?.[1];
 			const comments = content.match(DETECT_DICE_MESSAGE)?.[3].replaceAll("*", "\\*");
 			if (comments && !detectRoll) {
-				const diceValue = content.match(/^\S*#?d\S+|\{.*\}/);
+				const diceValue = content.match(/^\S*#?d\S+|\{.*\}/i);
 				if (!diceValue) return;
 				content = content.replace(DETECT_DICE_MESSAGE, "$1");
 			}
 			let deleteInput = true;
 			let result: Resultat | undefined;
 			try {
-				result = detectRoll ? roll(detectRoll) : roll(content);
+				result = detectRoll
+					? roll(detectRoll.toLowerCase())
+					: roll(content.toLowerCase());
 			} catch (e) {
 				return;
 			}
@@ -60,7 +62,6 @@ export default (client: EClient): void => {
 			}
 			let linkToOriginal = "";
 			if (deleteInput) {
-				await message.delete();
 				if (client.settings.get(message.guild.id, "context")) {
 					const messageBefore = await findMessageBefore(channel, message, client);
 					if (messageBefore)
