@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.16.0](https://github.com/Dicelette/discord-dicelette/compare/1.15.0...1.16.0) (2024-11-10)
+
+
+### Features
+
+* **contextMenu:** add a command to copy the result ([88a6948](https://github.com/Dicelette/discord-dicelette/commit/88a694860a622dd6be6f13db60c0b2de6387b2d3))
+
+
+### Bug Fixes
+
+* "D" not recognized ([4d82096](https://github.com/Dicelette/discord-dicelette/commit/4d82096ad1d35143bd345bd8559072b0972e6cda))
+* bulk roll with extra space at the start ([64c86ae](https://github.com/Dicelette/discord-dicelette/commit/64c86aeea8d957393b7cf0989d33879775db767a))
+* should delete message input after sending the result ([90df8b5](https://github.com/Dicelette/discord-dicelette/commit/90df8b5404950f7786da647e4d823e633dc18b7e))
+
 ## [1.15.0](https://github.com/Dicelette/discord-dicelette/compare/1.14.0...1.15.0) (2024-11-02)
 
 
