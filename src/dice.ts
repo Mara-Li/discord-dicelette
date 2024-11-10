@@ -105,7 +105,7 @@ export function parseResult(
 				.replace("✓", `**${ul("roll.success")}** —`);
 		}
 
-		finalRes.push(res);
+		finalRes.push(res.trimStart());
 	}
 	return `${comment}  ${finalRes.join("\n  ").trimEnd()}`;
 }
