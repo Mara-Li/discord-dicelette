@@ -1,7 +1,8 @@
 import process from "node:process";
 import { commandsList } from "@commands";
+import { contextMenus } from "@commands/context-menu";
 import type { Settings } from "@interfaces/discord";
-import { type EClient, logger, VERSION } from "@main";
+import { type EClient, VERSION, logger } from "@main";
 import { ActivityType, type Guild, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 
@@ -11,18 +12,22 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN ?? "0");
 
 export default (client: EClient): void => {
 	client.on("ready", async () => {
-		if (!client.user || !client.application || !process.env.CLIENT_ID) {
-			return;
-		}
+		if (!client.user || !client.application || !process.env.CLIENT_ID) return;
+
 		logger.trace(`${client.user.username} is online; v.${VERSION}`);
-		const serializedCommands = commandsList.map((command) => command.data.toJSON());
+		let serializedCommands = commandsList.map((command) => command.data.toJSON());
 		client.user.setActivity("Roll Dices 🎲 !", { type: ActivityType.Competing });
+		serializedCommands = serializedCommands.concat(
+			//@ts-ignore
+			contextMenus.map((cmd) => cmd.toJSON())
+		);
 		for (const guild of client.guilds.cache.values()) {
 			logger.trace(`Registering commands for \`${guild.name}\``);
-
+			const cmds = await guild.client.application.commands.fetch({ guildId: guild.id });
+			//filter the list of the commands that are deleted
 			// biome-ignore lint/complexity/noForEach: forEach is fine here noinspection ES6MissingAwait
-			guild.client.application.commands.cache.forEach(async (command) => {
-				logger.trace(`Deleting ${command.name}`);
+			cmds.forEach(async (command) => {
+				if (serializedCommands.find((c) => c.name === command.name)) return;
 				await command.delete();
 			});
 

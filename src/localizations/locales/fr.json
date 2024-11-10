@@ -142,6 +142,14 @@
   "context": {
     "disabled": "L'ajout d'un lien vers le contexte est désactivé."
   },
+  "copyRollResult": {
+    "error": {
+      "noResult": "Aucun résultat de dés n'a été trouvé dans le message.",
+      "notBot": "Ce message ne provient pas de Dicelette. Aucun lien ne peut être créé !"
+    },
+    "notRaw": "Résultats formatés (lien)",
+    "raw": "Résultats formatés (lien brut)"
+  },
   "csv_generation": {
     "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
     "name": "csv",

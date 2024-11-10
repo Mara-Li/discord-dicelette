@@ -6,13 +6,13 @@ import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { registerUser, setDefaultManagerId } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
 
+import { deleteAfter } from "@commands/rolls/base_roll";
+import { TUTORIAL_IMAGES } from "@interfaces/constant";
+import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
+import { logger } from "@main";
 import * as Djs from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
-import { deleteAfter } from "@commands/rolls/base_roll";
-import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
-import { TUTORIAL_IMAGES } from "@interfaces/constant";
-import { logger } from "@main";
 /**
  * Set the tags for thread channel in forum
  */
@@ -416,7 +416,6 @@ export const embedError = (error: string, ul: Translation, cause?: string) => {
 	return new Djs.EmbedBuilder()
 		.setDescription(error)
 		.setColor("Red")
-		.setFooter({ text: cause ?? stack.replace("error.", "") })
 		.setAuthor({ name: ul("common.error"), iconURL: "https://i.imgur.com/2ulUJCc.png" })
 		.setTimestamp();
 };

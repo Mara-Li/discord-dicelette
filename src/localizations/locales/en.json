@@ -142,6 +142,14 @@
   "context": {
     "disabled": "Adding a link to context is disabled."
   },
+  "copyRollResult": {
+    "error": {
+      "noResult": "No result was found in the message.",
+      "notBot": "This message is not from Dicelette. No link can be created!"
+    },
+    "notRaw": "Formatted results (link)",
+    "raw": "Formatted results (raw link)"
+  },
   "csv_generation": {
     "description": "Used to generate the CSV file for the add_mass command.",
     "name": "csv",

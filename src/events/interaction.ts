@@ -1,4 +1,5 @@
 import { autCompleteCmd, commandsList } from "@commands";
+import { commandMenu } from "@commands/context-menu";
 import { resetButton } from "@commands/gimmick/edit";
 import type { StatisticalTemplate } from "@dicelette/core";
 import { executeAddDiceButton, storeDamageDice } from "@interactions/add/dice";
@@ -8,7 +9,7 @@ import { initiateRenaming, validateRename } from "@interactions/edit/rename";
 import { editStats, triggerEditStats } from "@interactions/edit/stats";
 import { initiateMove, validateMove } from "@interactions/edit/user";
 import type { Settings, Translation } from "@interfaces/discord";
-import { lError, ln } from "@localization";
+import { findln, lError, ln } from "@localization";
 import type { EClient } from "@main";
 import {
 	continuePage,
@@ -31,7 +32,12 @@ export default (client: EClient): void => {
 		const ul = ln(langToUse);
 		const interactionUser = interaction.user;
 		try {
-			if (interaction.isCommand()) {
+			if (interaction.isMessageContextMenuCommand()) {
+				const name = interaction.commandName;
+				let raw = true;
+				if (findln(name).includes("notRaw")) raw = false;
+				await commandMenu(interaction, client, raw);
+			} else if (interaction.isCommand()) {
 				const command = commandsList.find(
 					(cmd) => cmd.data.name === interaction.commandName
 				);

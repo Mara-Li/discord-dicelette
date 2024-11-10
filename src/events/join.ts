@@ -1,4 +1,5 @@
 import { commandsList } from "@commands";
+import { contextMenus } from "@commands/context-menu";
 import { type EClient, logger } from "@main";
 
 export default (client: EClient): void => {
@@ -8,6 +9,9 @@ export default (client: EClient): void => {
 				await guild.commands.create(command.data);
 				logger.trace(`Command ${command.data.name} created in ${guild.name}`);
 				client.settings.set(guild.id, true, "converted");
+			}
+			for (const contextMenu of contextMenus) {
+				await guild.commands.create(contextMenu);
 			}
 		} catch (e) {
 			logger.fatal(e);
