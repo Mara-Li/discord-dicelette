@@ -85,7 +85,7 @@ export default (client: EClient): void => {
 			const signMessage = result.compare
 				? `${result.compare.sign} ${result.compare.value}`
 				: "";
-			const authorMention = `*${Djs.userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")} ${signMessage}\`)`;
+			const authorMention = `*${Djs.userMention(message.author.id)}* (🎲 \`${result.dice.replace(COMMENT_REGEX, "")}${signMessage ? ` ${signMessage}` : ""}\`)`;
 			const msg = `${authorMention}${timestamp(client.settings, message.guild.id)}\n${parser}${linkToOriginal}`;
 			await msgToEdit.edit(msg);
 			const idMessage = client.settings.get(message.guild.id, "linkToLogs")
@@ -99,6 +99,7 @@ export default (client: EClient): void => {
 					});
 			const timer = client.settings.get(message.guild.id, "deleteAfter") ?? 180000;
 			await deleteAfter(reply, timer);
+			if (deleteInput) await message.delete();
 			return;
 		} catch (e) {
 			logger.error(e);
