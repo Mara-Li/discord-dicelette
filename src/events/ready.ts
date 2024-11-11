@@ -28,7 +28,11 @@ export default (client: EClient): void => {
 			// biome-ignore lint/complexity/noForEach: forEach is fine here noinspection ES6MissingAwait
 			cmds.forEach(async (command) => {
 				if (serializedCommands.find((c) => c.name === command.name)) return;
-				await command.delete();
+				try {
+					await command.delete();
+				} catch (e) {
+					logger.warn(`Error while deleting command ${command.name} in ${guild.name}`);
+				}
 			});
 
 			await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, guild.id), {
