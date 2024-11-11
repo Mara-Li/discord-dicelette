@@ -147,8 +147,8 @@
       "noResult": "No result was found in the message.",
       "notBot": "This message is not from Dicelette. No link can be created!"
     },
-    "notRaw": "Formatted results (link)",
-    "raw": "Formatted results (raw link)"
+    "notRaw": "Create: link to the result",
+    "raw": "Create: raw link to the result"
   },
   "csv_generation": {
     "description": "Used to generate the CSV file for the add_mass command.",
