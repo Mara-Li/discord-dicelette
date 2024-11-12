@@ -1,5 +1,5 @@
 import { autCompleteCmd, commandsList } from "@commands";
-import { commandMenu } from "@commands/context-menu";
+import {commandMenu, desktopLink, mobileLink} from "@commands/context-menu";
 import { resetButton } from "@commands/gimmick/edit";
 import type { StatisticalTemplate } from "@dicelette/core";
 import { executeAddDiceButton, storeDamageDice } from "@interactions/add/dice";
@@ -155,6 +155,13 @@ async function buttonSubmit(
 	else if (interaction.customId === "avatar") {
 		await resetButton(interaction.message, ul);
 		await interaction.reply({ content: ul("refresh"), ephemeral: true });
+	} else if (interaction.customId.includes("copyResult")) {
+		const isMobile = interaction.customId.includes("mobile");
+		//remove button from the message
+		const message = await interaction.message.fetch();
+		if (isMobile) await mobileLink(interaction, ul);
+		else await desktopLink(interaction, ul);
+		message.edit({ components: [] });
 	}
 }
 

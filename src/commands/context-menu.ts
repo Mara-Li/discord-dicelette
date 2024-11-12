@@ -2,6 +2,8 @@ import { cmdLn, ln } from "@localization/index";
 import * as Djs from "discord.js";
 import i18next from "i18next";
 import type { EClient } from "../index";
+import {Translation} from "@interfaces/discord";
+import {GuildMember} from "discord.js";
 
 const t = i18next.getFixedT("en");
 
@@ -17,6 +19,7 @@ export async function commandMenu(
 	interaction: Djs.MessageContextMenuCommandInteraction,
 	client: EClient
 ) {
+	const member = (interaction.member as GuildMember).presence
 	const lang = client.settings.get(interaction!.guild!.id, "lang") ?? interaction.locale;
 	const ul = ln(lang);
 	if (interaction.targetMessage.author.id !== client.user?.id) {
@@ -26,6 +29,21 @@ export async function commandMenu(
 		return;
 	}
 	const message = interaction.targetMessage.content;
+	const messageUrl = interaction.targetMessage.url;
+	
+	const link = await finalLink(interaction, message, messageUrl, ul);
+	await interaction.reply({
+		content: `${ul("copyRollResult.info")}\n\n\`\`${link}\`\``,
+		ephemeral: true,
+	});
+
+	await interaction.followUp({
+		content: `${link}`,
+		ephemeral: true,
+	});
+}
+
+async function finalLink(interaction: Djs.MessageContextMenuCommandInteraction | Djs.ButtonInteraction, message: string, messageUrl: string, ul: Translation) {
 	const regexResultForRoll = /= `(?<result>.*)`/gi;
 
 	let match: RegExpExecArray | null;
@@ -47,16 +65,27 @@ export async function commandMenu(
 		/-# ↪ (?<saved>https:\/\/discord\.com\/channels\/\d+\/\d+\/\d+)/gi;
 	let savedDice = regexSavedDice.exec(message)?.groups?.saved;
 	const generateMessage = `[[${stats ? `${stats}${ul("common.space")}: ` : ""}${res.join(" ; ")}]]`;
-	if (!savedDice) savedDice = interaction.targetMessage.url;
-	const finalLink = `${generateMessage}(<${savedDice}>)`;
+	if (!savedDice) savedDice = messageUrl;
+	return `${generateMessage}(<${savedDice}>)`;
+}
 
+export async function mobileLink(interaction: Djs.ButtonInteraction, ul: Translation) {
+	const message = interaction.message.content;
+	const messageUrl = interaction.message.url;
+	//check user mobile or desktop
+	const link = await finalLink(interaction, message, messageUrl, ul);
 	await interaction.reply({
-		content: `${ul("copyRollResult.info")}\n\n\`\`${finalLink}\`\``,
+		content: link,
 		ephemeral: true,
 	});
+}
 
-	await interaction.followUp({
-		content: `${finalLink}`,
+export async function desktopLink(interaction: Djs.ButtonInteraction, ul: Translation) {
+	const message = interaction.message.content;
+	const messageUrl = interaction.message.url;
+	const link = await finalLink(interaction, message, messageUrl, ul);
+	await interaction.reply({
+		content: `\`\`${link}\`\``,
 		ephemeral: true,
 	});
 }
