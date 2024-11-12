@@ -143,12 +143,18 @@
     "disabled": "Adding a link to context is disabled."
   },
   "copyRollResult": {
+    "desktop": {
+      "info": "Please select the following code block and copy it.",
+      "name": "PC: Link to this result"
+    },
     "error": {
       "noResult": "No result was found in the message.",
       "notBot": "This message is not from Dicelette. No link can be created!"
     },
-    "notRaw": "Create: link to the result",
-    "raw": "Create: raw link to the result"
+    "mobile": {
+      "info": "Please, select the message bellow and click on \"Copy text\".",
+      "name": "Mobile: Link to this result"
+    }
   },
   "csv_generation": {
     "description": "Used to generate the CSV file for the add_mass command.",

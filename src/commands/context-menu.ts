@@ -1,5 +1,4 @@
 import { cmdLn, ln } from "@localization/index";
-import { ApplicationCommandType } from "discord-api-types/v10";
 import * as Djs from "discord.js";
 import i18next from "i18next";
 import type { EClient } from "../index";
@@ -8,20 +7,22 @@ const t = i18next.getFixedT("en");
 
 export const contextMenus = [
 	new Djs.ContextMenuCommandBuilder()
-		.setName(t("copyRollResult.raw"))
-		.setNameLocalizations(cmdLn("copyRollResult.raw"))
+		.setName(t("copyRollResult.mobile.name"))
+		.setNameLocalizations(cmdLn("copyRollResult.mobile.name"))
 		.setDMPermission(false)
-		.setType(ApplicationCommandType.Message),
+		//@ts-ignore
+		.setType(Djs.ApplicationCommandType.Message),
 	new Djs.ContextMenuCommandBuilder()
-		.setName(t("copyRollResult.notRaw"))
-		.setNameLocalizations(cmdLn("copyRollResult.notRaw"))
+		.setName(t("copyRollResult.desktop.name"))
+		.setNameLocalizations(cmdLn("copyRollResult.desktop.name"))
 		.setDMPermission(false)
-		.setType(ApplicationCommandType.Message),
+		//@ts-ignore
+		.setType(Djs.ApplicationCommandType.Message),
 ];
 export async function commandMenu(
 	interaction: Djs.MessageContextMenuCommandInteraction,
 	client: EClient,
-	raw?: boolean
+	desktop?: boolean
 ) {
 	const lang = client.settings.get(interaction!.guild!.id, "lang") ?? interaction.locale;
 	const ul = ln(lang);
@@ -55,14 +56,20 @@ export async function commandMenu(
 	const generateMessage = `[[${stats ? `${stats}${ul("common.space")}: ` : ""}${res.join(" ; ")}]]`;
 	if (!savedDice) savedDice = interaction.targetMessage.url;
 	const finalLink = `${generateMessage}(<${savedDice}>)`;
-	if (raw)
+
+	if (desktop) {
 		await interaction.reply({
-			content: `\`\`${finalLink}\`\``,
+			content: `${ul("copyRollResult.desktop.info")}\n\n\`\`${finalLink}\`\``,
 			ephemeral: true,
 		});
-	else
+	} else {
 		await interaction.reply({
+			content: ul("copyRollResult.mobile.info"),
+			ephemeral: true,
+		});
+		await interaction.followUp({
 			content: `${finalLink}`,
 			ephemeral: true,
 		});
+	}
 }

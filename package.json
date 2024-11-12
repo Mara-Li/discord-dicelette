@@ -50,7 +50,7 @@
 		"chart.js": "^3.9.1",
 		"chartjs-node-canvas": "^4.1.6",
 		"csv-generate": "^4.4.1",
-		"discord-api-types": "^0.37.92",
+		"discord-api-types": "^0.37.104",
 		"discord.js": "^14.16.3",
 		"dotenv": "^16.4.5",
 		"enmap": "^6.0.3",

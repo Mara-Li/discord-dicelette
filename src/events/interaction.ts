@@ -34,9 +34,9 @@ export default (client: EClient): void => {
 		try {
 			if (interaction.isMessageContextMenuCommand()) {
 				const name = interaction.commandName;
-				let raw = true;
-				if (findln(name).includes("notRaw")) raw = false;
-				await commandMenu(interaction, client, raw);
+				let desktop = true;
+				if (findln(name).includes("mobile")) desktop = false;
+				await commandMenu(interaction, client, desktop);
 			} else if (interaction.isCommand()) {
 				const command = commandsList.find(
 					(cmd) => cmd.data.name === interaction.commandName
