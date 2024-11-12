@@ -7,22 +7,15 @@ const t = i18next.getFixedT("en");
 
 export const contextMenus = [
 	new Djs.ContextMenuCommandBuilder()
-		.setName(t("copyRollResult.mobile.name"))
-		.setNameLocalizations(cmdLn("copyRollResult.mobile.name"))
-		.setDMPermission(false)
-		//@ts-ignore
-		.setType(Djs.ApplicationCommandType.Message),
-	new Djs.ContextMenuCommandBuilder()
-		.setName(t("copyRollResult.desktop.name"))
-		.setNameLocalizations(cmdLn("copyRollResult.desktop.name"))
+		.setName(t("copyRollResult.name"))
+		.setNameLocalizations(cmdLn("copyRollResult.name"))
 		.setDMPermission(false)
 		//@ts-ignore
 		.setType(Djs.ApplicationCommandType.Message),
 ];
 export async function commandMenu(
 	interaction: Djs.MessageContextMenuCommandInteraction,
-	client: EClient,
-	desktop?: boolean
+	client: EClient
 ) {
 	const lang = client.settings.get(interaction!.guild!.id, "lang") ?? interaction.locale;
 	const ul = ln(lang);
@@ -57,19 +50,13 @@ export async function commandMenu(
 	if (!savedDice) savedDice = interaction.targetMessage.url;
 	const finalLink = `${generateMessage}(<${savedDice}>)`;
 
-	if (desktop) {
-		await interaction.reply({
-			content: `${ul("copyRollResult.desktop.info")}\n\n\`\`${finalLink}\`\``,
-			ephemeral: true,
-		});
-	} else {
-		await interaction.reply({
-			content: ul("copyRollResult.mobile.info"),
-			ephemeral: true,
-		});
-		await interaction.followUp({
-			content: `${finalLink}`,
-			ephemeral: true,
-		});
-	}
+	await interaction.reply({
+		content: `${ul("copyRollResult.info")}\n\n\`\`${finalLink}\`\``,
+		ephemeral: true,
+	});
+
+	await interaction.followUp({
+		content: `${finalLink}`,
+		ephemeral: true,
+	});
 }

@@ -9,7 +9,7 @@ import { initiateRenaming, validateRename } from "@interactions/edit/rename";
 import { editStats, triggerEditStats } from "@interactions/edit/stats";
 import { initiateMove, validateMove } from "@interactions/edit/user";
 import type { Settings, Translation } from "@interfaces/discord";
-import { findln, lError, ln } from "@localization";
+import { lError, ln } from "@localization";
 import type { EClient } from "@main";
 import {
 	continuePage,
@@ -33,10 +33,7 @@ export default (client: EClient): void => {
 		const interactionUser = interaction.user;
 		try {
 			if (interaction.isMessageContextMenuCommand()) {
-				const name = interaction.commandName;
-				let desktop = true;
-				if (findln(name).includes("mobile")) desktop = false;
-				await commandMenu(interaction, client, desktop);
+				await commandMenu(interaction, client);
 			} else if (interaction.isCommand()) {
 				const command = commandsList.find(
 					(cmd) => cmd.data.name === interaction.commandName

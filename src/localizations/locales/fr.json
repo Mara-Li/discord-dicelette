@@ -143,18 +143,12 @@
     "disabled": "L'ajout d'un lien vers le contexte est désactivé."
   },
   "copyRollResult": {
-    "desktop": {
-      "info": "Merci de sélectionner le bloc de code suivant et de le copier.",
-      "name": "PC : Lien vers ce résultat"
-    },
     "error": {
       "noResult": "Aucun résultat de dés n'a été trouvé dans le message.",
       "notBot": "Ce message ne provient pas de Dicelette. Aucun lien ne peut être créé !"
     },
-    "mobile": {
-      "info": "Merci de cliquer sur le message suivant et de cliquer sur \"Copier le texte\".",
-      "name": "Mobile : Lien vers ce résultat"
-    }
+    "info": "Le choix du message à copier pour créer un raccourci vers le résultat dépend de votre plateforme :\n- __Mobile__ : Merci de sélectionner le second message et cliquer sur \"Copier le texte\".\n- __PC__ : Merci de copier le bloc de code ci-dessous.",
+    "name": "Créer un lien vers ce résultat"
   },
   "csv_generation": {
     "description": "Permet de générer le fichier CSV pour la commande ajout_masse.",
