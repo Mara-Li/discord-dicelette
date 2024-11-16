@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.17.0](https://github.com/Dicelette/discord-dicelette/compare/1.16.0...1.17.0) (2024-11-16)
+
+
+### Features
+
+* **copyResult:** add possibility to create link using reaction + button ([7045224](https://github.com/Dicelette/discord-dicelette/commit/7045224459b8c96ee323431771e24bece13012f0))
+
+
+### Bug Fixes
+
+* crash when changing command /delete cmd ([a96dd65](https://github.com/Dicelette/discord-dicelette/commit/a96dd65eaf4c45fd494c429e0512ea7882e18713))
+* **dbRoll:** accent should be kept in the final roll message ([eea8876](https://github.com/Dicelette/discord-dicelette/commit/eea88767eec8a91050a41ee69515634c48a30736))
+
 ## [1.16.0](https://github.com/Dicelette/discord-dicelette/compare/1.15.0...1.16.0) (2024-11-10)
 
 
