@@ -6,7 +6,7 @@ import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { UserData } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
-import type { EClient } from "@main";
+import {logger, type EClient } from "@main";
 import { embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";
@@ -27,7 +27,7 @@ export async function rollWithInteraction(
 	critical?: { failure?: number; success?: number },
 	user?: Djs.User,
 	charName?: string,
-	infoRoll?: string,
+	infoRoll?: string | { name: string; standardized: string },
 	hideResult?: boolean | null
 ) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild)
@@ -68,7 +68,10 @@ export async function rollWithInteraction(
 		else if (charName) user = titleCharName;
 		if (time) user += `${timestamp(db, interaction.guild!.id)}`;
 		if (user.trim().length > 0) user += `${ul("common.space")}:\n`;
-		if (infoRoll) return `${user}[__${infoRoll.capitalize()}__] `;
+		if (infoRoll) {
+			if (infoRoll instanceof String) return `${user}[__${infoRoll.capitalize()}__] `;
+			if (infoRoll instanceof Object) return`${user}[__${infoRoll.name.capitalize()}__] `;
+		}
 		return user;
 	};
 	const retrieveUser = infoRollTotal(true);
@@ -148,27 +151,28 @@ export async function rollStatistique(
 	user?: Djs.User,
 	hideResult?: boolean | null
 ) {
-	let statistique = options.getString(t("common.statistic"), true).standardize(true);
+	let statistic = options.getString(t("common.statistic"), true);
+	let standardizedStatistic = statistic.standardize(true);
 	//model : {dice}{stats only if not comparator formula}{bonus/malus}{formula}{override/comparator}{comments}
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	const override = options.getString(t("dbRoll.options.override.name"));
 	const modification = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 
-	let userStat = userStatistique.stats?.[statistique];
-
+	let userStat = userStatistique.stats?.[standardizedStatistic];
 	while (!userStat) {
 		const guildData = client.settings.get(interaction.guild!.id, "templateID.statsName");
 		if (userStatistique.stats && guildData) {
-			const findStatInList = guildData.find((stat) => stat.subText(statistique));
+			const findStatInList = guildData.find((stat) => stat.subText(standardizedStatistic));
 			if (findStatInList) {
-				statistique = findStatInList;
+				standardizedStatistic = findStatInList.standardize(true);
+				statistic = findStatInList;
 				userStat = userStatistique.stats[findStatInList.standardize(true)];
 			}
 		}
 		if (userStat) break;
 		throw new Error(
 			ul("error.noStat", {
-				stat: statistique.capitalize(),
+				stat: standardizedStatistic.capitalize(),
 				char: optionChar ? ` ${optionChar.capitalize()}` : "",
 			})
 		);
@@ -207,7 +211,7 @@ export async function rollStatistique(
 		template.critical,
 		user,
 		optionChar,
-		statistique,
+		{ name: statistic, standardized: standardizedStatistic },
 		hideResult
 	);
 }
