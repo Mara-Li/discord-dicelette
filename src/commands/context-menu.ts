@@ -1,10 +1,11 @@
 import type { Translation } from "@interfaces/discord";
-import { cmdLn, ln } from "@localization/index";
+import { cmdLn, findAllTranslation, ln } from "@localization";
+import type { EClient } from "@main";
 import * as Djs from "discord.js";
 import i18next from "i18next";
-import type { EClient } from "../index";
 
 const t = i18next.getFixedT("en");
+const critical = criticalRegex();
 
 export const contextMenus = [
 	new Djs.ContextMenuCommandBuilder()
@@ -48,16 +49,15 @@ async function finalLink(
 	ul: Translation
 ) {
 	const regexResultForRoll = /= `(?<result>.*)`/gi;
-	const successFail = / {2}(?<compare>.*) — /gi;
 
 	const list = message.split("\n");
 	const res: string[] = [];
 	for (const line of list) {
 		if (!line.startsWith("  ")) continue;
 		const match = regexResultForRoll.exec(line)?.groups?.result;
-		const compare = successFail.exec(line)?.groups?.compare;
+		const compare = critical.exec(line)?.groups?.compare;
 		if (match && compare) {
-			res.push(`${compare.trim()} — \`${match.trim()}\``);
+			res.push(`**${compare.trim()}** — \`${match.trim()}\``);
 		} else if (match) {
 			res.push(`\`${match.trim()}\``);
 		}
@@ -100,4 +100,23 @@ export async function desktopLink(interaction: Djs.ButtonInteraction, ul: Transl
 		content: `\`\`${link}\`\``,
 		ephemeral: true,
 	});
+}
+
+export function criticalRegex() {
+	const failure = "roll.critical.failure";
+	const success = "roll.critical.success";
+	const failTranslation = findAllTranslation(failure);
+	//create a list
+	const failList = Object.values(failTranslation)
+		.map((value) => value?.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"))
+		.filter((value) => value != null);
+	const successTranslation = findAllTranslation(success);
+	const successList = Object.values(successTranslation)
+		.map((value) => value?.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"))
+		.filter((value) => value != null);
+	//concatenate the list
+	const criticalList = failList.concat(successList);
+	//escape the special characters
+	const joined = criticalList.join("|");
+	return new RegExp(` {2}\\*{2}(?<compare>${joined})\\*{2} — `, "gi");
 }

@@ -134,3 +134,13 @@ export function findln(translatedText: string) {
 	}
 	return translatedText;
 }
+
+export function findAllTranslation(key: string) {
+	const allLocales = Object.keys(resources);
+	const translations: Djs.LocalizationMap = {};
+	for (const locale of allLocales) {
+		const ul = ln(locale as Djs.Locale);
+		translations[locale as Djs.Locale] = ul(key);
+	}
+	return translations;
+}
