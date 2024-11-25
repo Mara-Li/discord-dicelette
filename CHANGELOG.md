@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.18.0](https://github.com/Dicelette/discord-dicelette/compare/1.17.0...1.18.0) (2024-11-25)
+
+
+### Features
+
+* **register:** allow to wipe all characters when registering new template ([4fe5939](https://github.com/Dicelette/discord-dicelette/commit/4fe5939f90da959b7cf049b4e940e4109a6e5433))
+
+
+### Bug Fixes
+
+* **copyResult:** add compare result (failure/success) & adjust aspect with other comments ([f337d1a](https://github.com/Dicelette/discord-dicelette/commit/f337d1a41e68b53c36f3dcca2b475032aa09c498))
+
 ## [1.17.0](https://github.com/Dicelette/discord-dicelette/compare/1.16.0...1.17.0) (2024-11-16)
 
 
