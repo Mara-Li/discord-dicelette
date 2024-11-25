@@ -10,7 +10,7 @@ import type { GuildData } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
 import { type EClient, logger } from "@main";
 import { downloadTutorialImages, embedError, reply } from "@utils";
-import { bulkEditTemplateUser } from "@utils/parse";
+import { bulkDeleteCharacters, bulkEditTemplateUser } from "@utils/parse";
 import * as Djs from "discord.js";
 import i18next from "i18next";
 import { dedent } from "ts-dedent";
@@ -197,6 +197,20 @@ export const registerTemplate = {
 					Djs.ChannelType.PrivateThread,
 					Djs.ChannelType.GuildForum
 				)
+		)
+		.addBooleanOption((option) =>
+			option
+				.setName(t("register.options.update.name"))
+				.setDescription(t("register.options.update.description"))
+				.setNameLocalizations(cmdLn("register.options.update.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.update.description"))
+		)
+		.addBooleanOption((option) =>
+			option
+				.setName(t("register.options.delete.name"))
+				.setDescription(t("register.options.delete.description"))
+				.setNameLocalizations(cmdLn("register.options.delete.name"))
+				.setDescriptionLocalizations(cmdLn("register.options.delete.description"))
 		),
 	async execute(interaction: Djs.CommandInteraction, client: EClient): Promise<void> {
 		if (!interaction.guild) return;
@@ -310,7 +324,7 @@ export const registerTemplate = {
 			for (const [dice, value] of Object.entries(templateData.damage))
 				diceEmbed.addFields({
 					name: dice.capitalize(),
-					value: `${value}`,
+					value: `\`${value}\``,
 					inline: true,
 				});
 		}
@@ -372,10 +386,15 @@ export const registerTemplate = {
 			};
 			client.settings.set(guildId, newData);
 		}
-		await bulkEditTemplateUser(client.settings, interaction, ul, templateData);
+
 		await reply(interaction, {
 			content: ul("register.embed.registered"),
 			files: await downloadTutorialImages(),
 		});
+
+		if (options.getBoolean(t("register.options.update.name")))
+			await bulkEditTemplateUser(client.settings, interaction, ul, templateData);
+		else if (options.getBoolean(t("register.options.delete.name")))
+			await bulkDeleteCharacters(client.settings, interaction, ul);
 	},
 };

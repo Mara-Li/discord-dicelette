@@ -1,11 +1,11 @@
 import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
 import type { PersonnageIds, UserData, UserRegistration } from "@interfaces/database";
+import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
-import { type EClient, logger } from "@main";
+import type { EClient } from "@main";
 import { embedError, haveAccess, reply, searchUserChannel } from "@utils";
 import { ensureEmbed, getEmbeds, parseEmbedFields } from "@utils/parse";
 import * as Djs from "discord.js";
-import type { Settings, Translation } from "@interfaces/discord";
 
 /**
  * Get the guild template when clicking on the "registering user" button or when submitting
@@ -271,7 +271,7 @@ export function getUserByEmbed(
 	if (templateStat) {
 		stats = {};
 		for (const stat of templateStat) {
-			if (first && !stat.name.startsWith("✏️")) continue;
+			if (first && !stat.name.startsWith("✏")) continue;
 			const value = Number.parseInt(stat.value.removeBacktick(), 10);
 			if (Number.isNaN(value)) {
 				//it's a combinaison

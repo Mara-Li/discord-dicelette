@@ -539,6 +539,10 @@
   "refresh": "Suite à une mise à jour, les boutons ont été modifié ! Vous devez maintenant sélectionner l'option \"Avatar\" du menu déroulant pour modifier l'image.\nDe nouvelles options y ont aussi été rajouté !",
   "register": {
     "button": "Enregistrer un personnage",
+    "delete": {
+      "confirm": "Êtes vous sûr.e de vouloir supprimer **toutes** les fiches ?",
+      "done": "Les fiches ont bien été supprimé."
+    },
     "description": "Enregistre un nouveau modèle pour la commande dbroll",
     "embed": {
       "comparator": "Comparateur :",
@@ -551,6 +555,10 @@
     "name": "enregistrer",
     "options": {
       "channel": "Le channel où le modèle et les utilisateurs seront enregistrés",
+      "delete": {
+        "description": "Supprime toutes les anciennes fiches",
+        "name": "tout_supprimer"
+      },
       "private": {
         "description": "Permet de choisir un channel dans lequel les fiches “privées” seront envoyées",
         "name": "channel_privé"
@@ -562,6 +570,10 @@
       "template": {
         "description": "Le modèle à enregistrer",
         "name": "template"
+      },
+      "update": {
+        "description": "Mettre à jour les anciennes fiches de personnages",
+        "name": "mettre-à-jour"
       }
     }
   },

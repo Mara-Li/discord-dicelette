@@ -6,6 +6,7 @@ import type { Settings, Translation } from "@interfaces/discord";
 import { findln } from "@localization";
 import { NoEmbed, searchUserChannel } from "@utils";
 import * as Djs from "discord.js";
+import { logger } from "../index";
 /**
  * Ensure the embeds are present
  * @param {Message} message
@@ -195,6 +196,61 @@ export async function bulkEditTemplateUser(
 			}
 		}
 	}
+}
+
+/**
+ * Delete all characters from the guild
+ * @param guildData {Settings}
+ * @param interaction {Djs.CommandInteraction}
+ * @param ul {Translation}
+ */
+export async function bulkDeleteCharacters(
+	guildData: Settings,
+	interaction: Djs.CommandInteraction,
+	ul: Translation
+) {
+	//first add a warning using buttons
+	const msg = ul("register.delete.confirm");
+	const embed = new Djs.EmbedBuilder()
+		.setTitle(ul("deleteChar.confirm.title"))
+		.setDescription(msg)
+		.setColor(Djs.Colors.Red);
+	const confirm = new Djs.ButtonBuilder()
+		.setCustomId("delete_all_confirm")
+		.setStyle(Djs.ButtonStyle.Danger)
+		.setLabel(ul("common.confirm"));
+	const cancel = new Djs.ButtonBuilder()
+		.setCustomId("delete_all_cancel")
+		.setStyle(Djs.ButtonStyle.Secondary)
+		.setLabel(ul("common.cancel"));
+	const row = new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents(
+		confirm,
+		cancel
+	);
+	const channel = interaction.channel as Djs.TextChannel;
+	const rep = await channel.send({ embeds: [embed], components: [row] });
+	const collectorFilter = (i: { user: { id: string | undefined } }) =>
+		i.user.id === interaction.user.id;
+	try {
+		const confirm = await rep.awaitMessageComponent({
+			filter: collectorFilter,
+			time: 60_000,
+		});
+		console.log(confirm);
+		if (confirm.customId === "delete_all_confirm") {
+			guildData.delete(interaction.guild!.id, "user");
+			await rep.edit({
+				components: [],
+				content: ul("register.delete.done"),
+				embeds: [],
+			});
+		} else {
+			await rep.edit({ components: [] });
+		}
+	} catch (err) {
+		logger.error(err);
+	}
+	return;
 }
 
 /**

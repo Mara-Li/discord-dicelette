@@ -539,6 +539,10 @@
   "refresh": "Following an update, the buttons have been modified! \nNow you need to select the “Avatar” option from the drop-down menu to edit the image.\n\nNew options have also been added!",
   "register": {
     "button": "Register a character",
+    "delete": {
+      "confirm": "Are you sure do you want to delete **all** users data ?",
+      "done": "The characters sheets has been deleted."
+    },
     "description": "Register a new template for the dbroll command",
     "embed": {
       "comparator": "Comparator:",
@@ -551,6 +555,10 @@
     "name": "register",
     "options": {
       "channel": "The channel where the template and users will be registered",
+      "delete": {
+        "description": "Delete all character sheets",
+        "name": "wipe"
+      },
       "private": {
         "description": "Allows you to choose a channel in which the “private” characters will be sent",
         "name": "private_channel"
@@ -562,6 +570,10 @@
       "template": {
         "description": "The template to be registered",
         "name": "template"
+      },
+      "update": {
+        "description": "Update old character sheets",
+        "name": "update"
       }
     }
   },
