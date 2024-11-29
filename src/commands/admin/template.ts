@@ -9,7 +9,7 @@ import {
 import type { GuildData } from "@interfaces/database";
 import { cmdLn, ln } from "@localization";
 import { type EClient, logger } from "@main";
-import { downloadTutorialImages, embedError, reply } from "@utils";
+import { createDefaultThread, downloadTutorialImages, embedError, reply } from "@utils";
 import { bulkDeleteCharacters, bulkEditTemplateUser } from "@utils/parse";
 import * as Djs from "discord.js";
 import i18next from "i18next";
@@ -98,7 +98,7 @@ export const generateTemplate = {
 				statServer[stat] = {
 					max: 0,
 					min: 0,
-					combinaison: "",
+					combination: "",
 				};
 			}
 		}
@@ -278,10 +278,10 @@ export const registerTemplate = {
 			for (const [stat, value] of Object.entries(templateData.statistics)) {
 				const min = value.min;
 				const max = value.max;
-				const combinaison = value.combinaison;
+				const combination = value.combination;
 				let msg = "";
-				if (combinaison)
-					msg += `- Combinaison${ul("common.space")}: \`${combinaison}\`\n`;
+				if (combination)
+					msg += `- Combination${ul("common.space")}: \`${combination}\`\n`;
 				if (min) msg += `- Min${ul("common.space")}: \`${min}\`\n`;
 				if (max) msg += `- Max${ul("common.space")}: \`${max}\`\n`;
 				if (msg.length === 0) msg = ul("register.embed.noValue");
@@ -371,11 +371,27 @@ export const registerTemplate = {
 				damageName: damageName ?? [],
 			};
 			if (publicChannel) json.managerId = publicChannel.id;
+			else if (interaction.channel instanceof Djs.TextChannel) {
+				const thread = await createDefaultThread(
+					interaction!.channel,
+					client.settings,
+					interaction,
+					false
+				);
+				json.managerId = thread.id;
+			} else {
+				await reply(interaction, {
+					embeds: [embedError(ul("error.public"), ul)],
+					ephemeral: true,
+				});
+				return;
+			}
 			if (privateChannel) json.privateChannel = privateChannel.id;
 			client.settings.set(guildId, json);
 		} else {
 			const newData: GuildData = {
 				lang: interaction.guild.preferredLocale ?? interaction.locale,
+				managerId: undefined,
 				templateID: {
 					channelId: channel.id,
 					messageId: msg.id,

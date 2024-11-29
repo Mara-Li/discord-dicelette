@@ -43,7 +43,7 @@
 	"license": "GNU GPLv3",
 	"dependencies": {
 		"@dice-roller/rpg-dice-roller": "^5.5.0",
-		"@dicelette/core": "latest",
+		"@dicelette/core": "link:N:/Documents/Github/dicelette/core",
 		"@discordjs/rest": "^2.4.0",
 		"@types/papaparse": "^5.3.14",
 		"@types/parse-color": "^1.0.3",

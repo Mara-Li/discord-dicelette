@@ -1,19 +1,19 @@
 {
-  "charName": false,
-  "statistics": {
-    "Force": {
-      "min": 1
-    },
-    "Endurance": {
-      "min": 1
-    },
-    "Agilité": {
-      "min": 1
-    },
-    "logique": {
-      "combinaison": "force+endurance"
-    }
-  },
-  "diceType": "1d20>$",
-  "total": 88
+	"charName": false,
+	"statistics": {
+		"Force": {
+			"min": 1
+		},
+		"Endurance": {
+			"min": 1
+		},
+		"Agilité": {
+			"min": 1
+		},
+		"logique": {
+			"combination": "force+endurance"
+		}
+	},
+	"diceType": "1d20>$",
+	"total": 88
 }

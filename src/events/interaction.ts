@@ -1,5 +1,5 @@
 import { autCompleteCmd, commandsList } from "@commands";
-import {commandMenu, desktopLink, mobileLink} from "@commands/context-menu";
+import { commandMenu, desktopLink, mobileLink } from "@commands/context-menu";
 import { resetButton } from "@commands/gimmick/edit";
 import type { StatisticalTemplate } from "@dicelette/core";
 import { executeAddDiceButton, storeDamageDice } from "@interactions/add/dice";
@@ -202,6 +202,6 @@ async function cancel(
 	const isModerator = interaction.guild?.members.cache
 		.get(interactionUser.id)
 		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
-	if (user || isModerator) await interaction.message.edit({ components: [] });
+	if (user || isModerator) await interaction.message.delete();
 	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 }

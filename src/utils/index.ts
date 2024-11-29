@@ -103,18 +103,8 @@ export async function repostInThread(
 		}
 	} else {
 		// noinspection SuspiciousTypeOfGuard
-		if (!thread && channel instanceof Djs.TextChannel) {
-			thread = (await channel.threads.fetch()).threads.find(
-				(thread) => thread.name === "📝 • [STATS]"
-			) as Djs.AnyThreadChannel | undefined;
-			if (!thread) {
-				thread = (await channel.threads.create({
-					name: "📝 • [STATS]",
-					autoArchiveDuration: 10080,
-				})) as Djs.AnyThreadChannel;
-				setDefaultManagerId(guildData, interaction, thread.id);
-			}
-		}
+		if (!thread && channel instanceof Djs.TextChannel)
+			thread = await createDefaultThread(channel, guildData, interaction);
 	}
 	if (!thread) {
 		throw new Error(ul("error.noThread"));
@@ -129,6 +119,25 @@ export async function repostInThread(
 		msgId: [msg.id, thread.id],
 	};
 	registerUser(userRegister, interaction, guildData);
+}
+
+export async function createDefaultThread(
+	parent: Djs.TextChannel,
+	guildData: Settings,
+	interaction: Djs.BaseInteraction,
+	save = true
+) {
+	let thread = (await parent.threads.fetch()).threads.find(
+		(thread) => thread.name === "📝 • [STATS]"
+	) as Djs.AnyThreadChannel | undefined;
+	if (!thread) {
+		thread = (await parent.threads.create({
+			name: "📝 • [STATS]",
+			autoArchiveDuration: 10080,
+		})) as Djs.AnyThreadChannel;
+		if (save) setDefaultManagerId(guildData, interaction, thread.id);
+	}
+	return thread;
 }
 
 /**
@@ -277,7 +286,7 @@ export function uniqueValues(array: string[]) {
 }
 
 /**
- * Parse the fields in stats, used to fix combinaison and get only them and not their result
+ * Parse the fields in stats, used to fix combination and get only them and not their result
  */
 export function parseStatsString(statsEmbed: Djs.EmbedBuilder) {
 	const stats = parseEmbedFields(statsEmbed.toJSON() as Djs.Embed);
@@ -285,8 +294,8 @@ export function parseStatsString(statsEmbed: Djs.EmbedBuilder) {
 	for (const [name, value] of Object.entries(stats)) {
 		let number = Number.parseInt(value, 10);
 		if (Number.isNaN(number)) {
-			const combinaison = value.replace(/`(.*)` =/, "").trim();
-			number = Number.parseInt(combinaison, 10);
+			const combination = value.replace(/`(.*)` =/, "").trim();
+			number = Number.parseInt(combination, 10);
 		}
 		parsedStats[name] = number;
 	}

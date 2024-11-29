@@ -414,7 +414,7 @@ All notable changes to this project will be documented in this file. See [commit
 * set a default tags for forum post ([d6cc887](https://github.com/Dicelette/discord-dicelette/commit/d6cc8872c19fcdf77da2bcad2e8254dd8ebaddae))
 * set translation ([e65efa0](https://github.com/Dicelette/discord-dicelette/commit/e65efa07d14b2fe1fb17531f67982924f3ee04ed))
 * template assets ([14821f1](https://github.com/Dicelette/discord-dicelette/commit/14821f15476b6867f53a0c50644dd160dc801e96))
-* verify combinaison/formula before register ([f645449](https://github.com/Dicelette/discord-dicelette/commit/f645449f53d737e86c3694e966f437910a9cf683))
+* verify combination/formula before register ([f645449](https://github.com/Dicelette/discord-dicelette/commit/f645449f53d737e86c3694e966f437910a9cf683))
 
 
 ### Bug Fixes

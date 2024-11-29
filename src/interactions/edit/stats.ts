@@ -1,4 +1,4 @@
-import { FormulaError, evalOneCombinaison } from "@dicelette/core";
+import { FormulaError, evalOneCombination } from "@dicelette/core";
 import { allowEdit, createStatsEmbed, getUserNameAndChar } from "@interactions";
 import type { Settings, Translation } from "@interfaces/discord";
 import { displayOldAndNewStats, isArrayEqual, reply, sendLogs } from "@utils";
@@ -61,15 +61,15 @@ export async function editStats(
 		}
 		const num = Number.parseInt(value, 10);
 		if (Number.isNaN(num)) {
-			//it's a combinaison OR an error
-			//we need to get the result of the combinaison
-			const combinaison = Number.parseInt(evalOneCombinaison(value, stats), 10);
-			if (Number.isNaN(combinaison)) {
+			//it's a combination OR an error
+			//we need to get the result of the combination
+			const combination = Number.parseInt(evalOneCombination(value, stats), 10);
+			if (Number.isNaN(combination)) {
 				throw new FormulaError(value);
 			}
 			embedsStatsFields.push({
 				name: name.capitalize(),
-				value: `\`${value}\` = ${combinaison}`,
+				value: `\`${value}\` = ${combination}`,
 				inline: true,
 			});
 			continue;
@@ -169,8 +169,8 @@ export async function showEditorStats(
 		let stringValue = value;
 		if (!registeredStats?.includes(name.unidecode())) continue; //remove stats that are not registered
 		if (value.match(/=/)) {
-			const combinaison = value.split("=")?.[0].trim();
-			if (combinaison) stringValue = combinaison;
+			const combination = value.split("=")?.[0].trim();
+			if (combination) stringValue = combination;
 		}
 		statsStrings += `- ${name}${ul("common.space")}: ${stringValue}\n`;
 	}
