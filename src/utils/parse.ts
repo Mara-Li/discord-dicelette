@@ -261,15 +261,15 @@ export function getStatistiqueFields(
 	templateData: StatisticalTemplate,
 	ul: Translation
 ) {
-	const combinationFields: { [name: string]: string } = {};
+	const combinaisonFields: { [name: string]: string } = {};
 	const stats: { [name: string]: number } = {};
 	let total = templateData.total;
-	if (!templateData.statistics) return { combinationFields, stats };
+	if (!templateData.statistics) return { combinaisonFields, stats };
 	for (const [key, value] of Object.entries(templateData.statistics)) {
 		const name = key.standardize();
-		if (!interaction.fields.fields.has(name) && !value.combination) continue;
-		if (value.combination) {
-			combinationFields[key] = value.combination;
+		if (!interaction.fields.fields.has(name) && !value.combinaison) continue;
+		if (value.combinaison) {
+			combinaisonFields[key] = value.combinaison;
 			continue;
 		}
 		const statValue = interaction.fields.getTextInputValue(name);
@@ -288,5 +288,5 @@ export function getStatistiqueFields(
 			stats[key] = num;
 		} else stats[key] = num;
 	}
-	return { combinationFields, stats };
+	return { combinaisonFields, stats };
 }

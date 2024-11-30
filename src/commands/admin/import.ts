@@ -104,8 +104,8 @@ export const bulkAdd = {
 				//! important: As the bulk add can be for level upped characters, the value is not verified (min/max) & total points
 				for (const [name, value] of Object.entries(char.stats ?? {})) {
 					const validateValue = guildTemplate.statistics?.[name];
-					const fieldValue = validateValue?.combination
-						? `\`${validateValue.combination}\` = ${value}`
+					const fieldValue = validateValue?.combinaison
+						? `\`${validateValue.combinaison}\` = ${value}`
 						: `\`${value}\``;
 					statsEmbed!.addFields({
 						name: name.capitalize(),

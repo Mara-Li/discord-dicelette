@@ -26,7 +26,7 @@
 			"min": 3
 		},
 		"PV": {
-			"combination": "endurance*2+force"
+			"combinaison": "endurance*2+force"
 		}
 	},
 	"diceType": "1d20+$>=20",

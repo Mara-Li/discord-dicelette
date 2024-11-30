@@ -6,7 +6,7 @@ import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { UserData } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
-import {logger, type EClient } from "@main";
+import type { EClient } from "@main";
 import { embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";
@@ -27,7 +27,7 @@ export async function rollWithInteraction(
 	critical?: { failure?: number; success?: number },
 	user?: Djs.User,
 	charName?: string,
-	infoRoll?: string | { name: string; standardized: string },
+	infoRoll?: { name: string; standardized: string },
 	hideResult?: boolean | null
 ) {
 	if (!channel || channel.isDMBased() || !channel.isTextBased() || !interaction.guild)
@@ -56,7 +56,6 @@ export async function rollWithInteraction(
 		rollDice.comment = comments;
 		rollDice.dice = `${dice} /* ${comments} */`;
 	}
-
 	const parser = parseResult(rollDice, ul, critical, !!infoRoll);
 	const userId = user?.id ?? interaction.user.id;
 	let mentionUser: string = Djs.userMention(userId);
@@ -68,10 +67,7 @@ export async function rollWithInteraction(
 		else if (charName) user = titleCharName;
 		if (time) user += `${timestamp(db, interaction.guild!.id)}`;
 		if (user.trim().length > 0) user += `${ul("common.space")}:\n`;
-		if (infoRoll) {
-			if (infoRoll instanceof String) return `${user}[__${infoRoll.capitalize()}__] `;
-			if (infoRoll instanceof Object) return`${user}[__${infoRoll.name.capitalize()}__] `;
-		}
+		if (infoRoll) return `${user}[__${infoRoll.name.capitalize()}__] `;
 		return user;
 	};
 	const retrieveUser = infoRollTotal(true);
@@ -162,7 +158,9 @@ export async function rollStatistique(
 	while (!userStat) {
 		const guildData = client.settings.get(interaction.guild!.id, "templateID.statsName");
 		if (userStatistique.stats && guildData) {
-			const findStatInList = guildData.find((stat) => stat.subText(standardizedStatistic));
+			const findStatInList = guildData.find((stat) =>
+				stat.subText(standardizedStatistic)
+			);
 			if (findStatInList) {
 				standardizedStatistic = findStatInList.standardize(true);
 				statistic = findStatInList;
@@ -226,10 +224,15 @@ export async function rollDice(
 	user?: Djs.User,
 	hideResult?: boolean | null
 ) {
-	let atq = options.getString(t("rAtq.atq_name.name"), true).standardize(true);
+	let atq = options.getString(t("rAtq.atq_name.name"), true);
+	const infoRoll = {
+		name: atq,
+		standardized: atq.standardize(),
+	};
+	atq = atq.standardize();
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	//search dice
-	let dice = userStatistique.damage?.[atq.toLowerCase()];
+	let dice = userStatistique.damage?.[atq];
 	while (!dice) {
 		const userData = client.settings
 			.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`)
@@ -246,7 +249,10 @@ export async function rollDice(
 		await reply(interaction, {
 			embeds: [
 				embedError(
-					ul("error.noDamage", { atq: atq.capitalize(), charName: charOptions ?? "" }),
+					ul("error.noDamage", {
+						atq: infoRoll.name.capitalize(),
+						charName: charOptions ?? "",
+					}),
 					ul
 				),
 			],
@@ -273,7 +279,7 @@ export async function rollDice(
 		undefined,
 		user,
 		charOptions,
-		atq,
+		infoRoll,
 		hideResult
 	);
 }

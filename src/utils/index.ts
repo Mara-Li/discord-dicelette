@@ -286,7 +286,7 @@ export function uniqueValues(array: string[]) {
 }
 
 /**
- * Parse the fields in stats, used to fix combination and get only them and not their result
+ * Parse the fields in stats, used to fix combinaison and get only them and not their result
  */
 export function parseStatsString(statsEmbed: Djs.EmbedBuilder) {
 	const stats = parseEmbedFields(statsEmbed.toJSON() as Djs.Embed);
@@ -294,8 +294,8 @@ export function parseStatsString(statsEmbed: Djs.EmbedBuilder) {
 	for (const [name, value] of Object.entries(stats)) {
 		let number = Number.parseInt(value, 10);
 		if (Number.isNaN(number)) {
-			const combination = value.replace(/`(.*)` =/, "").trim();
-			number = Number.parseInt(combination, 10);
+			const combinaison = value.replace(/`(.*)` =/, "").trim();
+			number = Number.parseInt(combinaison, 10);
 		}
 		parsedStats[name] = number;
 	}

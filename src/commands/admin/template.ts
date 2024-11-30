@@ -98,7 +98,7 @@ export const generateTemplate = {
 				statServer[stat] = {
 					max: 0,
 					min: 0,
-					combination: "",
+					combinaison: "",
 				};
 			}
 		}
@@ -278,10 +278,10 @@ export const registerTemplate = {
 			for (const [stat, value] of Object.entries(templateData.statistics)) {
 				const min = value.min;
 				const max = value.max;
-				const combination = value.combination;
+				const combinaison = value.combinaison;
 				let msg = "";
-				if (combination)
-					msg += `- Combination${ul("common.space")}: \`${combination}\`\n`;
+				if (combinaison)
+					msg += `- Combinaison${ul("common.space")}: \`${combinaison}\`\n`;
 				if (min) msg += `- Min${ul("common.space")}: \`${min}\`\n`;
 				if (max) msg += `- Max${ul("common.space")}: \`${max}\`\n`;
 				if (msg.length === 0) msg = ul("register.embed.noValue");

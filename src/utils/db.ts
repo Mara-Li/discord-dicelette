@@ -123,7 +123,7 @@ export async function getUserFromMessage(
 	interaction: Djs.BaseInteraction,
 	charName?: string | null,
 	options?: {
-		integrateCombination?: boolean;
+		integrateCombinaison?: boolean;
 		allowAccess?: boolean;
 		skipNotFound?: boolean;
 		fetchAvatar?: boolean;
@@ -132,8 +132,8 @@ export async function getUserFromMessage(
 ) {
 	if (!options)
 		//biome-ignore lint/style/noParameterAssign: We need to assign a default value
-		options = { integrateCombination: true, allowAccess: true, skipNotFound: false };
-	const { integrateCombination, allowAccess, skipNotFound } = options;
+		options = { integrateCombinaison: true, allowAccess: true, skipNotFound: false };
+	const { integrateCombinaison, allowAccess, skipNotFound } = options;
 	const ul = ln(interaction.locale);
 	const guild = interaction.guild;
 	const user = guildData.get(guild!.id, `user.${userId}`)?.find((char) => {
@@ -160,7 +160,7 @@ export async function getUserFromMessage(
 			message,
 			ul,
 			undefined,
-			integrateCombination,
+			integrateCombinaison,
 			options.fetchAvatar,
 			options.fetchChannel
 		);
@@ -249,7 +249,7 @@ export function getUserByEmbed(
 	message: Djs.Message,
 	ul: Translation,
 	first: boolean | undefined = false,
-	integrateCombination = true,
+	integrateCombinaison = true,
 	fetchAvatar = false,
 	fetchChannel = false
 ) {
@@ -274,11 +274,11 @@ export function getUserByEmbed(
 			if (first && !stat.name.startsWith("✏")) continue;
 			const value = Number.parseInt(stat.value.removeBacktick(), 10);
 			if (Number.isNaN(value)) {
-				//it's a combination
+				//it's a combinaison
 				//remove the `x` = text;
-				const combination = stat.value.split("=")[1].trim();
-				if (integrateCombination)
-					stats[stat.name.unidecode()] = Number.parseInt(combination, 10);
+				const combinaison = stat.value.split("=")[1].trim();
+				if (integrateCombinaison)
+					stats[stat.name.unidecode()] = Number.parseInt(combinaison, 10);
 			} else stats[stat.name.unidecode()] = value;
 		}
 	}

@@ -1,4 +1,4 @@
-import { type StatisticalTemplate, evalCombination } from "@dicelette/core";
+import { type StatisticalTemplate, evalCombinaison } from "@dicelette/core";
 import { ln } from "@localization";
 import { reply } from "@utils";
 import { continueCancelButtons, registerDmgButton } from "@utils/buttons";
@@ -23,7 +23,7 @@ export async function embedStatistiques(
 	const userEmbed = getEmbeds(ul, interaction.message, "user");
 	if (!userEmbed) return;
 	const statsEmbed = getEmbeds(ul, interaction.message, "stats");
-	const { combinationFields, stats } = getStatistiqueFields(interaction, template, ul);
+	const { combinaisonFields, stats } = getStatistiqueFields(interaction, template, ul);
 	//combine all embeds as one
 	userEmbed.setFooter({ text: ul("common.page", { nb: page }) });
 	//add old fields
@@ -36,9 +36,9 @@ export async function embedStatistiques(
 			inline: true,
 		});
 	}
-	const statsWithoutCombination = template.statistics
+	const statsWithoutCombinaison = template.statistics
 		? Object.keys(template.statistics)
-				.filter((stat) => !template.statistics![stat].combination)
+				.filter((stat) => !template.statistics![stat].combinaison)
 				.map((name) => name.standardize())
 		: [];
 	const embedObject = statEmbeds.toJSON();
@@ -50,17 +50,17 @@ export async function embedStatistiques(
 	}
 
 	const embedStats = Object.fromEntries(
-		Object.entries(parsedFields).filter(([key]) => statsWithoutCombination.includes(key))
+		Object.entries(parsedFields).filter(([key]) => statsWithoutCombinaison.includes(key))
 	);
-	if (Object.keys(embedStats).length === statsWithoutCombination.length) {
+	if (Object.keys(embedStats).length === statsWithoutCombinaison.length) {
 		// noinspection JSUnusedAssignment
-		let combination: { [name: string]: number } = {};
-		combination = evalCombination(combinationFields, embedStats);
-		//add combination to the embed
-		for (const stat of Object.keys(combination)) {
+		let combinaison: { [name: string]: number } = {};
+		combinaison = evalCombinaison(combinaisonFields, embedStats);
+		//add combinaison to the embed
+		for (const stat of Object.keys(combinaison)) {
 			statEmbeds.addFields({
 				name: stat.capitalize(),
-				value: `\`${combinationFields[stat]}\` = ${combination[stat]}`,
+				value: `\`${combinaisonFields[stat]}\` = ${combinaison[stat]}`,
 				inline: true,
 			});
 		}
@@ -93,18 +93,18 @@ export async function showStatistiqueModal(
 ) {
 	if (!template.statistics) return;
 	const ul = ln(interaction.locale as Djs.Locale);
-	const statsWithoutCombination =
+	const statsWithoutCombinaison =
 		Object.keys(template.statistics).filter((stat) => {
-			return !template.statistics?.[stat]?.combination;
+			return !template.statistics?.[stat]?.combinaison;
 		}) ?? [];
 	const nbOfPages =
-		Math.ceil(statsWithoutCombination.length / 5) >= 1
-			? Math.ceil(statsWithoutCombination.length / 5)
+		Math.ceil(statsWithoutCombinaison.length / 5) >= 1
+			? Math.ceil(statsWithoutCombinaison.length / 5)
 			: page;
 	const modal = new Djs.ModalBuilder()
 		.setCustomId(`page${page}`)
 		.setTitle(ul("modals.steps", { page, max: nbOfPages + 1 }));
-	let statToDisplay = statsWithoutCombination;
+	let statToDisplay = statsWithoutCombinaison;
 	if (stats && stats.length > 0) {
 		statToDisplay = statToDisplay.filter((stat) => !stats.includes(stat.unidecode()));
 		if (statToDisplay.length === 0) {
@@ -121,7 +121,7 @@ export async function showStatistiqueModal(
 	for (const stat of statsToDisplay) {
 		const cleanedName = stat.unidecode();
 		const value = statisticsLowerCase[cleanedName];
-		if (value.combination) continue;
+		if (value.combinaison) continue;
 		let msg = "";
 		if (value.min && value.max)
 			msg = ul("modals.enterValue.minAndMax", { min: value.min, max: value.max });
