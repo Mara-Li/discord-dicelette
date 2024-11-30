@@ -1,7 +1,6 @@
 // noinspection SuspiciousTypeOfGuard
 
 import type { UserData, UserRegistration } from "@interfaces/database";
-import { findln } from "@localization";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { registerUser, setDefaultManagerId } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
@@ -420,8 +419,7 @@ export async function reply(
 		: await interaction.reply(options);
 }
 
-export const embedError = (error: string, ul: Translation, cause?: string) => {
-	const stack = findln(error);
+export const embedError = (error: string, ul: Translation) => {
 	return new Djs.EmbedBuilder()
 		.setDescription(error)
 		.setColor("Red")

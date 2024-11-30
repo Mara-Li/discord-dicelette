@@ -13,9 +13,9 @@ import { getDatabaseChar, registerUser } from "@utils/db";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
 import * as Djs from "discord.js";
 
-import i18next from "i18next";
-import { findLocation } from "@utils/find";
 import type { DiscordChannel, Translation } from "@interfaces/discord";
+import { findLocation } from "@utils/find";
+import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
 export const editAvatar = {
@@ -296,11 +296,11 @@ export async function rename(
 	} catch (error) {
 		if ((error as Error).message === "DUPLICATE")
 			await reply(interaction, {
-				embeds: [embedError(ul("error.duplicate"), ul, "duplicate")],
+				embeds: [embedError(ul("error.duplicate"), ul)],
 			});
 		else
 			await reply(interaction, {
-				embeds: [embedError(ul("error.generic.e", { e: error }), ul, "unknown")],
+				embeds: [embedError(ul("error.generic.e", { e: error }), ul)],
 			});
 		await resetButton(message, ul);
 		return;

@@ -4,7 +4,7 @@ import type {
 	PersonnageIds,
 } from "@interfaces/database";
 import type { DiscordTextChannel, Settings, Translation } from "@interfaces/discord";
-import { type EClient, logger } from "@main";
+import type { EClient } from "@main";
 import {
 	embedError,
 	haveAccess,

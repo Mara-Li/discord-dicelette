@@ -85,7 +85,6 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
 
 # Docusaurus cache and generated files
 .docusaurus
@@ -124,14 +123,8 @@ database_*
 data_backups/
 db.zip
 toDelete.txt
-.env
 .env~
 data/
-data_backups/
-db.zip
 dist/
 git.zip
-node_modules/
-pnpm-lock.yaml
-toDelete.txt
 .idea/
