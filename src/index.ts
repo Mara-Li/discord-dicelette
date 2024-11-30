@@ -1,5 +1,4 @@
 import * as process from "node:process";
-import { onReactionAdd, onReactionRemove } from "@events/MessageReactionAdd";
 import interaction from "@events/interaction";
 import join from "@events/join";
 import MESSAGE_CREATE from "@events/message_create";
@@ -10,16 +9,16 @@ import {
 	ON_KICK,
 } from "@events/on_delete";
 import ready from "@events/ready";
+import { onReactionAdd, onReactionRemove } from "@events/MessageReactionAdd";
 import type { GuildData } from "@interfaces/database";
-import { flattenJson } from "@localization";
-import { resources } from "@localization/init";
-import * as Djs from "discord.js";
 import dotenv from "dotenv";
 import Enmap from "enmap";
-import { type ILogObj, Logger } from "tslog";
+import { flattenJson } from "@localization";
+import { resources } from "@localization/init";
 import * as pkg from "../package.json" assert { type: "json" };
+import * as Djs from "discord.js";
+import { type ILogObj, Logger } from "tslog";
 import "uniformize";
-import { botError } from "@events/on_error";
 dotenv.config({ path: ".env" });
 
 const optionLoggers =
@@ -79,7 +78,6 @@ try {
 	DELETE_THREAD(client);
 	onReactionAdd(client);
 	onReactionRemove(client);
-	botError(client);
 } catch (error) {
 	console.error(error);
 }

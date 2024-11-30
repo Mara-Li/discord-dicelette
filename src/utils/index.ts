@@ -419,12 +419,14 @@ export async function reply(
 		: await interaction.reply(options);
 }
 
-export const embedError = (error: string, ul: Translation) => {
-	return new Djs.EmbedBuilder()
+export const embedError = (error: string, ul: Translation, cause?: string) => {
+	const embed = new Djs.EmbedBuilder()
 		.setDescription(error)
 		.setColor("Red")
 		.setAuthor({ name: ul("common.error"), iconURL: "https://i.imgur.com/2ulUJCc.png" })
 		.setTimestamp();
+	if (cause) embed.setFooter({ text: cause });
+	return embed;
 };
 
 async function fetchDiceRole(diceEmbed: boolean, guild: Djs.Guild, role?: string) {

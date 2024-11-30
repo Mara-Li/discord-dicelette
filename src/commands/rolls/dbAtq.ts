@@ -1,5 +1,3 @@
-// noinspection JSUnusedGlobalSymbols
-
 import { cmdLn, ln } from "@localization";
 import { type EClient, logger } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
@@ -10,7 +8,6 @@ import i18next from "i18next";
 
 const t = i18next.getFixedT("en");
 
-// noinspection JSUnusedGlobalSymbols
 export const dbd = {
 	data: new Djs.SlashCommandBuilder()
 		.setName(t("rAtq.name"))
