@@ -104,7 +104,7 @@ export const deleteChar = {
 			const rep = await confirmToDelete(interaction, ul, user ?? interaction.user, msg);
 
 			const collectorFilter = (i: { user: { id: string | undefined } }) =>
-				i.user.id === user?.id ?? interaction.user.id;
+				i.user.id === (user?.id ?? interaction.user.id);
 			try {
 				const confirm = await rep.awaitMessageComponent({
 					filter: collectorFilter,
@@ -166,7 +166,7 @@ export const deleteChar = {
 			deleteMsg
 		);
 		const collectorFilter = (i: { user: { id: string | undefined } }) =>
-			i.user.id === user?.id ?? interaction.user.id;
+			i.user.id === (user?.id ?? interaction.user.id);
 		try {
 			const confirm = await rep.awaitMessageComponent({
 				filter: collectorFilter,
