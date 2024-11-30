@@ -1,6 +1,6 @@
 import { type EClient, logger } from "@main";
 import * as Djs from "discord.js";
-import {ln} from "@localization/index";
+import { ln } from "@localization/index";
 
 export const onReactionAdd = (client: EClient): void => {
 	client.on(Djs.Events.MessageReactionAdd, async (reaction, user) => {
@@ -25,25 +25,35 @@ export const onReactionAdd = (client: EClient): void => {
 			//remove reaction
 			await reaction.remove();
 			return;
-		} if (reaction.emoji.name === "🔗") {
+		}
+		if (reaction.emoji.name === "🔗") {
 			//add button to the message
 			logger.debug("Adding button 🔗 to the message");
-			const lang = client.settings.get(reaction.message.guild.id, "lang") ??
-			reaction.message.guild?.preferredLocale ?? "en";
+			const lang =
+				client.settings.get(reaction.message.guild.id, "lang") ??
+				reaction.message.guild?.preferredLocale ??
+				"en";
 			const ul = ln(lang);
 			const copyResButtonDesktop = new Djs.ButtonBuilder()
 				.setCustomId("copyResult_desktop")
 				.setStyle(Djs.ButtonStyle.Secondary)
 				.setLabel(ul("copyRollResult.name"))
 				.setEmoji("🖥️");
-			
+
 			const copyResButtonMobile = new Djs.ButtonBuilder()
 				.setCustomId("copyResult_mobile")
 				.setStyle(Djs.ButtonStyle.Secondary)
 				.setLabel(ul("copyRollResult.name"))
 				.setEmoji("📱");
 			const message = await reaction.message.fetch();
-			await message.edit({ components: [new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents(copyResButtonDesktop, copyResButtonMobile)] });
+			await message.edit({
+				components: [
+					new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents(
+						copyResButtonDesktop,
+						copyResButtonMobile
+					),
+				],
+			});
 			//remove reaction
 			await reaction.remove();
 			return;
