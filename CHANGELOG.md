@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.18.2](https://github.com/Dicelette/discord-dicelette/compare/1.18.1...1.18.2) (2024-11-30)
+
+
+### Bug Fixes
+
+* crash at startup ([795c8e3](https://github.com/Dicelette/discord-dicelette/commit/795c8e37eb89549d80b8efe46cbed86fb85a868b))
+
 ## [1.18.1](https://github.com/Dicelette/discord-dicelette/compare/1.18.0...1.18.1) (2024-11-30)
 
 
