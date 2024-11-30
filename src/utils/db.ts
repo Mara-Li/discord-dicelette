@@ -1,4 +1,8 @@
-import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
+import {
+	type Statistic,
+	type StatisticalTemplate,
+	verifyTemplateValue,
+} from "@dicelette/core";
 import type { PersonnageIds, UserData, UserRegistration } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
@@ -106,12 +110,61 @@ export async function getTemplateWithDB(
 			throw new Error(ul("error.noTemplate"));
 		}
 		const res = await fetch(template.url).then((res) => res.json());
-		return verifyTemplateValue(res);
+		return parseTemplate(enmap, guild.id, res);
 	} catch (error) {
 		if ((error as Error).message === "Unknown Message")
 			throw new Error(ul("error.noTemplateId", { channelId, messageId }));
 		throw error;
 	}
+}
+
+//Get only the template value without testing it
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+function parseTemplate(db: Settings, guildId: string, template: any) {
+	if (!db.get(guildId, "templateID.valid")) {
+		db.set(guildId, true, "templateID.valid");
+		return verifyTemplateValue(template);
+	}
+	const statistiqueTemplate: StatisticalTemplate = {
+		diceType: "",
+		statistics: {} as Statistic,
+	};
+	if (!template.statistics) statistiqueTemplate.statistics = undefined;
+	else if (template.statistics && Object.keys(template.statistics).length > 0) {
+		for (const [key, value] of Object.entries(template.statistics)) {
+			const dataValue = value as { max?: number; min?: number; combinaison?: string };
+			if (dataValue.max && dataValue.max <= 0) dataValue.max = undefined;
+			if (dataValue.min && dataValue.min <= 0) dataValue.min = undefined;
+			let formula = dataValue.combinaison
+				? dataValue.combinaison.standardize()
+				: undefined;
+			formula = formula && formula.trim().length > 0 ? formula : undefined;
+			if (!statistiqueTemplate.statistics) {
+				statistiqueTemplate.statistics = {} as Statistic;
+			}
+			statistiqueTemplate.statistics[key] = {
+				max: dataValue.max,
+				min: dataValue.min,
+				combinaison: formula || undefined,
+			};
+		}
+	}
+	if (template.diceType) {
+		statistiqueTemplate.diceType = template.diceType;
+	}
+	if (template.critical && Object.keys(template.critical).length > 0) {
+		statistiqueTemplate.critical = {
+			failure: template.critical.failure ?? undefined,
+			success: template.critical.success ?? undefined,
+		};
+	}
+	if (template.total) {
+		if (template.total <= 0) template.total = undefined;
+		statistiqueTemplate.total = template.total;
+	}
+	if (template.charName) statistiqueTemplate.charName = template.charName;
+	if (template.damage) statistiqueTemplate.damage = template.damage;
+	return statistiqueTemplate;
 }
 
 /**

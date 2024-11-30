@@ -87,6 +87,7 @@ export interface GuildData {
 		messageId: string;
 		statsName: string[];
 		damageName: string[];
+		valid?: boolean;
 	};
 	user: {
 		[userID: string]: {

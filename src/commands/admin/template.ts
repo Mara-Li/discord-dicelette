@@ -369,6 +369,7 @@ export const registerTemplate = {
 				messageId: msg.id,
 				statsName: statsName ?? [],
 				damageName: damageName ?? [],
+				valid: true,
 			};
 			if (publicChannel) json.managerId = publicChannel.id;
 			else if (interaction.channel instanceof Djs.TextChannel) {
@@ -397,6 +398,7 @@ export const registerTemplate = {
 					messageId: msg.id,
 					statsName: statsName ?? [],
 					damageName: damageName ?? [],
+					valid: true,
 				},
 				user: {},
 			};
