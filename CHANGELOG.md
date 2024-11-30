@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.18.1](https://github.com/Dicelette/discord-dicelette/compare/1.18.0...1.18.1) (2024-11-30)
+
+
+### Bug Fixes
+
+* channel where to send character sheet when default channel is not set ([e86c701](https://github.com/Dicelette/discord-dicelette/commit/e86c701fb4c4b2825e5e7721695916057c07b01e))
+* rename 'combination' to 'combinaison' in codebase (main) ([ed9639d](https://github.com/Dicelette/discord-dicelette/commit/ed9639d8183f7ea3aa119ed86267929da3a01768))
+
 ## [1.18.0](https://github.com/Dicelette/discord-dicelette/compare/1.17.0...1.18.0) (2024-11-25)
 
 
