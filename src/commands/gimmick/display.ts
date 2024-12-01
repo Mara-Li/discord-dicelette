@@ -1,3 +1,4 @@
+import { generateStatsDice } from "@dicelette/core";
 import { createDiceEmbed, createStatsEmbed } from "@interactions";
 import type { CharacterData } from "@interfaces/database";
 import { cmdLn, findln, ln, t } from "@localization";
@@ -102,8 +103,8 @@ export const displayUser = {
 			const userMessage = await thread?.messages.fetch(sheetLocation.messageId);
 			const statisticEmbed = getEmbeds(ul, userMessage, "stats");
 			const diceEmbed = getEmbeds(ul, userMessage, "damage");
-			const diceFields = diceEmbed?.toJSON().fields;
 			const statsFields = statisticEmbed?.toJSON().fields;
+			const diceFields = generateDice(diceEmbed?.toJSON().fields, statsFields);
 			const dataUserEmbeds = getEmbeds(ul, userMessage, "user");
 			if (!statisticEmbed && !diceEmbed && !diceFields && !statsFields) {
 				await reply(interaction, { embeds: [embedError(ul("error.user"), ul)] });
@@ -162,4 +163,22 @@ function keepResultOnlyInFormula(fields: Djs.APIEmbedField[]) {
 		newFields.push({ ...field, value });
 	}
 	return newFields;
+}
+
+function generateDice(fields?: Djs.APIEmbedField[], statsFields?: Djs.APIEmbedField[]) {
+	if (!fields) return;
+	const stats = statsFields?.reduce(
+		(acc, field) => {
+			const stat = field.name.toLowerCase();
+			const value = Number.parseInt(field.value.removeBacktick() as string);
+			if (stat && value) acc[field.name.standardize()] = value;
+			return acc;
+		},
+		{} as { [name: string]: number }
+	);
+	for (const field of fields) {
+		const dice = generateStatsDice(field.value.standardize() as string, stats);
+		if (dice) field.value = `\`${dice}\``;
+	}
+	return fields;
 }
