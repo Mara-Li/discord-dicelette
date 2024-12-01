@@ -6,7 +6,7 @@ import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { UserData } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
-import type { EClient } from "@main";
+import { type EClient, logger } from "@main";
 import { embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";
@@ -200,7 +200,7 @@ export async function rollStatistique(
 		dice = dice.replace(comparatorMatch[0], "").trim();
 		comparator = comparatorMatch[0];
 	}
-	const roll = `${replaceFormulaInDice(dice)}${modificationString}${comparator} ${comments}`;
+	const roll = `${replaceFormulaInDice(dice).trimAll()}${modificationString}${comparator} ${comments}`;
 	await rollWithInteraction(
 		interaction,
 		roll,
@@ -270,7 +270,8 @@ export async function rollDice(
 		dice = dice.replace(comparatorMatch[0], "");
 		comparator = comparatorMatch[0];
 	}
-	const roll = `${dice}${modificatorString}${comparator} ${comments}`;
+	const roll = `${dice.trimAll()}${modificatorString}${comparator} ${comments}`;
+	logger.debug(dice.trimAll());
 	await rollWithInteraction(
 		interaction,
 		roll,
