@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.20.1](https://github.com/Dicelette/discord-dicelette/compare/1.20.0...1.20.1) (2024-12-01)
+
+
+### Bug Fixes
+
+* can't delete capa when " - " in name; ([5b76094](https://github.com/Dicelette/discord-dicelette/commit/5b760944720a7def4840522cfd3c47d39df0aac7))
+
 ## [1.20.0](https://github.com/Dicelette/discord-dicelette/compare/1.19.1...1.20.0) (2024-12-01)
 
 
