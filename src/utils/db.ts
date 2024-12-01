@@ -273,14 +273,11 @@ export function getUserByEmbed(
 	if (charNameFields && charNameFields.value !== "common.noSet") {
 		user.userName = charNameFields.value;
 	}
-	const templateStat = first
-		? userEmbed.toJSON().fields
-		: getEmbeds(ul, message, "stats")?.toJSON()?.fields;
+	const statsFields = getEmbeds(ul, message, "stats")?.toJSON()?.fields;
 	let stats: { [name: string]: number } | undefined = undefined;
-	if (templateStat) {
+	if (statsFields) {
 		stats = {};
-		for (const stat of templateStat) {
-			if (first && !stat.name.startsWith("✏")) continue;
+		for (const stat of statsFields) {
 			const value = Number.parseInt(stat.value.removeBacktick(), 10);
 			if (Number.isNaN(value)) {
 				//it's a combinaison
@@ -292,9 +289,7 @@ export function getUserByEmbed(
 		}
 	}
 	user.stats = stats;
-	const damageFields = first
-		? userEmbed.toJSON().fields
-		: getEmbeds(ul, message, "damage")?.toJSON()?.fields;
+	const damageFields = getEmbeds(ul, message, "damage")?.toJSON()?.fields;
 	let templateDamage: { [name: string]: string } | undefined = undefined;
 	if (damageFields) {
 		templateDamage = {};
