@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.19.1](https://github.com/Dicelette/discord-dicelette/compare/1.19.0...1.19.1) (2024-12-01)
+
+
+### Bug Fixes
+
+* statistic not found when registering the first time a dice ([498cfa1](https://github.com/Dicelette/discord-dicelette/commit/498cfa1c18479c6abc9ef316c47ff7736a9e4566))
+
 ## [1.19.0](https://github.com/Dicelette/discord-dicelette/compare/1.18.3...1.19.0) (2024-12-01)
 
 
