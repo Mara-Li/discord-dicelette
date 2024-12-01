@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.18.3](https://github.com/Dicelette/discord-dicelette/compare/1.18.2...1.18.3) (2024-12-01)
+
+
+### Bug Fixes
+
+* multiple dice combined not recognized properly ([cdd78d0](https://github.com/Dicelette/discord-dicelette/commit/cdd78d0cece78a297338ada38efa484a07fcabd3))
+* no need to verify the template each time user add a new dice skill ([0fa5c3f](https://github.com/Dicelette/discord-dicelette/commit/0fa5c3fb2e5ff20c5f1225fa884b84277dd155a4))
+
 ## [1.18.2](https://github.com/Dicelette/discord-dicelette/compare/1.18.1...1.18.2) (2024-11-30)
 
 
