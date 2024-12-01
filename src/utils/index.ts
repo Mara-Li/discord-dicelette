@@ -1,15 +1,13 @@
 // noinspection SuspiciousTypeOfGuard
 
+import { TUTORIAL_IMAGES } from "@interfaces/constant";
 import type { UserData, UserRegistration } from "@interfaces/database";
+import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
+import { logger } from "@logger";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { registerUser, setDefaultManagerId } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
-
-import { TUTORIAL_IMAGES } from "@interfaces/constant";
-import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
-import { logger } from "@logger";
 import * as Djs from "discord.js";
-import { evaluate } from "mathjs";
 import moment from "moment";
 
 /**
@@ -213,53 +211,6 @@ export function isArrayEqual(array1: string[] | undefined, array2: string[] | un
 }
 
 /**
- * Replace the {{}} in the dice string and evaluate the interior if any
- * @param dice {string}
- */
-export function replaceFormulaInDice(dice: string) {
-	// noinspection RegExpRedundantEscape
-	const formula = /(?<formula>\{{2}(.+?)\}{2})/gim;
-	const formulaMatch = formula.exec(dice);
-	if (formulaMatch?.groups?.formula) {
-		const formula = formulaMatch.groups.formula.replaceAll("{{", "").replaceAll("}}", "");
-		try {
-			const result = evaluate(formula);
-			return cleanedDice(dice.replace(formulaMatch.groups.formula, result.toString()));
-		} catch (error) {
-			throw new Error(
-				`[error.invalidFormula, common.space]: ${formulaMatch.groups.formula} [From: replaceFormulaInDice]`
-			);
-		}
-	}
-	return cleanedDice(dice);
-}
-
-// noinspection JSUnusedGlobalSymbols
-/**
- * Replace the stat name by their value using stat and after evaluate any formula using `replaceFormulaInDice`
- */
-export function generateStatsDice(
-	originalDice: string,
-	stats?: { [name: string]: number }
-) {
-	let dice = originalDice;
-	if (stats && Object.keys(stats).length > 0) {
-		//damage field support adding statistic, like : 1d6 + strength
-		//check if the value contains a statistic & calculate if it's okay
-		//the dice will be converted before roll
-		const allStats = Object.keys(stats);
-		for (const stat of allStats) {
-			const regex = new RegExp(escapeRegex(stat.removeAccents()), "gi");
-			if (dice.match(regex)) {
-				const statValue = stats[stat];
-				dice = dice.replace(regex, statValue.toString());
-			}
-		}
-	}
-	return replaceFormulaInDice(dice);
-}
-
-/**
  * Escape regex string
  * @param string {string}
  */
@@ -267,16 +218,6 @@ export function escapeRegex(string: string) {
 	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-/**
- * Replace the ++ +- -- by their proper value:
- * - `++` = `+`
- * - `+-` = `-`
- * - `--` = `+`
- * @param dice {string}
- */
-export function cleanedDice(dice: string) {
-	return dice.replaceAll("+-", "-").replaceAll("--", "+").replaceAll("++", "+");
-}
 /**
  * filter the choices by removing the accents and check if it includes the removedAccents focused
  * @param choices {string[]}

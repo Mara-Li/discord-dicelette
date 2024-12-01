@@ -8,6 +8,7 @@ import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
+import { logger } from "../../logger";
 /**
  * Interaction to add a new skill dice
  * @param interaction {Djs.ButtonInteraction}
@@ -143,6 +144,7 @@ export async function registerDamageDice(
 			}
 		}
 	const user = getUserByEmbed(interaction.message, ul, first);
+	logger.trace("user", user);
 	if (!user) throw new Error(ul("error.user")); //mean that there is no embed
 	value = evalStatsDice(value, user.stats);
 
@@ -215,12 +217,10 @@ export async function registerDamageDice(
 	}
 
 	const components = registerDmgButton(ul);
-	//get all other embeds from the old messages
-	//remove the old dice embed
-	//add the new dice embed
 	const userEmbed = getEmbeds(ul, interaction.message ?? undefined, "user");
 	if (!userEmbed) throw new NoEmbed(); //mean that there is no embed
 	const statsEmbed = getEmbeds(ul, interaction.message ?? undefined, "stats");
+	logger.trace("stats", statsEmbed);
 	const allEmbeds = [userEmbed];
 	if (statsEmbed) allEmbeds.push(statsEmbed);
 	allEmbeds.push(diceEmbed);
