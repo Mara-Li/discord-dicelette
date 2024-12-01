@@ -1,5 +1,5 @@
-import i18next from "i18next";
 import * as Djs from "discord.js";
+import i18next from "i18next";
 import EnglishUS from "./locales/en.json" assert { type: "json" };
 import French from "./locales/fr.json" assert { type: "json" };
 

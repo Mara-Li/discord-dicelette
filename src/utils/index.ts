@@ -5,13 +5,34 @@ import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { registerUser, setDefaultManagerId } from "@utils/db";
 import { parseEmbedFields } from "@utils/parse";
 
-import { deleteAfter } from "@commands/rolls/base_roll";
 import { TUTORIAL_IMAGES } from "@interfaces/constant";
 import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
 import { logger } from "@main";
 import * as Djs from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";
+
+/**
+ * Deletes a given message after a specified time delay.
+ * If the time delay is zero, the function exits immediately.
+ * Uses setTimeout to schedule the deletion and handles any errors silently.
+ * @param message - An instance of InteractionResponse or Message that needs to be deleted.
+ * @param time - A number representing the delay in milliseconds before the message is deleted.
+ */
+export async function deleteAfter(
+	message: Djs.InteractionResponse | Djs.Message,
+	time: number
+): Promise<void> {
+	if (time === 0) return;
+
+	setTimeout(async () => {
+		try {
+			await message.delete();
+		} catch (error) {
+			// Can't delete message, probably because the message was already deleted; ignoring the error.
+		}
+	}, time);
+}
 /**
  * Set the tags for thread channel in forum
  */

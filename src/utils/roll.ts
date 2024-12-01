@@ -1,20 +1,14 @@
-// noinspection SuspiciousTypeOfGuard,LoopStatementThatDoesntLoopJS
+import { ln, t } from "@localization";
 
-import { deleteAfter } from "@commands/rolls/base_roll";
 import { generateStatsDice, replaceFormulaInDice, roll } from "@dicelette/core";
 import { DETECT_DICE_MESSAGE } from "@events/message_create";
 import type { UserData } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
-import { ln } from "@localization";
 import { type EClient, logger } from "@main";
-import { embedError, reply, timestamp } from "@utils";
+import { deleteAfter, embedError, reply, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";
-import i18next from "i18next";
-
 import { parseResult } from "../dice";
-
-const t = i18next.getFixedT("en");
 
 /**
  * create the roll dice, parse interaction etc... When the slash-commands is used for dice

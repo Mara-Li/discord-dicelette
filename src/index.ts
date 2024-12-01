@@ -34,6 +34,7 @@ const optionLoggers =
 		: { minLevel: 4, hideLogPositionForProduction: true };
 
 export const logger: Logger<ILogObj> = new Logger(optionLoggers);
+
 logger.info("Starting bot...");
 
 export class EClient extends Djs.Client {

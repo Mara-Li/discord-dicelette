@@ -1,8 +1,5 @@
-import {
-	type Statistic,
-	type StatisticalTemplate,
-	verifyTemplateValue,
-} from "@dicelette/core";
+import { type StatisticalTemplate, verifyTemplateValue } from "@dicelette/core";
+import { templateSchema } from "@dicelette/core";
 import type { PersonnageIds, UserData, UserRegistration } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
@@ -125,46 +122,8 @@ function parseTemplate(db: Settings, guildId: string, template: any) {
 		db.set(guildId, true, "templateID.valid");
 		return verifyTemplateValue(template);
 	}
-	const statistiqueTemplate: StatisticalTemplate = {
-		diceType: "",
-		statistics: {} as Statistic,
-	};
-	if (!template.statistics) statistiqueTemplate.statistics = undefined;
-	else if (template.statistics && Object.keys(template.statistics).length > 0) {
-		for (const [key, value] of Object.entries(template.statistics)) {
-			const dataValue = value as { max?: number; min?: number; combinaison?: string };
-			if (dataValue.max && dataValue.max <= 0) dataValue.max = undefined;
-			if (dataValue.min && dataValue.min <= 0) dataValue.min = undefined;
-			let formula = dataValue.combinaison
-				? dataValue.combinaison.standardize()
-				: undefined;
-			formula = formula && formula.trim().length > 0 ? formula : undefined;
-			if (!statistiqueTemplate.statistics) {
-				statistiqueTemplate.statistics = {} as Statistic;
-			}
-			statistiqueTemplate.statistics[key] = {
-				max: dataValue.max,
-				min: dataValue.min,
-				combinaison: formula || undefined,
-			};
-		}
-	}
-	if (template.diceType) {
-		statistiqueTemplate.diceType = template.diceType;
-	}
-	if (template.critical && Object.keys(template.critical).length > 0) {
-		statistiqueTemplate.critical = {
-			failure: template.critical.failure ?? undefined,
-			success: template.critical.success ?? undefined,
-		};
-	}
-	if (template.total) {
-		if (template.total <= 0) template.total = undefined;
-		statistiqueTemplate.total = template.total;
-	}
-	if (template.charName) statistiqueTemplate.charName = template.charName;
-	if (template.damage) statistiqueTemplate.damage = template.damage;
-	return statistiqueTemplate;
+	const parsedTemplate = templateSchema.parse(template);
+	return parsedTemplate as StatisticalTemplate;
 }
 
 /**

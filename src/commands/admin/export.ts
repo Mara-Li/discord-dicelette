@@ -2,16 +2,14 @@
  * Allow to export all characters from the database to a CSV file
  */
 
-import { cmdLn, ln } from "@localization";
+import { cmdLn, ln, t } from "@localization";
 import type { EClient } from "@main";
 import { getUserFromMessage } from "@utils/db";
 
 import * as Djs from "discord.js";
-import i18next from "i18next";
 import Papa from "papaparse";
 import type { CSVRow } from "./import";
 
-const t = i18next.getFixedT("en");
 export const exportData = {
 	data: new Djs.SlashCommandBuilder()
 		.setName(t("export.name"))

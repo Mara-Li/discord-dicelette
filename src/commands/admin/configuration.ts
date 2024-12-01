@@ -1,13 +1,11 @@
 import type { Translation } from "@interfaces/discord";
-import { cmdLn, ln } from "@localization";
+import { cmdLn, ln, t } from "@localization";
+import { LocalePrimary, localeList } from "@localization/init";
 import type { EClient } from "@main";
 import { reply } from "@utils";
 import * as Djs from "discord.js";
-import i18next from "i18next";
 import { dedent } from "ts-dedent";
-import { LocalePrimary, localeList } from "@localization/init";
 
-const t = i18next.getFixedT("en");
 const findLocale = (locale?: Djs.Locale) => {
 	if (locale === Djs.Locale.EnglishUS || locale === Djs.Locale.EnglishGB)
 		return "English";

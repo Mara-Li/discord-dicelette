@@ -5,10 +5,7 @@ import {
 	DiceTypeError,
 	EmptyObjectError,
 	FormulaError,
-	MaxGreater,
 	NoStatisticsError,
-	TooManyDice,
-	TooManyStats,
 } from "@dicelette/core";
 import { ALL_TRANSLATION_KEYS, logger } from "@main";
 import { InvalidCsvContent, NoChannel, NoEmbed } from "@utils";
@@ -22,6 +19,8 @@ export function ln(userLang: Djs.Locale) {
 	});
 	return i18next.getFixedT(localeName?.[1] ?? "en");
 }
+
+export const t = i18next.getFixedT("en");
 
 export function lError(
 	e: Error,
@@ -37,16 +36,19 @@ export function lError(
 	if (e instanceof FormulaError)
 		return ul("error.invalidFormula", { formula: e.formula });
 
-	if (e instanceof MaxGreater)
-		return ul("error.mustBeGreater", { max: e.max, value: e.value });
+	if (e.message.includes("Max_Greater")) {
+		const max = e.message.split(";")[2];
+		const min = e.message.split(";")[1];
+		return ul("error.mustBeGreater", { max: max, value: min });
+	}
 
 	if (e instanceof EmptyObjectError) return ul("error.emptyDamage");
 
-	if (e instanceof TooManyDice) return ul("error.tooMuchDice");
+	if (e.message.includes("TooManyDice")) return ul("error.tooMuchDice");
 
 	if (e instanceof NoStatisticsError) return ul("error.emptyStats");
 
-	if (e instanceof TooManyStats) return ul("error.tooMuchStats");
+	if (e.message.includes("TooManyStats")) return ul("error.tooMuchStats");
 
 	if (e instanceof NoEmbed) return ul("error.noEmbed");
 

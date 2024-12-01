@@ -1,14 +1,11 @@
 import { deleteUser } from "@events/on_delete";
 import type { GuildData, PersonnageIds, UserMessageId } from "@interfaces/database";
 import type { DiscordChannel, Translation } from "@interfaces/discord";
-import { cmdLn, ln } from "@localization";
+import { cmdLn, ln, t } from "@localization";
 import { type EClient, logger } from "@main";
 import { embedError, filterChoices, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import * as Djs from "discord.js";
-import i18next from "i18next";
-
-const t = i18next.getFixedT("en");
 
 export const deleteChar = {
 	async autocomplete(

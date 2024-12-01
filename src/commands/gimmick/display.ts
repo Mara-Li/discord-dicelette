@@ -1,15 +1,12 @@
 import { createDiceEmbed, createStatsEmbed } from "@interactions";
 import type { CharacterData } from "@interfaces/database";
-import { cmdLn, findln, ln } from "@localization";
+import { cmdLn, findln, ln, t } from "@localization";
 import { type EClient, logger } from "@main";
 import { embedError, filterChoices, haveAccess, reply } from "@utils";
 import { getDatabaseChar } from "@utils/db";
+import { findChara, findLocation } from "@utils/find";
 import { getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
-import i18next from "i18next";
-import { findChara, findLocation } from "@utils/find";
-
-const t = i18next.getFixedT("en");
 
 export const displayUser = {
 	data: new Djs.SlashCommandBuilder()

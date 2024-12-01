@@ -1,6 +1,6 @@
 import path from "node:path";
 import type { CharacterData, PersonnageIds, UserData } from "@interfaces/database";
-import { cmdLn, ln } from "@localization";
+import { cmdLn, ln, t } from "@localization";
 import { type EClient, logger } from "@main";
 import {
 	embedError,
@@ -11,11 +11,10 @@ import {
 	sendLogs,
 } from "@utils";
 import { getDatabaseChar, getTemplateWithDB, getUserByEmbed } from "@utils/db";
+import { findChara } from "@utils/find";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import * as Djs from "discord.js";
-import i18next from "i18next";
 import parse from "parse-color";
-import { findChara } from "@utils/find";
 
 async function chart(
 	userData: UserData,
@@ -104,8 +103,6 @@ async function chart(
 function fontPath(fontName: string) {
 	return path.resolve(`assets/fonts/${fontName}.ttf`).replace("dist/", "");
 }
-
-const t = i18next.getFixedT("en");
 
 export const graph = {
 	data: new Djs.SlashCommandBuilder()

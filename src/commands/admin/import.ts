@@ -6,7 +6,7 @@
 import type { StatisticalTemplate } from "@dicelette/core";
 import { createDiceEmbed, createStatsEmbed, createUserEmbed } from "@interactions";
 import type { UserData } from "@interfaces/database";
-import { cmdLn, ln } from "@localization";
+import { cmdLn, ln, t } from "@localization";
 import { type EClient, logger } from "@main";
 import {
 	InvalidCsvContent,
@@ -18,10 +18,7 @@ import {
 import { getTemplateWithDB } from "@utils/db";
 import { createEmbedsList } from "@utils/parse";
 import * as Djs from "discord.js";
-import i18next from "i18next";
 import Papa from "papaparse";
-
-const t = i18next.getFixedT("en");
 
 export type CSVRow = {
 	user: string;

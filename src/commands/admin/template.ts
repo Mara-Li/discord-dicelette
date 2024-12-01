@@ -7,15 +7,12 @@ import {
 	verifyTemplateValue,
 } from "@dicelette/core";
 import type { GuildData } from "@interfaces/database";
-import { cmdLn, ln } from "@localization";
+import { cmdLn, ln, t } from "@localization";
 import { type EClient, logger } from "@main";
 import { createDefaultThread, downloadTutorialImages, embedError, reply } from "@utils";
 import { bulkDeleteCharacters, bulkEditTemplateUser } from "@utils/parse";
 import * as Djs from "discord.js";
-import i18next from "i18next";
 import { dedent } from "ts-dedent";
-
-const t = i18next.getFixedT("en");
 
 export const generateTemplate = {
 	data: new Djs.SlashCommandBuilder()

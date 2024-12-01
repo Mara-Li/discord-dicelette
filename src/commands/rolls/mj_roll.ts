@@ -1,13 +1,10 @@
 import type { UserMessageId } from "@interfaces/database";
-import { cmdLn, ln } from "@localization";
+import { cmdLn, ln, t } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice, rollStatistique } from "@utils/roll";
 import * as Djs from "discord.js";
-import i18next from "i18next";
-
-const t = i18next.getFixedT("en");
 
 export const mjRoll = {
 	data: new Djs.SlashCommandBuilder()

@@ -1,12 +1,9 @@
-import { cmdLn, ln } from "@localization";
+import { cmdLn, ln, t } from "@localization";
 import { type EClient, logger } from "@main";
 import { embedError, filterChoices, reply } from "@utils";
 import { getFirstRegisteredChar, getUserFromMessage, serializeName } from "@utils/db";
 import { rollDice } from "@utils/roll";
 import * as Djs from "discord.js";
-import i18next from "i18next";
-
-const t = i18next.getFixedT("en");
 
 export const dbd = {
 	data: new Djs.SlashCommandBuilder()

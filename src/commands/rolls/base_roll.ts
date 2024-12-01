@@ -1,34 +1,14 @@
-import { cmdLn, ln } from "@localization";
-import type { EClient } from "@main";
-import { reply, setTagsForRoll } from "@utils";
-import { rollWithInteraction } from "@utils/roll";
 import * as Djs from "discord.js";
-import i18next from "i18next";
 import moment from "moment";
 
-const t = i18next.getFixedT("en");
+//group1: Import
+import type { EClient } from "@main";
 
-/**
- * Deletes a given message after a specified time delay.
- * If the time delay is zero, the function exits immediately.
- * Uses setTimeout to schedule the deletion and handles any errors silently.
- * @param message - An instance of InteractionResponse or Message that needs to be deleted.
- * @param time - A number representing the delay in milliseconds before the message is deleted.
- */
-export async function deleteAfter(
-	message: Djs.InteractionResponse | Djs.Message,
-	time: number
-): Promise<void> {
-	if (time === 0) return;
+//group 2: discord.js
+import { deleteAfter, reply, setTagsForRoll } from "@utils";
+import { rollWithInteraction } from "@utils/roll";
 
-	setTimeout(async () => {
-		try {
-			await message.delete();
-		} catch (error) {
-			// Can't delete message, probably because the message was already deleted; ignoring the error.
-		}
-	}, time);
-}
+import { cmdLn, ln, t } from "@localization";
 
 export const diceRoll = {
 	data: new Djs.SlashCommandBuilder()
@@ -129,7 +109,7 @@ export const newScene = {
 			}
 			let threadName = "";
 			if (bubble) {
-				threadName = scene ? ` ⏲️ ${scene}` : ` ⏲️ ${moment().format("DD-MM-YYYY")}`;
+				threadName = scene ? ` ⏲ ${scene}` : ` ⏲ ${moment().format("DD-MM-YYYY")}`;
 			} else threadName = `🎲 ${scene}`;
 
 			if (threadName.includes("{{date}}"))

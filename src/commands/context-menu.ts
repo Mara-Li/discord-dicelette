@@ -1,10 +1,7 @@
 import type { Translation } from "@interfaces/discord";
-import { cmdLn, ln } from "@localization/index";
+import { cmdLn, ln, t } from "@localization/index";
+import type { EClient } from "@main";
 import * as Djs from "discord.js";
-import i18next from "i18next";
-import type { EClient } from "../index";
-
-const t = i18next.getFixedT("en");
 
 export const contextMenus = [
 	new Djs.ContextMenuCommandBuilder()

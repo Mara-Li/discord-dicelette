@@ -5,19 +5,16 @@ import type {
 	UserMessageId,
 	UserRegistration,
 } from "@interfaces/database";
-import { cmdLn, findln, ln } from "@localization";
+import type { DiscordChannel, Translation } from "@interfaces/discord";
+import { cmdLn, findln, ln, t } from "@localization";
 import type { EClient } from "@main";
 import { embedError, filterChoices, haveAccess, reply } from "@utils";
 import { editUserButtons, selectEditMenu } from "@utils/buttons";
 import { getDatabaseChar, registerUser } from "@utils/db";
+import { findLocation } from "@utils/find";
 import { getEmbeds, getEmbedsList } from "@utils/parse";
 import * as Djs from "discord.js";
 
-import i18next from "i18next";
-import { findLocation } from "@utils/find";
-import type { DiscordChannel, Translation } from "@interfaces/discord";
-
-const t = i18next.getFixedT("en");
 export const editAvatar = {
 	data: new Djs.SlashCommandBuilder()
 		.setName("edit")
