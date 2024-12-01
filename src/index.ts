@@ -1,5 +1,4 @@
 import * as process from "node:process";
-import * as pkg from "../package.json" assert { type: "json" };
 import * as Djs from "discord.js";
 import dotenv from "dotenv";
 import Enmap from "enmap";
@@ -72,8 +71,8 @@ export const client = new EClient({
 		Djs.Partials.User,
 	],
 });
-
-export const VERSION = pkg.version ?? "0.0.0";
+//@ts-ignore
+export const VERSION = process.env.npm_package_version ?? "/";
 
 try {
 	ready(client);
