@@ -43,7 +43,7 @@
 	"license": "GNU GPLv3",
 	"dependencies": {
 		"@dice-roller/rpg-dice-roller": "^5.5.0",
-		"@dicelette/core": "^1.4.7",
+		"@dicelette/core": "^1.5.0",
 		"@discordjs/rest": "^2.4.0",
 		"@types/papaparse": "^5.3.14",
 		"@types/parse-color": "^1.0.3",
@@ -63,7 +63,7 @@
 		"parse-color": "^1.0.0",
 		"ts-dedent": "^2.2.0",
 		"tslog": "^4.9.3",
-		"uniformize": "^2.0.5",
+		"uniformize": "^2.2.0",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
