@@ -69,10 +69,15 @@ export async function getDatabaseChar(
 		`user.${user?.id ?? interaction.user.id}`
 	);
 	const findChara = userData?.find((char) => {
-		return char.charName?.subText(charName, strict);
+		if (charName) return char.charName?.subText(charName, strict);
 	});
-	if (!findChara) {
+	if (!findChara && charName) {
 		return undefined;
+	}
+	if (!findChara) {
+		const char = userData?.[0];
+
+		return char ? { [user?.id ?? interaction.user.id]: char } : undefined;
 	}
 	return {
 		[user?.id ?? interaction.user.id]: findChara,
