@@ -3,6 +3,7 @@ import * as Djs from "discord.js";
 import dotenv from "dotenv";
 import Enmap from "enmap";
 import "uniformize";
+import { logger } from "@logger";
 //group type & interface
 import type { GuildData } from "@interfaces/database";
 
@@ -19,12 +20,8 @@ import {
 import ready from "@events/ready";
 import { onReactionAdd, onReactionRemove } from "@events/MessageReactionAdd";
 
-//group: Localization
-import { logger } from "@logger";
-
 // Load the environment variables
 dotenv.config({ path: ".env" });
-
 logger.info("Starting bot...");
 
 export class EClient extends Djs.Client {

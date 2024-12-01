@@ -8,8 +8,6 @@ import { embedError, filterChoices, reply, searchUserChannel } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import * as Djs from "discord.js";
 
-console.log("Loading deleteChar");
-
 export const deleteChar = {
 	async autocomplete(
 		interaction: Djs.AutocompleteInteraction,
