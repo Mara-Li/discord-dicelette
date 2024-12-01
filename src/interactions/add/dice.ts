@@ -1,13 +1,13 @@
 import { evalStatsDice } from "@dicelette/core";
 import { allowEdit, createDiceEmbed, getUserNameAndChar } from "@interactions";
 import type { UserMessageId } from "@interfaces/database";
+import type { Settings, Translation } from "@interfaces/discord";
 import { findln, ln } from "@localization";
 import { NoEmbed, addAutoRole, embedError, reply, sendLogs } from "@utils";
 import { editUserButtons, registerDmgButton } from "@utils/buttons";
 import { getTemplateWithDB, getUserByEmbed, registerUser } from "@utils/db";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
-import type { Settings, Translation } from "@interfaces/discord";
 /**
  * Interaction to add a new skill dice
  * @param interaction {Djs.ButtonInteraction}
