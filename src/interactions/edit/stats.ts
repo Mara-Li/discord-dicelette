@@ -30,7 +30,7 @@ export async function editStats(
 	if (!templateStats || !templateStats.statistics) return;
 	const valuesAsStats = values.split("\n- ").map((stat) => {
 		const [name, value] = stat.split(/ ?: ?/);
-		return { name: name.replace("- ", "").trim().toLowerCase(), value };
+		return { name: name.replace(/^- /, "").trim().toLowerCase(), value };
 	});
 	//fusion all stats into an object instead of list
 	const stats = valuesAsStats.reduce(

@@ -61,7 +61,7 @@ export async function validateDiceEdit(
 	const values = interaction.fields.getTextInputValue("allDice");
 	const valuesAsDice = values.split("\n- ").map((dice) => {
 		const [name, value] = dice.split(/ ?: ?/);
-		return { name: name.replace("- ", "").trim().toLowerCase(), value };
+		return { name: name.replace(/^- /, "").trim().toLowerCase(), value };
 	});
 	const dices = valuesAsDice.reduce(
 		(acc, { name, value }) => {
