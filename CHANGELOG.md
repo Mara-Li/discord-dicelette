@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.19.0](https://github.com/Dicelette/discord-dicelette/compare/1.18.3...1.19.0) (2024-12-01)
+
+
+### Features
+
+* it is now possible to remove template dice value from user ([0fa1b67](https://github.com/Dicelette/discord-dicelette/commit/0fa1b6793f1c7135774dabf0b73aa0cdf96780be))
+
+
+### Bug Fixes
+
+* logger with wrong config doesn't display logs ([589d8a8](https://github.com/Dicelette/discord-dicelette/commit/589d8a83c0033fc3403d0aed2e06b047ce0f88d6))
+* return default char when using display/graph with no charName ([9f9a54f](https://github.com/Dicelette/discord-dicelette/commit/9f9a54fc5d5ec70e7b0bb7561fd679124012b45c))
+
 ## [1.18.3](https://github.com/Dicelette/discord-dicelette/compare/1.18.2...1.18.3) (2024-12-01)
 
 
