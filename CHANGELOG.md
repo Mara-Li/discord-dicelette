@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.20.0](https://github.com/Dicelette/discord-dicelette/compare/1.19.1...1.20.0) (2024-12-01)
+
+
+### Features
+
+* **display:** display evaluated formula ([33e070d](https://github.com/Dicelette/discord-dicelette/commit/33e070dcb9a8e1be750949790dd6b473d48a78fa))
+
 ## [1.19.1](https://github.com/Dicelette/discord-dicelette/compare/1.19.0...1.19.1) (2024-12-01)
 
 
