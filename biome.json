@@ -4,7 +4,8 @@
 		"ignore": ["node_modules", "dist"]
 	},
 	"organizeImports": {
-		"enabled": true
+		"enabled": true,
+		"ignore": ["src/index.ts"]
 	},
 	"linter": {
 		"rules": {

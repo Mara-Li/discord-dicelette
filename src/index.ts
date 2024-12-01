@@ -1,4 +1,15 @@
 import * as process from "node:process";
+import * as pkg from "../package.json" assert { type: "json" };
+import * as Djs from "discord.js";
+import dotenv from "dotenv";
+import Enmap from "enmap";
+import "uniformize";
+import { type ILogObj, Logger } from "tslog";
+
+//group type & interface
+import type { GuildData } from "@interfaces/database";
+
+//group: Import @events
 import interaction from "@events/interaction";
 import join from "@events/join";
 import MESSAGE_CREATE from "@events/message_create";
@@ -10,15 +21,12 @@ import {
 } from "@events/on_delete";
 import ready from "@events/ready";
 import { onReactionAdd, onReactionRemove } from "@events/MessageReactionAdd";
-import type { GuildData } from "@interfaces/database";
-import dotenv from "dotenv";
-import Enmap from "enmap";
+
+//group: Localization
 import { flattenJson } from "@localization";
 import { resources } from "@localization/init";
-import * as pkg from "../package.json" assert { type: "json" };
-import * as Djs from "discord.js";
-import { type ILogObj, Logger } from "tslog";
-import "uniformize";
+
+// Load the environment variables
 dotenv.config({ path: ".env" });
 
 const optionLoggers =
