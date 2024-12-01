@@ -1,7 +1,8 @@
 import { createDiceEmbed, createStatsEmbed } from "@interactions";
 import type { CharacterData } from "@interfaces/database";
 import { cmdLn, findln, ln, t } from "@localization";
-import { type EClient, logger } from "@main";
+import { logger } from "@logger";
+import type { EClient } from "@main";
 import { embedError, filterChoices, haveAccess, reply } from "@utils";
 import { getDatabaseChar } from "@utils/db";
 import { findChara, findLocation } from "@utils/find";

@@ -108,7 +108,7 @@
 			}
 		},
 		{
-			"include": ["tests/constant.tests.ts"],
+			"include": ["tests/constant.ts"],
 			"linter": {
 				"rules": {
 					"style": {

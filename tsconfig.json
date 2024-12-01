@@ -41,13 +41,15 @@
 			"@events": ["src/events/index.js"],
 			"@commands/*": ["src/commands/*"],
 			"@commands": ["src/commands/index.js"],
+			"@logger": ["src/logger.js"]
 		}
 	},
 	"files": ["src/index.ts"],
-	"include": [
-		"src/**/*.ts",
-		"src/@types/**/*.d.ts",
-		"jest.config.ts"
-	],
-	"exclude": ["dist", "node_modules", "src/uniformize/tests", "src/uniformize/tsup.config.ts"]
+	"include": ["src/**/*.ts", "src/@types/**/*.d.ts", "jest.config.ts"],
+	"exclude": [
+		"dist",
+		"node_modules",
+		"src/uniformize/tests",
+		"src/uniformize/tsup.config.ts"
+	]
 }

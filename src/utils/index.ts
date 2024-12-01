@@ -7,7 +7,7 @@ import { parseEmbedFields } from "@utils/parse";
 
 import { TUTORIAL_IMAGES } from "@interfaces/constant";
 import type { DiscordChannel, Settings, Translation } from "@interfaces/discord";
-import { logger } from "@main";
+import { logger } from "@logger";
 import * as Djs from "discord.js";
 import { evaluate } from "mathjs";
 import moment from "moment";

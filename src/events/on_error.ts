@@ -1,4 +1,5 @@
-import { logger, type EClient } from "@main";
+import { logger } from "@logger";
+import type { EClient } from "@main";
 import dotenv from "dotenv";
 
 dotenv.config({ path: ".env" });

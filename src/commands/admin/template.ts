@@ -8,7 +8,8 @@ import {
 } from "@dicelette/core";
 import type { GuildData } from "@interfaces/database";
 import { cmdLn, ln, t } from "@localization";
-import { type EClient, logger } from "@main";
+import { logger } from "@logger";
+import type { EClient } from "@main";
 import { createDefaultThread, downloadTutorialImages, embedError, reply } from "@utils";
 import { bulkDeleteCharacters, bulkEditTemplateUser } from "@utils/parse";
 import * as Djs from "discord.js";

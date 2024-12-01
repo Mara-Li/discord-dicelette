@@ -7,9 +7,11 @@ import {
 	FormulaError,
 	NoStatisticsError,
 } from "@dicelette/core";
-import { ALL_TRANSLATION_KEYS, logger } from "@main";
+import { logger } from "@logger";
 import { InvalidCsvContent, NoChannel, NoEmbed } from "@utils";
 import { resources } from "./init";
+
+export const ALL_TRANSLATION_KEYS = Object.keys(flattenJson(resources.en.translation));
 
 export function ln(userLang: Djs.Locale) {
 	if (userLang === Djs.Locale.EnglishUS || userLang === Djs.Locale.EnglishGB)

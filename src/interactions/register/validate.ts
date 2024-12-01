@@ -8,7 +8,7 @@ import {
 import type { UserData } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { ln } from "@localization";
-import { logger } from "@main";
+import { logger } from "@logger";
 import {
 	NoChannel,
 	NoEmbed,

@@ -4,9 +4,9 @@ import { createTemplateEmbed } from "@interactions";
 import type { PersonnageIds } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { findln } from "@localization";
+import { logger } from "@logger";
 import { NoEmbed, searchUserChannel } from "@utils";
 import * as Djs from "discord.js";
-import { logger } from "../index";
 /**
  * Ensure the embeds are present
  * @param {Message} message

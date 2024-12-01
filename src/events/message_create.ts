@@ -2,7 +2,8 @@
 
 import { COMMENT_REGEX, type Resultat, roll } from "@dicelette/core";
 import { lError, ln } from "@localization";
-import { type EClient, logger } from "@main";
+import { logger } from "@logger";
+import type { EClient } from "@main";
 import { deleteAfter, timestamp } from "@utils";
 import { findForumChannel, findMessageBefore, findThread } from "@utils/find";
 import * as Djs from "discord.js";

@@ -1,6 +1,7 @@
 import { commandsList } from "@commands";
 import { contextMenus } from "@commands/context-menu";
-import { type EClient, logger } from "@main";
+import { logger } from "@logger";
+import type { EClient } from "@main";
 
 export default (client: EClient): void => {
 	client.on("guildCreate", async (guild) => {

@@ -1,6 +1,6 @@
 import type { StatisticalTemplate } from "@dicelette/core";
 
-import type { UserData } from "../src/interfaces/database";
+import type { UserData } from "src/interfaces/database";
 
 export const guildTemplate: StatisticalTemplate = {
 	charName: true,
@@ -48,6 +48,7 @@ export const expectedResult: { [id: string]: UserData[] } = {
 				CHA: 12,
 			},
 			template: temp,
+			channel: undefined,
 		},
 	],
 	truc: [
@@ -62,6 +63,7 @@ export const expectedResult: { [id: string]: UserData[] } = {
 				CHA: 10,
 			},
 			template: temp,
+			channel: undefined,
 		},
 	],
 };
@@ -70,11 +72,11 @@ export const clonedExpectedResultWithSkills: { [id: string]: UserData[] } =
 	structuredClone(expectedResult);
 
 clonedExpectedResultWithSkills.mara__li[0].damage = {
-	athletics: "1d4+STR",
-	acrobatics: "1d4+DEX",
+	Athletics: "1d4+STR",
+	Acrobatics: "1d4+DEX",
 };
 
 clonedExpectedResultWithSkills.truc[0].damage = {
-	athletics: "1d4+STR",
-	acrobatics: "1d4+DEX",
+	Athletics: "1d4+STR",
+	Acrobatics: "1d4+DEX",
 };

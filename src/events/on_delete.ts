@@ -1,5 +1,7 @@
 import type { GuildData, PersonnageIds } from "@interfaces/database";
-import { type EClient, logger } from "@main";
+import { logger } from "@logger";
+import type { EClient } from "@main";
+
 import { sendLogs } from "@utils";
 import type { AnyThreadChannel } from "discord.js";
 import type * as Djs from "discord.js";

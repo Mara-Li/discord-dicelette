@@ -2,7 +2,8 @@ import process from "node:process";
 import { commandsList } from "@commands";
 import { contextMenus } from "@commands/context-menu";
 import type { Settings } from "@interfaces/discord";
-import { type EClient, VERSION, logger } from "@main";
+import { logger } from "@logger";
+import { type EClient, VERSION } from "@main";
 import { ActivityType, type Guild, REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 

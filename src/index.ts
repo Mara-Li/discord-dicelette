@@ -3,8 +3,6 @@ import * as Djs from "discord.js";
 import dotenv from "dotenv";
 import Enmap from "enmap";
 import "uniformize";
-import { type ILogObj, Logger } from "tslog";
-
 //group type & interface
 import type { GuildData } from "@interfaces/database";
 
@@ -22,18 +20,10 @@ import ready from "@events/ready";
 import { onReactionAdd, onReactionRemove } from "@events/MessageReactionAdd";
 
 //group: Localization
-import { flattenJson } from "@localization";
-import { resources } from "@localization/init";
+import { logger } from "@logger";
 
 // Load the environment variables
 dotenv.config({ path: ".env" });
-
-const optionLoggers =
-	process.env.NODE_ENV === "development"
-		? { minLevel: 0 }
-		: { minLevel: 4, hideLogPositionForProduction: true };
-
-export const logger: Logger<ILogObj> = new Logger(optionLoggers);
 
 logger.info("Starting bot...");
 
@@ -53,8 +43,6 @@ export class EClient extends Djs.Client {
 		});
 	}
 }
-
-export const ALL_TRANSLATION_KEYS = Object.keys(flattenJson(resources.en.translation));
 
 export const client = new EClient({
 	intents: [

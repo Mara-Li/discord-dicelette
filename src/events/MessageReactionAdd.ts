@@ -1,6 +1,7 @@
-import { type EClient, logger } from "@main";
-import * as Djs from "discord.js";
 import { ln } from "@localization/index";
+import { logger } from "@logger";
+import type { EClient } from "@main";
+import * as Djs from "discord.js";
 
 export const onReactionAdd = (client: EClient): void => {
 	client.on(Djs.Events.MessageReactionAdd, async (reaction, user) => {
@@ -38,7 +39,7 @@ export const onReactionAdd = (client: EClient): void => {
 				.setCustomId("copyResult_desktop")
 				.setStyle(Djs.ButtonStyle.Secondary)
 				.setLabel(ul("copyRollResult.name"))
-				.setEmoji("🖥️");
+				.setEmoji("🖥");
 
 			const copyResButtonMobile = new Djs.ButtonBuilder()
 				.setCustomId("copyResult_mobile")

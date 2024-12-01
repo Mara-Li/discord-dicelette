@@ -6,9 +6,9 @@ import { cmdLn, ln, t } from "@localization";
 import type { EClient } from "@main";
 import { getUserFromMessage } from "@utils/db";
 
+import type { CSVRow } from "@utils/import_csv";
 import * as Djs from "discord.js";
 import Papa from "papaparse";
-import type { CSVRow } from "./import";
 
 export const exportData = {
 	data: new Djs.SlashCommandBuilder()

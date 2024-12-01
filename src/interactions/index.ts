@@ -1,7 +1,7 @@
 import type { PersonnageIds } from "@interfaces/database";
 import type { Settings, Translation } from "@interfaces/discord";
 import { findln, ln } from "@localization";
-import { logger } from "@main";
+import { logger } from "@logger";
 import { embedError, reply } from "@utils";
 import { ensureEmbed, getEmbeds } from "@utils/parse";
 import * as Djs from "discord.js";
