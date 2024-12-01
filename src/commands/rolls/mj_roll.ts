@@ -152,7 +152,7 @@ export const mjRoll = {
 
 		if (typeof user !== "string") user = interaction.user.id;
 		if (user === interaction.user.id) {
-			for (const [user, char] of Object.entries(guildData.user)) {
+			for (const [, char] of Object.entries(guildData.user)) {
 				for (const data of char) {
 					allCharFromGuild.push(data);
 				}
