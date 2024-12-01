@@ -73,7 +73,11 @@ export const dbd = {
 					if (value.damageName) choices = choices.concat(value.damageName);
 				}
 			}
-			if (db.templateID.damageName && db.templateID.damageName.length > 0)
+			if (
+				db.templateID.damageName &&
+				db.templateID.damageName.length > 0 &&
+				choices.length === 0
+			)
 				choices = choices.concat(db.templateID.damageName);
 		} else if (focused.name === t("common.character")) {
 			//if dice is set, get all characters that have this dice

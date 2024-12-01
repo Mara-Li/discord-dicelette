@@ -233,21 +233,13 @@ export async function registerUser(
 	deleteMsg: boolean | undefined = true,
 	errorOnDuplicate: boolean | undefined = false
 ) {
-	const { userID, charName, msgId, isPrivate } = userData;
+	const { userID, charName, msgId, isPrivate, damage } = userData;
 	const ids: PersonnageIds = { channelId: msgId[1], messageId: msgId[0] };
-	let { damage } = userData;
 	if (!interaction.guild) return;
 	const guildData = enmap.get(interaction.guild.id);
 	if (!guildData) return;
 	if (!guildData.user) guildData.user = {};
-	if (
-		damage &&
-		guildData.templateID.damageName &&
-		guildData.templateID.damageName.length > 0
-	) {
-		//filter the damage list and remove the guildData.templateID.damageName
-		damage = damage.filter((damage) => !guildData.templateID.damageName.includes(damage));
-	}
+
 	const user = enmap.get(interaction.guild.id, `user.${userID}`);
 	const newChar = {
 		charName,
