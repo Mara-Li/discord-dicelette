@@ -1,55 +1,10 @@
 {
-	"ts-node": {
-		"require": ["tsconfig-paths/register"]
-	},
-	"tsc-alias": {
-		"resolveFullPaths": true
-	},
-	"compilerOptions": {
-		"target": "ESNext",
-		"module": "esnext",
-		"lib": ["ESNext"],
-		"rootDir": "./",
-		"outDir": "./dist/",
-		"strict": true,
-		"moduleResolution": "bundler",
-		"importHelpers": true,
-		"experimentalDecorators": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"allowSyntheticDefaultImports": true,
-		"inlineSourceMap": true,
-		"allowJs": true,
-		"checkJs": false,
-		"resolveJsonModule": true,
-		"forceConsistentCasingInFileNames": true,
-		"removeComments": true,
-		"typeRoots": ["src/@types", "node_modules/@types"],
-		"sourceMap": false,
-		"baseUrl": ".",
-		"paths": {
-			"@utils/*": ["src/utils/*"],
-			"@utils": ["src/utils/index.js"],
-			"@interactions/*": ["src/interactions/*"],
-			"@interactions": ["src/interactions/index.js"],
-			"@register/*": ["src/interactions/register/*"],
-			"@localization/*": ["src/localizations/*"],
-			"@localization": ["src/localizations/index.js"],
-			"@main": ["src/index.js"],
-			"@interfaces/*": ["src/interfaces/*"],
-			"@events/*": ["src/events/*"],
-			"@events": ["src/events/index.js"],
-			"@commands/*": ["src/commands/*"],
-			"@commands": ["src/commands/index.js"],
-			"@logger": ["src/logger.js"]
-		}
-	},
-	"files": ["src/index.ts"],
-	"include": ["src/**/*.ts", "src/@types/**/*.d.ts", "jest.config.ts"],
-	"exclude": [
-		"dist",
-		"node_modules",
-		"src/uniformize/tests",
-		"src/uniformize/tsup.config.ts"
+	"extends": "./tsconfig.base.json",
+	"files": [],
+	"references": [
+		{ "path": "./packages/@bot" },
+		{ "path": "./packages/@database" },
+		{ "path": "./packages/@dice" },
+		{ "path": "./packages/@types" }
 	]
 }

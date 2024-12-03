@@ -1,0 +1,29 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "esnext",
+		"lib": ["ESNext"],
+		"rootDir": "./",
+		"outDir": "./dist/",
+		"strict": true,
+		"moduleResolution": "bundler",
+		"importHelpers": true,
+		"experimentalDecorators": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"allowSyntheticDefaultImports": true,
+		"inlineSourceMap": true,
+		"allowJs": true,
+		"checkJs": false,
+		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true,
+		"removeComments": true,
+		"typeRoots": ["packages/@types", "node_modules/@types"],
+		"sourceMap": false,
+		"composite": true,
+		"baseUrl": ".",
+      "paths": {
+        "@types" : ["packages/@types/src/index.ts"]
+      }
+	}
+}
