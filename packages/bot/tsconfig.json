@@ -2,13 +2,20 @@
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"outDir": "dist",
-		"rootDir": "src"
+		"rootDir": "./",
+		"paths": {
+			"@dicelette/*": ["packages/*"],
+			"*": ["packages/bot/src/*"],
+			"@dicelette:utils/*": ["packages/utils/src/*"],
+			"@dicelette:types/*": ["packages/types/src/*"]
+		}
 	},
-	"include": ["src"],
+	"include": ["src", "index.ts"],
 	"references": [
-		{ "path": "../@database" },
-		{ "path": "../@dice" },
-		{ "path": "../@types" },
-		{ "path": "../@localizations" }
+		{ "path": "../database" },
+		{ "path": "../dice" },
+		{ "path": "../utils" },
+		{ "path": "../localization" },
+		{ "path": "../types" }
 	]
 }

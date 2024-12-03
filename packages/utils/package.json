@@ -10,5 +10,9 @@
 		"type": "git",
 		"url": "https://github.com/Mara-Li/discord-dicelette.git"
 	},
-	"private": true
+	"private": true,
+	"devDependencies": {
+		"@types/papaparse": "^5.3.15",
+		"papaparse": "^5.4.1"
+	}
 }

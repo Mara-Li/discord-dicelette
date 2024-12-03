@@ -2,8 +2,9 @@
 	"files": [],
 	"references": [
 		{ "path": "./packages/bot" },
-		{ "path": "./packages/database" },
 		{ "path": "./packages/dice" },
-		{ "path": "./packages/utils" }
+		{ "path": "./packages/utils" },
+		{ "path": "./packages/localization" },
+		{ "path": "./packages/types" }
 	]
 }

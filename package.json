@@ -25,6 +25,11 @@
 		"typescript": "^5.7.2"
 	},
 	"dependencies": {
-		"dotenv": "^16.4.6"
+		"@dicelette/core": "^1.5.1",
+		"@types/node": "^22.10.1",
+		"discord.js": "^14.16.3",
+		"dotenv": "^16.4.6",
+		"tslog": "^4.9.3",
+		"uniformize": "^2.2.0"
 	}
 }
