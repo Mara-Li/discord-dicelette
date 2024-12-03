@@ -8,7 +8,7 @@
 	"engineStrict": true,
 	"private": true,
 	"scripts": {
-		"lint" : "biome format --write packages"
+		"lint": "biome format --write packages"
 	},
 	"engines": {
 		"node": "^20.0.0"
@@ -21,6 +21,7 @@
 	"license": "GNU GPLv3",
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
+		"i18next": "^24.0.5",
 		"typescript": "^5.7.2"
 	},
 	"dependencies": {

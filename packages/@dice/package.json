@@ -1,5 +1,5 @@
 {
-	"name": "dice",
+	"name": "@dicelette/dice",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
@@ -10,5 +10,9 @@
 		"type": "git",
 		"url": "https://github.com/Dicelette/discord-dicelette.git"
 	},
-	"private": true
+	"private": true,
+	"dependencies": {
+		"vite-tsconfig-paths": "^5.1.3",
+		"vitest": "^2.1.8"
+	}
 }

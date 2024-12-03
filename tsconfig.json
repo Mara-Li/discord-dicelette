@@ -1,10 +1,10 @@
 {
-	"extends": "./tsconfig.base.json",
 	"files": [],
 	"references": [
 		{ "path": "./packages/@bot" },
 		{ "path": "./packages/@database" },
 		{ "path": "./packages/@dice" },
-		{ "path": "./packages/@types" }
+		{ "path": "./packages/@types" },
+		{ "path": "./packages/@localizations" }
 	]
 }

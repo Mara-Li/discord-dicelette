@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "include": ["src"],
-  "references": []
+	"extends": "../../tsconfig.json",
+	"include": ["src/**/*.ts"],
+	"references": [{ "path": "../@localizations" }, { "path": "../@types" }]
 }

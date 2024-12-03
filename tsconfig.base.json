@@ -22,8 +22,15 @@
 		"sourceMap": false,
 		"composite": true,
 		"baseUrl": ".",
-      "paths": {
-        "@types" : ["packages/@types/src/index.ts"]
-      }
-	}
+		"paths": {
+			"@dicelette/bot": ["packages/@bot/src"],
+			"@dicelette/database": ["packages/@database/src"],
+			"@dicelette/dice": ["packages/@dice/src"],
+			"@dicelette/types": ["packages/@types/src"],
+			"@dicelette/localizations": ["packages/@localizations/src"]
+		},
+		"declaration": true,
+		"declarationMap": true
+	},
+	"exclude": ["node_modules", "dist"]
 }
