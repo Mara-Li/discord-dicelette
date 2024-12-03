@@ -18,16 +18,17 @@
 		"resolveJsonModule": true,
 		"forceConsistentCasingInFileNames": true,
 		"removeComments": true,
-		"typeRoots": ["packages/@types", "node_modules/@types"],
+		"typeRoots": ["packages/utils/types", "node_modules/@types"],
 		"sourceMap": false,
 		"composite": true,
 		"baseUrl": ".",
 		"paths": {
-			"@dicelette/bot": ["packages/@bot/src"],
-			"@dicelette/database": ["packages/@database/src"],
-			"@dicelette/dice": ["packages/@dice/src"],
-			"@dicelette/types": ["packages/@types/src"],
-			"@dicelette/localizations": ["packages/@localizations/src"]
+			"@dicelette/bot": ["packages/bot/src"],
+			"@dicelette/database": ["packages/database/src"],
+			"@dicelette/dice": ["packages/dice/src"],
+			"@dicelette/types": ["packages/utils/src/types"],
+			"@dicelette/localizations": ["packages/utils/src/localizations"],
+			"@dicelette/utils": ["packages/utils/src"]
 		},
 		"declaration": true,
 		"declarationMap": true
