@@ -377,7 +377,7 @@ export const registerTemplate = {
 			if (publicChannel) json.managerId = publicChannel.id;
 			else if (interaction.channel instanceof Djs.TextChannel) {
 				const thread = await createDefaultThread(
-					interaction!.channel,
+					channel,
 					client.settings,
 					interaction,
 					false

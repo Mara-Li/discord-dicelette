@@ -14,11 +14,12 @@ import { deleteAfter, embedError, reply, sendLogs } from "messages";
 import { editUserButtons, haveAccess, searchUserChannel, selectEditMenu } from "utils";
 
 export async function createDefaultThread(
-	parent: Djs.TextChannel,
+	parent: Djs.ThreadChannel | Djs.TextChannel,
 	guildData: Settings,
 	interaction: Djs.BaseInteraction,
 	save = true
 ) {
+	if (parent instanceof Djs.ThreadChannel) parent = parent.parent as Djs.TextChannel;
 	let thread = (await parent.threads.fetch()).threads.find(
 		(thread) => thread.name === "📝 • [STATS]"
 	) as Djs.AnyThreadChannel | undefined;
