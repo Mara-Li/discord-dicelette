@@ -4,8 +4,9 @@ import {
 	verifyTemplateValue,
 } from "@dicelette/core";
 import { ln } from "@dicelette/localization";
-import type { Settings } from "@dicelette/types";
+import type { Settings, Translation } from "@dicelette/types";
 import * as Djs from "discord.js";
+import type { Message } from "discord.js";
 
 /**
  * Get the statistical Template using the database templateID information
@@ -29,21 +30,32 @@ export async function getTemplateWithDB(
 	if (!channel || channel instanceof Djs.CategoryChannel) return;
 	try {
 		const message = await channel.messages.fetch(messageId);
-		const template = message.attachments.first();
-		if (!template) {
-			// noinspection ExceptionCaughtLocallyJS
-			throw new Error(ul("error.noTemplate"));
-		}
-		const res = await fetch(template.url).then((res) => res.json());
-		if (!enmap.get(guild.id, "templateID.valid")) {
-			enmap.set(guild.id, true, "templateID.valid");
-			return verifyTemplateValue(template);
-		}
-		const parsedTemplate = templateSchema.parse(template);
-		return parsedTemplate as StatisticalTemplate;
+		return getTemplate(message, enmap, ul);
 	} catch (error) {
 		if ((error as Error).message === "Unknown Message")
 			throw new Error(ul("error.noTemplateId", { channelId, messageId }));
 		throw error;
 	}
+}
+
+/**
+ * Get the guild template when clicking on the "registering user" button or when submitting
+ */
+export async function getTemplate(
+	message: Message,
+	enmap: Settings,
+	ul: Translation
+): Promise<StatisticalTemplate | undefined> {
+	const template = message?.attachments.first();
+	if (!template) {
+		// noinspection ExceptionCaughtLocallyJS
+		throw new Error(ul("error.noTemplate"));
+	}
+	const res = await fetch(template.url).then((res) => res.json());
+	if (!enmap.get(message.guild!.id, "templateID.valid")) {
+		enmap.set(message.guild!.id, true, "templateID.valid");
+		return verifyTemplateValue(res);
+	}
+	const parsedTemplate = templateSchema.parse(res);
+	return parsedTemplate as StatisticalTemplate;
 }

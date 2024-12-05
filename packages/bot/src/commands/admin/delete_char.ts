@@ -8,7 +8,7 @@ import { deleteUser } from "database/delete_user";
 import { getDatabaseChar } from "database/get_user";
 import * as Djs from "discord.js";
 import { reply } from "messages/send";
-import { embedError, filterChoices } from "utils";
+import { embedError } from "utils";
 import { searchUserChannel } from "utils/search";
 
 export const deleteChar = {

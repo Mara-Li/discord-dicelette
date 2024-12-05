@@ -213,3 +213,27 @@ export async function findChara(charData: CharDataWithName, charName?: string) {
 		return data.charName === charName;
 	});
 }
+
+export function verifyIfEmbedInDB(
+	db: Settings,
+	message: Djs.Message,
+	userId: string,
+	userName?: string
+): { isInDb: boolean; coord?: PersonnageIds } {
+	const charData = db.get(message.guild!.id, `user.${userId}`);
+	if (!charData) return { isInDb: false };
+	const charName = charData.find((char) => {
+		if (userName && char.charName)
+			return char.charName.standardize() === userName.standardize();
+		return char.charName == null && userName == null;
+	});
+	if (!charName) return { isInDb: false };
+	const ids: PersonnageIds = {
+		channelId: charName.messageId[1],
+		messageId: charName.messageId[0],
+	};
+	return {
+		isInDb: message.channel.id === ids.channelId && message.id === ids.messageId,
+		coord: ids,
+	};
+}

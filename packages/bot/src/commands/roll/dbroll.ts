@@ -1,10 +1,10 @@
 import { cmdLn, ln, t } from "@dicelette/localization";
+import { serializeName } from "@dicelette/utils";
 import type { EClient } from "client";
 import { getFirstRegisteredChar, getUserFromMessage } from "database/get_user";
 import * as Djs from "discord.js";
 import { reply } from "messages/send";
-import { embedError, filterChoices } from "utils";
-import { serializeName } from "utils/check";
+import { embedError } from "utils";
 import { rollStatistique } from "utils/roll";
 
 export const dbRoll = {

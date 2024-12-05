@@ -15,6 +15,8 @@
 		"@types/parse-color": "^1.0.3",
 		"chart.js": "3.9.1",
 		"chartjs-node-canvas": "^4.1.6",
+		"@discordjs/rest": "^2.4.0",
+		"discord-api-types": "^0.37.104",
 		"discord.js": "^14.16.3",
 		"enmap": "^6.0.3",
 		"parse-color": "^1.0.0"

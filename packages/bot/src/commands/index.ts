@@ -2,6 +2,8 @@ import { deleteChar } from "./admin/delete_char";
 import { ADMIN } from "./admin/index";
 import { ROLL_AUTO, ROLL_CMDLIST } from "./roll";
 import { GIMMICK } from "./tools";
+import { help } from "./tools/help";
+import newScene from "./tools/new_scene";
 export const autCompleteCmd = [...ROLL_AUTO, ...GIMMICK, deleteChar];
 export const commandsList = [
 	...ROLL_AUTO,
@@ -9,4 +11,6 @@ export const commandsList = [
 	...GIMMICK,
 	...ADMIN,
 	deleteChar,
+	help,
+	newScene,
 ];

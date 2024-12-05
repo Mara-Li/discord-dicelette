@@ -1,5 +1,7 @@
 import type { Translation } from "@dicelette/types";
 import * as Djs from "discord.js";
+import { ensureEmbed } from "messages/embeds";
+import { reply } from "messages/send";
 /**
  * Button to edit the user embed character sheet
  * By default, only add the "add dice" button
@@ -59,4 +61,53 @@ export function selectEditMenu(ul: Translation) {
 				.setDescription(ul("button.user"))
 		);
 	return new Djs.ActionRowBuilder<Djs.StringSelectMenuBuilder>().addComponents(select);
+}
+
+/**
+ * Interaction when the cancel button is pressed
+ * Also prevent to cancel by user not authorized
+ * @param interaction {Djs.ButtonInteraction}
+ * @param ul {Translation}
+ * @param interactionUser {User}
+ */
+export async function cancel(
+	interaction: Djs.ButtonInteraction,
+	ul: Translation,
+	interactionUser: Djs.User
+) {
+	const embed = ensureEmbed(interaction.message);
+	const user =
+		embed.fields
+			.find((field) => field.name === ul("common.user"))
+			?.value.replace("<@", "")
+			.replace(">", "") === interactionUser.id;
+	const isModerator = interaction.guild?.members.cache
+		.get(interactionUser.id)
+		?.permissions.has(Djs.PermissionsBitField.Flags.ManageRoles);
+	if (user || isModerator) await interaction.message.delete();
+	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
+}
+
+/**
+ * Button when registering the user, adding the "add dice" button
+ * @param ul {Translation}
+ */
+export function registerDmgButton(ul: Translation) {
+	const validateButton = new Djs.ButtonBuilder()
+		.setCustomId("validate")
+		.setLabel(ul("button.validate"))
+		.setStyle(Djs.ButtonStyle.Success);
+	const cancelButton = new Djs.ButtonBuilder()
+		.setCustomId("cancel")
+		.setLabel(ul("button.cancel"))
+		.setStyle(Djs.ButtonStyle.Danger);
+	const registerDmgButton = new Djs.ButtonBuilder()
+		.setCustomId("add_dice_first")
+		.setLabel(ul("button.dice"))
+		.setStyle(Djs.ButtonStyle.Primary);
+	return new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents([
+		registerDmgButton,
+		validateButton,
+		cancelButton,
+	]);
 }
