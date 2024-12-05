@@ -10,16 +10,16 @@ import * as Djs from "discord.js";
 import { initiateAvatarEdit } from "features/avatar/modal";
 import { validateAvatarEdit } from "features/avatar/validation";
 import { executeAddDiceButton, initiateDiceEdit } from "features/dice/buttons";
-import { storeDamageDice } from "features/dice/modals";
+import { storeDamageDice } from "features/dice/register";
 import { validateDiceEdit } from "features/dice/validation";
 import { initiateMove } from "features/move/modal";
 import { validateMove } from "features/move/validation";
-import { startRegisterUser } from "features/register/modals";
-import { continuePage, validateUserButton } from "features/register/validation";
 import { initiateRenaming } from "features/rename/modal";
 import { validateRename } from "features/rename/validation";
 import { triggerEditStats } from "features/stats/buttons";
 import { editStats } from "features/stats/modals";
+import { startRegisterUser } from "features/user/modals";
+import { continuePage, validateUserButton } from "features/user/validation";
 import { embedError } from "messages/embeds";
 import { reply } from "messages/send";
 import { pageNumber, recordFirstPage } from "modals/register_user";
@@ -82,7 +82,9 @@ export default (client: EClient): void => {
 			if (client.settings.has(interaction.guild.id)) {
 				const db = client.settings.get(interaction.guild.id, "logs");
 				if (!db) return;
-				const logs = await interaction.guild.channels.fetch(db);
+				const logs = (await interaction.guild.channels.fetch(
+					db
+				)) as Djs.GuildBasedChannel;
 				if (logs instanceof Djs.TextChannel) {
 					await logs.send(`\`\`\`\n${(e as Error).message}\n\`\`\``);
 				}

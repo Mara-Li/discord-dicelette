@@ -3,9 +3,9 @@ import { ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
 import { isArrayEqual } from "@dicelette/utils";
 import * as Djs from "discord.js";
+import { registerDmgButton } from "features/dice/register";
 import { getEmbeds, parseEmbedFields } from "messages/embeds";
 import { reply } from "messages/send";
-import { registerDmgButton } from "utils/button";
 import { allowEdit } from "utils/check";
 
 /**

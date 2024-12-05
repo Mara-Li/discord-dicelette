@@ -126,7 +126,7 @@ export async function validateDiceEdit(
 			damage: undefined,
 			msgId: messageID,
 		};
-		registerUser(userRegister, interaction, db, false);
+		await registerUser(userRegister, interaction, db, false);
 		await sendLogs(
 			ul("logs.dice.remove", {
 				user: Djs.userMention(interaction.user.id),
@@ -153,7 +153,7 @@ export async function validateDiceEdit(
 		damage: skillDiceName,
 		msgId: messageID,
 	};
-	registerUser(userRegister, interaction, db, false);
+	await registerUser(userRegister, interaction, db, false);
 	const embedsList = getEmbedsList(
 		ul,
 		{ which: "damage", embed: diceEmbed },

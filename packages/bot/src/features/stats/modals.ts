@@ -9,6 +9,7 @@ import type { Settings, Translation } from "@dicelette/types";
 import { getTemplateWithDB } from "database/get_template";
 import { getUserNameAndChar } from "database/get_user";
 import * as Djs from "discord.js";
+import { registerDmgButton } from "features/dice/register";
 import {
 	createStatsEmbed,
 	getEmbeds,
@@ -17,7 +18,7 @@ import {
 	removeEmbedsFromList,
 } from "messages/embeds";
 import { displayOldAndNewStats, reply, sendLogs } from "messages/send";
-import { continueCancelButtons, editUserButtons, registerDmgButton } from "utils/button";
+import { continueCancelButtons, editUserButtons } from "utils/button";
 
 /**
  * Embed to display the statistics when adding a new user
@@ -26,7 +27,7 @@ import { continueCancelButtons, editUserButtons, registerDmgButton } from "utils
  * @param page {number=2}
  * @param lang
  */
-export async function embedStatistiques(
+export async function registerStatistics(
 	interaction: Djs.ModalSubmitInteraction,
 	template: StatisticalTemplate,
 	page: number | undefined = 2,

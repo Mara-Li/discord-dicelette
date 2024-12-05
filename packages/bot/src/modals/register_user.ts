@@ -5,10 +5,11 @@ import type { Settings, Translation } from "@dicelette/types";
 import { verifyAvatarUrl } from "@dicelette/utils";
 import { getTemplateWithDB } from "database/get_template";
 import * as Djs from "discord.js";
-import { embedStatistiques } from "features/stats/modals";
+import { registerDmgButton } from "features/dice/register";
+import { registerStatistics } from "features/stats/modals";
 import { embedError } from "messages/embeds";
 import { reply } from "messages/send";
-import { continueCancelButtons, registerDmgButton } from "utils/button";
+import { continueCancelButtons } from "utils/button";
 import { isUserNameOrId } from "utils/check";
 
 /**
@@ -27,7 +28,7 @@ export async function pageNumber(
 		await reply(interaction, { embeds: [embedError(ul("error.noTemplate"), ul)] });
 		return;
 	}
-	await embedStatistiques(
+	await registerStatistics(
 		interaction,
 		template,
 		pageNumber,

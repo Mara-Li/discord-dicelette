@@ -10,7 +10,7 @@ import * as Djs from "discord.js";
 import { createDiceEmbed, embedError, ensureEmbed, getEmbeds } from "messages/embeds";
 import { reply, sendLogs } from "messages/send";
 import { addAutoRole } from "utils";
-import { editUserButtons, registerDmgButton } from "utils/button";
+import { editUserButtons } from "utils/button";
 
 /**
  * Interaction to submit the new skill dice
@@ -43,6 +43,30 @@ export async function storeDamageDice(
 	if (user || isModerator)
 		await registerDamageDice(interaction, db, interaction.customId.includes("first"));
 	else await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
+}
+
+/**
+ * Button when registering the user, adding the "add dice" button
+ * @param ul {Translation}
+ */
+export function registerDmgButton(ul: Translation) {
+	const validateButton = new Djs.ButtonBuilder()
+		.setCustomId("validate")
+		.setLabel(ul("button.validate"))
+		.setStyle(Djs.ButtonStyle.Success);
+	const cancelButton = new Djs.ButtonBuilder()
+		.setCustomId("cancel")
+		.setLabel(ul("button.cancel"))
+		.setStyle(Djs.ButtonStyle.Danger);
+	const registerDmgButton = new Djs.ButtonBuilder()
+		.setCustomId("add_dice_first")
+		.setLabel(ul("button.dice"))
+		.setStyle(Djs.ButtonStyle.Primary);
+	return new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents([
+		registerDmgButton,
+		validateButton,
+		cancelButton,
+	]);
 }
 
 /**
