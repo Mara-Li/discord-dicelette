@@ -15,12 +15,13 @@ import { commandMenu, desktopLink, mobileLink } from "commands/context_menus";
 import { resetButton } from "commands/tools/edit";
 import { getTemplate, getTemplateWithDB } from "database/get_template";
 import * as Djs from "discord.js";
+import { initiateAvatarEdit, validateAvatarEdit } from "edit_user/avatar";
+import { initiateMove, validateMove } from "edit_user/move";
+import { initiateRenaming, validateRename } from "edit_user/rename";
 import { embedError } from "messages/embeds";
 import { reply } from "messages/send";
-import { validateAvatarEdit } from "modals/avatar";
 import { storeDamageDice, validateDiceEdit } from "modals/dice";
 import { pageNumber, recordFirstPage } from "modals/register_user";
-import { validateRename } from "modals/rename";
 import { editStats } from "modals/stats";
 
 export default (client: EClient): void => {
