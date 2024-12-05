@@ -16,6 +16,7 @@ export class EClient extends Djs.Client {
 		});
 	}
 }
+
 export const client = new EClient({
 	intents: [
 		Djs.GatewayIntentBits.GuildMessages,

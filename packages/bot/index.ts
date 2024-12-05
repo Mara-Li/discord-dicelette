@@ -18,6 +18,7 @@ import {
 import packageJson from "./package.json" assert { type: "json" };
 dotenv.config({ path: ".env" });
 logger.info("Starting bot...");
+logger.trace("Version: " + packageJson.version);
 //@ts-ignore
 export const VERSION = packageJson.version ?? "/";
 try {
@@ -35,5 +36,4 @@ try {
 	console.error(error);
 }
 
-// noinspection JSIgnoredPromiseFromCall
-client.login(process.env.DISCORD_TOKEN);
+await client.login(process.env.DISCORD_TOKEN);

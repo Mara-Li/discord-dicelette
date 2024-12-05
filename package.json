@@ -1,15 +1,18 @@
 {
 	"name": "dicelette",
 	"version": "1.20.1",
-	"description": "",
-	"main": "index.js",
-	"repository": "",
-	"type": "module",
 	"engineStrict": true,
 	"private": true,
 	"scripts": {
 		"lint": "biome format --write packages",
-		"build": "pnpm run --recursive build"
+		"clean": "pnpm run --recursive prebuild",
+		"build": "pnpm run --recursive build",
+		"prewatch": "pnpm run --recursive clean",
+		"watch:start": "tsc -b packages/bot/tsconfig.json packages/dice/tsconfig.json packages/localization/tsconfig.json packages/types/tsconfig.json packages/utils/tsconfig.json --watch",
+		"watch:bot": "tsx watch --clear-screen=false packages/bot/index.ts",
+		"watch": "run-p -ln watch:*",
+		"prestart": "pnpm run --recursive build",
+		"start": "node packages/bot/dist/index.js"
 	},
 	"engines": {
 		"node": "^20.0.0"
@@ -30,14 +33,18 @@
 		"@biomejs/biome": "^1.9.4",
 		"cpx": "^1.5.0",
 		"i18next": "^24.0.5",
+		"npm-run-all": "^4.1.5",
+		"parallelshell": "^3.0.2",
 		"ts-node": "^10.9.2",
 		"tsc-alias": "^1.8.10",
 		"tsconfig-paths": "^4.2.0",
-		"typescript": "^5.7.2"
+		"typescript": "^5.7.2",
+		"wait-on": "^8.0.1"
 	},
 	"dependencies": {
 		"@dicelette/core": "^1.5.1",
 		"@types/node": "^22.10.1",
+		"concurrently": "^9.1.0",
 		"cross-os": "^1.5.0",
 		"discord.js": "^14.16.3",
 		"dotenv": "^16.4.7",
