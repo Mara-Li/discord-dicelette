@@ -1,28 +1,29 @@
 import type { StatisticalTemplate } from "@dicelette/core";
 import { lError, ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
-import { cancel } from "buttons";
-import { executeAddDiceButton, initiateDiceEdit } from "buttons/dices";
-import {
-	continuePage,
-	startRegisterUser,
-	validateUserButton,
-} from "buttons/register_user";
-import { triggerEditStats } from "buttons/statistics";
 import type { EClient } from "client";
 import { autCompleteCmd, commandsList } from "commands";
 import { commandMenu, desktopLink, mobileLink } from "commands/context_menus";
 import { resetButton } from "commands/tools/edit";
 import { getTemplate, getTemplateWithDB } from "database/get_template";
 import * as Djs from "discord.js";
-import { initiateAvatarEdit, validateAvatarEdit } from "edit_user/avatar";
-import { initiateMove, validateMove } from "edit_user/move";
-import { initiateRenaming, validateRename } from "edit_user/rename";
+import { initiateAvatarEdit } from "features/avatar/modal";
+import { validateAvatarEdit } from "features/avatar/validation";
+import { executeAddDiceButton, initiateDiceEdit } from "features/dice/buttons";
+import { storeDamageDice } from "features/dice/modals";
+import { validateDiceEdit } from "features/dice/validation";
+import { initiateMove } from "features/move/modal";
+import { validateMove } from "features/move/validation";
+import { startRegisterUser } from "features/register/modals";
+import { continuePage, validateUserButton } from "features/register/validation";
+import { initiateRenaming } from "features/rename/modal";
+import { validateRename } from "features/rename/validation";
+import { triggerEditStats } from "features/stats/buttons";
+import { editStats } from "features/stats/modals";
 import { embedError } from "messages/embeds";
 import { reply } from "messages/send";
-import { storeDamageDice, validateDiceEdit } from "modals/dice";
 import { pageNumber, recordFirstPage } from "modals/register_user";
-import { editStats } from "modals/stats";
+import { cancel } from "utils/button";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: Djs.BaseInteraction) => {

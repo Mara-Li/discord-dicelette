@@ -3,12 +3,12 @@ import type { StatisticalTemplate } from "@dicelette/core";
 import { ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
 import { verifyAvatarUrl } from "@dicelette/utils";
-import { continueCancelButtons, registerDmgButton } from "buttons";
 import { getTemplateWithDB } from "database/get_template";
 import * as Djs from "discord.js";
+import { embedStatistiques } from "features/stats/modals";
 import { embedError } from "messages/embeds";
 import { reply } from "messages/send";
-import { embedStatistiques } from "modals/stats";
+import { continueCancelButtons, registerDmgButton } from "utils/button";
 import { isUserNameOrId } from "utils/check";
 
 /**

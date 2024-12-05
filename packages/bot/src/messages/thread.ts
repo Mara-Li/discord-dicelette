@@ -6,13 +6,13 @@ import type {
 	UserRegistration,
 } from "@dicelette:types/database";
 import type { Settings, Translation } from "@dicelette/types";
-import { editUserButtons, selectEditMenu } from "buttons";
 import type { EClient } from "client";
 import { registerUser, setDefaultManagerId } from "database/register_user";
 import * as Djs from "discord.js";
 import { embedError } from "messages/embeds";
 import { deleteAfter, reply, sendLogs } from "messages/send";
 import { haveAccess } from "utils";
+import { editUserButtons, selectEditMenu } from "utils/button";
 import { searchUserChannel } from "utils/search";
 
 export async function createDefaultThread(

@@ -1,42 +1,12 @@
-import type { PersonnageIds, UserMessageId } from "@dicelette:types/database";
-import type { DiscordChannel } from "@dicelette:types/discord";
-import { findln } from "@dicelette/localization";
-import type { Settings, Translation } from "@dicelette/types";
-import type { EClient } from "client";
-import { rename } from "commands/tools/edit";
-import { getUserByEmbed } from "database/get_user";
-import * as Djs from "discord.js";
-import { getEmbeds } from "messages/embeds";
-import { allowEdit } from "utils/check";
-
-export async function initiateRenaming(
-	interaction: Djs.StringSelectMenuInteraction,
-	ul: Translation,
-	interactionUser: Djs.User,
-	db: Settings
-) {
-	if (await allowEdit(interaction, db, interactionUser))
-		await showRename(interaction, ul);
-}
-
-export async function showRename(
-	interaction: Djs.StringSelectMenuInteraction,
-	ul: Translation
-) {
-	const modal = new Djs.ModalBuilder()
-		.setCustomId("rename")
-		.setTitle(ul("button.edit.name"));
-	const input =
-		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
-			new Djs.TextInputBuilder()
-				.setCustomId("newName")
-				.setLabel(ul("common.character"))
-				.setRequired(true)
-				.setStyle(Djs.TextInputStyle.Short)
-		);
-	modal.addComponents(input);
-	await interaction.showModal(modal);
-}
+import type * as Djs from "discord.js";
+import type {Translation} from "@dicelette/types";
+import type {EClient} from "client";
+import {getEmbeds} from "messages/embeds";
+import {findln} from "@dicelette/localization";
+import type {PersonnageIds, UserMessageId} from "@dicelette:types/database";
+import {getUserByEmbed} from "database/get_user";
+import {rename} from "commands/tools/edit";
+import type {DiscordChannel} from "@dicelette:types/discord";
 
 export async function validateRename(
 	interaction: Djs.ModalSubmitInteraction,

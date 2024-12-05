@@ -1,13 +1,13 @@
-import type { PersonnageIds, UserMessageId } from "@dicelette:types/database";
-import type { DiscordChannel } from "@dicelette:types/discord";
-import { findln } from "@dicelette/localization";
-import type { Settings, Translation } from "@dicelette/types";
-import type { EClient } from "client";
-import { move, resetButton } from "commands/tools/edit";
-import { getUserByEmbed } from "database/get_user";
-import * as Djs from "discord.js";
-import { embedError, getEmbeds } from "messages/embeds";
-import { allowEdit, isUserNameOrId } from "utils/check";
+import type * as Djs from "discord.js";
+import type {Translation} from "@dicelette/types";
+import type {EClient} from "client";
+import {embedError, getEmbeds} from "messages/embeds";
+import {isUserNameOrId} from "utils/check";
+import {move, resetButton} from "commands/tools/edit";
+import {findln} from "@dicelette/localization";
+import type {PersonnageIds, UserMessageId} from "@dicelette:types/database";
+import {getUserByEmbed} from "database/get_user";
+import type {DiscordChannel} from "@dicelette:types/discord";
 
 export async function validateMove(
 	interaction: Djs.ModalSubmitInteraction,
@@ -84,29 +84,4 @@ export async function validateMove(
 		oldData,
 		interaction.channel as DiscordChannel
 	);
-}
-
-export async function initiateMove(
-	interaction: Djs.StringSelectMenuInteraction,
-	ul: Translation,
-	interactionUser: Djs.User,
-	db: Settings
-) {
-	if (await allowEdit(interaction, db, interactionUser)) await showMove(interaction, ul);
-}
-
-async function showMove(interaction: Djs.StringSelectMenuInteraction, ul: Translation) {
-	const modal = new Djs.ModalBuilder()
-		.setCustomId("move")
-		.setTitle(ul("button.edit.move"));
-	const input =
-		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
-			new Djs.TextInputBuilder()
-				.setCustomId("user")
-				.setLabel(ul("common.user"))
-				.setRequired(true)
-				.setStyle(Djs.TextInputStyle.Short)
-		);
-	modal.addComponents(input);
-	await interaction.showModal(modal);
 }

@@ -6,7 +6,6 @@ import {
 } from "@dicelette/core";
 import { ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
-import { continueCancelButtons, editUserButtons, registerDmgButton } from "buttons";
 import { getTemplateWithDB } from "database/get_template";
 import { getUserNameAndChar } from "database/get_user";
 import * as Djs from "discord.js";
@@ -18,6 +17,7 @@ import {
 	removeEmbedsFromList,
 } from "messages/embeds";
 import { displayOldAndNewStats, reply, sendLogs } from "messages/send";
+import { continueCancelButtons, editUserButtons, registerDmgButton } from "utils/button";
 
 /**
  * Embed to display the statistics when adding a new user
