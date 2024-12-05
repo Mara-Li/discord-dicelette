@@ -18,7 +18,7 @@
 		"resolveJsonModule": true,
 		"forceConsistentCasingInFileNames": true,
 		"removeComments": true,
-		"typeRoots": ["packages/bot/@types", "node_modules/@types"],
+		"typeRoots": ["packages/@types", "node_modules/@types"],
 		"sourceMap": false,
 		"composite": true,
 		"baseUrl": ".",

@@ -8,7 +8,9 @@
 	"engineStrict": true,
 	"private": true,
 	"scripts": {
-		"lint": "biome format --write packages"
+		"lint": "biome format --write packages",
+		"check": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+		"dev": "ts-node-dev -r tsconfig-paths/register --respawn -- packages/bot/index.ts"
 	},
 	"engines": {
 		"node": "^20.0.0"
@@ -22,6 +24,8 @@
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"i18next": "^24.0.5",
+		"tsc-alias": "^1.8.10",
+		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.7.2"
 	},
 	"dependencies": {
@@ -29,6 +33,7 @@
 		"@types/node": "^22.10.1",
 		"discord.js": "^14.16.3",
 		"dotenv": "^16.4.6",
+		"ts-node-dev": "^2.0.0",
 		"tslog": "^4.9.3",
 		"uniformize": "^2.2.0"
 	}

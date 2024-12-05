@@ -12,7 +12,6 @@
 	},
 	"include": ["src", "index.ts"],
 	"references": [
-		{ "path": "../database" },
 		{ "path": "../dice" },
 		{ "path": "../utils" },
 		{ "path": "../localization" },
