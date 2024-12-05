@@ -1,6 +1,6 @@
 import * as Djs from "discord.js";
-import type {Settings, Translation} from "@dicelette/types";
-import {allowEdit} from "utils/check";
+import type { Settings, Translation } from "@dicelette/types";
+import { allowEdit } from "utils/check";
 
 export async function initiateRenaming(
 	interaction: Djs.StringSelectMenuInteraction,

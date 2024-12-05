@@ -1,7 +1,7 @@
 import * as Djs from "discord.js";
-import type {StatisticalTemplate} from "@dicelette/core";
-import type {Translation} from "@dicelette/types";
-import {reply} from "messages/send";
+import type { StatisticalTemplate } from "@dicelette/core";
+import type { Translation } from "@dicelette/types";
+import { reply } from "messages/send";
 
 export async function startRegisterUser(
 	interaction: Djs.ButtonInteraction,

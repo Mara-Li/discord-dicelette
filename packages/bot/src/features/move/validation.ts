@@ -1,13 +1,13 @@
 import type * as Djs from "discord.js";
-import type {Translation} from "@dicelette/types";
-import type {EClient} from "client";
-import {embedError, getEmbeds} from "messages/embeds";
-import {isUserNameOrId} from "utils/check";
-import {move, resetButton} from "commands/tools/edit";
-import {findln} from "@dicelette/localization";
-import type {PersonnageIds, UserMessageId} from "@dicelette:types/database";
-import {getUserByEmbed} from "database/get_user";
-import type {DiscordChannel} from "@dicelette:types/discord";
+import type { Translation } from "@dicelette/types";
+import type { EClient } from "client";
+import { embedError, getEmbeds } from "messages/embeds";
+import { isUserNameOrId } from "utils/check";
+import { move, resetButton } from "commands/tools/edit";
+import { findln } from "@dicelette/localization";
+import type { PersonnageIds, UserMessageId } from "@dicelette:types/database";
+import { getUserByEmbed } from "database/get_user";
+import type { DiscordChannel } from "@dicelette:types/discord";
 
 export async function validateMove(
 	interaction: Djs.ModalSubmitInteraction,
