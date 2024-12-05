@@ -1,10 +1,10 @@
-import type { PersonnageIds } from "@dicelette:types/database";
 import type { StatisticalTemplate } from "@dicelette/core";
+import type { PersonnageIds } from "@dicelette/types";
 import type { Settings, Translation } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
 import * as Djs from "discord.js";
-import { createTemplateEmbed, getEmbeds, getEmbedsList } from "messages/embeds";
-import { searchUserChannel } from "utils/search";
+import { createTemplateEmbed, getEmbeds, getEmbedsList } from "messages";
+import { searchUserChannel } from "utils";
 
 /**
  * Update the template of existing user when the template is edited by moderation

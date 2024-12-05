@@ -1,12 +1,11 @@
-import type { UserData } from "@dicelette:types/database";
-import { InvalidCsvContent, InvalidURL } from "@dicelette:utils/errors";
-import { logger } from "@dicelette:utils/logger";
 import type { StatisticalTemplate } from "@dicelette/core";
 import { ln } from "@dicelette/localization";
+import type { UserData } from "@dicelette/types";
+import { InvalidCsvContent, InvalidURL, logger } from "@dicelette/utils";
 import * as Djs from "discord.js";
 import Papa from "papaparse";
 import "uniformize";
-import { reply } from "@dicelette:bot/utils";
+import { reply } from "messages";
 
 export type CSVRow = {
 	user: string;

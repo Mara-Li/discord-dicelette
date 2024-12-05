@@ -14,3 +14,7 @@ export const commandsList = [
 	help,
 	newScene,
 ];
+export * from "./context_menus";
+export * from "./admin";
+export * from "./roll";
+export * from "./tools";

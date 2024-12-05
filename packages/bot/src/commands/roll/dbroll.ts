@@ -1,11 +1,10 @@
 import { cmdLn, ln, t } from "@dicelette/localization";
-import { serializeName } from "@dicelette/utils";
+import { filterChoices } from "@dicelette/utils";
 import type { EClient } from "client";
-import { getFirstRegisteredChar, getUserFromMessage } from "database/get_user";
+import { getFirstRegisteredChar, getUserFromMessage } from "database";
 import * as Djs from "discord.js";
-import { reply } from "messages/send";
-import { embedError } from "utils";
-import { rollStatistique } from "utils/roll";
+import { embedError, reply } from "messages";
+import { rollStatistique, serializeName } from "utils";
 
 export const dbRoll = {
 	data: new Djs.SlashCommandBuilder()

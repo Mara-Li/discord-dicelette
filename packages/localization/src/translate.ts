@@ -1,11 +1,11 @@
+import { InvalidCsvContent, NoChannel, NoEmbed } from "@dicelette:utils/errors";
+import { logger } from "@dicelette:utils/logger";
 import {
 	DiceTypeError,
 	EmptyObjectError,
 	FormulaError,
 	NoStatisticsError,
 } from "@dicelette/core";
-import { logger } from "@utils";
-import { InvalidCsvContent, NoChannel, NoEmbed } from "@utils/errors";
 import * as Djs from "discord.js";
 import { default as i18next } from "i18next";
 import { ALL_TRANSLATION_KEYS } from "./flattenJson";

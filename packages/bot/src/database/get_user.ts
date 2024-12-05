@@ -1,16 +1,10 @@
-import type {
-	CharDataWithName,
-	PersonnageIds,
-	UserData,
-} from "@dicelette:types/database";
 import { findln, ln } from "@dicelette/localization";
+import type { CharDataWithName, PersonnageIds, UserData } from "@dicelette/types";
 import type { Settings, Translation } from "@dicelette/types";
 import type { EClient } from "client";
 import * as Djs from "discord.js";
-import { ensureEmbed, getEmbeds, parseEmbedFields } from "messages/embeds";
-import { reply } from "messages/send";
-import { embedError, haveAccess } from "utils";
-import { searchUserChannel } from "utils/search";
+import { embedError, ensureEmbed, getEmbeds, parseEmbedFields, reply } from "messages";
+import { haveAccess, searchUserChannel } from "utils";
 
 export function getUserByEmbed(
 	message: Djs.Message,

@@ -1,8 +1,8 @@
 import { ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
 import * as Djs from "discord.js";
-import { getEmbeds, parseEmbedFields } from "messages/embeds";
-import { allowEdit } from "utils/check";
+import { getEmbeds, parseEmbedFields } from "messages";
+import { allowEdit } from "utils";
 
 /**
  * Interaction to add a new skill dice

@@ -1,16 +1,12 @@
-import { NoChannel } from "@dicelette:utils/errors";
 import type { StatisticalTemplate } from "@dicelette/core";
 import { ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
-import { verifyAvatarUrl } from "@dicelette/utils";
-import { getTemplateWithDB } from "database/get_template";
+import { NoChannel, verifyAvatarUrl } from "@dicelette/utils";
+import { getTemplateWithDB } from "database";
 import * as Djs from "discord.js";
-import { registerDmgButton } from "features/dice/register";
-import { registerStatistics } from "features/stats/modals";
-import { embedError } from "messages/embeds";
-import { reply } from "messages/send";
-import { continueCancelButtons } from "utils/button";
-import { isUserNameOrId } from "utils/check";
+import { registerDmgButton, registerStatistics } from "features";
+import { embedError, reply } from "messages";
+import { continueCancelButtons, isUserNameOrId } from "utils";
 
 /**
  * Register the statistic in the embed when registering a new user and validate the modal

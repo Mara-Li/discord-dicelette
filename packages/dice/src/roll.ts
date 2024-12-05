@@ -21,10 +21,8 @@ export function rollText(
 	const ul = ln(data.lang);
 	const comments = dice.match(DETECT_DICE_MESSAGE)?.[3].replaceAll("*", "\\*");
 	if (comments) {
-		//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
 		dice = dice.replace(DETECT_DICE_MESSAGE, "$1");
 	}
-	//biome-ignore lint/style/noParameterAssign: We need to replace the dice with the message
 	dice = dice.trim();
 	const rollDice = roll(dice.trim().toLowerCase());
 	if (!rollDice) {

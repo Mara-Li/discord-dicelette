@@ -1,22 +1,14 @@
-import type {
-	PersonnageIds,
-	UserMessageId,
-	UserRegistration,
-} from "@dicelette:types/database";
-import type { DiscordChannel } from "@dicelette:types/discord";
 import { cmdLn, findln, ln, t } from "@dicelette/localization";
+import type { DiscordChannel } from "@dicelette/types";
+import type { PersonnageIds, UserMessageId, UserRegistration } from "@dicelette/types";
 import type { Translation } from "@dicelette/types";
+import { filterChoices, verifyAvatarUrl } from "@dicelette/utils";
 import type { EClient } from "client";
-import { deleteUser } from "database/delete_user";
-import { getDatabaseChar } from "database/get_user";
-import { registerUser } from "database/register_user";
+import { deleteUser, getDatabaseChar, registerUser } from "database";
 import * as Djs from "discord.js";
-import { getEmbeds, getEmbedsList } from "messages/embeds";
-import { findLocation } from "messages/thread";
-import { embedError, haveAccess, reply } from "utils";
-import { editUserButtons, selectEditMenu } from "utils/button";
-
-import { verifyAvatarUrl } from "@dicelette/utils";
+import { embedError, findLocation, getEmbeds, getEmbedsList } from "messages";
+import { reply } from "messages";
+import { editUserButtons, haveAccess, selectEditMenu } from "utils";
 
 export const editAvatar = {
 	data: new Djs.SlashCommandBuilder()

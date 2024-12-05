@@ -1,4 +1,4 @@
-import type { GuildData } from "@dicelette:types/database";
+import type { GuildData } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
 import type * as Djs from "discord.js";
 import type Enmap from "enmap";

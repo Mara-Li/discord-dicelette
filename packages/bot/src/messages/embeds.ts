@@ -1,7 +1,7 @@
-import { NoEmbed } from "@dicelette:utils/errors";
 import type { StatisticalTemplate } from "@dicelette/core";
 import { findln } from "@dicelette/localization";
 import type { Translation } from "@dicelette/types";
+import { NoEmbed } from "@dicelette/utils";
 import * as Djs from "discord.js";
 export function ensureEmbed(message?: Djs.Message) {
 	const oldEmbeds = message?.embeds[0];

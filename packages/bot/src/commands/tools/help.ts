@@ -1,10 +1,9 @@
-import { LINKS } from "@dicelette:types/constants";
 import { cmdLn, ln, t } from "@dicelette/localization";
-import type { Settings, Translation } from "@dicelette/types";
+import { LINKS, type Settings, type Translation } from "@dicelette/types";
 import type { EClient } from "client";
 import dedent from "dedent";
 import * as Djs from "discord.js";
-import { reply } from "messages/send";
+import { reply } from "messages";
 
 export const help = {
 	data: new Djs.SlashCommandBuilder()

@@ -4,11 +4,10 @@
 
 import { cmdLn, ln, t } from "@dicelette/localization";
 import type { EClient } from "client";
-import { getUserFromMessage } from "database/get_user";
-
-import type { CSVRow } from "@dicelette:utils/import_csv";
+import { getUserFromMessage } from "database";
 import * as Djs from "discord.js";
 import Papa from "papaparse";
+import type { CSVRow } from "utils";
 
 export const exportData = {
 	data: new Djs.SlashCommandBuilder()

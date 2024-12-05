@@ -1,11 +1,16 @@
-import { parseCSV } from "@dicelette:utils/import_csv";
 import { cmdLn, ln, t } from "@dicelette/localization";
 import type { EClient } from "client";
-import { getTemplateWithDB } from "database/get_template";
+import { getTemplateWithDB } from "database";
 import * as Djs from "discord.js";
-import { createDiceEmbed, createStatsEmbed } from "messages/embeds";
-import { repostInThread } from "messages/thread";
-import { addAutoRole, createEmbedsList, createUserEmbed, reply } from "utils";
+import {
+	createDiceEmbed,
+	createEmbedsList,
+	createStatsEmbed,
+	createUserEmbed,
+	reply,
+	repostInThread,
+} from "messages";
+import { addAutoRole, parseCSV } from "utils";
 
 /**
  * ! Note: Bulk data doesn't allow to register dice-per-user, as each user can have different dice

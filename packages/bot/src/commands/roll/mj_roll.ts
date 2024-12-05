@@ -1,12 +1,12 @@
-import type { UserMessageId } from "@dicelette:types/database";
 import { cmdLn, ln, t } from "@dicelette/localization";
-import { serializeName } from "@dicelette/utils";
+import type { UserMessageId } from "@dicelette/types";
+import { filterChoices } from "@dicelette/utils";
 import type { EClient } from "client";
-import { getFirstRegisteredChar, getUserFromMessage } from "database/get_user";
+import { getFirstRegisteredChar, getUserFromMessage } from "database";
 import * as Djs from "discord.js";
-import { embedError } from "messages/embeds";
-import { reply } from "messages/send";
-import { rollDice, rollStatistique } from "utils/roll";
+import { embedError, reply } from "messages";
+import { serializeName } from "utils";
+import { rollDice, rollStatistique } from "utils";
 
 export const mjRoll = {
 	data: new Djs.SlashCommandBuilder()

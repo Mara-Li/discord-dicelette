@@ -1,12 +1,12 @@
-import type * as Djs from "discord.js";
-import type { Translation } from "@dicelette/types";
-import type { EClient } from "client";
-import { getEmbeds } from "messages/embeds";
 import { findln } from "@dicelette/localization";
-import type { PersonnageIds, UserMessageId } from "@dicelette:types/database";
-import { getUserByEmbed } from "database/get_user";
-import { rename } from "commands/tools/edit";
-import type { DiscordChannel } from "@dicelette:types/discord";
+import type { Translation } from "@dicelette/types";
+import type { PersonnageIds, UserMessageId } from "@dicelette/types";
+import type { DiscordChannel } from "@dicelette/types";
+import type { EClient } from "client";
+import { rename } from "commands";
+import { getUserByEmbed } from "database";
+import type * as Djs from "discord.js";
+import { getEmbeds } from "messages";
 
 export async function validateRename(
 	interaction: Djs.ModalSubmitInteraction,

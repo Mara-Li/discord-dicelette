@@ -6,19 +6,20 @@ import {
 } from "@dicelette/core";
 import { ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
-import { getTemplateWithDB } from "database/get_template";
-import { getUserNameAndChar } from "database/get_user";
+import { getTemplateWithDB, getUserNameAndChar } from "database";
 import * as Djs from "discord.js";
-import { registerDmgButton } from "features/dice/register";
+import { registerDmgButton } from "features";
 import {
 	createStatsEmbed,
+	displayOldAndNewStats,
 	getEmbeds,
 	getEmbedsList,
 	getStatistiqueFields,
 	removeEmbedsFromList,
-} from "messages/embeds";
-import { displayOldAndNewStats, reply, sendLogs } from "messages/send";
-import { continueCancelButtons, editUserButtons } from "utils/button";
+	reply,
+	sendLogs,
+} from "messages";
+import { continueCancelButtons, editUserButtons } from "utils";
 
 /**
  * Embed to display the statistics when adding a new user

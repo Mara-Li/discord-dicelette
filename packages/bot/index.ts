@@ -3,19 +3,21 @@ import { logger } from "@dicelette/utils";
 import dotenv from "dotenv";
 import i18next from "i18next";
 import "uniformize";
+
 import process from "node:process";
 import { client } from "client";
 import {
 	onDeleteChannel,
 	onDeleteMessage,
 	onDeleteThread,
+	onInteraction,
+	onJoin,
 	onKick,
-} from "events/on_delete";
-import onInteraction from "events/on_interaction";
-import onJoin from "events/on_join";
-import { onReactionAdd, onReactionRemove } from "events/on_message_reaction";
-import onMessageSend from "events/on_message_send";
-import ready from "events/ready";
+	onMessageSend,
+	onReactionAdd,
+	onReactionRemove,
+	ready,
+} from "event";
 
 await i18next.init({
 	lng: "en",

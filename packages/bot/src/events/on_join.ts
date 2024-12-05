@@ -1,7 +1,6 @@
 import { logger } from "@dicelette/utils";
 import type { EClient } from "client";
-import { commandsList } from "commands";
-import { contextMenus } from "commands/context_menus";
+import { commandsList, contextMenus } from "commands";
 
 export default (client: EClient): void => {
 	client.on("guildCreate", async (guild) => {

@@ -1,8 +1,8 @@
-import type { PersonnageIds, UserRegistration } from "@dicelette:types/database";
 import { ln } from "@dicelette/localization";
+import type { PersonnageIds, UserRegistration } from "@dicelette/types";
 import type { Settings } from "@dicelette/types";
 import type * as Djs from "discord.js";
-import { searchUserChannel } from "utils/search";
+import { searchUserChannel } from "utils";
 
 /**
  * Register the managerId in the database

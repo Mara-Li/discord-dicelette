@@ -1,5 +1,5 @@
-import type { UserData } from "@dicelette:types/database";
 import { logger } from "./src/logger";
+import "uniformize";
 
 export { logger };
 
@@ -37,18 +37,6 @@ export function verifyAvatarUrl(url: string) {
 	return false;
 }
 
-export function serializeName(
-	userStatistique: UserData | undefined,
-	charName: string | undefined
-) {
-	const serializedNameDB = userStatistique?.userName?.standardize(true);
-	const serializedNameQueries = charName?.standardize(true);
-	return (
-		serializedNameDB !== serializedNameQueries ||
-		(serializedNameQueries && serializedNameDB?.includes(serializedNameQueries))
-	);
-}
-
 /**
  * Verify if an array is equal to another
  * @param array1 {string[]|undefined}
@@ -61,3 +49,5 @@ export function isArrayEqual(array1: string[] | undefined, array2: string[] | un
 		array1.every((value, index) => value === array2[index])
 	);
 }
+
+export * from "./src/errors";

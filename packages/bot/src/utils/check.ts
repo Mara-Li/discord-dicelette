@@ -1,10 +1,9 @@
 import { findln, ln } from "@dicelette/localization";
-import type { Settings } from "@dicelette/types";
+import type { Settings, UserData } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
-import { verifyIfEmbedInDB } from "database/get_user";
+import { verifyIfEmbedInDB } from "database";
 import * as Djs from "discord.js";
-import { embedError, ensureEmbed } from "messages/embeds";
-import { reply } from "messages/send";
+import { embedError, ensureEmbed, reply } from "messages";
 
 export async function allowEdit(
 	interaction: Djs.ButtonInteraction | Djs.StringSelectMenuInteraction,
@@ -61,4 +60,15 @@ export async function isUserNameOrId(
 	if (!userId.match(/\d+/))
 		return (await interaction.guild!.members.fetch({ query: userId })).first();
 	return await interaction.guild!.members.fetch({ user: userId });
+}
+export function serializeName(
+	userStatistique: UserData | undefined,
+	charName: string | undefined
+) {
+	const serializedNameDB = userStatistique?.userName?.standardize(true);
+	const serializedNameQueries = charName?.standardize(true);
+	return (
+		serializedNameDB !== serializedNameQueries ||
+		(serializedNameQueries && serializedNameDB?.includes(serializedNameQueries))
+	);
 }

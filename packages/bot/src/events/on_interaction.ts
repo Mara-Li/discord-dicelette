@@ -2,28 +2,19 @@ import type { StatisticalTemplate } from "@dicelette/core";
 import { lError, ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
 import type { EClient } from "client";
-import { autCompleteCmd, commandsList } from "commands";
-import { commandMenu, desktopLink, mobileLink } from "commands/context_menus";
-import { resetButton } from "commands/tools/edit";
-import { getTemplate, getTemplateWithDB } from "database/get_template";
+import {
+	autCompleteCmd,
+	commandMenu,
+	commandsList,
+	desktopLink,
+	mobileLink,
+} from "commands";
+import { resetButton } from "commands";
+import { getTemplate, getTemplateWithDB } from "database";
 import * as Djs from "discord.js";
-import { initiateAvatarEdit } from "features/avatar/modal";
-import { validateAvatarEdit } from "features/avatar/validation";
-import { executeAddDiceButton, initiateDiceEdit } from "features/dice/buttons";
-import { storeDamageDice } from "features/dice/register";
-import { validateDiceEdit } from "features/dice/validation";
-import { initiateMove } from "features/move/modal";
-import { validateMove } from "features/move/validation";
-import { initiateRenaming } from "features/rename/modal";
-import { validateRename } from "features/rename/validation";
-import { triggerEditStats } from "features/stats/buttons";
-import { editStats } from "features/stats/modals";
-import { startRegisterUser } from "features/user/modals";
-import { continuePage, validateUserButton } from "features/user/validation";
-import { embedError } from "messages/embeds";
-import { reply } from "messages/send";
-import { pageNumber, recordFirstPage } from "modals/register_user";
-import { cancel } from "utils/button";
+import * as features from "features";
+import { embedError, reply } from "messages";
+import { cancel } from "utils";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: Djs.BaseInteraction) => {
@@ -108,17 +99,21 @@ async function modalSubmit(
 ) {
 	const db = client.settings;
 	if (interaction.customId.includes("damageDice"))
-		await storeDamageDice(interaction, ul, interactionUser, db);
-	else if (interaction.customId.includes("page")) await pageNumber(interaction, ul, db);
-	else if (interaction.customId === "editStats") await editStats(interaction, ul, db);
-	else if (interaction.customId === "firstPage") await recordFirstPage(interaction, db);
+		await features.storeDamageDice(interaction, ul, interactionUser, db);
+	else if (interaction.customId.includes("page"))
+		await features.pageNumber(interaction, ul, db);
+	else if (interaction.customId === "editStats")
+		await features.editStats(interaction, ul, db);
+	else if (interaction.customId === "firstPage")
+		await features.recordFirstPage(interaction, db);
 	else if (interaction.customId === "editDice")
-		await validateDiceEdit(interaction, ul, db);
+		await features.validateDiceEdit(interaction, ul, db);
 	else if (interaction.customId === "editAvatar")
-		await validateAvatarEdit(interaction, ul);
+		await features.validateAvatarEdit(interaction, ul);
 	else if (interaction.customId === "rename")
-		await validateRename(interaction, ul, client);
-	else if (interaction.customId === "move") await validateMove(interaction, ul, client);
+		await features.validateRename(interaction, ul, client);
+	else if (interaction.customId === "move")
+		await features.validateMove(interaction, ul, client);
 }
 
 /**
@@ -137,7 +132,7 @@ async function buttonSubmit(
 	db: Settings
 ) {
 	if (interaction.customId === "register")
-		await startRegisterUser(
+		await features.startRegisterUser(
 			interaction,
 			template,
 			interactionUser,
@@ -145,17 +140,17 @@ async function buttonSubmit(
 			db.has(interaction.guild!.id, "privateChannel")
 		);
 	else if (interaction.customId === "continue")
-		await continuePage(interaction, template, ul, interactionUser);
+		await features.continuePage(interaction, template, ul, interactionUser);
 	else if (interaction.customId.includes("add_dice"))
-		await executeAddDiceButton(interaction, interactionUser, db);
+		await features.executeAddDiceButton(interaction, interactionUser, db);
 	else if (interaction.customId === "edit_stats")
-		await triggerEditStats(interaction, ul, interactionUser, db);
+		await features.triggerEditStats(interaction, ul, interactionUser, db);
 	else if (interaction.customId === "validate")
-		await validateUserButton(interaction, interactionUser, template, ul, db);
+		await features.validateUserButton(interaction, interactionUser, template, ul, db);
 	else if (interaction.customId === "cancel")
 		await cancel(interaction, ul, interactionUser);
 	else if (interaction.customId === "edit_dice")
-		await initiateDiceEdit(interaction, ul, interactionUser, db);
+		await features.initiateDiceEdit(interaction, ul, interactionUser, db);
 	else if (interaction.customId === "avatar") {
 		await resetButton(interaction.message, ul);
 		await interaction.reply({ content: ul("refresh"), ephemeral: true });
@@ -178,9 +173,10 @@ async function selectSubmit(
 	if (interaction.customId === "edit_select") {
 		const value = interaction.values[0];
 		if (value === "avatar")
-			await initiateAvatarEdit(interaction, ul, interactionUser, db);
+			await features.initiateAvatarEdit(interaction, ul, interactionUser, db);
 		else if (value === "name")
-			await initiateRenaming(interaction, ul, interactionUser, db);
-		else if (value === "user") await initiateMove(interaction, ul, interactionUser, db);
+			await features.initiateRenaming(interaction, ul, interactionUser, db);
+		else if (value === "user")
+			await features.initiateMove(interaction, ul, interactionUser, db);
 	}
 }

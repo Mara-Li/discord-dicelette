@@ -1,15 +1,17 @@
-import type { GuildData, PersonnageIds, UserMessageId } from "@dicelette:types/database";
-import type { DiscordChannel } from "@dicelette:types/discord";
-import { logger } from "@dicelette:utils/logger";
 import { cmdLn, ln, t } from "@dicelette/localization";
+import type {
+	DiscordChannel,
+	GuildData,
+	PersonnageIds,
+	UserMessageId,
+} from "@dicelette/types";
 import type { Translation } from "@dicelette/types";
+import { filterChoices, logger } from "@dicelette/utils";
 import type { EClient } from "client";
-import { deleteUser } from "database/delete_user";
-import { getDatabaseChar } from "database/get_user";
+import { deleteUser, getDatabaseChar } from "database";
 import * as Djs from "discord.js";
-import { reply } from "messages/send";
-import { embedError } from "utils";
-import { searchUserChannel } from "utils/search";
+import { embedError, reply } from "messages";
+import { searchUserChannel } from "utils";
 
 export const deleteChar = {
 	async autocomplete(

@@ -1,7 +1,7 @@
 import type { Settings, Translation } from "@dicelette/types";
 import * as Djs from "discord.js";
-import { getEmbeds } from "messages/embeds";
-import { allowEdit } from "utils/check";
+import { getEmbeds } from "messages";
+import { allowEdit } from "utils";
 
 export async function initiateAvatarEdit(
 	interaction: Djs.StringSelectMenuInteraction,

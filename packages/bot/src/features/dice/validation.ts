@@ -1,18 +1,19 @@
-import type { UserMessageId, UserRegistration } from "@dicelette:types/database";
 import { evalStatsDice, roll } from "@dicelette/core";
+import type { UserMessageId, UserRegistration } from "@dicelette/types";
 import type { Settings, Translation } from "@dicelette/types";
-import { getUserNameAndChar } from "database/get_user";
-import { registerUser } from "database/register_user";
+import { getUserNameAndChar, registerUser } from "database";
 import * as Djs from "discord.js";
 import {
 	createDiceEmbed,
+	displayOldAndNewStats,
 	getEmbeds,
 	getEmbedsList,
 	parseStatsString,
 	removeEmbedsFromList,
-} from "messages/embeds";
-import { displayOldAndNewStats, reply, sendLogs } from "messages/send";
-import { editUserButtons } from "utils/button";
+	reply,
+	sendLogs,
+} from "messages";
+import { editUserButtons } from "utils";
 
 /**
  * Validate the edit of the dice from the modals

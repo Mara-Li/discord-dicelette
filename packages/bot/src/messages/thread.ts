@@ -2,18 +2,16 @@ import type {
 	CharDataWithName,
 	CharacterData,
 	PersonnageIds,
+	Settings,
+	Translation,
 	UserData,
 	UserRegistration,
-} from "@dicelette:types/database";
-import type { Settings, Translation } from "@dicelette/types";
+} from "@dicelette/types";
 import type { EClient } from "client";
-import { registerUser, setDefaultManagerId } from "database/register_user";
+import { registerUser, setDefaultManagerId } from "database";
 import * as Djs from "discord.js";
-import { embedError } from "messages/embeds";
-import { deleteAfter, reply, sendLogs } from "messages/send";
-import { haveAccess } from "utils";
-import { editUserButtons, selectEditMenu } from "utils/button";
-import { searchUserChannel } from "utils/search";
+import { deleteAfter, embedError, reply, sendLogs } from "messages";
+import { editUserButtons, haveAccess, searchUserChannel, selectEditMenu } from "utils";
 
 export async function createDefaultThread(
 	parent: Djs.TextChannel,

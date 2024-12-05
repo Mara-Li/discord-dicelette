@@ -1,10 +1,8 @@
 // noinspection SuspiciousTypeOfGuard
 
-import type { DiscordChannel } from "@dicelette:types/discord";
-import type { Settings, Translation } from "@dicelette/types";
+import type { DiscordChannel, Settings, Translation } from "@dicelette/types";
 import * as Djs from "discord.js";
-import { reply, sendLogs } from "messages/send";
-import { embedError } from "utils/index";
+import { embedError, reply, sendLogs } from "messages";
 export async function searchUserChannel(
 	guildData: Settings,
 	interaction: Djs.BaseInteraction,

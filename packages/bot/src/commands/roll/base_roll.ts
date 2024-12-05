@@ -1,7 +1,7 @@
 import { cmdLn, t } from "@dicelette/localization";
 import type { EClient } from "client";
 import * as Djs from "discord.js";
-import { rollWithInteraction } from "utils/roll";
+import { rollWithInteraction } from "utils";
 
 export const diceRoll = {
 	data: new Djs.SlashCommandBuilder()

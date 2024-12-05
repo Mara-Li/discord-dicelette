@@ -1,16 +1,14 @@
 import path from "node:path";
-import type { CharacterData, PersonnageIds, UserData } from "@dicelette:types/database";
 import { cmdLn, ln, t } from "@dicelette/localization";
+import type { CharacterData, PersonnageIds, UserData } from "@dicelette/types";
 import { filterChoices, logger } from "@dicelette/utils";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 import type { EClient } from "client";
-import { getTemplateWithDB } from "database/get_template";
-import { findChara, getDatabaseChar, getUserByEmbed } from "database/get_user";
+import { findChara, getDatabaseChar, getTemplateWithDB, getUserByEmbed } from "database";
 import * as Djs from "discord.js";
-import { sendLogs } from "messages/send";
+import { embedError, reply, sendLogs } from "messages";
 import parse from "parse-color";
-import { embedError, haveAccess, reply } from "utils";
-import { searchUserChannel } from "utils/search";
+import { haveAccess, searchUserChannel } from "utils";
 
 async function chart(
 	userData: UserData,

@@ -1,5 +1,3 @@
-import { TUTORIAL_IMAGES } from "@dicelette:types/constants";
-import type { GuildData } from "@dicelette:types/database";
 import {
 	type Critical,
 	type Statistic,
@@ -7,13 +5,18 @@ import {
 	verifyTemplateValue,
 } from "@dicelette/core";
 import { cmdLn, ln, t } from "@dicelette/localization";
+import { type GuildData, TUTORIAL_IMAGES } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
 import type { EClient } from "client";
 import dedent from "dedent";
 import * as Djs from "discord.js";
-import { bulkDeleteCharacters, bulkEditTemplateUser } from "messages/bulk";
-import { createDefaultThread } from "messages/thread";
-import { embedError, reply } from "utils";
+import {
+	bulkDeleteCharacters,
+	bulkEditTemplateUser,
+	createDefaultThread,
+	embedError,
+	reply,
+} from "messages";
 
 export const generateTemplate = {
 	data: new Djs.SlashCommandBuilder()

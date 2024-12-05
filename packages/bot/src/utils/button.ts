@@ -1,7 +1,6 @@
 import type { Translation } from "@dicelette/types";
 import * as Djs from "discord.js";
-import { ensureEmbed } from "messages/embeds";
-import { reply } from "messages/send";
+import { ensureEmbed, reply } from "messages";
 
 /**
  * Button to edit the user embed character sheet

@@ -1,16 +1,24 @@
-import type { UserMessageId } from "@dicelette:types/database";
-import { NoEmbed } from "@dicelette:utils/errors";
 import { evalStatsDice } from "@dicelette/core";
 import { findln, ln } from "@dicelette/localization";
+import type { UserMessageId } from "@dicelette/types";
 import type { Settings, Translation } from "@dicelette/types";
-import { getTemplateWithDB } from "database/get_template";
-import { getUserByEmbed, getUserNameAndChar } from "database/get_user";
-import { registerUser } from "database/register_user";
+import { NoEmbed } from "@dicelette/utils";
+import {
+	getTemplateWithDB,
+	getUserByEmbed,
+	getUserNameAndChar,
+	registerUser,
+} from "database";
 import * as Djs from "discord.js";
-import { createDiceEmbed, embedError, ensureEmbed, getEmbeds } from "messages/embeds";
-import { reply, sendLogs } from "messages/send";
-import { addAutoRole } from "utils";
-import { editUserButtons } from "utils/button";
+import {
+	createDiceEmbed,
+	embedError,
+	ensureEmbed,
+	getEmbeds,
+	reply,
+	sendLogs,
+} from "messages";
+import { addAutoRole, editUserButtons } from "utils";
 
 /**
  * Interaction to submit the new skill dice

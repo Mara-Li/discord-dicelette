@@ -1,7 +1,7 @@
 {
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-		"outDir": "../dist",
+		"outDir": "../../dist/dice",
 		"rootDir": "./",
 		"paths": {
 			"@dicelette/*": ["packages/*"],
@@ -12,11 +12,5 @@
 		}
 	},
 	"include": ["src", "index.ts"],
-	"references": [
-		{ "path": "../localization" },
-		{ "path": "../types" },
-		{
-			"path": "../bot"
-		}
-	]
+	"references": [{ "path": "../localization" }, { "path": "../types" }]
 }

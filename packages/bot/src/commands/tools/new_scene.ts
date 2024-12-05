@@ -1,8 +1,7 @@
 import { cmdLn, ln, t } from "@dicelette/localization";
 import type { EClient } from "client";
 import * as Djs from "discord.js";
-import { deleteAfter, reply } from "messages/send";
-import { setTagsForRoll } from "messages/thread";
+import { deleteAfter, reply, setTagsForRoll } from "messages";
 import moment from "moment";
 
 export default {

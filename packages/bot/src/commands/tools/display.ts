@@ -1,14 +1,19 @@
-import type { CharacterData } from "@dicelette:types/database";
 import { generateStatsDice } from "@dicelette/core";
 import { cmdLn, findln, ln, t } from "@dicelette/localization";
+import type { CharacterData } from "@dicelette/types";
 import { filterChoices, logger } from "@dicelette/utils";
 import type { EClient } from "client";
-import { findChara, getDatabaseChar } from "database/get_user";
+import { findChara, getDatabaseChar } from "database";
 import * as Djs from "discord.js";
-import { createDiceEmbed, createStatsEmbed, getEmbeds } from "messages/embeds";
-import { reply } from "messages/send";
-import { findLocation } from "messages/thread";
-import { embedError, haveAccess } from "utils";
+import {
+	createDiceEmbed,
+	createStatsEmbed,
+	embedError,
+	findLocation,
+	getEmbeds,
+	reply,
+} from "messages";
+import { haveAccess } from "utils";
 
 export const displayUser = {
 	data: new Djs.SlashCommandBuilder()

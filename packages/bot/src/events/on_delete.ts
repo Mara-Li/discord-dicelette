@@ -1,8 +1,8 @@
-import type { PersonnageIds } from "@dicelette:types/database";
+import type { PersonnageIds } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
 import type { EClient } from "client";
-import { deleteIfChannelOrThread } from "database/delete_user";
-import { sendLogs } from "messages/send";
+import { deleteIfChannelOrThread } from "database";
+import { sendLogs } from "messages";
 
 export const onDeleteChannel = (client: EClient): void => {
 	client.on("channelDelete", async (channel) => {

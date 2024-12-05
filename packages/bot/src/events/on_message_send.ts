@@ -4,9 +4,7 @@ import { lError, ln } from "@dicelette/localization";
 import { logger } from "@dicelette/utils";
 import type { EClient } from "client";
 import * as Djs from "discord.js";
-import { findMessageBefore } from "messages";
-import { deleteAfter } from "messages/send";
-import { threadToSend } from "messages/thread";
+import { deleteAfter, findMessageBefore, threadToSend } from "messages";
 
 export default (client: EClient): void => {
 	client.on("messageCreate", async (message) => {

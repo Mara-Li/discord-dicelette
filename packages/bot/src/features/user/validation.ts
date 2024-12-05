@@ -1,11 +1,10 @@
-import type { UserData } from "@dicelette:types/database";
-import { NoEmbed } from "@dicelette:utils/errors";
 import type { StatisticalTemplate } from "@dicelette/core";
 import { ln } from "@dicelette/localization";
+import type { UserData } from "@dicelette/types";
 import type { Settings, Translation } from "@dicelette/types";
-import { logger } from "@dicelette/utils";
+import { NoEmbed, logger } from "@dicelette/utils";
 import * as Djs from "discord.js";
-import { showStatistiqueModal } from "features/stats/buttons";
+import { showStatistiqueModal } from "features";
 import {
 	createDiceEmbed,
 	createEmbedsList,
@@ -15,9 +14,9 @@ import {
 	embedError,
 	getEmbeds,
 	parseEmbedFields,
-} from "messages/embeds";
-import { reply } from "messages/send";
-import { repostInThread } from "messages/thread";
+	reply,
+	repostInThread,
+} from "messages";
 import { addAutoRole } from "utils";
 
 /**

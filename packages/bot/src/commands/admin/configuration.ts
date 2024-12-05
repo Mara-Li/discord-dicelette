@@ -4,7 +4,7 @@ import type { EClient } from "client";
 import dedent from "dedent";
 import * as Djs from "discord.js";
 import { localeList } from "locales";
-import { reply } from "utils";
+import { reply } from "messages";
 
 const findLocale = (locale?: Djs.Locale) => {
 	if (locale === Djs.Locale.EnglishUS || locale === Djs.Locale.EnglishGB)
