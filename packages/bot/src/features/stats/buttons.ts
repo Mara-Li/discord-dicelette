@@ -79,7 +79,7 @@ export async function triggerEditStats(
 	db: Settings
 ) {
 	if (await allowEdit(interaction, db, interactionUser))
-		showEditorStats(interaction, ul, db);
+		await showEditorStats(interaction, ul, db);
 }
 
 /**

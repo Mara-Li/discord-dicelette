@@ -145,6 +145,7 @@ export async function rollDice(
 	const comments = options.getString(t("dbRoll.options.comments.name")) ?? "";
 	//search dice
 	let dice = userStatistique.damage?.[atq];
+	// noinspection LoopStatementThatDoesntLoopJS
 	while (!dice) {
 		const userData = client.settings
 			.get(interaction.guild!.id, `user.${user?.id ?? interaction.user.id}`)
@@ -215,6 +216,7 @@ export async function rollStatistique(
 	const modification = options.getNumber(t("dbRoll.options.modificator.name")) ?? 0;
 
 	let userStat = userStatistique.stats?.[standardizedStatistic];
+	// noinspection LoopStatementThatDoesntLoopJS
 	while (!userStat) {
 		const guildData = client.settings.get(interaction.guild!.id, "templateID.statsName");
 		if (userStatistique.stats && guildData) {

@@ -19,7 +19,6 @@ import { addAutoRole, parseCSV } from "utils";
 export const bulkAdd = {
 	data: new Djs.SlashCommandBuilder()
 		.setName(t("import.name"))
-		.setDMPermission(false)
 		.setDefaultMemberPermissions(Djs.PermissionFlagsBits.ManageRoles)
 		.setNameLocalizations(cmdLn("import.name"))
 		.setDescription(t("import.description"))

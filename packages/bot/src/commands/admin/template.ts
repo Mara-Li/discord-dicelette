@@ -1,3 +1,5 @@
+// noinspection SuspiciousTypeOfGuard
+
 import {
 	type Critical,
 	type Statistic,
@@ -343,7 +345,7 @@ export const registerTemplate = {
 			],
 			components: [components],
 		});
-		msg.pin();
+		await msg.pin();
 
 		//save in database file
 		const json = client.settings.get(guildId);

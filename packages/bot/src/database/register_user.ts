@@ -65,7 +65,7 @@ export async function registerUser(
 					);
 					if (threadOfChar) {
 						const oldMessage = await threadOfChar.messages.fetch(char.messageId[1]);
-						if (oldMessage) oldMessage.delete();
+						if (oldMessage) await oldMessage.delete();
 					}
 				} catch (error) {
 					//skip unknown message

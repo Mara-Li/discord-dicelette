@@ -341,7 +341,7 @@ export async function move(
 		msgId: oldData.messageId,
 	};
 	try {
-		registerUser(userRegister, interaction, client.settings, false, true);
+		await registerUser(userRegister, interaction, client.settings, false, true);
 	} catch (error) {
 		if ((error as Error).message === "DUPLICATE")
 			await reply(interaction, { embeds: [embedError(ul("error.duplicate"), ul)] });

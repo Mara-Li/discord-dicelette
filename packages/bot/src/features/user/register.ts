@@ -65,7 +65,10 @@ export async function createEmbedFirstPage(
 	const userFromField = interaction.fields.getTextInputValue("userID");
 	const user = await isUserNameOrId(userFromField, interaction);
 	if (!user) {
-		reply(interaction, { embeds: [embedError(ul("error.user"), ul)], ephemeral: true });
+		await reply(interaction, {
+			embeds: [embedError(ul("error.user"), ul)],
+			ephemeral: true,
+		});
 		return;
 	}
 	const customChannel = interaction.fields.getTextInputValue("channelId");
@@ -84,7 +87,7 @@ export async function createEmbedFirstPage(
 		? await interaction.guild?.channels.fetch(sheetId)
 		: undefined;
 	if (!existChannel) {
-		reply(interaction, {
+		await reply(interaction, {
 			embeds: [embedError(ul("error.noThread"), ul)],
 			ephemeral: true,
 		});

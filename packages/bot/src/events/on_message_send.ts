@@ -54,8 +54,6 @@ export default (client: EClient): void => {
 					messageId: message.id,
 				});
 			}
-			const parentChannel =
-				channel instanceof Djs.ThreadChannel ? channel.parent : channel;
 			const thread = await threadToSend(client.settings, channel, ul);
 			const msgToEdit = await thread.send("_ _");
 			const msg = rollContent(

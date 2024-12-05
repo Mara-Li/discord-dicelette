@@ -7,6 +7,7 @@ import {
 	onDeleteChannel,
 	onDeleteMessage,
 	onDeleteThread,
+	onError,
 	onInteraction,
 	onJoin,
 	onKick,
@@ -18,7 +19,6 @@ import {
 import packageJson from "./package.json" assert { type: "json" };
 dotenv.config({ path: ".env" });
 logger.info("Starting bot...");
-logger.trace("Version: " + packageJson.version);
 //@ts-ignore
 export const VERSION = packageJson.version ?? "/";
 try {
@@ -32,8 +32,9 @@ try {
 	onDeleteThread(client);
 	onReactionAdd(client);
 	onReactionRemove(client);
+	onError(client);
 } catch (error) {
-	console.error(error);
+	logger.fatal(error);
 }
 
 await client.login(process.env.DISCORD_TOKEN);

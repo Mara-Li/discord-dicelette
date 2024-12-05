@@ -9,7 +9,6 @@ export function isRolling(content: string) {
 		if (!diceValue) return;
 		content = content.replace(DETECT_DICE_MESSAGE, "$1");
 	}
-	const deleteInput = true;
 	let result: Resultat | undefined;
 	try {
 		result = detectRoll ? roll(detectRoll.toLowerCase()) : roll(content.toLowerCase());

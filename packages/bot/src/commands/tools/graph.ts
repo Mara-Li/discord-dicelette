@@ -326,7 +326,7 @@ export const graph = {
 			await reply(interaction, {
 				embeds: [embedError(ul("error.generic.e", { e: error as Error }), ul)],
 			});
-			sendLogs(
+			await sendLogs(
 				ul("error.generic.e", { e: error as Error }),
 				interaction.guild,
 				client.settings

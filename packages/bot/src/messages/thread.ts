@@ -294,7 +294,7 @@ export async function findForumChannel(
 	const tags = await setTagsForRoll(forum);
 	if (rollTopic) {
 		//archive all other roll topic
-		if (rollTopic.archived) rollTopic.setArchived(false);
+		if (rollTopic.archived) await rollTopic.setArchived(false);
 		await rollTopic.setAppliedTags([tags.id as string]);
 		return rollTopic;
 	}

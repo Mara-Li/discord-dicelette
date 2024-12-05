@@ -1,3 +1,5 @@
+// noinspection SuspiciousTypeOfGuard
+
 import type { Settings } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
 import * as Djs from "discord.js";
@@ -72,7 +74,7 @@ export async function addAutoRole(
 		} else {
 			//Dm the server owner because it's pretty important to know
 			const owner = await interaction.guild!.fetchOwner();
-			owner.send(errorMessage);
+			await owner.send(errorMessage);
 		}
 	}
 }
