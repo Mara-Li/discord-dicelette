@@ -1,3 +1,5 @@
+// noinspection ES6MissingAwait
+
 import type { Settings } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
 import type { EClient } from "client";
@@ -5,7 +7,7 @@ import { commandsList, contextMenus } from "commands";
 import * as Djs from "discord.js";
 import type { Guild } from "discord.js";
 import dotenv from "dotenv";
-import { VERSION } from "../../index";
+import { VERSION } from "../../index.js";
 dotenv.config({ path: ".env" });
 
 const rest = new Djs.REST().setToken(process.env.DISCORD_TOKEN ?? "0");
@@ -23,11 +25,10 @@ export default (client: EClient): void => {
 		);
 		for (const guild of client.guilds.cache.values()) {
 			logger.trace(`Registering commands for \`${guild.name}\``);
-			const { forEach } = await guild.client.application.commands.fetch({
-				guildId: guild.id,
-			});
+			const cmds = await guild.client.application.commands.fetch({ guildId: guild.id });
 			//filter the list of the commands that are deleted
-			forEach(async (command) => {
+			// biome-ignore lint/complexity/noForEach: <explanation
+			cmds.forEach(async (command) => {
 				if (serializedCommands.find((c) => c.name === command.name)) return;
 				try {
 					await command.delete();

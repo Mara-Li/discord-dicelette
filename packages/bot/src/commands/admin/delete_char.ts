@@ -1,4 +1,4 @@
-import { cmdLn, ln, t } from "@dicelette/localization";
+import { cmdLn, ln } from "@dicelette/localization";
 import type {
 	DiscordChannel,
 	GuildData,
@@ -10,8 +10,10 @@ import { filterChoices, logger } from "@dicelette/utils";
 import type { EClient } from "client";
 import { deleteUser, getDatabaseChar } from "database";
 import * as Djs from "discord.js";
+import i18next from "i18next";
 import { embedError, reply } from "messages";
 import { searchUserChannel } from "utils";
+export const t = i18next.getFixedT("en");
 
 export const deleteChar = {
 	async autocomplete(

@@ -20,23 +20,24 @@
 	},
 	"private": true,
 	"dependencies": {
+		"@dicelette/dice": "workspace:*",
+		"@dicelette/localization": "workspace:*",
+		"@dicelette/types": "workspace:*",
+		"@dicelette/utils": "workspace:*",
+		"@discordjs/rest": "^2.4.0",
 		"@types/parse-color": "^1.0.3",
 		"chart.js": "3.9.1",
 		"chartjs-node-canvas": "^4.1.6",
-		"@discordjs/rest": "^2.4.0",
 		"discord-api-types": "^0.37.104",
 		"discord.js": "^14.16.3",
 		"enmap": "^6.0.3",
-		"parse-color": "^1.0.0",
-		"@dicelette/utils": "workspace:*",
-		"@dicelette/dice": "workspace:*",
-		"@dicelette/localization": "workspace:*",
-		"@dicelette/types": "workspace:*"
+		"parse-color": "^1.0.0"
 	},
 	"devDependencies": {
 		"@types/papaparse": "^5.3.15",
 		"dedent": "^1.5.3",
 		"moment": "^2.30.1",
-		"papaparse": "^5.4.1"
+		"papaparse": "^5.4.1",
+		"tsconfig-paths": "^4.2.0"
 	}
 }

@@ -1,6 +1,8 @@
 {
 	"ts-node": {
-		"require": ["tsconfig-paths/register"]
+		"require": ["tsconfig-paths/register"],
+		"esm": true,
+		"transpileOnly": true
 	},
 	"tsc-alias": {
 		"resolveFullPaths": true
@@ -12,7 +14,7 @@
 		"rootDir": "./",
 		"outDir": "./dist/",
 		"strict": true,
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"importHelpers": true,
 		"experimentalDecorators": true,
 		"esModuleInterop": true,
