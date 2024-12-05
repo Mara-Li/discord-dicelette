@@ -412,7 +412,7 @@ export const registerTemplate = {
 			await bulkDeleteCharacters(client.settings, interaction, ul);
 		await reply(interaction, {
 			content: ul("register.embed.registered"),
-			files: await downloadTutorialImages(),
+			files: downloadTutorialImages(),
 		});
 	},
 };
