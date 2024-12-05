@@ -1,7 +1,7 @@
 {
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"outDir": "../../dist/dice",
+		"outDir": "./dist",
 		"rootDir": "./"
 	},
 	"include": ["src", "index.ts"]

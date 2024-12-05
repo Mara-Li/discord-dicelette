@@ -1,5 +1,5 @@
 import { type Resultat, roll } from "@dicelette/core";
-import { DETECT_DICE_MESSAGE } from "./interfaces";
+import { DETECT_DICE_MESSAGE } from "./interfaces.js";
 
 export function isRolling(content: string) {
 	const detectRoll = content.match(/\[(.*)\]/)?.[1];

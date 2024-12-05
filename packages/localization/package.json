@@ -2,9 +2,17 @@
 	"name": "@dicelette/localization",
 	"version": "1.0.0",
 	"description": "",
-	"main": "dist/localization/index.js",
+	"type": "module",
+	"main": "dist/index.js",
 	"scripts": {
+		"prebuild": "cross-os clean",
 		"build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json"
+	},
+	"cross-os": {
+		"clean": {
+			"linux": "rm -rf dist",
+			"win32": "rmdir /s /q dist"
+		}
 	},
 	"repository": {
 		"type": "git",

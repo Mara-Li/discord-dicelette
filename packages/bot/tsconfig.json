@@ -7,7 +7,7 @@
 	},
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"outDir": "../../dist/bot",
+		"outDir": "./dist",
 		"rootDir": "./",
 		"paths": {
 			"client": ["packages/bot/src/client.js"],

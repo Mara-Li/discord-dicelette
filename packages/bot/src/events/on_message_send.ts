@@ -1,5 +1,4 @@
-import { isRolling } from "@dicelette/dice/src/check";
-import { createUrl, parseResult, rollContent } from "@dicelette/dice/src/roll";
+import { createUrl, isRolling, parseResult, rollContent } from "@dicelette/dice";
 import { lError, ln } from "@dicelette/localization";
 import { logger } from "@dicelette/utils";
 import type { EClient } from "client";

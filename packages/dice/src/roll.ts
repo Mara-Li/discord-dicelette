@@ -2,7 +2,7 @@ import { COMMENT_REGEX, type Compare, type Resultat, roll } from "@dicelette/cor
 import type { Translation } from "@dicelette/types";
 import { evaluate } from "mathjs";
 import { DETECT_DICE_MESSAGE, type RollResult, type Server } from "./interfaces";
-import { timestamp } from "./utils";
+import { timestamp } from "./utils.js";
 import "uniformize";
 import { ln } from "@dicelette/localization";
 /**

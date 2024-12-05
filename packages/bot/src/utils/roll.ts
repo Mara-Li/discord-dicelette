@@ -1,6 +1,5 @@
 import { generateStatsDice, replaceFormulaInDice } from "@dicelette/core";
-import type { Server } from "@dicelette/dice/src/interfaces";
-import { rollText } from "@dicelette/dice/src/roll";
+import { type Server, rollText } from "@dicelette/dice";
 import { ln, t } from "@dicelette/localization";
 import type { Settings, Translation, UserData } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
