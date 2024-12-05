@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "dist/dice/index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json"
 	},
 	"repository": {
 		"type": "git",
@@ -14,7 +14,10 @@
 	"dependencies": {
 		"mathjs": "^14.0.0",
 		"vite-tsconfig-paths": "^5.1.3",
-		"vitest": "^2.1.8"
+		"vitest": "^2.1.8",
+		"@dicelette/utils": "workspace:*",
+		"@dicelette/types": "workspace:*",
+		"@dicelette/localization": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/papaparse": "^5.3.15",

@@ -1,9 +1,8 @@
 {
-	"extends": "../../tsconfig.base.json",
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"outDir": "../../dist/localization",
 		"rootDir": "./"
 	},
-	"include": ["./src/**/*", "locales/**/*.json", "index.ts"],
-	"references": [{ "path": "../utils" }]
+	"include": ["./src/**/*", "locales/**/*.json", "index.ts"]
 }

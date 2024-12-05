@@ -5,12 +5,11 @@
 	"tsc-alias": {
 		"resolveFullPaths": true
 	},
-	"extends": "../../tsconfig.base.json",
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"outDir": "../../dist/bot",
 		"rootDir": "./",
 		"paths": {
-			"@dicelette/*": ["packages/*"],
 			"client": ["packages/bot/src/client.js"],
 			"messages": ["packages/bot/src/messages/index.js"],
 			"utils": ["packages/bot/src/utils/index.js"],
@@ -21,11 +20,5 @@
 			"locales": ["packages/bot/src/locales.js"]
 		}
 	},
-	"include": ["src", "index.ts"],
-	"references": [
-		{ "path": "../dice" },
-		{ "path": "../utils" },
-		{ "path": "../localization" },
-		{ "path": "../types" }
-	]
+	"include": ["src", "index.ts"]
 }

@@ -9,11 +9,17 @@
 	"private": true,
 	"scripts": {
 		"lint": "biome format --write packages",
-		"check": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-		"dev": "ts-node-dev -r tsconfig-paths/register --respawn -- packages/bot/index.ts"
+		"prebuild": "cross-os clean",
+		"build": "pnpm run --recursive build"
 	},
 	"engines": {
 		"node": "^20.0.0"
+	},
+	"cross-os": {
+		"clean": {
+			"linux": "rm -rf dist",
+			"win32": "rmdir /s /q dist"
+		}
 	},
 	"commit-and-tag-version": {
 		"t": ""
@@ -31,8 +37,9 @@
 	"dependencies": {
 		"@dicelette/core": "^1.5.1",
 		"@types/node": "^22.10.1",
+		"cross-os": "^1.5.0",
 		"discord.js": "^14.16.3",
-		"dotenv": "^16.4.6",
+		"dotenv": "^16.4.7",
 		"ts-node-dev": "^2.0.0",
 		"tslog": "^4.9.3",
 		"uniformize": "^2.2.0"

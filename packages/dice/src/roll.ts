@@ -1,8 +1,8 @@
 import { COMMENT_REGEX, type Compare, type Resultat, roll } from "@dicelette/core";
 import type { Translation } from "@dicelette/types";
-import { DETECT_DICE_MESSAGE, type RollResult, type Server } from "interfaces";
 import { evaluate } from "mathjs";
-import { timestamp } from "utils";
+import { DETECT_DICE_MESSAGE, type RollResult, type Server } from "./interfaces";
+import { timestamp } from "./utils";
 import "uniformize";
 import { ln } from "@dicelette/localization";
 /**

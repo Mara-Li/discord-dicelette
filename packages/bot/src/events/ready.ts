@@ -1,4 +1,3 @@
-import { VERSION } from "@dicelette/bot";
 import type { Settings } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
 import type { EClient } from "client";
@@ -6,6 +5,7 @@ import { commandsList, contextMenus } from "commands";
 import * as Djs from "discord.js";
 import type { Guild } from "discord.js";
 import dotenv from "dotenv";
+import { VERSION } from "../../index";
 dotenv.config({ path: ".env" });
 
 const rest = new Djs.REST().setToken(process.env.DISCORD_TOKEN ?? "0");

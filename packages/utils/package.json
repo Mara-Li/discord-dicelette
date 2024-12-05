@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "dist/utils/index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json"
 	},
 	"repository": {
 		"type": "git",
