@@ -9,7 +9,7 @@ import { ln } from "@dicelette/localization";
  * create the roll dice, parse interaction etc... When the slash-commands is used for dice
  */
 export function rollText(
-	dice: string,
+	result: Resultat | undefined,
 	data: Server,
 	critical?: { failure?: number; success?: number },
 	charName?: string,
@@ -19,23 +19,10 @@ export function rollText(
 	logUrl?: string
 ): RollResult {
 	const ul = ln(data.lang);
-	const comments = dice.match(DETECT_DICE_MESSAGE)?.[3].replaceAll("*", "\\*");
-	if (comments) {
-		dice = dice.replace(DETECT_DICE_MESSAGE, "$1");
+	if (!result) {
+		return { error: true, result: ul("roll.error") };
 	}
-	dice = dice.trim();
-	const rollDice = roll(dice.trim().toLowerCase());
-	if (!rollDice) {
-		return {
-			error: true,
-			result: ul("error.invalidDice.withDice", { dice }),
-		};
-	}
-	if (comments) {
-		rollDice.comment = comments;
-		rollDice.dice = `${dice} /* ${comments} */`;
-	}
-	const parser = parseResult(rollDice, ul, critical, !!infoRoll);
+	const parser = parseResult(result, ul, critical, !!infoRoll);
 	let mentionUser = `<@${data.userId}>`;
 	const titleCharName = `__**${charName?.capitalize()}**__`;
 	mentionUser = charName ? `${titleCharName} (${mentionUser})` : mentionUser;
@@ -56,6 +43,23 @@ export function rollText(
 		};
 	if (context) return { result: `${retrieveUser}${parser}${createUrl(ul, context)}` };
 	return { result: `${retrieveUser}${parser}` };
+}
+
+export function getRoll(ul: Translation, dice: string): Resultat | undefined {
+	const comments = dice.match(DETECT_DICE_MESSAGE)?.[3].replaceAll("*", "\\*");
+	if (comments) {
+		dice = dice.replace(DETECT_DICE_MESSAGE, "$1");
+	}
+	dice = dice.trim();
+	const rollDice = roll(dice.trim().toLowerCase());
+	if (!rollDice) {
+		return undefined;
+	}
+	if (comments) {
+		rollDice.comment = comments;
+		rollDice.dice = `${dice} /* ${comments} */`;
+	}
+	return rollDice;
 }
 
 export function createUrl(

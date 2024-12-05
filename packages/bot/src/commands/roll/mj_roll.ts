@@ -200,7 +200,7 @@ export const mjRoll = {
 			}
 			choices.push(...defaultDice);
 		}
-		if (choices.length === 0) return;
+		if (!choices || choices.length === 0) return;
 		const filter = filterChoices(choices, interaction.options.getFocused());
 		await interaction.respond(
 			filter.map((result) => ({ name: result.capitalize(), value: result }))

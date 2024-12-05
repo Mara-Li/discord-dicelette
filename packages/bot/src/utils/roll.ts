@@ -1,5 +1,5 @@
 import { generateStatsDice, replaceFormulaInDice } from "@dicelette/core";
-import { type Server, rollText } from "@dicelette/dice";
+import { type Server, getRoll, rollText } from "@dicelette/dice";
 import { ln, t } from "@dicelette/localization";
 import type { Settings, Translation, UserData } from "@dicelette/types";
 import { logger } from "@dicelette/utils";
@@ -39,7 +39,8 @@ export async function rollWithInteraction(
 		userId: user?.id ?? interaction.user.id,
 		config: db.get(interaction.guild.id),
 	};
-	const defaultMsg = rollText(dice, data, critical, charName, infoRoll, false);
+	const result = getRoll(ul, dice);
+	const defaultMsg = rollText(result, data, critical, charName, infoRoll, false);
 	if (defaultMsg.error) {
 		await reply(interaction, {
 			embeds: [embedError(defaultMsg.result, ul)],
@@ -81,12 +82,12 @@ export async function rollWithInteraction(
 
 	const thread = await threadToSend(db, channel, ul, isHidden);
 	const rolLog = await thread.send("_ _");
-	const editMessage = rollText(dice, data, critical, charName, infoRoll, true).result;
+	const editMessage = rollText(result, data, critical, charName, infoRoll, true).result;
 	await rolLog.edit(editMessage);
 	const rollLogEnabled = db.get(interaction.guild.id, "linkToLogs");
 	const rolLogUrl = rollLogEnabled ? rolLog.url : undefined;
 	const rollTextUrl = rollText(
-		dice,
+		result,
 		data,
 		critical,
 		charName,
@@ -111,7 +112,7 @@ export async function rollWithInteraction(
 			if (messageBefore) messageId = messageBefore.id;
 		}
 		const res = rollText(
-			dice,
+			result,
 			data,
 			critical,
 			charName,
