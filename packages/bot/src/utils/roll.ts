@@ -55,6 +55,9 @@ export async function rollWithInteraction(
 		| string
 		| boolean
 		| undefined;
+	logger.debug(
+		`hideResultConfig: ${hideResultConfig} - disable thread: ${disableThread}; rollChannel: ${rollChannel}`
+	);
 	const hidden = hideResult && hideResultConfig;
 	let isHidden: undefined | string = undefined;
 	if (hidden) {
@@ -185,7 +188,6 @@ export async function rollDice(
 		comparator = comparatorMatch[0];
 	}
 	const roll = `${dice.trimAll()}${modificatorString}${comparator} ${comments}`;
-	logger.debug(dice.trimAll());
 	await rollWithInteraction(
 		interaction,
 		roll,

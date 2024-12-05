@@ -70,7 +70,7 @@ export function createUrl(
 	if (logUrl) return `\n-# ↪ ${logUrl}`;
 	if (!context) return "";
 	const { guildId, channelId, messageId } = context;
-	return `\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${guildId}/${channelId}/${messageId}>)`;
+	return `\n\n-# ↪ [${ul("common.context")}](<https://discord.com/channels/${guildId}/${channelId}/${messageId}>)`;
 }
 
 export function rollContent(

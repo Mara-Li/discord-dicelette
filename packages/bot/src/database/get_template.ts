@@ -34,7 +34,7 @@ export async function getTemplateWithDB(
 	} catch (error) {
 		if ((error as Error).message === "Unknown Message")
 			throw new Error(ul("error.noTemplateId", { channelId, messageId }));
-		throw error;
+		throw new Error(ul("error.noTemplate"));
 	}
 }
 
@@ -47,10 +47,7 @@ export async function getTemplate(
 	ul: Translation
 ): Promise<StatisticalTemplate | undefined> {
 	const template = message?.attachments.first();
-	if (!template) {
-		// noinspection ExceptionCaughtLocallyJS
-		throw new Error(ul("error.noTemplate"));
-	}
+	if (!template) return;
 	const res = await fetch(template.url).then((res) => res.json());
 	if (!enmap.get(message.guild!.id, "templateID.valid")) {
 		enmap.set(message.guild!.id, true, "templateID.valid");
