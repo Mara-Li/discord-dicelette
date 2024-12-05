@@ -1,6 +1,7 @@
 import { ln } from "@dicelette/localization";
-import type { Settings } from "@dicelette/types";
+import type { Settings, Translation } from "@dicelette/types";
 import * as Djs from "discord.js";
+import { getEmbeds, parseEmbedFields } from "messages/embeds";
 import { allowEdit } from "utils/check";
 
 /**
@@ -63,5 +64,53 @@ export async function showDamageDiceModals(
 		);
 	modal.addComponents(damageDice);
 	modal.addComponents(diceValue);
+	await interaction.showModal(modal);
+}
+
+/**
+ * Start the showEditDice when the button is interacted
+ * It will also verify if the user can edit their dice
+ * @param interaction {Djs.ButtonInteraction}
+ * @param ul {Translation}
+ * @param interactionUser {Djs.User}
+ * @param db {Settings}
+ */
+export async function initiateDiceEdit(
+	interaction: Djs.ButtonInteraction,
+	ul: Translation,
+	interactionUser: Djs.User,
+	db: Settings
+) {
+	if (await allowEdit(interaction, db, interactionUser))
+		await showEditDice(interaction, ul);
+}
+
+/**
+ * Show the modal to **edit** the registered dice
+ * Will parse registered dice and show them in the modal as `- Skill : Dice`
+ * @param interaction {Djs.ButtonInteraction}
+ * @param ul {Translation}
+ */
+export async function showEditDice(interaction: Djs.ButtonInteraction, ul: Translation) {
+	const diceEmbed = getEmbeds(ul, interaction.message, "damage");
+	if (!diceEmbed) throw new Error(ul("error.invalidDice.embeds"));
+	const diceFields = parseEmbedFields(diceEmbed.toJSON() as Djs.Embed);
+	let dices = "";
+	for (const [skill, dice] of Object.entries(diceFields)) {
+		dices += `- ${skill}${ul("common.space")}: ${dice}\n`;
+	}
+	const modal = new Djs.ModalBuilder()
+		.setCustomId("editDice")
+		.setTitle(ul("common.dice").capitalize());
+	const input =
+		new Djs.ActionRowBuilder<Djs.ModalActionRowComponentBuilder>().addComponents(
+			new Djs.TextInputBuilder()
+				.setCustomId("allDice")
+				.setLabel(ul("modals.edit.dice"))
+				.setRequired(true)
+				.setStyle(Djs.TextInputStyle.Paragraph)
+				.setValue(dices)
+		);
+	modal.addComponents(input);
 	await interaction.showModal(modal);
 }

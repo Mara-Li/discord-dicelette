@@ -2,8 +2,12 @@ import type { StatisticalTemplate } from "@dicelette/core";
 import { lError, ln } from "@dicelette/localization";
 import type { Settings, Translation } from "@dicelette/types";
 import { cancel } from "buttons";
-import { executeAddDiceButton } from "buttons/dices";
-import { continuePage, startRegisterUser } from "buttons/register_user";
+import { executeAddDiceButton, initiateDiceEdit } from "buttons/dices";
+import {
+	continuePage,
+	startRegisterUser,
+	validateUserButton,
+} from "buttons/register_user";
 import { triggerEditStats } from "buttons/statistics";
 import type { EClient } from "client";
 import { autCompleteCmd, commandsList } from "commands";
@@ -13,6 +17,11 @@ import { getTemplate, getTemplateWithDB } from "database/get_template";
 import * as Djs from "discord.js";
 import { embedError } from "messages/embeds";
 import { reply } from "messages/send";
+import { validateAvatarEdit } from "modals/avatar";
+import { storeDamageDice, validateDiceEdit } from "modals/dice";
+import { pageNumber, recordFirstPage } from "modals/register_user";
+import { validateRename } from "modals/rename";
+import { editStats } from "modals/stats";
 
 export default (client: EClient): void => {
 	client.on("interactionCreate", async (interaction: Djs.BaseInteraction) => {

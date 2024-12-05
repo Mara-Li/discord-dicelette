@@ -46,3 +46,30 @@ export async function deleteAfter(
 		}
 	}, time);
 }
+
+export function displayOldAndNewStats(
+	oldStats?: Djs.APIEmbedField[],
+	newStats?: Djs.APIEmbedField[]
+) {
+	let stats = "";
+	if (oldStats && newStats) {
+		for (const field of oldStats) {
+			const name = field.name.toLowerCase();
+			const newField = newStats.find((f) => f.name.toLowerCase() === name);
+			if (!newField) {
+				stats += `- ~~${field.name}: ${field.value}~~\n`;
+				continue;
+			}
+			if (field.value === newField.value) continue;
+			stats += `- ${field.name}: ${field.value} ⇒ ${newField.value}\n`;
+		}
+		//verify if there is new stats
+		for (const field of newStats) {
+			const name = field.name.toLowerCase();
+			if (!oldStats.find((f) => f.name.toLowerCase() === name)) {
+				stats += `- ${field.name}: 0 ⇒ ${field.value}\n`;
+			}
+		}
+	}
+	return stats;
+}

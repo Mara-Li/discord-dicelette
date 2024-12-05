@@ -1,4 +1,5 @@
 import { NoEmbed } from "@dicelette:utils/errors";
+import type { StatisticalTemplate } from "@dicelette/core";
 import { findln } from "@dicelette/localization";
 import type { Translation } from "@dicelette/types";
 import * as Djs from "discord.js";
@@ -176,4 +177,79 @@ export function createTemplateEmbed(ul: Translation) {
  */
 export function createDiceEmbed(ul: Translation) {
 	return new Djs.EmbedBuilder().setTitle(ul("embed.dice")).setColor("Green");
+}
+
+/**
+ * Get the statistiques fields from the modals and verify if all value are correct and if the total is not exceeded
+ */
+export function getStatistiqueFields(
+	interaction: Djs.ModalSubmitInteraction,
+	templateData: StatisticalTemplate,
+	ul: Translation
+) {
+	const combinaisonFields: { [name: string]: string } = {};
+	const stats: { [name: string]: number } = {};
+	let total = templateData.total;
+	if (!templateData.statistics) return { combinaisonFields, stats };
+	for (const [key, value] of Object.entries(templateData.statistics)) {
+		const name = key.standardize();
+		if (!interaction.fields.fields.has(name) && !value.combinaison) continue;
+		if (value.combinaison) {
+			combinaisonFields[key] = value.combinaison;
+			continue;
+		}
+		const statValue = interaction.fields.getTextInputValue(name);
+		if (!statValue) continue;
+		const num = Number.parseInt(statValue, 10);
+		if (value.min && num < value.min)
+			throw new Error(ul("error.mustBeGreater", { value: name, min: value.min }));
+		if (value.max && num > value.max)
+			throw new Error(ul("error.mustBeLower", { value: name, max: value.max }));
+		if (total) {
+			total -= num;
+			if (total < 0) {
+				const exceeded = total * -1;
+				throw new Error(ul("error.totalExceededBy", { value: name, max: exceeded }));
+			}
+			stats[key] = num;
+		} else stats[key] = num;
+	}
+	return { combinaisonFields, stats };
+}
+
+/**
+ * Remove the embeds from the list
+ */
+export function removeEmbedsFromList(
+	embeds: Djs.EmbedBuilder[],
+	which: "user" | "stats" | "damage" | "template"
+) {
+	return embeds.filter((embed) => {
+		const embedTitle = embed.toJSON().title;
+		if (!embedTitle) return false;
+		const title = findln(embedTitle);
+		if (which === "user")
+			return title !== "embed.user" && title !== "embed.add" && title !== "embed.old";
+		if (which === "stats")
+			return title !== "common.statistic" && title !== "common.statistics";
+		if (which === "damage") return title !== "embed.dice";
+		if (which === "template") return title !== "embed.template";
+	});
+}
+
+/**
+ * Parse the fields in stats, used to fix combinaison and get only them and not their result
+ */
+export function parseStatsString(statsEmbed: Djs.EmbedBuilder) {
+	const stats = parseEmbedFields(statsEmbed.toJSON() as Djs.Embed);
+	const parsedStats: { [name: string]: number } = {};
+	for (const [name, value] of Object.entries(stats)) {
+		let number = Number.parseInt(value, 10);
+		if (Number.isNaN(number)) {
+			const combinaison = value.replace(/`(.*)` =/, "").trim();
+			number = Number.parseInt(combinaison, 10);
+		}
+		parsedStats[name] = number;
+	}
+	return parsedStats;
 }

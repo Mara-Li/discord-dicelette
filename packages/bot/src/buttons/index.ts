@@ -111,3 +111,22 @@ export function registerDmgButton(ul: Translation) {
 		cancelButton,
 	]);
 }
+
+/**
+ * Add the cancel and continue button when registering user and their are multiple page
+ * @param ul {Translation}
+ */
+export function continueCancelButtons(ul: Translation) {
+	const continueButton = new Djs.ButtonBuilder()
+		.setCustomId("continue")
+		.setLabel(ul("button.continue"))
+		.setStyle(Djs.ButtonStyle.Success);
+	const cancelButton = new Djs.ButtonBuilder()
+		.setCustomId("cancel")
+		.setLabel(ul("button.cancel"))
+		.setStyle(Djs.ButtonStyle.Danger);
+	return new Djs.ActionRowBuilder<Djs.ButtonBuilder>().addComponents([
+		continueButton,
+		cancelButton,
+	]);
+}

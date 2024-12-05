@@ -53,3 +53,12 @@ export async function allowEdit(
 	await reply(interaction, { content: ul("modals.noPermission"), ephemeral: true });
 	return false;
 }
+
+export async function isUserNameOrId(
+	userId: string,
+	interaction: Djs.ModalSubmitInteraction
+) {
+	if (!userId.match(/\d+/))
+		return (await interaction.guild!.members.fetch({ query: userId })).first();
+	return await interaction.guild!.members.fetch({ user: userId });
+}
